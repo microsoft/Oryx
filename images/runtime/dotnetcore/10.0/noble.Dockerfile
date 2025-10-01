@@ -1,3 +1,5 @@
+ARG INCLUDE_AZURELINUX_CERTS=true
+
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
 FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS tools-install
@@ -6,10 +8,10 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
-RUN DOTNET_ROLL_FORWARD=LatestMajor dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 10.0.0-rc.1.25460.1
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.8-bookworm as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.1-bookworm AS startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -24,9 +26,21 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
+# Stage: (optional) pull Azure Linux CA certificates so we can merge them into BaseOS trust store
+# Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
+FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
+ARG INCLUDE_AZURELINUX_CERTS
+RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+		set -eux; \
+		tdnf makecache; \
+		tdnf install -y ca-certificates; \
+		update-ca-trust extract; \
+		tdnf clean all; \
+	fi
 
-FROM mcr.microsoft.com/mirror/docker/library/debian:bookworm-slim
+FROM mcr.microsoft.com/mirror/docker/library/ubuntu:noble
 ARG BUILD_DIR=/tmp/oryx/build
+ARG INCLUDE_AZURELINUX_CERTS
 ADD build ${BUILD_DIR}
 
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
@@ -35,13 +49,13 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         # .NET Core dependencies
         libc6 \
-        libgcc1 \
+        libgcc-s1 \
         libgssapi-krb5-2 \
-        libicu72 \
+        libicu74 \
         libssl3 \
         libstdc++6 \
         zlib1g \
-        lldb \
+        lldb-18 \
         curl \
         file \
         libgdiplus \
@@ -56,8 +70,6 @@ ENV ASPNETCORE_URLS=http://+:80 \
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
-ARG NET_CORE_APP_100_SHA
-ARG ASPNET_CORE_APP_100_SHA
 ARG NET_CORE_APP_100
 ARG ASPNET_CORE_APP_100
 
@@ -68,20 +80,44 @@ RUN set -ex \
     && apt-get purge ca-certificates -y \
     && apt-get update \
     && apt-get install -f ca-certificates -y --no-install-recommends \
-    && curl -SL --output dotnet.tar.gz https://builds.dotnet.microsoft.com/dotnet/Runtime/$NET_CORE_APP_100/dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz \
-    && echo "$NET_CORE_APP_100_SHA dotnet.tar.gz" | sha512sum -c - \
+    && curl --fail --show-error --location \
+        --remote-name https://builds.dotnet.microsoft.com/dotnet/Runtime/$NET_CORE_APP_100/dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz \
+        --remote-name https://builds.dotnet.microsoft.com/dotnet/Runtime/$NET_CORE_APP_100/dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz.sha512 \
+    && sha512sum -c dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz.sha512 \
     && mkdir -p /usr/share/dotnet \
-    && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
-    && rm dotnet.tar.gz \
+    && tar -zxf dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz -C /usr/share/dotnet \
+    && rm dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz \
+    && rm dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz.sha512 \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
     # Install ASP.NET Core
-    && curl -SL --output aspnetcore.tar.gz https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_100/aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz \
-    && echo "$ASPNET_CORE_APP_100_SHA aspnetcore.tar.gz" | sha512sum -c - \
+    && curl --fail --show-error --location \
+        --remote-name https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_100/aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz \
+        --remote-name https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_100/aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz.sha512 \
+    && sha512sum -c aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz.sha512 \
     && mkdir -p /usr/share/dotnet \
-    && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
-    && rm aspnetcore.tar.gz \
+    && tar -zxf aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
+    && rm aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz \
+    && rm aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz.sha512 \
     && dotnet-sos install \
     && rm -rf ${BUILD_DIR}
+
+# Copy Azure linux certs to a temporary location
+RUN mkdir -p /tmp/azurelinux-ca-certs && \
+	chmod 755 /tmp/azurelinux-ca-certs;
+COPY --from=azurelinux-core /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem* /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
+
+COPY images/runtime/scripts/install-azurelinux-certs.sh /usr/local/bin/install-azurelinux-certs.sh
+
+# Add Azure Linux certs to Debian's CA store if the flag is set to true
+RUN set -e; \
+    if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+        chmod +x /usr/local/bin/install-azurelinux-certs.sh; \
+        /usr/local/bin/install-azurelinux-certs.sh /tmp/azurelinux-ca-certs /tmp/azurelinux-ca-certs/tls-ca-bundle.pem; \
+    fi;
+
+# Cleanup script and temporary files
+RUN	rm -f /usr/local/bin/install-azurelinux-certs.sh; \
+	rm -rf /tmp/azurelinux-ca-certs;
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_CONNECTION_STRING

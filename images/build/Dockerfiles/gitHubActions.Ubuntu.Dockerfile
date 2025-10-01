@@ -1,38 +1,13 @@
 ARG BASE_IMAGE
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 as buildscriptgenerator
-
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
-ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
-
-WORKDIR /usr/oryx
-COPY build build
-# This statement copies signed oryx binaries from during agent build.
-# For local/dev contents of blank/empty directory named binaries are getting copied
-COPY binaries /opt/buildscriptgen/
-COPY src src
-COPY build/FinalPublicKey.snk build/
-
-RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
-RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
-
+# =================== MAIN BASE IMAGE ====================
+# This stage sets up the base Ubuntu image with essential build tools
 FROM ${BASE_IMAGE} AS main
-ARG DEBIAN_FLAVOR
 ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
-ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
-# stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
-RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
-        sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
-        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
-        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
-    fi
+COPY binaries /opt/buildscriptgen/
+RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript /opt/buildscriptgen/Microsoft.Oryx.BuildServer
 
 # Install basic build tools
 RUN apt-get update \
@@ -78,53 +53,25 @@ RUN apt-get update \
         lzma \
         lzma-dev \
         zlib1g-dev \
+        libargon2-1 \
+        libonig-dev \
+        libicu74 \
+        libcurl4 \
+        libssl3 \
+        libyaml-dev \
+        libxml2 \
+        $PHPIZE_DEPS \
+        ca-certificates \
+        curl \
+        xz-utils \
+        libsodium-dev \
+        libncurses6 \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 
-RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            libicu72 \
-            libcurl4 \
-            libssl3 \
-            libyaml-dev \
-            libxml2 \
-        && rm -rf /var/lib/apt/lists/* ; \
-    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            libicu67 \
-            libcurl4 \
-            libssl1.1 \
-            libyaml-dev \
-            libxml2 \
-            # Adding lxml depended packages to avoid build failures
-            # https://lxml.de/installation.html#requirements
-            libxml2-dev \
-            libxslt-dev \
-            python3-dev \
-            python3-setuptools \
-            python3-wheel \
-        && rm -rf /var/lib/apt/lists/* ; \
-    elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            libicu63 \
-            libcurl4 \
-            libssl1.1 \
-        && rm -rf /var/lib/apt/lists/* ; \
-    else \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            libcurl3 \
-            libicu57 \
-            liblttng-ust0 \
-            libssl1.0.2 \
-        && rm -rf /var/lib/apt/lists/* ; \
-    fi
-
-# Install Yarn, HUGO
+# =================== INTERMEDIATE IMAGE ====================
+# This stage installs Yarn, HUGO, and copies build scripts
 FROM main AS intermediate
 
 ARG IMAGES_DIR=/opt/tmp/images
@@ -136,10 +83,10 @@ COPY build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \; \
     && find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-
+# Install HUGO
 RUN ${IMAGES_DIR}/build/installHugo.sh
 
+# Install Yarn
 ARG YARN_VERSION
 ARG YARN_MINOR_VERSION
 ARG YARN_MAJOR_VERSION
@@ -159,10 +106,13 @@ RUN set -ex \
  && ln -s $YARN_VERSION /opt/yarn/latest \
  && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
  && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
+
 RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
+# =================== FINAL IMAGE ====================
+# This stage creates the final image with all components
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
 ARG IMAGES_DIR="/opt/tmp/images"
@@ -173,24 +123,9 @@ COPY --from=intermediate /opt /opt
 # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
 RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
     && update-ca-certificates \
-    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
+    && echo "value of OS_FLAVOR is ${OS_FLAVOR}"
 
-# Install PHP pre-reqs	# Install PHP pre-reqs
-RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ] || [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
-    apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y \
-        $PHPIZE_DEPS \
-        ca-certificates \
-        curl \
-        xz-utils \
-        libsodium-dev \
-        libncurses5 \
-    --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
-    else \
-        .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
-    fi 
-
+# Final setup and configuration
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
     && cp -f $tmpDir/images/build/logger.sh /opt/oryx/logger \
@@ -203,19 +138,9 @@ RUN tmpDir="/opt/tmp" \
     && mkdir -p /var/nuget \
     && chmod a+rw /var/nuget \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    # Install PHP pre-reqs
-    #&& $tmpDir/images/build/php/prereqs/installPrereqs.sh \
-    # NOTE: do not include the following lines in prereq installation script as
-    # doing so is causing different version of libargon library being installed
-    # causing php-composer to fail
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libargon2-0 \
-        libonig-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -f /etc/apt/sources.list.d/buster.list \
     && echo "githubactions" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+    && echo "${UBUNTU}|${OS_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
 # For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 
