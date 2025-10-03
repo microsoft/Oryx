@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Theory, Trait("category", "latest")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(null)]
         [InlineData("false")]
         public void GeneratesScript_AndBuilds_DjangoApp_RunningCollectStatic(string disableCollectStatic)
@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
