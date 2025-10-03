@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.Detector.Python
             var appDirectory = string.Empty;
             var hasRequirementsTxtFile = false;
             var hasPyprojectTomlFile = false;
+            var hasUvLockFile = false;
             var customRequirementsTxtPath = this.options.CustomRequirementsTxtPath;
             var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
 
@@ -105,6 +106,16 @@ namespace Microsoft.Oryx.Detector.Python
                 this.logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo. More information: https://aka.ms/requirements-not-found");
             }
 
+            if (sourceRepo.FileExists(PythonConstants.UvLockFileName))
+            {
+                this.logger.LogInformation($"Found {PythonConstants.UvLockFileName} at the root of the repo.");
+                hasUvLockFile = true;
+            }
+            else
+            {
+                this.logger.LogError($"Missing {PythonConstants.UvLockFileName} at the root of the repo. More information: https://aka.ms/requirements-not-found");
+            }
+
             var hasCondaEnvironmentYmlFile = false;
             if (sourceRepo.FileExists(PythonConstants.CondaEnvironmentYmlFileName) &&
                 this.IsCondaEnvironmentFile(sourceRepo, PythonConstants.CondaEnvironmentYmlFileName))
@@ -147,7 +158,8 @@ namespace Microsoft.Oryx.Detector.Python
                 !hasCondaEnvironmentYmlFile &&
                 !hasJupyterNotebookFiles &&
                 !hasRuntimeTxtFile &&
-                !hasPyprojectTomlFile)
+                !hasPyprojectTomlFile &&
+                !hasUvLockFile)
             {
                 var searchSubDirectories = !this.options.DisableRecursiveLookUp;
                 if (!searchSubDirectories)
@@ -182,6 +194,7 @@ namespace Microsoft.Oryx.Detector.Python
                 HasCondaEnvironmentYmlFile = hasCondaEnvironmentYmlFile,
                 HasRequirementsTxtFile = hasRequirementsTxtFile,
                 HasPyprojectTomlFile = hasPyprojectTomlFile,
+                HasUvLockFile = hasUvLockFile,
             };
         }
 
