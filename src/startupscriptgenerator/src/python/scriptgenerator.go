@@ -49,7 +49,13 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogInformation("Generating script for source.")
 
-	pythonInstallationRoot := fmt.Sprintf("/opt/python/%s", gen.Manifest.PythonVersion)
+	var pythonVersion string
+	if gen.Manifest.PythonVersion != "" {
+		pythonVersion = gen.Manifest.PythonVersion
+	} else {
+		pythonVersion = os.Getenv("PYTHON_VERSION")
+	}
+	pythonInstallationRoot := fmt.Sprintf("/opt/python/%s", pythonVersion)
 
 	common.PrintVersionInfo()
 
