@@ -187,7 +187,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 				scriptBuilder.WriteString("  echo WARNING: Could not find virtual environment directory '" + virtualEnvDir + "'.\n")
 			}
 		} else {
-			scriptBuilder.WriteString(fmt.Sprintf("echo '. %s/bin/activate' >> ~/.bashrc\n", "/" + virtualEnvironmentName))
+			scriptBuilder.WriteString(fmt.Sprintf("echo '. /%s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
 			compressedFile := gen.Manifest.CompressedVirtualEnvFile
 			virtualEnvDir := "/" + virtualEnvironmentName
 			if strings.HasSuffix(compressedFile, ".zip") {
@@ -265,6 +265,8 @@ func (gen *PythonStartupScriptGenerator) getVenvHandlingScript(virtualEnvName st
 					fmt.Sprintf("ln -sf %s %s\n", virtualEnvDir, gen.Manifest.SourceDirectoryInBuildContainer))
 				scriptBuilder.WriteString(fmt.Sprintf(". %s/bin/activate\n", virtualEnvName))
 			}
+		} else {
+			scriptBuilder.WriteString(fmt.Sprintf(". /%s/bin/activate\n", virtualEnvName))
 		}
 	}
 
