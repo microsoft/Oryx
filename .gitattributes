@@ -1,7 +1,7 @@
 * text=auto
 
 # Make sure c# files have crlf
-*.cs -text
+*.cs text eol=crlf
 *.sln text eol=crlf
 *.csproj text eol=crlf
 
