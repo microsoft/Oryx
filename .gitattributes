@@ -16,4 +16,4 @@
 *.json text eol=lf
 
 # Make sure bash scripts have lf
-*.sh text eol=lf
+*.sh text eol=lf*.cs -text
