@@ -16,7 +16,8 @@ variables:
   python310DebianFlavors: buster,bullseye
   python311DebianFlavors: bullseye,bookworm
   python312DebianFlavors: bullseye,bookworm
-  python313DebianFlavors: bookworm
+  python313DebianFlavors: bullseye,bookworm
+  python314DebianFlavors: noble
   dotnet60DebianFlavors: bullseye
   dotnet80DebianFlavors: bullseye,bookworm
   dotnet90DebianFlavors: bookworm
@@ -42,5 +43,7 @@ variables:
   python310_GPG_keys: 'A035C8C19219BA821ECEA86B64E628F8D684696D'
   python311_GPG_keys: 'A035C8C19219BA821ECEA86B64E628F8D684696D'
   python312_GPG_keys: '7169605F62C751356D054A26A821E680E5FA6305'
+  python313_GPG_keys: '7169605F62C751356D054A26A821E680E5FA6305'
+  python314_GPG_keys: '7169605F62C751356D054A26A821E680E5FA6305'
   python38_GPG_keys: 'E3FF2839C048B25C084DEBE9B26995E310250568'
   python39_GPG_keys: 'E3FF2839C048B25C084DEBE9B26995E310250568'
