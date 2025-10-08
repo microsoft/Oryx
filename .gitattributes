@@ -1,7 +1,7 @@
 * text=auto
 
 # Make sure c# files have crlf
-*.cs text eol=crlf
+*.cs -text
 *.sln text eol=crlf
 *.csproj text eol=crlf
 
@@ -16,4 +16,4 @@
 *.json text eol=lf
 
 # Make sure bash scripts have lf
-*.sh text eol=lf*.cs -text
+*.sh text eol=lf
