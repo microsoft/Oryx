@@ -7,7 +7,8 @@ json_data = response.json()
 todays_date = date.today().strftime("%Y-%m-%d")
  
 for element in json_data:
-    if element["eol"] > todays_date:
+    # Include versions where eol is False (no EOL date) or eol is after today
+    if element["eol"] == False or element["eol"] > todays_date:
         version = element["latest"]
         major_version = element["cycle"].replace('.', '')
  
