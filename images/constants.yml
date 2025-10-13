@@ -11,6 +11,7 @@ variables:
   node18osFlavors: bullseye
   node20osFlavors: bullseye,bookworm
   node22osFlavors: bullseye,bookworm
+  node24osFlavors: noble
   python39osFlavors: bullseye
   python310osFlavors: bullseye
   python311osFlavors: bullseye,bookworm
@@ -26,7 +27,7 @@ variables:
   php84osFlavors: bullseye,bookworm
   osFlavors: bullseye,bookworm,noble
   dotnetosFlavors: bookworm,bullseye,noble
-  nodejsosFlavors: bookworm,bullseye
+  nodejsosFlavors: bookworm,bullseye,noble
   phposFlavors: bookworm,bullseye
   pythonosFlavors: bookworm,bullseye,noble
   cliDebianFlavors: bullseye
