@@ -170,15 +170,16 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 
 	if virtualEnvironmentName != "" {
 		virtualEnvDir := filepath.Join(gen.getAppPath(), virtualEnvironmentName)
+		virtualEnvPath := gen.getVirtualEnvPath(virtualEnvDir, virtualEnvironmentName)
 
 		scriptBuilder.WriteString(
-			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", gen.getVirtualEnvPath(virtualEnvDir, virtualEnvironmentName)))
+			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", virtualEnvPath))
 		
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
 		if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
-			scriptBuilder.WriteString(fmt.Sprintf("echo '. %s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
+			scriptBuilder.WriteString(fmt.Sprintf("echo 'if [ -f %s/bin/activate ]; then . %s/bin/activate; fi' >> ~/.bashrc\n", virtualEnvPath, virtualEnvPath))
 			if common.PathExists(virtualEnvDir) {
 				// We add the virtual env site-packages to PYTHONPATH instead of activating it to be backwards compatible with existing
 				// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
