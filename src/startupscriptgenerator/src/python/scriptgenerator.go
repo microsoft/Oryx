@@ -167,7 +167,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 
 		scriptBuilder.WriteString(
 			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", virtualEnvDir))
-		scriptBuilder.WriteString(fmt.Sprintf("echo '. %s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
+		scriptBuilder.WriteString(fmt.Sprintf("echo 'if [ -f %s/bin/activate ]; then . %s/bin/activate; fi' >> ~/.bashrc\n", virtualEnvDir, virtualEnvDir))
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
