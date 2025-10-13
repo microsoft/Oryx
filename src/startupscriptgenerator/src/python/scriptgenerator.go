@@ -172,7 +172,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 		virtualEnvDir := filepath.Join(gen.getAppPath(), virtualEnvironmentName)
 
 		scriptBuilder.WriteString(
-			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", virtualEnvDir))
+			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", gen.getVirtualEnvPath(virtualEnvDir, virtualEnvironmentName)))
 		
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
@@ -381,4 +381,12 @@ func appendArgs(currentArgs string, argToAppend string) string {
 	}
 	currentArgs += argToAppend
 	return currentArgs
+}
+
+func (gen *PythonStartupScriptGenerator) getVirtualEnvPath(virtualEnvDir string, virtualEnvironmentName string) string {
+	if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
+		return virtualEnvDir
+	}
+
+	return "/" + virtualEnvironmentName
 }
