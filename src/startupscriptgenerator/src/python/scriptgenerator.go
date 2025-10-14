@@ -219,6 +219,8 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 			scriptBuilder.WriteString("mkdir -p " + virtualEnvDir + "\n")
 			scriptBuilder.WriteString("echo Extracting to directory '" + virtualEnvDir + "'...\n")
 			scriptBuilder.WriteString("$extractionCommand\n")
+			venvSubScript := gen.getHandleVenvPresentInRootScript(virtualEnvDir, virtualEnvironmentName)
+			scriptBuilder.WriteString(venvSubScript)
 			venvSubScript := gen.getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
 			scriptBuilder.WriteString(venvSubScript)
 		}
@@ -390,4 +392,19 @@ func (gen *PythonStartupScriptGenerator) getVirtualEnvPath(virtualEnvDir string,
 	}
 
 	return "/" + virtualEnvironmentName
+}
+
+func (gen *PythonStartupScriptGenerator) getHandleVenvPresentInRootScript(virtualEnvDir string, virtualEnvironmentName string) string {
+	scriptBuilder := strings.Builder{}
+
+	scriptBuilder.WriteString("if [ -d " + virtualEnvironmentName + " ]; then\n")
+	scriptBuilder.WriteString("    mv -f " + virtualEnvironmentName + " _del_" + virtualEnvironmentName + " || true\n")
+	scriptBuilder.WriteString("fi\n\n")
+
+	scriptBuilder.WriteString("if [ -d " + virtualEnvDir + " ]; then\n")
+	scriptBuilder.WriteString("    ln -sfn " + virtualEnvDir + " ./" + virtualEnvironmentName + "\n")
+	scriptBuilder.WriteString("fi\n\n")
+	scriptBuilder.WriteString("echo \"Done.\"\n")
+	
+	return scriptBuilder.String()
 }
