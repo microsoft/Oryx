@@ -2,9 +2,7 @@ import Link from 'next/link'
 
 const Nav = () => (
   <nav>
-    <Link href='/about'>
-      <a>About</a>
-    </Link>
+    <Link href='/about'>About</Link>
     <style jsx>{`
       nav {
         display: flex;

@@ -15,17 +15,6 @@ source $REPO_DIR/build/__functions.sh
 echo
 echo "Building build images for tests..."
 
-
-echo "Building buster based GitHub Action image for tests..."
-docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-buster" \
-    --build-arg PARENT_IMAGE_BASE=$ORYX_TEST_IMAGE_BASE:github-actions-debian-buster-$IMAGE_BUILDNUMBER \
-    -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
-    .
-
-echo
-echo
-
 echo "Building bullseye based GitHub Action image for tests..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-bullseye" \

@@ -1,0 +1,13 @@
+{
+    "name": "@monorepo/shared-utils",
+    "version": "1.0.0",
+    "description": "Shared utilities for the monorepo",
+    "main": "index.js",
+    "scripts": {
+        "build": "echo 'Building shared-utils...'",
+        "test": "echo 'Testing shared-utils...'"
+    },
+    "dependencies": {
+        "lodash": "^4.17.21"
+    }
+}

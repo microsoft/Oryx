@@ -2,7 +2,7 @@
   <div class="view">
     <item-list-nav :feed="feed" :page="page" :max-page="maxPage" />
 
-    <lazy-wrapper :loading="loading">
+    <loading-wrapper :loading="loading">
       <transition :name="transition" mode="out-in">
         <div :key="displayedPage" class="news-list">
           <transition-group tag="ul" name="item">
@@ -11,21 +11,21 @@
         </div>
       </transition>
       <item-list-nav :feed="feed" :page="page" :max-page="maxPage" />
-    </lazy-wrapper>
+    </loading-wrapper>
   </div>
 </template>
 
 <script>
 import Item from '~/components/Item.vue'
 import ItemListNav from '~/components/ItemListNav.vue'
-import LazyWrapper from '~/components/LazyWrapper'
+import LoadingWrapper from '~/components/LoadingWrapper'
 import { feeds, validFeeds } from '~/common/api'
 
 export default {
   components: {
     Item,
     ItemListNav,
-    LazyWrapper
+    LoadingWrapper
   },
 
   validate({ params: { feed } }) {

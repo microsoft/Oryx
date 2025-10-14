@@ -87,6 +87,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string CustomRequirementsTxtPath { get; set; }
 
+        public string OsType { get; set; }
+
+        public string OsFlavor { get; set; }
+
         public string DebianFlavor { get; set; }
 
         public string CallerId { get; set; }

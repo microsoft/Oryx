@@ -23,6 +23,8 @@ RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
 
 FROM ${BASE_IMAGE} AS main
 ARG DEBIAN_FLAVOR
+ARG OS_FLAVOR
+ENV OS_FLAVOR=$OS_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
 # stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror

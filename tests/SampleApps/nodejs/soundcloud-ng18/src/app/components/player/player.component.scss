@@ -1,0 +1,193 @@
+@use 'sass:math';
+
+.player {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    &__artwork {
+        img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+    }
+
+    &__details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__artist {
+        font-size: 0.875rem;
+        opacity: 0.8;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    &__btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1.2rem;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        &--play {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+
+            &:hover {
+                background: white;
+            }
+        }
+    }
+
+    &__progress {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 200px;
+    }
+
+    &__time {
+        font-size: 0.875rem;
+        font-variant-numeric: tabular-nums;
+        min-width: 40px;
+        text-align: center;
+    }
+
+    &__progress-bar {
+        flex: 1;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+
+        &:hover {
+            height: 6px;
+        }
+    }
+
+    &__progress-fill {
+        height: 100%;
+        background: white;
+        border-radius: 2px;
+        transition: width 0.1s linear;
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .player__progress-bar:hover &::after {
+            opacity: 1;
+        }
+    }
+
+    &__volume {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__volume-slider {
+        width: 80px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+        outline: none;
+        cursor: pointer;
+
+        &::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        &::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+    .player {
+        flex-direction: column;
+        gap: 0.75rem;
+
+        &__progress {
+            min-width: auto;
+            width: 100%;
+        }
+
+        &__volume {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}

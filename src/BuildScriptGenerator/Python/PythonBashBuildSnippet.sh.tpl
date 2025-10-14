@@ -44,17 +44,28 @@ fi
 
     echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
 
-    if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
-        VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
+    if [ -e "pyproject.toml" ] && [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ]; then
+        echo "Detected uv.lock (and no $REQUIREMENTS_TXT_FILE); creating virtual environment with uv..."
+        echo "Installing uv..."
+        InstallUv="python -m pip install uv"
+        printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
+        $python -m pip install uv
+        CreateVenvCommand="uv venv --link-mode=copy --system-site-packages $VIRTUALENVIRONMENTNAME"
+    else
+        if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
+            VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
+        fi
+        CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
     fi
 
     echo Creating virtual environment...
-
-    CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
+    
     echo "BuildCommands=$CreateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
-
-    $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
-
+    
+    # Execute the resolved CreateVenvCommand
+    echo "Executing: $CreateVenvCommand"
+    $CreateVenvCommand
+    
     echo Activating virtual environment...
     printf %s " , $ActivateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
     ActivateVenvCommand="source $VIRTUALENVIRONMENTNAME/bin/activate"
@@ -65,9 +76,9 @@ fi
     then
         set +e
         echo "Running pip install..."
-        InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
+        InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
 
         set -e
@@ -94,29 +105,47 @@ fi
         fi
     elif [ -e "pyproject.toml" ]
     then
-        set +e
-        echo "Running pip install poetry..."
-        InstallPipCommand="pip install poetry"
-        printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-        pip install poetry
-        echo "Running poetry install..."
-        InstallPoetryCommand="poetry install --without dev"
-        printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( poetry install --without dev; exit ${PIPESTATUS[0]} ) 2>&1)
-        pythonBuildExitCode=${PIPESTATUS[0]}
-        set -e
-        echo "${output}"
-        if [[ $pythonBuildExitCode != 0 ]]
+        if [ -e "uv.lock" ];
         then
-            LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
-            exit $pythonBuildExitCode
+            # Install using uv
+            set +e
+            echo "Detected uv.lock. Installing dependencies with uv..."
+            InstallUvCommand="uv sync --active --link-mode copy"
+            printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
+            uvExitCode=${PIPESTATUS[0]}
+            set -e
+            echo "${output}"
+            if [[ $uvExitCode != 0 ]]; then
+                LogError "${output} | Exit code: ${uvExitCode} | Please review your uv.lock | ${moreInformation}"
+                exit $uvExitCode
+            fi
+        else
+            # Fallback to poetry
+            set +e
+            echo "Running pip install poetry..."
+            InstallPipCommand="pip install poetry==1.8.5"
+            printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
+            pip install poetry==1.8.5
+            echo "Running poetry install..."
+            InstallPoetryCommand="poetry install --no-dev"
+            printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1)
+            pythonBuildExitCode=${PIPESTATUS[0]}
+            set -e
+            echo "${output}"
+            if [[ $pythonBuildExitCode != 0 ]]
+            then
+                LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
+                exit $pythonBuildExitCode
+            fi
         fi
     else
         echo $REQS_NOT_FOUND_MSG
     fi
 
     # For virtual environment, we use the actual 'python' alias that as setup by the venv,
-    python_bin=python
+    python_bin=$python
 {{ else }}
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
@@ -164,25 +193,54 @@ fi
         fi
     elif [ -e "pyproject.toml" ]
     then
-        set +e
-        echo "Running pip install poetry..."
-        InstallPipCommand="pip install poetry"
-        printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-        pip install poetry
-        START_TIME=$SECONDS
-        echo "Running poetry install..."
-        InstallPoetryCommand="poetry install --without dev"
-        printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( poetry install --without dev; exit ${PIPESTATUS[0]} ) 2>&1 )
-        pythonBuildExitCode=${PIPESTATUS[0]}
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "Done in $ELAPSED_TIME sec(s)."
-        set -e
-        echo "${output}"
-        if [[ $pythonBuildExitCode != 0 ]]
+        if [ -e "uv.lock" ];
         then
-            LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
-            exit $pythonBuildExitCode
+            # Install using uv
+            echo "Detected uv.lock. Installing dependencies with uv..."
+            START_TIME=$SECONDS
+            echo "Installing uv..."
+            InstallUv="python -m pip install uv"
+            printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
+            $python -m pip install uv
+            
+            set +e
+            SITE_PACKAGES_PATH="{{ PackagesDirectory }}"
+            echo "Installing dependencies..."
+            # Stream the export directly into uv pip install using process substitution
+            InstallUvCommand="uv export --locked | uv pip install --link-mode copy --target $SITE_PACKAGES_PATH -r -"
+            printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( eval $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
+            uvExitCode=${PIPESTATUS[0]}
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "Done in $ELAPSED_TIME sec(s)."
+            set -e
+            echo "${output}"
+            if [[ $uvExitCode != 0 ]]; then
+                LogError "${output} | Exit code: ${uvExitCode} | Please review your uv.lock | ${moreInformation}"
+                exit $uvExitCode
+            fi
+        else
+            # Fallback to poetry
+            set +e
+            echo "Running pip install poetry..."
+            InstallPipCommand="pip install poetry"
+            printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
+            pip install poetry
+            START_TIME=$SECONDS
+            echo "Running poetry install..."
+            InstallPoetryCommand="poetry install --no-dev"
+            printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1 )
+            pythonBuildExitCode=${PIPESTATUS[0]}
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "Done in $ELAPSED_TIME sec(s)."
+            set -e
+            echo "${output}"
+            if [[ $pythonBuildExitCode != 0 ]]
+            then
+                LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
+                exit $pythonBuildExitCode
+            fi
         fi
     else
         echo $REQS_NOT_FOUND_MSG

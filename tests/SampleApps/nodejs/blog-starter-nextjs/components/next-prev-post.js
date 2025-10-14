@@ -6,10 +6,8 @@ const NextPrevPost = ({ title, path, position }) => {
   return (
     <>
       <Link href={path}>
-        <a>
-          <small>Read {position} post </small>
-          {title}
-        </a>
+        <small>Read {position} post </small>
+        {title}
       </Link>
       <style jsx>{`
         a {
@@ -17,6 +15,10 @@ const NextPrevPost = ({ title, path, position }) => {
           flex-direction: column;
           ${isNext ? 'text-align: right;' : ''}
           ${isNext ? 'grid-column: 2 / 2;' : ''}
+        }
+
+        small {
+          color: #999;
         }
       `}</style>
     </>
@@ -26,7 +28,7 @@ const NextPrevPost = ({ title, path, position }) => {
 NextPrevPost.propTypes = {
   title: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
-  position: PropTypes.oneOf(['next', 'previous'])
+  position: PropTypes.string.isRequired
 }
 
 export default NextPrevPost

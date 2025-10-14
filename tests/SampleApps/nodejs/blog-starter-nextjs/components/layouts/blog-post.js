@@ -6,7 +6,7 @@ import PublishedAt from '../utils/published-at'
 import blogposts from '../../posts/index'
 import NextPrevPost from '../next-prev-post'
 
-function BlogPost ({ path, meta, children }) {
+function BlogPost({ path, meta, children }) {
   const currentPostIndex = blogposts
     .map(({ title }) => title)
     .indexOf(meta.title)
@@ -23,15 +23,13 @@ function BlogPost ({ path, meta, children }) {
           <div>
             <PublishedAt date={meta.publishedAt} link={path} />
 
-            <Link href='/about'>
-              <a
-                color='#aaa'
-                rel='author'
-                className='p-author h-card'
-                href='/about'
-              >
-                {siteMeta.author}
-              </a>
+            <Link
+              href='/about'
+              rel='author'
+              className='p-author h-card'
+              style={{ color: '#aaa', marginLeft: '1em' }}
+            >
+              {siteMeta.author}
             </Link>
           </div>
         </header>
@@ -60,10 +58,6 @@ function BlogPost ({ path, meta, children }) {
       <style jsx>{`
         header {
           margin-bottom: 2em;
-        }
-
-        [rel='author'] {
-          margin-left: 1em;
         }
 
         article {

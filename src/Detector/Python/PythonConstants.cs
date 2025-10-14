@@ -12,6 +12,7 @@ namespace Microsoft.Oryx.Detector.Python
         public const string PlatformName = "python";
         public const string RequirementsFileName = "requirements.txt";
         public const string PyprojectTomlFileName = "pyproject.toml";
+        public const string UvLockFileName = "uv.lock";
         public const string RuntimeFileName = "runtime.txt";
         public const string PythonFileNamePattern = "*.py";
         public const string ZipFileExtension = "tar.gz";

@@ -2,7 +2,7 @@
   <div class="user-view view">
     <template v-if="user">
       <h1>User : {{ user.id }}</h1>
-      <lazy-wrapper :loading="user.loading">
+      <loading-wrapper :loading="user.loading">
         <ul class="meta">
           <li>
             <span class="label">Created:</span> {{ user.created_time | timeAgo }} ago
@@ -12,7 +12,7 @@
           </li>
           <li v-if="user.about" class="about" v-html="user.about" />
         </ul>
-      </lazy-wrapper>
+      </loading-wrapper>
       <p class="links">
         <a :href="'https://news.ycombinator.com/submitted?id=' + user.id">submissions</a> |
         <a :href="'https://news.ycombinator.com/threads?id=' + user.id">comments</a>
@@ -25,12 +25,12 @@
 </template>
 
 <script>
-import LazyWrapper from '~/components/LazyWrapper'
+import LoadingWrapper from '~/components/LoadingWrapper'
 
 export default {
   name: 'UserView',
 
-  components: { LazyWrapper },
+  components: { LoadingWrapper },
 
   computed: {
     user() {
