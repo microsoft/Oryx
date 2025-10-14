@@ -7,10 +7,10 @@ ARG BASE_IMAGE
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-${DEBIAN_FLAVOR} as startupCmdGen
 
 # Download and install the latest version of Go
-RUN curl -OL https://go.dev/dl/go1.23.8.linux-amd64.tar.gz && \
+RUN curl -OL https://go.dev/dl/go1.25.3.linux-amd64.tar.gz && \
     rm -rf /usr/local/go && \
-    tar -C /usr/local -xzf go1.23.8.linux-amd64.tar.gz && \
-    rm go1.23.8.linux-amd64.tar.gz
+    tar -C /usr/local -xzf go1.25.3.linux-amd64.tar.gz && \
+    rm go1.25.3.linux-amd64.tar.gz
 ENV PATH=$PATH:/usr/local/go/bin
 # Verify the installation
 RUN go version
