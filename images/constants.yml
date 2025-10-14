@@ -11,6 +11,7 @@ variables:
   node18osFlavors: bullseye
   node20osFlavors: bullseye,bookworm
   node22osFlavors: bullseye,bookworm
+  node24osFlavors: noble
   python39osFlavors: bullseye
   python310osFlavors: bullseye
   python311osFlavors: bullseye,bookworm
@@ -26,7 +27,7 @@ variables:
   php84osFlavors: bullseye,bookworm
   osFlavors: bullseye,bookworm,noble
   dotnetosFlavors: bookworm,bullseye,noble
-  nodejsosFlavors: bookworm,bullseye
+  nodejsosFlavors: bookworm,bullseye,noble
   phposFlavors: bookworm,bullseye
   pythonosFlavors: bookworm,bullseye,noble
   cliDebianFlavors: bullseye
@@ -59,6 +60,7 @@ variables:
   node18Version: 18.20.8
   node20Version: 20.19.5
   node22Version: 22.20.0
+  node24Version: 24.10.0
   php81Version: 8.1.33
   php81Version_SHA: 9db83bf4590375562bc1a10b353cccbcf9fcfc56c58b7c8fb814e6865bb928d1
   php82Version: 8.2.29
@@ -67,9 +69,9 @@ variables:
   php83Version_SHA: 08be64700f703bca6ff1284bf1fdaffa37ae1b9734b6559f8350248e8960a6db
   php84Version: 8.4.10
   php84Version_SHA: 14983a9ef8800e6bc2d920739fd386054402f7976ca9cd7f711509496f0d2632
-  python39Version: 3.9.23
-  python310Version: 3.10.18
-  python311Version: 3.11.13
-  python312Version: 3.12.11
-  python313Version: 3.13.5
-  python314Version: 3.14.0rc2
+  python39Version: 3.9.24
+  python310Version: 3.10.19
+  python311Version: 3.11.14
+  python312Version: 3.12.12
+  python313Version: 3.13.8
+  python314Version: 3.14.0
