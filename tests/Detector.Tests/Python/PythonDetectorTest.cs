@@ -316,6 +316,29 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             Assert.True(pythonPlatformResult.HasPyprojectTomlFile);
         }
 
+        [Fact]
+        public void Detect_ReturnsResult_WhenUvLockFileExists()
+        {
+            // Arrange
+            var detector = CreatePythonPlatformDetector();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "", PythonConstants.UvLockFileName);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            var pythonPlatformResult = Assert.IsType<PythonPlatformDetectorResult>(result);
+            Assert.Equal(PythonConstants.PlatformName, pythonPlatformResult.Platform);
+            Assert.Null(pythonPlatformResult.PlatformVersion);
+            Assert.False(pythonPlatformResult.HasJupyterNotebookFiles);
+            Assert.False(pythonPlatformResult.HasCondaEnvironmentYmlFile);
+            Assert.False(pythonPlatformResult.HasPyprojectTomlFile);
+            Assert.True(pythonPlatformResult.HasUvLockFile);
+        }
+
         [Theory]
         [InlineData(PythonConstants.CondaEnvironmentYmlFileName)]
         [InlineData(PythonConstants.CondaEnvironmentYamlFileName)]
