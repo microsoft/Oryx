@@ -125,6 +125,7 @@ fi
 
             set +e
             echo "Running pip install poetry..."
+            START_TIME=$SECONDS
             InstallPipCommand="pip install poetry"
             printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
             pip install poetry
@@ -154,6 +155,8 @@ fi
                 fi
             fi
 
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "Done in $ELAPSED_TIME sec(s)."
             set -e
             echo "${output}"
         fi
@@ -241,6 +244,7 @@ fi
 
             set +e
             echo "Running pip install poetry..."
+            START_TIME=$SECONDS
             InstallPipCommand="pip install poetry"
             printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
             pip install poetry
@@ -270,6 +274,8 @@ fi
                 fi
             fi
 
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "Done in $ELAPSED_TIME sec(s)."
             set -e
             echo "${output}"
         fi
