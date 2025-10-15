@@ -221,8 +221,8 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 			scriptBuilder.WriteString("$extractionCommand\n")
 			venvSubScript := gen.getHandleVenvPresentInRootScript(virtualEnvDir, virtualEnvironmentName)
 			scriptBuilder.WriteString(venvSubScript)
-			venvSubScript := gen.getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
-			scriptBuilder.WriteString(venvSubScript)
+			venvHandlingScript := gen.getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
+			scriptBuilder.WriteString(venvHandlingScript)
 		}
 	}
 
