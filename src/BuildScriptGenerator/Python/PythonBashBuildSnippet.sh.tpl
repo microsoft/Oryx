@@ -131,7 +131,7 @@ fi
             echo "Running poetry install..."
 
             # Try with --only main flag as --no-dev option is depreciated in latest poetry versions
-            InstallPoetryCommand="poetry install --only-main-invalid"
+            InstallPoetryCommand="poetry install --only main"
             printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
             pythonBuildExitCode=${PIPESTATUS[0]}
@@ -247,7 +247,7 @@ fi
             echo "Running poetry install..."
 
             # Try with --only main flag as --no-dev option is depreciated in latest poetry versions
-            InstallPoetryCommand="poetry install --only-main-invalid"
+            InstallPoetryCommand="poetry install --only main"
             printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
             pythonBuildExitCode=${PIPESTATUS[0]}
