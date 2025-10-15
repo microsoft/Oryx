@@ -138,7 +138,7 @@ fi
 
             # Fallback to --no-dev flag
             if [[ $pythonBuildExitCode != 0 ]]; then
-                echo "Modern poetry syntax failed, falling back to poetry 1.8.5..."
+                echo "poetry install failed with --only main flag, falling back to --no-dev"
                 pip install poetry==1.8.5
                 InstallPoetryCommand="poetry install --no-dev"
                 printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -254,7 +254,7 @@ fi
 
             # Fallback to --no-dev flag
             if [[ $pythonBuildExitCode != 0 ]]; then
-                echo "Modern poetry syntax failed, falling back to poetry 1.8.5..."
+                echo "poetry install failed with --only main flag, falling back to --no-dev"
                 pip install poetry==1.8.5
                 InstallPoetryCommand="poetry install --no-dev"
                 printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
