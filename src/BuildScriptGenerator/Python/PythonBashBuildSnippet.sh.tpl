@@ -91,10 +91,14 @@ fi
     elif [ -e "setup.py" ]
     then
         set +e
+        echo "Running pip install setuptools..."
+        InstallSetuptoolsPipCommand="pip install setuptools"
+        printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
+        pip install setuptools
         echo "Running python setup.py install..."
-        InstallCommand="$python setup.py install --user| ts $TS_FMT"
+        InstallCommand="pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         echo "${output}"
@@ -179,10 +183,14 @@ fi
         echo "Done in $ELAPSED_TIME sec(s)."
 
         set +e
-        echo "Running python setup.py install..."
-        InstallCommand="$python setup.py install --user| ts $TS_FMT"
+        echo "Running pip install setuptools..."
+        InstallSetuptoolsPipCommand="pip install setuptools"
+        printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
+        pip install setuptools
+        echo "Running pip install..."
+        InstallCommand="$python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( $python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         echo "${output}"
