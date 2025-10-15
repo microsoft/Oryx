@@ -122,23 +122,40 @@ fi
             fi
         else
             # Fallback to poetry
+
             set +e
             echo "Running pip install poetry..."
-            InstallPipCommand="pip install poetry==1.8.5"
+            InstallPipCommand="pip install poetry"
             printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-            pip install poetry==1.8.5
+            pip install poetry
             echo "Running poetry install..."
-            InstallPoetryCommand="poetry install --no-dev"
+
+            # Try with --only main flag as --no-dev option is depreciated in latest poetry versions
+            InstallPoetryCommand="poetry install --only main"
             printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1)
+            output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
             pythonBuildExitCode=${PIPESTATUS[0]}
+
+            # Fallback to --no-dev flag
+            if [[ $pythonBuildExitCode != 0 ]]; then
+                echo "Modern poetry syntax failed, falling back to poetry 1.8.5..."
+                pip install poetry==1.8.5
+                InstallPoetryCommand="poetry install --no-dev"
+                printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
+                pythonBuildExitCode=${PIPESTATUS[0]}
+                
+                # Final check after fallback
+                if [[ $pythonBuildExitCode != 0 ]]; then
+                    set -e
+                    echo "${output}"
+                    LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
+                    exit $pythonBuildExitCode
+                fi
+            fi
+
             set -e
             echo "${output}"
-            if [[ $pythonBuildExitCode != 0 ]]
-            then
-                LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
-                exit $pythonBuildExitCode
-            fi
         fi
     else
         echo $REQS_NOT_FOUND_MSG
@@ -221,26 +238,40 @@ fi
             fi
         else
             # Fallback to poetry
+
             set +e
             echo "Running pip install poetry..."
             InstallPipCommand="pip install poetry"
             printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
             pip install poetry
-            START_TIME=$SECONDS
             echo "Running poetry install..."
-            InstallPoetryCommand="poetry install --no-dev"
+
+            # Try with --only main flag as --no-dev option is depreciated in latest poetry versions
+            InstallPoetryCommand="poetry install --only main"
             printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1 )
+            output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
             pythonBuildExitCode=${PIPESTATUS[0]}
-            ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "Done in $ELAPSED_TIME sec(s)."
+
+            # Fallback to --no-dev flag
+            if [[ $pythonBuildExitCode != 0 ]]; then
+                echo "Modern poetry syntax failed, falling back to poetry 1.8.5..."
+                pip install poetry==1.8.5
+                InstallPoetryCommand="poetry install --no-dev"
+                printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
+                pythonBuildExitCode=${PIPESTATUS[0]}
+                
+                # Final check after fallback
+                if [[ $pythonBuildExitCode != 0 ]]; then
+                    set -e
+                    echo "${output}"
+                    LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
+                    exit $pythonBuildExitCode
+                fi
+            fi
+
             set -e
             echo "${output}"
-            if [[ $pythonBuildExitCode != 0 ]]
-            then
-                LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
-                exit $pythonBuildExitCode
-            fi
         fi
     else
         echo $REQS_NOT_FOUND_MSG
