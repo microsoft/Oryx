@@ -6,7 +6,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 {
     public static class HugoConstants
     {
-        public const string Version = "0.151.1";
+        public const string Version = "0.151.0";
         public const string PlatformName = "hugo";
         public const string InstalledHugoVersionsDir = "/opt/hugo";
         public const string InstallationUrlFormat = "https://github.com/gohugoio/hugo/releases/download/v#VERSION#/#TAR_FILE#";
