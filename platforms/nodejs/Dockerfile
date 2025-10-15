@@ -1,13 +1,7 @@
-ARG DEBIAN_FLAVOR
-FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_FLAVOR}
-ARG DEBIAN_FLAVOR
-ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
-
-RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
-        sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
-        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
-        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
-    fi
+ARG OS_FLAVOR
+FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${OS_FLAVOR}
+ARG OS_FLAVOR
+ENV OS_FLAVOR=$OS_FLAVOR
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -25,4 +19,4 @@ COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
-RUN /tmp/platforms/nodejs/getNode.sh ${DEBIAN_FLAVOR} ""
+RUN /tmp/platforms/nodejs/getNode.sh ${OS_FLAVOR} ""
