@@ -23,11 +23,12 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-gh-buster")]
-        [Trait("build-image", "github-actions-debian-buster")]
-        public async Task CanBuildAndRunNode14AppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync()
+        [Trait("category", "node-18-gh-bullseye")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        [Trait("category", "githubactions")]
+        public async Task CanBuildAndRunNode18AppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync()
         {
-            await CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(NodeVersions.Node14Version);
+            await CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(NodeVersions.Node18Version);
         }
 
         // [Fact]
@@ -61,7 +62,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
+                _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]
                 {
@@ -84,19 +85,12 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-gh-buster")]
-        [Trait("build-image", "github-actions-debian-buster")]
-        public async Task CanBuildAndRunNode14App_UsingScriptCommandAsync()
+        [Trait("category", "node-18-gh-bullseye")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        [Trait("category", "githubactions")]
+        public async Task CanBuildAndRunNode18App_UsingScriptCommandAsync()
         {
-            await CanBuildAndRunApp_UsingScriptCommandAsync(NodeVersions.Node14Version);
-        }
-
-        [Fact]
-        [Trait("category", "node-16")]
-        [Trait("build-image", "github-actions-debian-buster")]
-        public async Task CanBuildAndRunNode16App_UsingScriptCommandAsync()
-        {
-            await CanBuildAndRunApp_UsingScriptCommandAsync(NodeVersions.Node16Version);
+            await CanBuildAndRunApp_UsingScriptCommandAsync(NodeVersions.Node18Version);
         }
 
         private async Task CanBuildAndRunApp_UsingScriptCommandAsync(string nodeVersion)
@@ -170,7 +164,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
-            var major_version = nodeVersion.Split('.')[0]; 
+            var major_version = nodeVersion.Split('.')[0];
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,

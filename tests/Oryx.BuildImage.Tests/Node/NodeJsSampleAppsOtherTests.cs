@@ -30,44 +30,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
-        [Fact, Trait("category", "latest")]
-        public void PipelineTestInvocationLatest()
-        {
-            GeneratesScript_AndBuilds(Settings.BuildImageName);
-        }
-
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-        }
-
-        [Fact, Trait("category", "jamstack")]
-        public void PipelineTestInvocationJamstack()
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubactions()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-        }
-
-        [Fact, Trait("category", "cli-stretch")]
-        public void PipelineTestInvocationCli()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage());
-        }
-
-        [Fact, Trait("category", "cli-buster")]
-        public void PipelineTestInvocationCliBuster()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-        }
-
-        [Fact, Trait("category", "cli-bullseye")]
-        public void PipelineTestInvocationCliBullseye()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+            GeneratesScript_AndBuilds(imageTestHelper.GetGitHubActionsBuildImage());
         }
 
         private void GeneratesScript_AndBuilds(string buildImageName)
@@ -106,7 +73,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
@@ -128,7 +95,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -143,7 +110,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_CopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -158,7 +125,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -173,7 +140,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "gitubhactions")]
         public void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
@@ -195,7 +162,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -306,7 +273,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
             // Arrange
@@ -323,7 +290,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", "\"" + script + "\"" }
             });
@@ -337,11 +304,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_WhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
-            var version = "8.2.1";
+            var version = "18.2.0";
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
@@ -357,7 +324,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -375,7 +342,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
@@ -395,7 +362,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -410,7 +377,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption_AndWhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
@@ -430,7 +397,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -445,7 +412,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
@@ -461,7 +428,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -476,7 +443,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
@@ -490,7 +457,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -599,7 +566,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsNodeApp_AndZipsNodeModules_WithTarGz_IfZipNodeModulesIsTarGz()
         {
             // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
@@ -619,7 +586,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -634,7 +601,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsNodeApp_AndZipsNodeModules_IfCompressNodeModulesIsZip()
         {
             // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
@@ -658,7 +625,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", buildScript }
@@ -673,7 +640,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsNodeApp_AndDoesNotZipNodeModules_IfZipNodeModulesIsFalse()
         {
             // Arrange
@@ -689,7 +656,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -704,7 +671,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir()
         {
             // Arrange
@@ -716,10 +683,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddFileExistsCheck($"{appDir}/another-directory/kudu-bug-0.0.0.tgz")
                 .ToString();
 
-             // Act
+            // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -734,7 +701,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir_WhenPackageDirAndSourceDirAreSame()
         {
             // Arrange
@@ -749,10 +716,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddFileExistsCheck($"{appDir}/lerna-monorepo-post-1.0.0.tgz")
                 .ToString();
 
-             // Act
+            // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -767,7 +734,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "jamstack")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsNodeApp_AndDoesNotCopyDevDependencies_IfPruneDevDependenciesIsTrue_AndNoProdDependencies()
         {
             // Arrange
@@ -785,7 +752,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -800,7 +767,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "jamstack")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData("empty-dependencies")]
         [InlineData("no-dependeny-nodes")]
         public void BuildsNodeApp_IfPruneDevDependenciesIsTrue_AndNoProd_OrDevDependencies(string appName)
@@ -820,7 +787,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -835,7 +802,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "latest")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData("webfrontend")]
         [InlineData("webfrontend-yarnlock")]
         public void BuildsNodeApp_AndDoesNotCopyDevDependencies_IfPruneDevDependenciesIsTrue(string appName)
@@ -867,7 +834,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -882,7 +849,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsNodeApp_DoesNotPruneDevDependencies_IfPruneDevDependenciesIsFalse()
         {
             // Arrange
@@ -912,7 +879,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -927,7 +894,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApp_ByRunningCustomBuildCommand_AndSkipNpmInstallCommand()
         {
             // Arrange
@@ -945,7 +912,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -961,7 +928,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApp_ByRunningCustomBuildScript_AndSkipNpmInstallCommand()
         {
             // Arrange
@@ -977,7 +944,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -992,10 +959,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
-        
+
         [Fact(Skip = "https://msazure.visualstudio.com/Antares/_workitems/edit/27122108")]
         [Trait("category", "ltsversions")]
-        public void  CanBuildAndRunNodeApp_WithWorkspace_UsingYarn2ForBuild()
+        public void CanBuildAndRunNodeApp_WithWorkspace_UsingYarn2ForBuild()
         {
             // Arrange
             var appName = "nextjs-yarn2-example";
@@ -1028,7 +995,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void CanBuildAndRunNodeAppWithoutWorkspace_UsingYarn2ForBuild()
         {
             // Arrange
@@ -1043,7 +1010,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageWithRootAccess,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -1058,7 +1025,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApp_ByRunningNpmInstall_AndCustomRunBuildCommand()
         {
             // Arrange
@@ -1078,7 +1045,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -1093,7 +1060,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void CanBuildAppHavingAppDynamicsNpmPackage()
         {
             // Arrange
@@ -1114,7 +1081,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -1129,7 +1096,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void CanBuildAppHavingUsingYarnEngine()
         {
             // Arrange  
@@ -1153,7 +1120,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -1169,7 +1136,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void CanBuildVuePressSampleAppWithPruneDevDependencies()
         {
             // Arrange
@@ -1194,7 +1161,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -1209,7 +1176,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndLoggerFormatCheck()
         {
             // Arrange
@@ -1228,7 +1195,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(SampleAppName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

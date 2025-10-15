@@ -16,54 +16,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public HugoSampleAppsTest(ITestOutputHelper output) : base(output)
         {
         }
-
-        [Fact, Trait("category", "latest")]
-        public void PipelineTestInvocationLatest()
-        {
-            GeneratesScript_AndBuilds(Settings.BuildImageName);
-        }
-
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-        }
-
-        [Fact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubactions()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
+            GeneratesScript_AndBuilds(imageTestHelper.GetGitHubActionsBuildImage());
         }
-
-        [Fact, Trait("category", "jamstack")]
-        public void PipelineTestInvocationJamstack()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-        }
-
-        [Fact, Trait("category", "cli-stretch")]
-        public void PipelineTestInvocationCli()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliRepository));
-        }
-
-        [Fact, Trait("category", "cli-buster")]
-        public void PipelineTestInvocationCliBuster()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-        }
-
-        [Fact, Trait("category", "cli-bullseye")]
-        public void PipelineTestInvocationCliBullseye()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-        }
-
 
         private void GeneratesScript_AndBuilds(string buildImageName)
         {
@@ -167,7 +125,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact,Trait("category", "githubactions")]
+        [Fact, Trait("category", "githubactions")]
         public void CanBuildHugoAppWithNewHugoConfigName()
         {
             // Hugo changed naming convention from config.toml etc. to hugo.toml etc.

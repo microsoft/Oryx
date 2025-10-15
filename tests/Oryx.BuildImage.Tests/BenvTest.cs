@@ -25,48 +25,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _imageHelper = new ImageTestHelper(output);
         }
 
-        [Fact, Trait("category", "latest")]
-        public void PipelineTestInvocationLatest()
-        {
-            InstalledNodeModulesExecutablesAreOnPath(ImageTestHelperConstants.LatestStretchTag);
-            InstalledPythonExecutablesAreOnPath(ImageTestHelperConstants.LatestStretchTag);
-            var imageTestHelper = new ImageTestHelper();
-            BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetBuildImage());
-        }
-
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            InstalledNodeModulesExecutablesAreOnPath(ImageTestHelperConstants.LtsVersionsStretch);
-            InstalledPythonExecutablesAreOnPath(ImageTestHelperConstants.LtsVersionsStretch);
-            var imageTestHelper = new ImageTestHelper();
-            BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetLtsVersionsBuildImage());
-        }
-
-        [Fact, Trait("category", "jamstack")]
-        public void PipelineTestInvocationJamstack()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-        }
-
         [Fact, Trait("category", "githubaction")]
         public void PipelineTestInvocationGithubActions()
         {
+            InstalledNodeModulesExecutablesAreOnPath(ImageTestHelperConstants.GitHubActionsBookworm);
+            InstalledPythonExecutablesAreOnPath(ImageTestHelperConstants.GitHubActionsBookworm);
             var imageTestHelper = new ImageTestHelper();
             BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
                 imageTestHelper.GetGitHubActionsBuildImage());
-        }
-
-        [Fact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
         }
 
         [Theory, Trait("category", "latest")]

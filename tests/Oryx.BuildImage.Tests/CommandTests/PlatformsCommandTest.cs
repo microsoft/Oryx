@@ -54,10 +54,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(dotNetCorePlatform);
                     Assert.NotNull(dotNetCorePlatform.Versions);
                     Assert.True(dotNetCorePlatform.Versions.Any());
-                    Assert.True(dotNetCorePlatform.Versions.Contains("2.1.23"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("5.0.17"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("6.0.0-preview.7.21377.19"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("7.0.3"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("6.0.35"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("8.0.18"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("9.0.7"));
 
                     var nodePlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(NodeConstants.PlatformName))
@@ -65,7 +64,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(nodePlatform);
                     Assert.NotNull(nodePlatform.Versions);
                     Assert.True(nodePlatform.Versions.Any());
-                    Assert.True(nodePlatform.Versions.Contains("17.6.0"));
+                    Assert.True(nodePlatform.Versions.Contains("18.20.7"));
+                    Assert.True(nodePlatform.Versions.Contains("20.19.3"));
+                    Assert.True(nodePlatform.Versions.Contains("22.17.0"));
 
                     var pythonPlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(PythonConstants.PlatformName))
@@ -73,7 +74,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(pythonPlatform);
                     Assert.NotNull(pythonPlatform.Versions);
                     Assert.True(pythonPlatform.Versions.Any());
-                    Assert.True(pythonPlatform.Versions.Contains("3.6.12"));
                     Assert.True(pythonPlatform.Versions.Contains("3.7.9"));
                     Assert.True(pythonPlatform.Versions.Contains("3.9.15"));
                     Assert.True(pythonPlatform.Versions.Contains("3.9.0"));
@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(hugoPlatform);
                     Assert.NotNull(hugoPlatform.Versions);
                     Assert.True(hugoPlatform.Versions.Any());
-                    Assert.True(hugoPlatform.Versions.Contains(HugoConstants.Version));
+                    Assert.True(hugoPlatform.Versions.Contains("0.124.1"));
                 },
             result.GetDebugInfo());
         }

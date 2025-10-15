@@ -25,38 +25,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void JavaSampleAppsTestsGithubActions()
         {
-            var imageTag = ImageTestHelperConstants.GitHubActionsStretch;
-            BuildsMavenArcheTypeSample(imageTag);
-            BuildsMavenJ2EESample(imageTag);
-            BuildsMavenSimpleJavaApp(imageTag);
-            BuildsSpringBootSampleApp(imageTag);
-        }
-
-
-        [Theory, Trait("category", "cli-stretch")]
-        [InlineData(ImageTestHelperConstants.CliRepository)]
-        public void JavaSampleAppsTestsCli(string imageTag)
-        {
-            BuildsMavenArcheTypeSample(imageTag);
-            BuildsMavenJ2EESample(imageTag);
-            BuildsMavenSimpleJavaApp(imageTag);
-            BuildsSpringBootSampleApp(imageTag);
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterTag)]
-        public void JavaSampleAppsTestsCliBuster(string imageTag)
-        {
-            BuildsMavenArcheTypeSample(imageTag);
-            BuildsMavenJ2EESample(imageTag);
-            BuildsMavenSimpleJavaApp(imageTag);
-            BuildsSpringBootSampleApp(imageTag);
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
-        public void JavaSampleAppsTestsCliBullseye(string imageTag)
-        {
+            var imageTag = ImageTestHelperConstants.GitHubActionsBullseye;
             BuildsMavenArcheTypeSample(imageTag);
             BuildsMavenJ2EESample(imageTag);
             BuildsMavenSimpleJavaApp(imageTag);
