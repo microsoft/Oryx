@@ -458,67 +458,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        // This test is specific to vso-focal
-        // The test is checking for the existence of /home/codespace/.dotnet/ directory and pre-installed SDK links, but this directory structure appears to be specific to vso-focal(see createSymLinksForDotnet.sh)
-        // [Theory, Trait("category", "githubactions")]
-        // [InlineData(NetCore8WebApp, "8.0", DotNetCoreSdkVersions.DotNet80SdkVersion)]
-        // public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
-        //     string appName,
-        //     string runtimeVersion,
-        //     string sdkVersion)
-        // {
-        //     // Arrange
-        //     var volume = CreateSampleAppVolume(appName);
-        //     var appDir = volume.ContainerDir;
-        //     var appOutputDir = "/tmp/output";
-        //     var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
-        //     var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
-        //     var preInstalledSdkLink = $"/home/codespace/.dotnet/sdk";
-        //     var script = new ShellScriptBuilder()
-        //         .AddDirectoryExistsCheck($"/home/codespace/.dotnet/")
-        //         .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
-        //         .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNet60SdkVersion}")
-        //         .AddLinkDoesNotExistCheck($"{preInstalledSdkLink}/{sdkVersion}")
-        //         .AddBuildCommand(
-        //         $"{appDir} -i /tmp/int -o {appOutputDir} " +
-        //         $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
-        //         .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
-        //         .AddDirectoryExistsCheck($"/opt/dotnet/{sdkVersion}")
-        //         .AddLinkExistsCheck($"{preInstalledSdkLink}/{sdkVersion}")
-        //         .AddFileExistsCheck(manifestFile)
-        //         .AddFileExistsCheck(osTypeFile)
-        //         .AddCommand($"cat {manifestFile}")
-        //         .AddCommand("/home/codespace/.dotnet/dotnet --list-sdks")
-        //         .ToString();
-        //     var majorPart = runtimeVersion.Split('.')[0];
-        //     var expectedSdkVersionPrefix = $"{majorPart}.";
-
-        //     // Act
-        //     var result = _dockerCli.Run(new DockerRunArguments
-        //     {
-        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-        //         EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-        //         Volumes = new List<DockerVolume> { volume },
-        //         CommandToExecuteOnRun = "/bin/bash",
-        //         CommandArguments = new[] { "-c", script }
-        //     });
-
-        //     // Assert
-        //     RunAsserts(
-        //         () =>
-        //         {
-        //             Assert.True(result.IsSuccess);
-        //             Assert.Contains(string.Format(SdkVersionMessageFormat, expectedSdkVersionPrefix), result.StdOut);
-        //             Assert.Contains(
-        //                 $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersionPrefix}",
-        //                 result.StdOut);
-        //             Assert.Contains($"{DotNetCoreSdkVersions.DotNetCore31SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
-        //             Assert.Contains($"{DotNetCoreSdkVersions.DotNet60SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
-        //             Assert.Contains($"{sdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
-        //         },
-        //         result.GetDebugInfo());
-        // }
-
         public static TheoryData<string, string, string, string> SupportedVersionAndImageNameData
         {
             get
