@@ -49,7 +49,13 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogInformation("Generating script for source.")
 
-	pythonInstallationRoot := fmt.Sprintf("/opt/python/%s", gen.Manifest.PythonVersion)
+	var pythonVersion string
+	if gen.Manifest.PythonVersion != "" {
+		pythonVersion = gen.Manifest.PythonVersion
+	} else {
+		pythonVersion = os.Getenv("PYTHON_VERSION")
+	}
+	pythonInstallationRoot := fmt.Sprintf("/opt/python/%s", pythonVersion)
 
 	common.PrintVersionInfo()
 
@@ -164,14 +170,16 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 
 	if virtualEnvironmentName != "" {
 		virtualEnvDir := filepath.Join(gen.getAppPath(), virtualEnvironmentName)
+		virtualEnvPath := gen.getVirtualEnvPath(virtualEnvDir, virtualEnvironmentName)
 
 		scriptBuilder.WriteString(
-			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", virtualEnvDir))
-		scriptBuilder.WriteString(fmt.Sprintf("echo '. %s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
+			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", virtualEnvPath))
+		
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
 		if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
+			scriptBuilder.WriteString(fmt.Sprintf("echo 'if [ -f %s/bin/activate ]; then . %s/bin/activate; fi' >> ~/.bashrc\n", virtualEnvPath, virtualEnvPath))
 			if common.PathExists(virtualEnvDir) {
 				// We add the virtual env site-packages to PYTHONPATH instead of activating it to be backwards compatible with existing
 				// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
@@ -186,6 +194,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 				scriptBuilder.WriteString("  echo WARNING: Could not find virtual environment directory '" + virtualEnvDir + "'.\n")
 			}
 		} else {
+			scriptBuilder.WriteString(fmt.Sprintf("echo '. /%s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
 			compressedFile := gen.Manifest.CompressedVirtualEnvFile
 			virtualEnvDir := "/" + virtualEnvironmentName
 			if strings.HasSuffix(compressedFile, ".zip") {
@@ -210,8 +219,10 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 			scriptBuilder.WriteString("mkdir -p " + virtualEnvDir + "\n")
 			scriptBuilder.WriteString("echo Extracting to directory '" + virtualEnvDir + "'...\n")
 			scriptBuilder.WriteString("$extractionCommand\n")
-			venvSubScript := gen.getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
+			venvSubScript := gen.getHandleVenvPresentInRootScript(virtualEnvDir, virtualEnvironmentName)
 			scriptBuilder.WriteString(venvSubScript)
+			venvHandlingScript := gen.getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
+			scriptBuilder.WriteString(venvHandlingScript)
 		}
 	}
 
@@ -263,6 +274,8 @@ func (gen *PythonStartupScriptGenerator) getVenvHandlingScript(virtualEnvName st
 					fmt.Sprintf("ln -sf %s %s\n", virtualEnvDir, gen.Manifest.SourceDirectoryInBuildContainer))
 				scriptBuilder.WriteString(fmt.Sprintf(". %s/bin/activate\n", virtualEnvName))
 			}
+		} else {
+			scriptBuilder.WriteString(fmt.Sprintf(". /%s/bin/activate\n", virtualEnvName))
 		}
 	}
 
@@ -371,4 +384,27 @@ func appendArgs(currentArgs string, argToAppend string) string {
 	}
 	currentArgs += argToAppend
 	return currentArgs
+}
+
+func (gen *PythonStartupScriptGenerator) getVirtualEnvPath(virtualEnvDir string, virtualEnvironmentName string) string {
+	if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
+		return virtualEnvDir
+	}
+
+	return "/" + virtualEnvironmentName
+}
+
+func (gen *PythonStartupScriptGenerator) getHandleVenvPresentInRootScript(virtualEnvDir string, virtualEnvironmentName string) string {
+	scriptBuilder := strings.Builder{}
+
+	scriptBuilder.WriteString("if [ -d " + virtualEnvironmentName + " ]; then\n")
+	scriptBuilder.WriteString("    mv -f " + virtualEnvironmentName + " _del_" + virtualEnvironmentName + " || true\n")
+	scriptBuilder.WriteString("fi\n\n")
+
+	scriptBuilder.WriteString("if [ -d " + virtualEnvDir + " ]; then\n")
+	scriptBuilder.WriteString("    ln -sfn " + virtualEnvDir + " ./" + virtualEnvironmentName + "\n")
+	scriptBuilder.WriteString("fi\n\n")
+	scriptBuilder.WriteString("echo \"Done.\"\n")
+	
+	return scriptBuilder.String()
 }
