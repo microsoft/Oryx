@@ -29,6 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected const string NetCore6PreviewWebApp = "NetCore6PreviewWebApp";
         protected const string NetCore7PreviewMvcApp = "NetCore7PreviewMvcApp";
         protected const string NetCore8PreviewMvcApp = "NetCore8PreviewMvcApp";
+        protected const string NetCore8WebApp = "NetCore8WebApp";
         protected const string NetCore9PreviewMvcApp = "NetCore9PreviewMvcApp";
         protected const string NetCore10PreviewMvcApp = "NetCore10PreviewMvcApp";
         protected const string NetCoreApp70WebApp = "NetCore7WebApp";
@@ -49,9 +50,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
-        [InlineData(NetCoreApp50MvcApp, "5.0")]
         [InlineData(NetCore7PreviewMvcApp, "7.0")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActions(
             string appName,
@@ -70,54 +69,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             BuildsApplication_ByDynamicallyInstallingSDKs(
                 appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
-        }
-
-
-        [Theory, Trait("category", "cli-stretch")]
-        [InlineData(NetCoreApp21WebApp, "2.1")]
-        [InlineData(NetCoreApp31MvcApp, "3.1")]
-        [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_Cli(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage());
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [InlineData(NetCoreApp21WebApp, "2.1")]
-        [InlineData(NetCoreApp31MvcApp, "3.1")]
-        [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuster(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBullseye(
-           string appName,
-           string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-        }
-
-        [Theory, Trait("category", "cli-builder-bullseye")]
-        [InlineData(NetCore6PreviewWebApp, "6.0")]
-        [InlineData(NetCoreApp70WebApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuilderBullseye(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
         }
 
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
@@ -225,10 +176,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresExplicitRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
-            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
+            // Here we are testing building a 8.0 runtime version app with a 9.0.302 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.404";
+            var expectedSdkVersion = "9.0.302";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -237,8 +188,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
-            var appName = NetCoreApp21WebApp;
-            var runtimeVersion = "2.1";
+            var appName = NetCore8WebApp;
+            var runtimeVersion = "8.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -288,10 +239,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
-            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
+            // Here we are testing building a 8.0 runtime version app with a 9.0.302 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.404";
+            var expectedSdkVersion = "9.0.302";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -300,8 +251,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
-            var appName = NetCoreApp21WebApp;
-            var runtimeVersion = "2.1";
+            var appName = NetCore8WebApp;
+            var runtimeVersion = "8.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -350,7 +301,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsApplication_UsingPreviewVersionOfSdk()
         {
             // Arrange
-            var expectedSdkVersion = "7.0.100-preview.1.22110.4";
+            var expectedSdkVersion = "10.0.100-preview.5.25277.114";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -359,8 +310,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
-            var appName = NetCoreApp50MvcApp;
-            var runtimeVersion = "5.0";
+            var appName = NetCoreApp100WebApp;
+            var runtimeVersion = "10.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -383,7 +334,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -446,10 +397,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_IntoCustomDynamicInstallationDir()
         {
-            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
+            // Here we are testing building a 8.0 runtime version app with a 9.0.302 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.404";
+            var expectedSdkVersion = "9.0.302";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -458,8 +409,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
-            var appName = NetCoreApp21WebApp;
-            var runtimeVersion = "2.1";
+            var appName = NetCore8WebApp;
+            var runtimeVersion = "8.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -503,65 +454,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersion}",
                         result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory, Trait("category", "vso-focal")]
-        [InlineData(NetCoreApp21WebApp, "2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
-            string appName,
-            string runtimeVersion,
-            string sdkVersion)
-        {
-            // Arrange
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/output";
-            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
-            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
-            var preInstalledSdkLink = $"/home/codespace/.dotnet/sdk";
-            var script = new ShellScriptBuilder()
-                .AddDirectoryExistsCheck($"/home/codespace/.dotnet/")
-                .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
-                .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNet60SdkVersion}")
-                .AddLinkDoesNotExistCheck($"{preInstalledSdkLink}/{sdkVersion}")
-                .AddBuildCommand(
-                $"{appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
-                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
-                .AddDirectoryExistsCheck($"/opt/dotnet/{sdkVersion}")
-                .AddLinkExistsCheck($"{preInstalledSdkLink}/{sdkVersion}")
-                .AddFileExistsCheck(manifestFile)
-                .AddFileExistsCheck(osTypeFile)
-                .AddCommand($"cat {manifestFile}")
-                .AddCommand("/home/codespace/.dotnet/dotnet --list-sdks")
-                .ToString();
-            var majorPart = runtimeVersion.Split('.')[0];
-            var expectedSdkVersionPrefix = $"{majorPart}.";
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, expectedSdkVersionPrefix), result.StdOut);
-                    Assert.Contains(
-                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersionPrefix}",
-                        result.StdOut);
-                    Assert.Contains($"{DotNetCoreSdkVersions.DotNetCore31SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
-                    Assert.Contains($"{DotNetCoreSdkVersions.DotNet60SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
-                    Assert.Contains($"{sdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -633,8 +525,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(SupportedVersionAndImageNameData))]
         public void BuildsApplication_AfterInstallingSupportedSdk(
-            string runtimeVersion, 
-            string sdkVersion, 
+            string runtimeVersion,
+            string sdkVersion,
             string appName,
             string imageName)
         {
@@ -733,45 +625,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "jamstack")]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void ParsesImageTypeFromFile_Jamstack(bool removeImageTypeFile)
-        {
-            
-            var imageHelper = new ImageTestHelper();
-            TestImageTypeResolution(
-                imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
-                removeImageTypeFile,
-                "jamstack");
-        }
-
-        [Theory, Trait("category", "cli")]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void ParsesImageTypeFromFile_Cli(bool removeImageTypeFile)
-        {
-            
-            var imageHelper = new ImageTestHelper();
-            TestImageTypeResolution(
-                imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository),
-                removeImageTypeFile,
-                "cli");
-        }
-
         [Theory, Trait("category", "githubactions")]
         [InlineData(true)]
         [InlineData(false)]
         public void ParsesImageTypeFromFile_GithubActions(bool removeImageTypeFile)
         {
-            
+
             var imageHelper = new ImageTestHelper();
             TestImageTypeResolution(
                 imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 removeImageTypeFile,
                 "githubactions");
         }
-
 
         private void TestImageTypeResolution(
             string imageName,
@@ -809,13 +674,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    
-                    if (removeImageTypeFile) {
+
+                    if (removeImageTypeFile)
+                    {
                         Assert.Contains(MissingImageTypeWarning, result.StdOut);
                         Assert.DoesNotContain(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
                         Assert.DoesNotMatch(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         Assert.Contains(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
                         Assert.Matches(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);

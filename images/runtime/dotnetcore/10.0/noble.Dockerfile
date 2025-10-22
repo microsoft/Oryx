@@ -11,7 +11,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 10.0.0-rc.1.25460.1
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.1-bookworm AS startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.3-bookworm AS startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src

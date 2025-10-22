@@ -7,16 +7,9 @@
 set -ex
 
 version="$1"
-debianFlavor="$DEBIAN_FLAVOR"
+osFlavor="$OS_FLAVOR"
 
-tarFileName="nodejs-$version.tar.gz"
-    
-if [ "$debianFlavor" == "stretch" ]; then
-   # Use default sdk file name
-	tarFileName=nodejs-$version.tar.gz
-else
-    tarFileName=nodejs-$debianFlavor-$version.tar.gz
-fi
+tarFileName=nodejs-$osFlavor-$version.tar.gz
 
 # Certain versions (ex: 6.4.1) of NPM have issues installing native modules
 # like 'grpc', so upgrading them to a version whch we know works.

@@ -11,7 +11,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.*
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.8-bullseye AS startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.3-bullseye AS startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src

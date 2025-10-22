@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Fact, Trait("category", "jamstack")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsHugoClientAndDotNetCoreServerApp_WithRecurisveLookupDisabled()
         {
             // NOTE: This test simulates a typical Azure Static Web Apps repo where the root folder is a static app
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act1
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act2
             result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

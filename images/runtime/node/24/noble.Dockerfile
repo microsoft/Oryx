@@ -17,8 +17,8 @@ RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
 
-RUN groupadd --gid 1000 node \
-  && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
+RUN groupadd --gid 1001 node \
+  && useradd --uid 1001 --gid node --shell /bin/bash --create-home node
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -31,17 +31,23 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     *) echo "unsupported architecture"; exit 1 ;; \
   esac
 
-ARG NODE22_VERSION
-ENV NODE_VERSION ${NODE22_VERSION}
-ENV NPM_CONFIG_LOGLEVEL info
+ARG NODE24_VERSION
+ENV NODE_VERSION=${NODE24_VERSION}
+ENV NPM_CONFIG_LOGLEVEL=info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 
-COPY nodejs-bullseye-${NODE22_VERSION}.tar.gz .
 RUN set -e \
-    && mkdir -p /opt/nodejs/${NODE22_VERSION} \
-    && tar -xzf nodejs-bullseye-${NODE22_VERSION}.tar.gz -C /usr/local \
-    && rm nodejs-bullseye-${NODE22_VERSION}.tar.gz \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends git make \
+    && curl -sL https://git.io/n-install | bash -s -- -ny - \
+    && ~/n/bin/n -d ${NODE24_VERSION} \
+    && cp -r /usr/local/n/versions/node/${NODE24_VERSION}/* /usr/local/ \
+    && rm -rf /usr/local/n \
+    && rm -rf ~/n \
+    && apt-get purge -y git make \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 ARG NPM_VERSION
@@ -76,5 +82,3 @@ ENV LANG="C.UTF-8" \
     LC_ALL="C.UTF-8"
 
 CMD [ "node" ]
-
-
