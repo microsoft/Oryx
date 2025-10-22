@@ -169,7 +169,7 @@ fi
     fi
 
     # For virtual environment, we use the actual 'python' alias that as setup by the venv,
-    python_bin=$python
+    python_bin=python
 {{ else }}
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
