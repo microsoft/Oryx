@@ -60,7 +60,7 @@ variables:
   node18Version: 18.20.8
   node20Version: 20.19.5
   node22Version: 22.20.0
-  node24Version: 24.10.0
+  node24Version: 24.11.0
   php81Version: 8.1.33
   php81Version_SHA: 9db83bf4590375562bc1a10b353cccbcf9fcfc56c58b7c8fb814e6865bb928d1
   php82Version: 8.2.29
