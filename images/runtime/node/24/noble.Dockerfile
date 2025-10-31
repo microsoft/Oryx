@@ -1,8 +1,9 @@
+# syntax=docker/dockerfile:1.2
 ARG BASE_IMAGE
 ARG FEED_ACCESSTOKEN
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.3-bullseye as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.3-noble as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -17,7 +18,6 @@ RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
-ARG FEED_ACCESSTOKEN
 
 RUN groupadd --gid 1001 node \
   && useradd --uid 1001 --gid node --shell /bin/bash --create-home node
@@ -56,16 +56,15 @@ ARG NPM_VERSION
 ARG PM2_VERSION
 ARG NODE_APP_INSIGHTS_SDK_VERSION
 
-RUN cat > /root/.npmrc <<EOF
-registry=https://pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/
-always-auth=true
-//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/:_authToken=${FEED_ACCESSTOKEN}
-//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/:_authToken=${FEED_ACCESSTOKEN}
-EOF
-
-RUN npm install -g npm@${NPM_VERSION}
-RUN PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh 
-RUN rm -rf /tmp/oryx
+RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
+    FEED_ACCESSTOKEN=$(cat /run/secrets/npmrc) && \
+    echo "registry=https://pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/" > /root/.npmrc && \
+    echo "always-auth=true" >> /root/.npmrc && \
+    echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc && \
+    echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc && \
+    npm install -g npm@${NPM_VERSION} && \
+    PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh && \
+    rm -rf /tmp/oryx
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_CONNECTION_STRING
