@@ -1,8 +1,25 @@
 ARG INCLUDE_AZURELINUX_CERTS=true
+ARG FEED_ACCESSTOKEN
 
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
 FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS tools-install
+ARG FEED_ACCESSTOKEN
+RUN cat > /root/.nuget/NuGet/NuGet.Config <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="one_PublicPackages" value="https://pkgs.dev.azure.com/msazure/One/_packaging/one_PublicPackages/nuget/v3/index.json" />
+  </packageSources>
+  <packageSourceCredentials>
+    <one_PublicPackages>
+      <add key="Username" value="msazure" />
+      <add key="ClearTextPassword" value="${FEED_ACCESSTOKEN}" />
+    </one_PublicPackages>
+  </packageSourceCredentials>
+</configuration>
+EOF
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump

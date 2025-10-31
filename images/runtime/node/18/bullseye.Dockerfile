@@ -1,4 +1,5 @@
 ARG BASE_IMAGE
+ARG FEED_ACCESSTOKEN
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.3-bullseye as startupCmdGen
@@ -16,6 +17,7 @@ RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
+ARG FEED_ACCESSTOKEN
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
@@ -46,6 +48,13 @@ RUN set -e \
 ARG NPM_VERSION
 ARG PM2_VERSION
 ARG NODE_APP_INSIGHTS_SDK_VERSION
+
+RUN cat > /root/.npmrc <<EOF
+registry=https://pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/
+always-auth=true
+//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/:_authToken=${FEED_ACCESSTOKEN}
+//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/:_authToken=${FEED_ACCESSTOKEN}
+EOF
 
 RUN npm install -g npm@${NPM_VERSION}
 RUN PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh 
