@@ -100,19 +100,16 @@ ENV CNB_STACK_ID="oryx.stacks.skeleton"
 LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
-RUN pip install --upgrade pip \
-    && pip install gunicorn \
-    && pip install debugpy \
-    && pip install viztracer==0.15.6 \
-    && pip install vizplugins==0.1.3 \
-    # Removing orjson only for 3.12 due to build errors
-    && if [ "${PYTHON_VERSION}" != "3.12" ] && [ "${PYTHON_VERSION}" != "3.7" ]; then pip install orjson==3.10.7; fi \
-    && if [ "${PYTHON_VERSION}" = "3.7" ] || [ "${PYTHON_VERSION}" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
+RUN --mount=type=secret,id=pip_index_url,target=/run/secrets/pip_index_url \
+    pip install --index-url $(cat /run/secrets/pip_index_url) --upgrade pip && \
+    pip install --index-url $(cat /run/secrets/pip_index_url) gunicorn debugpy viztracer==0.15.6 vizplugins==0.1.3 && \
+    if [ "${PYTHON_VERSION}" != "3.12" ] && [ "${PYTHON_VERSION}" != "3.7" ]; then pip install --index-url $(cat /run/secrets/pip_index_url) orjson==3.10.7; fi && \
+    if [ "${PYTHON_VERSION}" = "3.7" ] || [ "${PYTHON_VERSION}" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
     && dpkg -i libffi6_3.2.1-9_amd64.deb \
-    && rm libffi6_3.2.1-9_amd64.deb; fi \
-    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/oryx
+    && rm libffi6_3.2.1-9_amd64.deb; fi && \
+    ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /tmp/oryx
 
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
