@@ -3,7 +3,7 @@ ARG BASE_IMAGE
 ARG FEED_ACCESSTOKEN
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.3-noble as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.3-bullseye as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
