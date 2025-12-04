@@ -6,6 +6,7 @@
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
@@ -17,6 +18,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
     {
         private readonly IOptions<DetectorOptions> options;
         private readonly ILogger<ExplicitProjectFileProvider> logger;
+        private readonly BuildScriptGeneratorOptions commonOptions;
 
         public ExplicitProjectFileProvider(
             IOptions<DetectorOptions> options,
@@ -43,9 +45,31 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             {
                 this.logger.LogDebug($"Using the given .NET Core project file to build.");
             }
-            else
+            else 
             {
                 this.logger.LogWarning($"Could not find the .NET Core project file.");
+
+                // Check if .NET Core is the target platform before failing
+                var userProvidedPlatformName = this.commonOptions.PlatformName;
+
+                // If platform is not dotnet, skip .NET Core requirements. Dotnet file detection will still happen.
+                if (!string.IsNullOrEmpty(userProvidedPlatformName) && 
+                    !userProvidedPlatformName.Equals("dotnet", StringComparison.OrdinalIgnoreCase))
+                {
+                    this.logger.LogDebug(
+                        $"Target platform is '{userProvidedPlatformName}', not 'dotnet'. " +
+                        "Skipping .NET Core project file requirement.");
+                    return null; 
+                }
+
+                // If platform is dotnet but PROJECT doesn't specify .csproj or .fsproj file
+                if (userProvidedPlatformName.Equals("dotnet", StringComparison.OrdinalIgnoreCase) && 
+                    !IsValidDotNetProjectFile(projectFileWithRelativePath))
+                {
+                    this.logger.LogDebug("PROJECT variable doesn't specify a valid .NET project file (.csproj or .fsproj).");
+                    return null;
+                }
+
                 throw new InvalidProjectFileException("Could not find the .NET Core project file.");
             }
 
@@ -60,6 +84,12 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             return null;
+        }
+
+        private bool IsValidDotNetProjectFile(string projectFile)
+        {
+            return projectFile.EndsWith(DotNetCoreConstants.CSharpProjectFileExtension, StringComparison.OrdinalIgnoreCase) ||
+                   projectFile.EndsWith(DotNetCoreConstants.FSharpProjectFileExtension, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
