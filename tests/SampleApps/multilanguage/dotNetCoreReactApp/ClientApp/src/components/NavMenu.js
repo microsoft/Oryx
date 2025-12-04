@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
 
@@ -24,25 +23,34 @@ export class NavMenu extends Component {
   render () {
     return (
       <header>
-        <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
-          <Container>
-            <NavbarBrand tag={Link} to="/">dotNetCoreReactApp</NavbarBrand>
-            <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
-            <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
-              <ul className="navbar-nav flex-grow">
-                <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/counter">Counter</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/fetch-data">Fetch data</NavLink>
-                </NavItem>
+        <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+          <div className="container">
+            <Link className="navbar-brand" to="/">dotNetCoreReactApp</Link>
+            <button 
+              className="navbar-toggler" 
+              type="button" 
+              onClick={this.toggleNavbar}
+              aria-controls="navbarNav"
+              aria-expanded={!this.state.collapsed}
+              aria-label="Toggle navigation"
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+            <div className={`collapse navbar-collapse ${this.state.collapsed ? '' : 'show'}`} id="navbarNav">
+              <ul className="navbar-nav ms-auto">
+                <li className="nav-item">
+                  <Link className="nav-link text-dark" to="/">Home</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link text-dark" to="/counter">Counter</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link text-dark" to="/fetch-data">Fetch data</Link>
+                </li>
               </ul>
-            </Collapse>
-          </Container>
-        </Navbar>
+            </div>
+          </div>
+        </nav>
       </header>
     );
   }
