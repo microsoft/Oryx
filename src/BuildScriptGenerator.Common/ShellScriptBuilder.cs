@@ -6,7 +6,6 @@
 using System;
 using System.Text;
 using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Common
