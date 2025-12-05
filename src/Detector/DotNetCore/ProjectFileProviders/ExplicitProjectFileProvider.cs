@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -42,11 +43,21 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             if (context.SourceRepo.FileExists(projectFile))
             {
                 this.logger.LogDebug($"Using the given .NET Core project file to build.");
+                Console.WriteLine("Using the given .NET Core project file to build.");
             }
             else
             {
-                this.logger.LogWarning($"Could not find the .NET Core project file.");
-                throw new InvalidProjectFileException("Could not find the .NET Core project file.");
+                if (!this.IsValidDotNetProjectFile(projectFileWithRelativePath))
+                {
+                    this.logger.LogDebug(
+                        $"The PROJECT variable doesn't specify a valid .NET project file (.csproj or .fsproj).");
+                    Console.WriteLine("PROJECT variable doesn't specify a valid .NET project file (.csproj or .fsproj).");
+                    return null;
+                }
+
+                throw new InvalidProjectFileException(
+                    $"Could not find the .NET Core project file specified in PROJECT environment variable: '{projectFileWithRelativePath}'. " +
+                    "Please ensure the file exists or update the PROJECT environment variable to point to a valid .csproj or .fsproj file.");
             }
 
             return projectFileWithRelativePath;
@@ -60,6 +71,12 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             return null;
+        }
+
+        private bool IsValidDotNetProjectFile(string projectFile)
+        {
+            return projectFile.EndsWith(DotNetCoreConstants.CSharpProjectFileExtension, StringComparison.OrdinalIgnoreCase) ||
+                   projectFile.EndsWith(DotNetCoreConstants.FSharpProjectFileExtension, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
