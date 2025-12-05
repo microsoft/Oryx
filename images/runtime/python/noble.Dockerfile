@@ -78,10 +78,10 @@ LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN --mount=type=secret,id=pip_index_url,target=/run/secrets/pip_index_url \
     pip install --index-url $(cat /run/secrets/pip_index_url) --upgrade pip && \
-    pip install --index-url $(cat /run/secrets/pip_index_url) gunicorn debugpy viztracer==0.15.6 vizplugins==0.1.3
-RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/oryx
+    pip install --index-url $(cat /run/secrets/pip_index_url) gunicorn debugpy viztracer==0.15.6 vizplugins==0.1.3 && \
+    ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /tmp/oryx
 
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \

@@ -56,7 +56,8 @@ RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
     echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc && \
     npm install -g npm@${NPM_VERSION} && \
     PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh && \
-    rm -rf /tmp/oryx
+    rm -rf /tmp/oryx && \
+    rm -rf /root/.npmrc
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_CONNECTION_STRING
