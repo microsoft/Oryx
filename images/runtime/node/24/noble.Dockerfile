@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.2
 ARG BASE_IMAGE
 ARG FEED_ACCESSTOKEN
 
