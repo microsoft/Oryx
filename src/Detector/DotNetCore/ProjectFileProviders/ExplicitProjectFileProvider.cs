@@ -43,7 +43,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             if (context.SourceRepo.FileExists(projectFile))
             {
                 this.logger.LogDebug($"Using the given .NET Core project file to build.");
-                Console.WriteLine("Using the given .NET Core project file to build.");
             }
             else
             {
@@ -51,7 +50,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 {
                     this.logger.LogDebug(
                         $"The PROJECT variable doesn't specify a valid .NET project file (.csproj or .fsproj).");
-                    Console.WriteLine("PROJECT variable doesn't specify a valid .NET project file (.csproj or .fsproj).");
                     return null;
                 }
 
