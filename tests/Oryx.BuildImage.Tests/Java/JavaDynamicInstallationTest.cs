@@ -15,6 +15,7 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.BuildImage.Tests
 {
     [Trait("platform", "java")]
+    [Skip("Java detection disabled during Oryx build")]
     public class JavaDynamicInstallationTest : SampleAppsTestBase
     {
         public JavaDynamicInstallationTest(ITestOutputHelper output) : base(output)
