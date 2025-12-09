@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.BuildImage.Tests
 {
     [Trait("platform", "java")]
-    [Skip("Java detection disabled during Oryx build")]
     public class JavaSampleAppsTest : SampleAppsTestBase
     {
         public JavaSampleAppsTest(ITestOutputHelper output) : base(output)
@@ -23,7 +22,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "java", sampleAppName));
 
-        [Fact, Trait("category", "githubactions")]
+        [Fact(Skip = "Java detection disabled during Oryx build"), Trait("category", "githubactions")]
         public void JavaSampleAppsTestsGithubActions()
         {
             var imageTag = ImageTestHelperConstants.GitHubActionsBullseye;
