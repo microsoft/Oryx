@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.BuildImage.Tests
 {
     [Trait("platform", "java")]
-    [Skip("Java detection disabled in the build")]
     public class JavaSampleAppsTest : SampleAppsTestBase
     {
         public JavaSampleAppsTest(ITestOutputHelper output) : base(output)
