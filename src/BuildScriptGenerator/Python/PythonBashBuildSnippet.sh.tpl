@@ -66,7 +66,7 @@ fi
     echo "Executing: $CreateVenvCommand"
     $CreateVenvCommand
 
-    CACHE_EXTRACTION_DIR=""/tmp/oryx_cache_$(date +%s)""
+    CACHE_EXTRACTION_DIR="/tmp/oryx_cache_$(date +%s)"
     OLD_VENV_RESTORED=false
 
     if [ -f "/home/site/wwwroot/output.tar.gz" ]; then
