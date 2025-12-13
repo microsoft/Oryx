@@ -137,7 +137,7 @@ fi
             # Step 6: Install/update packages from requirements
             if [ "$optimizationFailed" = false ]; then
                 echo "Installing updated requirements..."
-                if ! python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE; then
+                if ! python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE -U; then
                     echo "Failed to install requirements, falling back to standard build"
                     optimizationFailed=true
                 fi
