@@ -116,7 +116,7 @@ fi
                 ORIGINAL_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
                 
                 # Find Python library for pip freeze
-                PYTHON_LIB=$(find /tmp -name "libpython3.13.so.1.0" 2>/dev/null | head -1)
+                PYTHON_LIB="$(dirname $(dirname $python))/lib"
                 
                 # Set library path
                 export LD_LIBRARY_PATH=$(dirname $PYTHON_LIB):$LD_LIBRARY_PATH
