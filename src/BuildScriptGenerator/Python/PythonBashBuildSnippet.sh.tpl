@@ -73,7 +73,7 @@ fi
             
             # Step 1: Install pip-tools
             echo "Installing pip-tools..."
-            if ! python -m pip install pip-tools; then
+            if ! $python -m pip install pip-tools; then
                 echo "Failed to install pip-tools, falling back to standard build"
                 optimizationFailed=true
             fi
@@ -93,7 +93,7 @@ fi
             # Step 3: Compile requirements
             if [ "$optimizationFailed" = false ]; then
                 echo "Compiling requirements..."
-                if ! $python -m pip-compile requirements.txt -o incoming_compiled.txt; then
+                if ! $python -m piptools compile requirements.txt -o incoming_compiled.txt; then
                     echo "Failed to compile requirements, falling back to standard build"
                     optimizationFailed=true
                 fi
