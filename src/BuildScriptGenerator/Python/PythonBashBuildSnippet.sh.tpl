@@ -93,7 +93,7 @@ fi
             # Step 3: Compile requirements
             if [ "$optimizationFailed" = false ]; then
                 echo "Compiling requirements..."
-                if ! pip-compile requirements.txt -o incoming_compiled.txt; then
+                if ! $python -m pip-compile requirements.txt -o incoming_compiled.txt; then
                     echo "Failed to compile requirements, falling back to standard build"
                     optimizationFailed=true
                 fi
@@ -121,11 +121,11 @@ fi
                 # Set library path
                 export LD_LIBRARY_PATH=$(dirname $PYTHON_LIB):$LD_LIBRARY_PATH
 
-                pip freeze > all_installed.txt
+                python -m pip freeze > all_installed.txt
 
                 grep '^[a-zA-Z]' incoming_compiled.txt | cut -d'=' -f1 | tr '[:upper:]' '[:lower:]' > keep.txt
 
-                if ! pip freeze | grep -vi -f keep.txt | grep -v '^-e' | cut -d'=' -f1 | xargs -r pip uninstall -y; then
+                if ! python -m pip freeze | grep -vi -f keep.txt | grep -v '^-e' | cut -d'=' -f1 | xargs -r python -m pip uninstall -y; then
                     echo "Failed to uninstall old packages, falling back to standard build"
                     optimizationFailed=true
                 fi
