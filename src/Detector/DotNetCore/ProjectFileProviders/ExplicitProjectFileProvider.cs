@@ -46,6 +46,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
             else
             {
+                this.logger.LogWarning($"Could not find the .NET Core project file.");
                 if (!this.IsValidDotNetProjectFile(projectFileWithRelativePath))
                 {
                     this.logger.LogDebug(
