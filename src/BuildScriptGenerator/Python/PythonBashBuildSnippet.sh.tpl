@@ -65,46 +65,6 @@ fi
     # Execute the resolved CreateVenvCommand
     echo "Executing: $CreateVenvCommand"
     $CreateVenvCommand
-
-    CACHE_EXTRACTION_DIR="/tmp/oryx_cache_$(date +%s)"
-    OLD_VENV_RESTORED=false
-
-    if [ -f "/home/site/wwwroot/output.tar.gz" ]; then
-        echo "Found previous deployment, checking for virtual environment reuse..."
-
-        # Create temporary extraction directory
-        mkdir -p "$CACHE_EXTRACTION_DIR"
-
-        # Extract previous deployment to temp location
-        echo "Extracting previous deployment..."
-        tar -xzf /home/site/wwwroot/output.tar.gz -C "$CACHE_EXTRACTION_DIR"
-
-        # Compare requirements.txt files
-        OLD_REQUIREMENTS="$CACHE_EXTRACTION_DIR/$REQUIREMENTS_TXT_FILE"
-        CURRENT_REQUIREMENTS="$REQUIREMENTS_TXT_FILE"
-
-        if [ -f "$OLD_REQUIREMENTS" ] && [ -f "$CURRENT_REQUIREMENTS" ]; then
-            if cmp -s "$OLD_REQUIREMENTS" "$CURRENT_REQUIREMENTS"; then
-                echo "Requirements.txt unchanged - reusing existing virtual environment"
-                
-                # Check if old virtual environment exists
-                if [ -d "$CACHE_EXTRACTION_DIR/$VIRTUALENVIRONMENTNAME" ]; then
-                    echo "Copying cached virtual environment..."
-                    # Remove current empty venv and replace with old one
-                    cp -r "$CACHE_EXTRACTION_DIR/$VIRTUALENVIRONMENTNAME" ./
-                    
-                    # Reactivate the copied environment
-                    source $VIRTUALENVIRONMENTNAME/bin/activate
-                    
-                    OLD_VENV_RESTORED=true
-                    echo "Successfully restored virtual environment from cache"
-                    echo "Skipping pip install - using cached packages"
-                fi
-            else
-                echo "Requirements.txt changed - performing incremental update"
-            fi
-        fi
-    fi
     
     echo Activating virtual environment...
     printf %s " , $ActivateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
