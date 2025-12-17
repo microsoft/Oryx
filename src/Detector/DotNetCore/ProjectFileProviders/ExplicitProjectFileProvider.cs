@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
             var projectFileWithRelativePath = projectPath.Trim();
             var projectFile = Path.Combine(context.SourceRepo.RootPath, projectFileWithRelativePath);
-            if (context.SourceRepo.FileExists(projectFile))
+            if (context.SourceRepo.FileExists(projectFile) && this.IsValidDotNetProjectFile(projectFileWithRelativePath))
             {
                 this.logger.LogDebug($"Using the given .NET Core project file to build.");
             }
@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 this.logger.LogWarning($"Could not find the .NET Core project file.");
                 if (!this.IsValidDotNetProjectFile(projectFileWithRelativePath))
                 {
-                    this.logger.LogDebug(
+                    this.logger.LogWarning(
                         $"The PROJECT variable doesn't specify a valid .NET project file (.csproj or .fsproj).");
                     return null;
                 }
