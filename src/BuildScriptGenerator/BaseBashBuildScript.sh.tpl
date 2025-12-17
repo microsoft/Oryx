@@ -190,7 +190,7 @@ then
 	DESTINATION_DIR="$OLD_DESTINATION_DIR"
 	echo "Compressing content of directory '$preCompressedDestinationDir'..."
 	cd "$preCompressedDestinationDir"
-	tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+	tar -I pigz -cf "$DESTINATION_DIR/output.tar.gz" .
 	echo "Copied the compressed output to '$DESTINATION_DIR'"
 	{{ end }}
 fi
