@@ -4,7 +4,7 @@ set -e
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install. More information: https://aka.ms/requirements-not-found'
 echo "Python Version: $python"
-PIP_CACHE_DIR=/usr/local/share/pip-cache
+PIP_CACHE_DIR=/var/CachedPythonPackages
 
 {{ if PythonBuildCommandsFileName | IsNotBlank }}
 COMMAND_MANIFEST_FILE="{{ PythonBuildCommandsFileName }}"
@@ -76,18 +76,36 @@ fi
     then
         set +e
         echo "Running pip install..."
-        InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
-        printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-        pipInstallExitCode=${PIPESTATUS[0]}
 
-        set -e
-        echo "${output}"
-        if [[ $pipInstallExitCode != 0 ]]
-        then
-            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-            exit $pipInstallExitCode
+        if [ "$UseUvInstall" = "true" ]; then
+            $python -m pip install uv
+            InstallCommand="uv pip install --compile-bytecode --link-mode copy --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
+            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( uv pip install --compile-bytecode --link-mode copy --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            uvPipInstallExitCode=${PIPESTATUS[0]}
+
+            set -e
+            echo "${output}"
+            if [[ $uvPipInstallExitCode != 0 ]]
+            then
+                LogError "${output} | Exit code: ${uvPipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $uvPipInstallExitCode
+            fi
+        else
+            InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
+            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            pipInstallExitCode=${PIPESTATUS[0]}
+
+            set -e
+            echo "${output}"
+            if [[ $pipInstallExitCode != 0 ]]
+            then
+                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $pipInstallExitCode
+            fi
         fi
+
     elif [ -e "setup.py" ]
     then
         set +e
