@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             var projectFile = Path.Combine(context.SourceRepo.RootPath, projectFileWithRelativePath);
             if (context.SourceRepo.FileExists(projectFile) && this.IsValidDotNetProjectFile(projectFileWithRelativePath))
             {
-                this.logger.LogDebug($"Using the given .NET Core project file to build.");
+                this.logger.LogInformation($"Using the given .NET Core project file to build: '{projectFileWithRelativePath}'");
             }
             else
             {
