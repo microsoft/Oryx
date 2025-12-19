@@ -100,8 +100,13 @@ fi
                 echo "Extraction in $ELAPSED_TIME sec(s)."
             fi
 
+            # Step 5: Activate previous venv
+            if [ "$optimizationFailed" = false ]; then
+                echo "Activating previous virtual environment..."
+                source ./antenv/bin/activate
+            fi
 
-            # Step 4: Install/update packages from requirements
+            # Step 5: Install/update packages from requirements
             if [ "$optimizationFailed" = false ]; then
                 echo "Installing updated requirements..."
                 START_TIME=$SECONDS
