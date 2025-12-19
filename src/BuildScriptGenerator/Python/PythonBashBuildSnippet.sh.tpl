@@ -91,20 +91,26 @@ fi
             # Step 3: Extract previous venv
             if [ "$optimizationFailed" = false ]; then
                 echo "Extracting previous virtual environment..."
+                START_TIME=$SECONDS
                 if ! tar -xzf "$DESTINATION_DIR/output.tar.gz" ./antenv; then
                     echo "Failed to extract virtual environment, falling back to standard build"
                     optimizationFailed=true
                 fi
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                echo "Extraction in $ELAPSED_TIME sec(s)."
             fi
 
 
             # Step 4: Install/update packages from requirements
             if [ "$optimizationFailed" = false ]; then
                 echo "Installing updated requirements..."
+                START_TIME=$SECONDS
                 if ! python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE -U; then
                     echo "Failed to install requirements, falling back to standard build"
                     optimizationFailed=true
                 fi
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                echo "Pip done in $ELAPSED_TIME sec(s)."
             fi
 
             # If optimization succeeded, skip the standard build
