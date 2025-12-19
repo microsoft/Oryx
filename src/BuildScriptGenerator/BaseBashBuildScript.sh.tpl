@@ -192,6 +192,8 @@ then
 	cd "$preCompressedDestinationDir"
 	tar -zcf "$DESTINATION_DIR/output.tar.gz" .
 	echo "Copied the compressed output to '$DESTINATION_DIR'"
+	cp ./requirements.txt "$DESTINATION_DIR/requirements.txt"
+	echo "Copied requirements.txt to '$DESTINATION_DIR'"
 	{{ end }}
 fi
 
