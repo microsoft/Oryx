@@ -62,7 +62,7 @@ fi
     
     echo "BuildCommands=$CreateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
     
-    optimizedPythonBuild=true
+    optimizedPythonBuild=${optimizedPythonBuild:-true}
     optimizationFailed=false
 
     moreInformation="More information: https://aka.ms/troubleshoot-python"
@@ -70,71 +70,35 @@ fi
 
         if [ "$optimizedPythonBuild" = true ]; then
             echo "Attempting optimized Python build..."
-            
-            # Step 1: Install pip-tools
-            echo "Installing pip-tools..."
-            if ! $python -m pip install pip-tools; then
-                echo "Failed to install pip-tools, falling back to standard build"
+
+
+            # Step 1: Check if destination contains requirements.txt
+            if [ ! -f "$DESTINATION_DIR/requirements.txt" ]; then
+                echo "No requirements.txt found in $DESTINATION_DIR, cannot perform optimized build"
                 optimizationFailed=true
             fi
-            
-            # Step 2: Extract virtual environment from previous build
-            if [ "$optimizationFailed" = false ] && [ -f "$DESTINATION_DIR/output.tar.gz" ]; then
+
+
+            # Step 2: Compare requirements.txt files
+            if [ "$optimizationFailed" = false ]; then
+                echo "Comparing requirements.txt files..."
+                if ! cmp "$REQUIREMENTS_TXT_FILE" "$DESTINATION_DIR/requirements.txt"; then
+                    echo "requirements.txt files differ, cannot perform optimized build"
+                    optimizationFailed=true
+                fi
+            fi
+
+            # Step 3: Extract previous venv
+            if [ "$optimizationFailed" = false ]; then
                 echo "Extracting previous virtual environment..."
                 if ! tar -xzf "$DESTINATION_DIR/output.tar.gz" ./antenv; then
                     echo "Failed to extract virtual environment, falling back to standard build"
                     optimizationFailed=true
                 fi
-            elif [ "$optimizationFailed" = false ]; then
-                echo "No previous build found at $DESTINATION_DIR/output.tar.gz, falling back to standard build"
-                optimizationFailed=true
             fi
-            
-            # Step 3: Compile requirements
-            if [ "$optimizationFailed" = false ]; then
-                echo "Compiling requirements..."
-                if ! $python -m piptools compile requirements.txt -o incoming_compiled.txt; then
-                    echo "Failed to compile requirements, falling back to standard build"
-                    optimizationFailed=true
-                fi
-            fi
-            
-            # Step 4: Activate virtual environment
-            if [ "$optimizationFailed" = false ]; then
-                echo "Activating previous virtual environment..."
-                if ! source antenv/bin/activate; then
-                    echo "Failed to activate virtual environment, falling back to standard build"
-                    optimizationFailed=true
-                fi
-            fi
-            
-            # Step 5: Uninstall packages not in requirements
-            if [ "$optimizationFailed" = false ]; then
-                echo "Removing packages not in new requirements..."
 
-                # Save original LD_LIBRARY_PATH
-                ORIGINAL_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
-                
-                # Find Python library for pip freeze
-                PYTHON_LIB="$(dirname $(dirname $python))/lib"
-                
-                # Set library path
-                export LD_LIBRARY_PATH=$(dirname $PYTHON_LIB):$LD_LIBRARY_PATH
 
-                python -m pip freeze > all_installed.txt
-
-                grep '^[a-zA-Z]' incoming_compiled.txt | cut -d'=' -f1 | tr '[:upper:]' '[:lower:]' > keep.txt
-
-                if ! python -m pip freeze | grep -vi -f keep.txt | grep -v '^-e' | cut -d'=' -f1 | xargs -r python -m pip uninstall -y; then
-                    echo "Failed to uninstall old packages, falling back to standard build"
-                    optimizationFailed=true
-                fi
-
-                 # Restore original LD_LIBRARY_PATH
-                export LD_LIBRARY_PATH="$ORIGINAL_LD_LIBRARY_PATH"
-            fi
-            
-            # Step 6: Install/update packages from requirements
+            # Step 4: Install/update packages from requirements
             if [ "$optimizationFailed" = false ]; then
                 echo "Installing updated requirements..."
                 if ! python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE -U; then
@@ -142,7 +106,7 @@ fi
                     optimizationFailed=true
                 fi
             fi
-            
+
             # If optimization succeeded, skip the standard build
             if [ "$optimizationFailed" = false ]; then
                 echo "Optimized Python build completed successfully"
@@ -170,19 +134,33 @@ fi
 
     if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
         if [ "$optimizationFailed" = true ]; then
-            set +e
-            echo "Running pip install..."
-            InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
-            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-            pipInstallExitCode=${PIPESTATUS[0]}
+            if [ "$UseUvInstall" = "true" ]; then
+                $python -m pip install uv
+                InstallCommand="uv pip install --compile-bytecode --link-mode copy --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
+                printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( uv pip install --compile-bytecode --link-mode copy --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+                uvPipInstallExitCode=${PIPESTATUS[0]}
 
-            set -e
-            echo "${output}"
-            if [[ $pipInstallExitCode != 0 ]]
-            then
-                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-                exit $pipInstallExitCode
+                set -e
+                echo "${output}"
+                if [[ $uvPipInstallExitCode != 0 ]]
+                then
+                    LogError "${output} | Exit code: ${uvPipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $uvPipInstallExitCode
+                fi
+            else
+                InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
+                printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+                pipInstallExitCode=${PIPESTATUS[0]}
+
+                set -e
+                echo "${output}"
+                if [[ $pipInstallExitCode != 0 ]]
+                then
+                    LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $pipInstallExitCode
+                fi
             fi
         fi
     elif [ -e "setup.py" ]
