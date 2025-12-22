@@ -92,10 +92,31 @@ fi
             if [ "$optimizationFailed" = false ]; then
                 echo "Extracting previous virtual environment..."
                 START_TIME=$SECONDS
-                if ! tar -xzf "$DESTINATION_DIR/output.tar.gz" ./antenv; then
-                    echo "Failed to extract virtual environment, falling back to standard build"
+                
+                # Determine which archive file exists in destination directory
+                if [ -f "$DESTINATION_DIR/output.tar.lz4" ]; then
+                    echo "Found lz4 compressed archive"
+                    if ! tar -I lz4 -xf "$DESTINATION_DIR/output.tar.lz4" ./antenv; then
+                        echo "Failed to extract virtual environment, falling back to standard build"
+                        optimizationFailed=true
+                    fi
+                elif [ -f "$DESTINATION_DIR/output.tar.zst" ]; then
+                    echo "Found zstd compressed archive"
+                    if ! tar -I zstd -xf "$DESTINATION_DIR/output.tar.zst" ./antenv; then
+                        echo "Failed to extract virtual environment, falling back to standard build"
+                        optimizationFailed=true
+                    fi
+                elif [ -f "$DESTINATION_DIR/output.tar.gz" ]; then
+                    echo "Found gzip compressed archive"
+                    if ! tar -xzf "$DESTINATION_DIR/output.tar.gz" ./antenv; then
+                        echo "Failed to extract virtual environment, falling back to standard build"
+                        optimizationFailed=true
+                    fi
+                else
+                    echo "No compressed archive found in $DESTINATION_DIR"
                     optimizationFailed=true
                 fi
+                
                 ELAPSED_TIME=$(($SECONDS - $START_TIME))
                 echo "Extraction in $ELAPSED_TIME sec(s)."
             fi

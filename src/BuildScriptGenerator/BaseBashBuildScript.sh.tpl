@@ -170,12 +170,37 @@ then
 	{{ if CompressDestinationDir }}
 	cd "$SOURCE_DIR"
 	echo "Compressing content of directory '$SOURCE_DIR'..."
+	START_TIME=$SECONDS
 	tarExclusions=""
 	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
 	tarExclusions+=" --exclude={{ excludedDir }}"
 	{{ end }}
-	tar -zcf "$DESTINATION_DIR/output.tar.gz" $tarExclusions .
-	echo "Copied the compressed output to '$DESTINATION_DIR'"
+
+	# Determine compression method based on ORYX_COMPRESS_TYPE environment variable
+	# Supported values: gzip (default), lz4, zst
+	COMPRESS_TYPE="${ORYX_COMPRESS_TYPE:-gzip}"
+	
+	case "$COMPRESS_TYPE" in
+		lz4)
+			echo "Using lz4 compression..."
+			tar -I lz4 -cf "$DESTINATION_DIR/output.tar.lz4" $tarExclusions .
+			echo "Copied the compressed output to '$DESTINATION_DIR/output.tar.lz4'"
+			;;
+		zst|zstd)
+			echo "Using zstd compression..."
+			tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" $tarExclusions .
+			echo "Copied the compressed output to '$DESTINATION_DIR/output.tar.zst'"
+			;;
+		gzip|gz|*)
+			echo "Using gzip compression..."
+			tar -zcf "$DESTINATION_DIR/output.tar.gz" $tarExclusions .
+			echo "Copied the compressed output to '$DESTINATION_DIR/output.tar.gz'"
+			;;
+	esac
+
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
+
 	cp ./requirements.txt "$DESTINATION_DIR/requirements.txt"
 	echo "Copied requirements.txt to '$DESTINATION_DIR'"
 	{{ end }}
