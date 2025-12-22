@@ -124,28 +124,21 @@ if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	echo "Preparing output..."
 
-	{{ ## When compressing destination directory is chosen, we want to copy the source content to a temporary 
-	destination directory first, compress the content there and then copy that content to the final destination 
-	directory ## }}
-	{{ if CompressDestinationDir }}
-	preCompressedDestinationDir="/tmp/_preCompressedDestinationDir"
-	rm -rf $preCompressedDestinationDir
-	OLD_DESTINATION_DIR="$DESTINATION_DIR"
-	DESTINATION_DIR="$preCompressedDestinationDir"
-	{{ end }}
 
 	{{ if CopySourceDirectoryContentToDestinationDirectory }}
 		cd "$SOURCE_DIR"
 
-		echo
-		echo "Copying files to destination directory '$DESTINATION_DIR'..."
-		START_TIME=$SECONDS
-		excludedDirectories=""
-		{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
-		excludedDirectories+=" --exclude {{ excludedDir }}"
-		{{ end }}
-
-		{{ if OutputDirectoryIsNested }}
+	echo
+	echo "Copying files to destination directory '$DESTINATION_DIR'..."
+	START_TIME=$SECONDS
+	excludedDirectories=""
+	excludedDirsCount=0
+	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
+	excludedDirectories+=" --exclude {{ excludedDir }}"
+	echo "Excluding directory '{{ excludedDir }}' from copy to destination directory."
+	excludedDirsCount=$((excludedDirsCount + 1))
+	{{ end }}
+	echo "Total directories excluded from copy to build output: $excludedDirsCount"		{{ if OutputDirectoryIsNested }}
 		{{ ## We create destination directory upfront for scenarios where pre or post build commands need access
 		to it. This espceially hanldes the scenario where output directory is a sub-directory of a source directory ## }}
 		tmpDestinationDir="/tmp/__oryxDestinationDir"
@@ -172,25 +165,16 @@ then
 
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
 		echo "Done in $ELAPSED_TIME sec(s)."
-	{{ else }}
-		{{ if CompressDestinationDir }}
-			{{ ## In case of .NET apps, 'dotnet publish' writes to original destination directory. So here we are 
-			trying to move the files to the temporary destination directory so that they get compressed and these 
-			compressed files are copied to final destination directory ## }}
-			origDestDir="$OLD_DESTINATION_DIR"
-			tempDestDir="$DESTINATION_DIR"
-			cd $origDestDir
-			shopt -s dotglob
-			mkdir -p $tempDestDir
-			mv * "$tempDestDir/"
-		{{ end }}
 	{{ end }}
 
 	{{ if CompressDestinationDir }}
-	DESTINATION_DIR="$OLD_DESTINATION_DIR"
-	echo "Compressing content of directory '$preCompressedDestinationDir'..."
-	cd "$preCompressedDestinationDir"
-	tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+	cd "$SOURCE_DIR"
+	echo "Compressing content of directory '$SOURCE_DIR'..."
+	tarExclusions=""
+	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
+	tarExclusions+=" --exclude={{ excludedDir }}"
+	{{ end }}
+	tar -zcf "$DESTINATION_DIR/output.tar.gz" $tarExclusions .
 	echo "Copied the compressed output to '$DESTINATION_DIR'"
 	cp ./requirements.txt "$DESTINATION_DIR/requirements.txt"
 	echo "Copied requirements.txt to '$DESTINATION_DIR'"

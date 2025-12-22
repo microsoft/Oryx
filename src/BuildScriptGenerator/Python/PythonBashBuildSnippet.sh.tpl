@@ -110,7 +110,7 @@ fi
             if [ "$optimizationFailed" = false ]; then
                 echo "Installing updated requirements..."
                 START_TIME=$SECONDS
-                if ! python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE -U; then
+                if ! python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE -U --find-links=/wheels; then
                     echo "Failed to install requirements, falling back to standard build"
                     optimizationFailed=true
                 fi
@@ -149,7 +149,7 @@ fi
                 $python -m pip install uv
                 InstallCommand="uv pip install --compile-bytecode --link-mode copy --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
                 printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-                output=$( ( uv pip install --compile-bytecode --link-mode copy --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+                output=$( ( uv pip install --compile-bytecode --link-mode copy --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE --find-links=/wheels | ts $TS_FMT; exit ${PIPESTATUS[0]} ); exit ${PIPESTATUS[0]} )
                 uvPipInstallExitCode=${PIPESTATUS[0]}
 
                 set -e
@@ -162,7 +162,7 @@ fi
             else
                 InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
                 printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-                output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+                output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --find-links=/wheels | ts $TS_FMT; exit ${PIPESTATUS[0]} ); exit ${PIPESTATUS[0]} )
                 pipInstallExitCode=${PIPESTATUS[0]}
 
                 set -e

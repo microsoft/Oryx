@@ -299,6 +299,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+                CopySourceDirectoryContentToDestinationDirectory = false,
             };
         }
 
@@ -627,6 +628,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+
+                CopySourceDirectoryContentToDestinationDirectory = false,
             };
         }
 
