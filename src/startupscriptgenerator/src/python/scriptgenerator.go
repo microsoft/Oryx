@@ -64,11 +64,33 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	if gen.Manifest.CompressDestinationDir == "true" {
 		println("Output is compressed. Extracting it...")
-		tarballFile := filepath.Join(gen.AppPath, "output.tar.gz")
-		common.ExtractTarball(tarballFile, gen.Manifest.SourceDirectoryInBuildContainer)
-		println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
+		
+		// Try lz4 first (best compression/speed ratio)
+		tarballLz4 := filepath.Join(gen.AppPath, "output.tar.lz4")
+		if common.PathExists(tarballLz4) {
+			println("Found output.tar.lz4, extracting...")
+			common.ExtractTarball(tarballLz4, gen.Manifest.SourceDirectoryInBuildContainer)
+			println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
+		} else {
+			// Try zstd next
+			tarballZst := filepath.Join(gen.AppPath, "output.tar.zst")
+			if common.PathExists(tarballZst) {
+				println("Found output.tar.zst, extracting...")
+				common.ExtractTarball(tarballZst, gen.Manifest.SourceDirectoryInBuildContainer)
+				println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
+			} else {
+				// Fallback to gzip
+				tarballGz := filepath.Join(gen.AppPath, "output.tar.gz")
+				if common.PathExists(tarballGz) {
+					println("Found output.tar.gz, extracting...")
+					common.ExtractTarball(tarballGz, gen.Manifest.SourceDirectoryInBuildContainer)
+					println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
+				} else {
+					panic("No compressed output file found (tried .lz4, .zst, .gz)")
+				}
+			}
+		}
 	}
-
 	scriptBuilder.WriteString(fmt.Sprintf("echo 'export APP_PATH=\"%s\"' >> ~/.bashrc\n", gen.getAppPath()))
 	scriptBuilder.WriteString("echo 'cd $APP_PATH' >> ~/.bashrc\n")
 
