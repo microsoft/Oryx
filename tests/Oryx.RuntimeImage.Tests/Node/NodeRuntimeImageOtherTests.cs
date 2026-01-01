@@ -23,7 +23,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("18", NodeVersions.Node18Version)]
         [InlineData("20", NodeVersions.Node20Version)]
         [InlineData("22", NodeVersions.Node22Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
