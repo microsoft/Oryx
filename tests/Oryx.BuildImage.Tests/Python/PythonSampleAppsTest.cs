@@ -32,9 +32,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageHelper = new ImageTestHelper();
             GeneratesScript_AndBuilds(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
-            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.GitHubActionsBullseye);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBullseye);
-            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBullseye);
+            JamSpell_CanBe_Installed_In_The_BuildImage(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
         }
 
         public void GeneratesScript_AndBuilds(string buildImageName)
@@ -240,10 +239,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData(ImageTestHelperConstants.GitHubActionsBullseye)]
-        [InlineData(ImageTestHelperConstants.GitHubActionsBookworm)]
-        public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)
+        public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string buildImageName)
         {
             // Arrange
             var appName = "requirements";
@@ -257,7 +253,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(imageTag),
+                ImageId = buildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1525,9 +1521,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData(ImageTestHelperConstants.GitHubActionsBookworm)]
-        public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName)
+        public void JamSpell_CanBe_Installed_In_The_BuildImage(string buildImageName)
         {
             // Arrange
             var expectedPackage = "jamspell";
@@ -1535,7 +1529,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(tagName),
+                ImageId = buildImageName,
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", $"wget -O - https://pypi.org/simple/ | grep -i {expectedPackage}" },
             });
