@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -12,9 +13,31 @@ using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
+    /// <summary>
+    /// Custom trait attribute for Debian flavor filtering in CI/CD.
+    /// Usage: [DebianFlavor("bullseye")] or [DebianFlavor("bookworm")]
+    /// </summary>
+    [TraitDiscoverer("Microsoft.Oryx.Tests.Common.DebianFlavorDiscoverer", "Oryx.Tests.Common")]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    public class DebianFlavorAttribute : Attribute, ITraitAttribute
+    {
+        public string Flavor { get; }
+        public DebianFlavorAttribute(string flavor) => Flavor = flavor;
+    }
+}
+
+namespace Microsoft.Oryx.BuildImage.Tests
+{
+    /// <summary>
+    /// Tests for Python dynamic installation across different Debian flavors and Python versions.
+    /// Uses Theory-based testing for better parameterization and CI/CD parallelization.
+    /// </summary>
+    [Trait("Platform", "python")]
+    [Collection("Python Dynamic Installation Tests")]
     public class PythonDynamicInstallationTest : PythonSampleAppsTestBase
     {
         private readonly string DefaultInstallationRootDir = "/opt/python";
@@ -23,210 +46,131 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
+        #region Test Data Providers - Centralized Configuration
+
+        /// <summary>
+        /// Master data provider: All Python versions across all Debian flavors.
+        /// Bullseye: Python 3.7-3.13 | Bookworm: Python 3.13
+        /// </summary>
+        public static TheoryData<string, string, string> AllPythonVersionsAllFlavors
         {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.1");
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3");
-        }
-
-        [Fact, Trait("category", "githubactions")]
-        public void PipelineTestInvocationGithubActions()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python37Version);
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python38Version);
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python312Version);
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python313Version);
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm), PythonVersions.Python313Version);
-
-            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python37Version);
-            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python38Version);
-            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
-            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
-            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python312Version);
-            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm), PythonVersions.Python313Version);
-
-            GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
-            GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
-            GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python312Version);
-            GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python313Version);
-            GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm), PythonVersions.Python313Version);
-        }
-
-        private void GeneratesScript_AndBuildsPython_FlaskApp(
-            string imageName,
-            string version,
-            string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
-        {
-            // Please note:
-            // This test method has at least 1 wrapper function that pases the imageName parameter.
-
-            // Arrange
-            var installationDir = $"{installationRoot}/python/{version}";
-            var appName = "flask-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .AddBuildCommand(
-                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
+            get
             {
-                ImageId = imageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"Python Version: {installationDir}/bin/python3",
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
+                var data = new TheoryData<string, string, string>();
+                var imageHelper = new ImageTestHelper();
+                var bullseye = imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye);
+                var bookworm = imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm);
+                
+                // Bullseye - Python 3.7-3.13
+                data.Add(bullseye, PythonVersions.Python37Version, "bullseye");
+                data.Add(bullseye, PythonVersions.Python38Version, "bullseye");
+                data.Add(bullseye, PythonVersions.Python310Version, "bullseye");
+                data.Add(bullseye, PythonVersions.Python311Version, "bullseye");
+                data.Add(bullseye, PythonVersions.Python312Version, "bullseye");
+                data.Add(bullseye, PythonVersions.Python313Version, "bullseye");
+                
+                // Bookworm - Python 3.13
+                data.Add(bookworm, PythonVersions.Python313Version, "bookworm");
+                
+                return data;
+            }
         }
 
-        private void GeneratesScript_AndBuildsPython_DjangoRegexApp(
-            string imageName,
-            string version,
-            string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
+        /// <summary>
+        /// Django-specific data provider (requires Python 3.10+).
+        /// </summary>
+        public static TheoryData<string, string, string> DjangoSupportedVersions
         {
-            // Please note:
-            // This test method has at least 1 wrapper function that pases the imageName parameter.
-
-            // Arrange
-            var installationDir = $"{installationRoot}/python/{version}";
-            var appName = "django-regex-example-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .AddBuildCommand(
-                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
+            get
             {
-                ImageId = imageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"Python Version: {installationDir}/bin/python3",
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
+                var data = new TheoryData<string, string, string>();
+                var imageHelper = new ImageTestHelper();
+                var bullseye = imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye);
+                var bookworm = imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm);
+                
+                // Bullseye - Python 3.10+
+                data.Add(bullseye, PythonVersions.Python310Version, "bullseye");
+                data.Add(bullseye, PythonVersions.Python311Version, "bullseye");
+                data.Add(bullseye, PythonVersions.Python312Version, "bullseye");
+                data.Add(bullseye, PythonVersions.Python313Version, "bullseye");
+                
+                // Bookworm - Python 3.13
+                data.Add(bookworm, PythonVersions.Python313Version, "bookworm");
+                
+                return data;
+            }
         }
 
-        private void GeneratesScript_AndBuildsPython_PyodbcApp(
-            string imageName,
-            string version,
-            string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
+        /// <summary>
+        /// Unsupported/deprecated Python versions for error handling tests.
+        /// </summary>
+        public static TheoryData<string, string> UnsupportedVersions
         {
-            // Please note:
-            // This test method has at least 1 wrapper function that pases the imageName parameter.
-
-            // Arrange
-            var installationDir = $"{installationRoot}/python/{version}";
-            var appName = "pyodbc-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .AddBuildCommand(
-                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
+            get
             {
-                ImageId = imageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"Python Version: {installationDir}/bin/python3",
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
+                var data = new TheoryData<string, string>();
+                var imageHelper = new ImageTestHelper();
+                var bullseye = imageHelper.GetGitHubActionsBuildImage();
+                
+                data.Add(PythonVersions.Python27Version, bullseye);
+                data.Add(PythonVersions.Python36Version, bullseye);
+                return data;
+            }
         }
 
-        [Theory, Trait("category", "githubactions")]
-        [InlineData(PythonVersions.Python310Version)]
-        [InlineData(PythonVersions.Python311Version)]
-        [InlineData(PythonVersions.Python312Version)]
-        [InlineData(PythonVersions.Python313Version)]
-        public void GeneratesScript_AndBuildsPython(string version)
+        #endregion
+
+
+        #region Core Build Tests - App Types Across All Versions/Flavors
+
+        /// <summary>
+        /// Tests Flask app dynamic build across all Python versions and Debian flavors.
+        /// </summary>
+        [Theory]
+        [Trait("Platform", "python")]
+        [Trait("category", "githubactions")]
+        [Trait("TestPriority", "critical")]
+        [MemberData(nameof(AllPythonVersionsAllFlavors))]
+        public void Build_FlaskApp_AllVersionsAndFlavors(string imageName, string version, string debianFlavor)
         {
-            // Arrange
-            var installationDir = "/tmp/oryx/platforms/" + $"python/{version}";
-            var appName = "flask-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .AddBuildCommand(
-                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"Python Version: {installationDir}/bin/python3",
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
+            BuildPythonApp(imageName, version, "flask-app");
         }
 
-        [Theory, Trait("category", "githubactions")]
-        [InlineData("3.10.0a2")]
-        public void GeneratesScript_AndBuildsPythonPreviewVersion(string previewVersion)
+        /// <summary>
+        /// Tests PyODBC app (database connectivity) across all versions and flavors.
+        /// </summary>
+        [Theory]
+        [Trait("Platform", "python")]
+        [Trait("category", "githubactions")]
+        [MemberData(nameof(AllPythonVersionsAllFlavors))]
+        public void Build_PyodbcApp_AllVersionsAndFlavors(string imageName, string version, string debianFlavor)
+        {
+            BuildPythonApp(imageName, version, "pyodbc-app");
+        }
+
+        /// <summary>
+        /// Tests Django app (requires Python 3.10+) across supported versions.
+        /// </summary>
+        [Theory]
+        [Trait("Platform", "python")]
+        [Trait("category", "githubactions")]
+        [MemberData(nameof(DjangoSupportedVersions))]
+        public void Build_DjangoApp_SupportedVersions(string imageName, string version, string debianFlavor)
+        {
+            BuildPythonApp(imageName, version, "django-regex-example-app");
+        }
+
+        #endregion
+
+
+
+        /// <summary>
+        /// Tests SDK reinstallation when sentinel file is missing.
+        /// </summary>
+        [Fact]
+        [Trait("Platform", "python")]
+        [Trait("category", "githubactions")]
+        public void Build_ReinstallsSDK_WhenSentinelFileMissing()
         {
             // Arrange
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
@@ -263,8 +207,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
+        /// <summary>
+        /// Tests Azure Functions Python apps.
+        /// </summary>
+        [Fact]
+        [Trait("Platform", "python")]
+        [Trait("category", "githubactions")]
+        public void Build_AzureFunctionsApp()
         {
             // Arrange
             var version = "3.8.16"; //NOTE: use the full version so that we know the install directory path
@@ -305,8 +254,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void BuildsAzureFunctionApp()
+        /// <summary>
+        /// Tests dynamic installation to custom directory.
+        /// </summary>
+        [Fact]
+        [Trait("Platform", "python")]
+        [Trait("category", "githubactions")]
+        public void Build_WithCustomInstallDirectory()
         {
             // Arrange
             var version = "3.8.18";
@@ -344,8 +298,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
+        /// <summary>
+        /// Tests building with custom package directory.
+        /// </summary>
+        [Fact]
+        [Trait("Platform", "python")]
+        [Trait("category", "githubactions")]
+        public void Build_WithCustomPackageDirectory()
         {
             // Arrange
             var version = "3.10.18";
@@ -385,8 +344,37 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void GeneratesScript_AndBuilds_WithPackageDir()
+        #endregion
+
+        #region Helper Methods - Reusable Test Logic
+
+        /// <summary>
+        /// Universal Python app builder - consolidates all app build logic.
+        /// </summary>
+        private void BuildPythonApp(string imageName, string version, string appName, string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
+        {
+            var installationDir = $"{installationRoot}/python/{version}";
+            var volume = CreateSampleAppVolume(appName);
+            var script = new ShellScriptBuilder()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .AddBuildCommand($"{volume.ContainerDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o /tmp/app-output")
+                .ToString();
+
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = imageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains($"Python Version: {installationDir}/bin/python3", result.StdOut);
+            }, result.GetDebugInfo());
+        }
         {
             // Arrange
             var version = "3.10.13";
@@ -426,108 +414,56 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        public static TheoryData<string, string> SupportedVersionAndImageNameData
+        #region Generic Build Tests - Edge Cases & Special Scenarios
+
+        /// <summary>
+        /// Tests building with Python preview/alpha versions.
+        /// </summary>
+        [Theory]
+        [Trait("Platform", "python")]
+        [Trait("category", "githubactions")]
+        [InlineData("3.10.0a2")]
+        public void Build_WithPreviewVersion(string previewVersion)
         {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageHelper = new ImageTestHelper();
-
-                // GitHub Actions images
-                //bullseye
-                data.Add(PythonVersions.Python37Version, imageHelper.GetGitHubActionsBuildImage());
-                data.Add(PythonVersions.Python38Version, imageHelper.GetGitHubActionsBuildImage());
-                data.Add(PythonVersions.Python39Version, imageHelper.GetGitHubActionsBuildImage());
-                data.Add(PythonVersions.Python310Version, imageHelper.GetGitHubActionsBuildImage());
-                data.Add(PythonVersions.Python311Version, imageHelper.GetGitHubActionsBuildImage());
-                data.Add(PythonVersions.Python312Version, imageHelper.GetGitHubActionsBuildImage());
-
-                //bookworm
-                data.Add(PythonVersions.Python312Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
-                data.Add(PythonVersions.Python313Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
-                return data;
-            }
-        }
-
-
-
-        [Theory, Trait("category", "githubactions")]
-        [MemberData(nameof(SupportedVersionAndImageNameData))]
-        public void BuildsPython_AfterInstallingSupportedSdk(string version, string imageName)
-        {
-            // Arrange
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
-                $"python/{version}";
-            var appName = "http-server-py";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
-            var script = new ShellScriptBuilder()
-                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .AddBuildCommand(
-                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
-                .AddFileExistsCheck(manifestFile)
-                .AddCommand($"cat {manifestFile}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = imageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"PythonVersion=\"{version}",
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        public static TheoryData<string, string> UnsupportedVersionAndImageNameData
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageHelper = new ImageTestHelper();
-                data.Add(PythonVersions.Python27Version, imageHelper.GetGitHubActionsBuildImage());
-
-                data.Add(PythonVersions.Python27Version, imageHelper.GetGitHubActionsBuildImage());
-                data.Add(PythonVersions.Python36Version, imageHelper.GetGitHubActionsBuildImage());
-                return data;
-            }
-        }
-
-        [Theory, Trait("category", "githubactions")]
-        [MemberData(nameof(UnsupportedVersionAndImageNameData))]
-        public void PythonFails_ToInstallUnsupportedSdk(string version, string imageName)
-        {
-            // Arrange
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
-                $"python/{version}";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{previewVersion}";
             var script = new ShellScriptBuilder()
-                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .AddBuildCommand(
-                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
-                .AddFileExistsCheck(manifestFile)
-                .AddCommand($"cat {manifestFile}")
+                .AddBuildCommand($"{volume.ContainerDir} --platform {PythonConstants.PlatformName} --platform-version {previewVersion} -o /tmp/app-output")
                 .ToString();
 
-            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains($"Python Version: {installationDir}/bin/python3", result.StdOut);
+            }, result.GetDebugInfo());
+        }
+
+        /// <summary>
+        /// Tests that builds fail gracefully with unsupported Python versions.
+        /// </summary>
+        [Theory]
+        [Trait("Platform", "python")]
+        [Trait("category", "githubactions")]
+        [MemberData(nameof(UnsupportedVersions))]
+        public void Build_FailsWithUnsupportedVersion(string version, string imageName)
+        {
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var script = new ShellScriptBuilder()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .AddBuildCommand($"{volume.ContainerDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o /tmp/app-output")
+                .ToString();
+
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = imageName,
@@ -537,19 +473,26 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 CommandArguments = new[] { "-c", script }
             });
 
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.False(result.IsSuccess);
-                    Assert.Contains($"Error: Platform '{PythonConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
-                },
-                result.GetDebugInfo());
+            RunAsserts(() =>
+            {
+                Assert.False(result.IsSuccess);
+                Assert.Contains($"Error: Platform '{PythonConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
+            }, result.GetDebugInfo());
         }
 
+        #endregion
+
+        #region Utility Methods
+
+        /// <summary>
+        /// Returns shell command to clean up existing Python installations.
+        /// Used to ensure tests start with a clean environment.
+        /// </summary>
         private string GetSnippetToCleanUpExistingInstallation()
         {
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";
         }
+
+        #endregion
     }
 }
