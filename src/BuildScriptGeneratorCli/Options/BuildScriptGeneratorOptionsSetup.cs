@@ -58,6 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.CustomRequirementsTxtPath = this.GetStringValue(SettingsKeys.CustomRequirementsTxtPath);
             options.CallerId = this.GetStringValue(SettingsKeys.CallerId);
             options.OryxDisablePipUpgrade = this.GetBooleanValue(SettingsKeys.OryxDisablePipUpgrade);
+            options.OryxCompressionCommand = this.GetStringValue(SettingsKeys.OryxCompressionCommand);
 
             // Dynamic install
             options.EnableDynamicInstall = this.GetBooleanValue(SettingsKeys.EnableDynamicInstall);
