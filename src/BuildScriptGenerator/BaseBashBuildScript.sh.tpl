@@ -187,6 +187,9 @@ then
 	{{ end }}
 
 	{{ if CompressDestinationDir }}
+	echo "Deleting existing content of destination directory '$OLD_DESTINATION_DIR'..."
+	rm -rf "$OLD_DESTINATION_DIR"/output* 2>/dev/null || true
+
 	DESTINATION_DIR="$OLD_DESTINATION_DIR"
 	echo "Compressing content of directory '$preCompressedDestinationDir'..."
 	cd "$preCompressedDestinationDir"
