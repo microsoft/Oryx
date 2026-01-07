@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            Assert.Contains("python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE", text);
+            Assert.Contains("uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE", text);
 
         }
 
@@ -211,7 +211,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            string extectedString = "$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target=\"" + snippetProps.PackagesDirectory + "\"  | ts $TS_FMT";
+            string extectedString = "uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE --target=\"" + snippetProps.PackagesDirectory + "\"  | ts $TS_FMT";
             Assert.Contains(extectedString, text);
         }
 
@@ -239,7 +239,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            string extectedString = "$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target=\"" + snippetProps.PackagesDirectory + "\" --upgrade | ts $TS_FMT";
+            string extectedString = "uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE --target=\"" + snippetProps.PackagesDirectory + "\" --upgrade | ts $TS_FMT";
             Assert.Contains(extectedString, text);
         }
     }

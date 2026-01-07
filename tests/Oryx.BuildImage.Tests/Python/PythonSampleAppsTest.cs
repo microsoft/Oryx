@@ -1586,7 +1586,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    string expectedOutput = "$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target=\"" + PackagesDirectory + "\" " + pipUpgradeCommand + " | ts $TS_FMT";
+                    string expectedOutput = "$uv pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target=\"" + PackagesDirectory + "\" " + pipUpgradeCommand + " | ts $TS_FMT";
                     Assert.Contains(expectedOutput, result.StdOut);
                 },
                 result.GetDebugInfo());
