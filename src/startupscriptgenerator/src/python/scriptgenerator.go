@@ -275,6 +275,9 @@ func (gen *PythonStartupScriptGenerator) getVenvHandlingScript(virtualEnvName st
 				scriptBuilder.WriteString(fmt.Sprintf(". %s/bin/activate\n", virtualEnvName))
 			}
 		} else {
+			virtualEnvBinDir := "\"" + virtualEnvDir + "/bin\""
+			scriptBuilder.WriteString("export PATH=" + virtualEnvBinDir + ":$PATH" "\n")
+			scriptBuilder.WriteString("echo \"Updated PATH to '$PATH'\"\n")
 			scriptBuilder.WriteString(fmt.Sprintf(". /%s/bin/activate\n", virtualEnvName))
 		}
 	}

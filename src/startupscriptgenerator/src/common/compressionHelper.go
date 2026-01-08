@@ -117,6 +117,13 @@ func untar(dst string, tarballFile string) error {
 			// manually close here after each file operation; defering would cause each file close
 			// to wait until all operations have completed.
 			f.Close()
+
+		// if it's a symbolic link, create it
+		case tar.TypeSymlink:
+			if err := os.Symlink(header.Linkname, target); err != nil {
+				return err
+			}
+
 		}
 	}
 }
