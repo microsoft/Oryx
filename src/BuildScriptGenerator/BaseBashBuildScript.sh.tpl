@@ -191,14 +191,6 @@ then
 	echo "Compressing content of directory '$preCompressedDestinationDir'..."
 	cd "$preCompressedDestinationDir"
 
-    echo "ORYX_COMPRESS_WITH_ZSTD: $ORYX_COMPRESS_WITH_ZSTD"
-
-    # Extract major and minor version from FRAMEWORK_VERSION if it's a Python build
-    if [ "$FRAMEWORK" = "PYTHON" ] && [ ! -z "$FRAMEWORK_VERSION" ]; then
-        PYTHON_MAJOR=$(echo $FRAMEWORK_VERSION | cut -d. -f1)
-        PYTHON_MINOR=$(echo $FRAMEWORK_VERSION | cut -d. -f2)
-    fi
-
     if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
         rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
         tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .
