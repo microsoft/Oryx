@@ -199,8 +199,7 @@ then
         PYTHON_MINOR=$(echo $FRAMEWORK_VERSION | cut -d. -f2)
     fi
 
-	# Use zstd compression for Python 3.10+ when enabled, otherwise use gzip
-    if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ] && [ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" -ge 10 ]; then
+    if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
         rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
         tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .
     else
