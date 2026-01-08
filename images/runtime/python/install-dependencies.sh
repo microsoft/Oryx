@@ -15,12 +15,14 @@ else
     odbcPackage="libodbc1"
 fi
 
+# GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
 # libpq-dev is for PostgreSQL
 apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         libexpat1 \
         curl \
+        zstd \
         gnupg \
         libpq-dev \
         default-libmysqlclient-dev \
@@ -28,13 +30,11 @@ apt-get update \
         $odbcPackage \
         apt-transport-https \
         swig \
-        # GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
         binutils \
         libproj-dev \
         gdal-bin \
         libgdal-dev \
         python3-gdal \
-        zstd \
     && rm -rf /var/lib/apt/lists/*
 
 # Microsoft SQL Server 2017
