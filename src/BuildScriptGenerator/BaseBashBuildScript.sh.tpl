@@ -190,7 +190,24 @@ then
 	DESTINATION_DIR="$OLD_DESTINATION_DIR"
 	echo "Compressing content of directory '$preCompressedDestinationDir'..."
 	cd "$preCompressedDestinationDir"
-	tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+
+    echo "ORYX_COMPRESS_WITH_ZSTD: $ORYX_COMPRESS_WITH_ZSTD"
+
+    # Extract major and minor version from FRAMEWORK_VERSION if it's a Python build
+    if [ "$FRAMEWORK" = "PYTHON" ] && [ ! -z "$FRAMEWORK_VERSION" ]; then
+        PYTHON_MAJOR=$(echo $FRAMEWORK_VERSION | cut -d. -f1)
+        PYTHON_MINOR=$(echo $FRAMEWORK_VERSION | cut -d. -f2)
+    fi
+
+	# Use zstd compression for Python 3.10+ when enabled, otherwise use gzip
+    if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ] && [ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" -ge 10 ]; then
+        rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
+        tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .
+    else
+        rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+        tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+    fi
+
 	echo "Copied the compressed output to '$DESTINATION_DIR'"
 	{{ end }}
 fi

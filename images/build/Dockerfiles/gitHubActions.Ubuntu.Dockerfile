@@ -66,6 +66,7 @@ RUN apt-get update \
         xz-utils \
         libsodium-dev \
         libncurses6 \
+        zstd \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
