@@ -2,7 +2,7 @@ set -e
 # TODO: refactor redundant code. Work-item: 1476457
 
 declare -r TS_FMT='[%T%z] '
-declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install. More information: https://aka.ms/requirements-not-found'
+declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt, pyproject.toml, or setup.py; Not installing dependencies. More information: https://aka.ms/requirements-not-found'
 echo "Python Version: $python"
 PIP_CACHE_DIR=/usr/local/share/pip-cache
 
