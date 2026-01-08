@@ -12,7 +12,9 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // Untar the output file to the provided destination directory
@@ -49,10 +51,35 @@ func ExtractTarball(tarballFile string, destinationDir string) {
 	}
 }
 
+func unTar(dst string, tarballFile string) error {
+    // Detect compression format based on file extension
+	if strings.HasSuffix(tarballFile, ".tar.zst") {
+        // Use zstd for decompression
+        return unTarwithZstd(dst, tarballFile)
+    } else if strings.HasSuffix(tarballFile, ".tar.gz") || strings.HasSuffix(tarballFile, ".tgz") {
+        // Use native Go gzip decompression
+        return unTarwithGzip(dst, tarballFile)
+    } else {
+        return fmt.Errorf("unsupported compression format for file: %s", tarballFile)
+    }
+}
+
+// This extracts a zstd-compressed tarball using the system tar command.
+// Unlike untarWithGzip, we use the external tar binary because
+// Go's standard library doesn't include zstd support, avoiding the need for third-party dependencies.
+func unTarwithZstd(dst string, tarballFile string) error {
+    cmd := exec.Command("tar", "-I", "zstd", "-xf", tarballFile, "-C", dst)
+    output, err := cmd.CombinedOutput()
+    if err != nil {
+        return fmt.Errorf("tar extraction failed: %v, output: %s", err, output)
+    }
+    return nil
+}
+
 // Credit to https://medium.com/@skdomino/taring-untaring-files-in-go-6b07cf56bc07
 // Untar takes a destination path and a reader; a tar reader loops over the tarfile
 // creating the file structure at 'dst' along the way, and writing any files
-func untar(dst string, tarballFile string) error {
+func unTarwithGzip(dst string, tarballFile string) error {
 	r, err := os.Open(tarballFile)
 	if err != nil {
 		return err

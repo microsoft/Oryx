@@ -64,7 +64,18 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	if gen.Manifest.CompressDestinationDir == "true" {
 		println("Output is compressed. Extracting it...")
-		tarballFile := filepath.Join(gen.AppPath, "output.tar.gz")
+
+		// Check for zstd-compressed tarball first, then fall back to gzip
+		zstdTarballFile := filepath.Join(gen.AppPath, "output.tar.zst")
+		gzipTarballFile := filepath.Join(gen.AppPath, "output.tar.gz")
+
+		var tarballFile string
+		if common.PathExists(zstdTarballFile) {
+			tarballFile = zstdTarballFile
+		} else{
+			tarballFile = gzipTarballFile
+		}
+
 		common.ExtractTarball(tarballFile, gen.Manifest.SourceDirectoryInBuildContainer)
 		println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
 	}
