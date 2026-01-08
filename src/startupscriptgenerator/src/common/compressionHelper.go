@@ -56,7 +56,7 @@ func unTar(dst string, tarballFile string) error {
 	if strings.HasSuffix(tarballFile, ".tar.zst") {
         // Use zstd for decompression
         return unTarwithZstd(dst, tarballFile)
-    } else if strings.HasSuffix(tarballFile, ".tar.gz") || strings.HasSuffix(tarballFile, ".tgz") {
+    } else if strings.HasSuffix(tarballFile, ".tar.gz") {
         // Use native Go gzip decompression
         return unTarwithGzip(dst, tarballFile)
     } else {
