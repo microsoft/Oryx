@@ -29,6 +29,106 @@ fi
     REQUIREMENTS_TXT_FILE="requirements.txt"
 {{ end }}
 
+# Function to install packages via uv
+install_via_uv() {
+    local python_cmd=$1
+    local cache_dir=$2
+    local requirements_file=$3
+    local target_dir=$4
+    local upgrade_flag=$5
+    
+    # Install uv
+    echo "Installing uv..."
+    local install_uv_cmd="$python_cmd -m pip install uv"
+    printf %s " , $install_uv_cmd" >> "$COMMAND_MANIFEST_FILE"
+    $python_cmd -m pip install uv
+    
+    set +e
+    echo "Running uv pip install..."
+    
+    # Build and log the command
+    local uv_cmd="uv pip install --cache-dir $cache_dir -r $requirements_file"
+    if [ -n "$target_dir" ]; then
+        uv_cmd="$uv_cmd --target=\"$target_dir\""
+    fi
+    if [ -n "$upgrade_flag" ]; then
+        uv_cmd="$uv_cmd $upgrade_flag"
+    fi
+    uv_cmd="$uv_cmd | ts $TS_FMT"
+    printf %s " , $uv_cmd" >> "$COMMAND_MANIFEST_FILE"
+    
+    # Execute uv pip install
+    if [ -n "$target_dir" ]; then
+        output=$( ( uv pip install --cache-dir $cache_dir -r $requirements_file --target="$target_dir" $upgrade_flag | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+    else
+        output=$( ( uv pip install --cache-dir $cache_dir -r $requirements_file | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+    fi
+    local exit_code=$?
+    
+    echo "${output}"
+    set -e
+    return $exit_code
+}
+
+# Function to install packages via pip
+install_via_pip() {
+    local python_cmd=$1
+    local cache_dir=$2
+    local requirements_file=$3
+    local target_dir=$4
+    local upgrade_flag=$5
+    
+    set +e
+    echo "Running pip install..."
+    
+    # Build and log the command
+    local pip_cmd="$python_cmd -m pip install --cache-dir $cache_dir -r $requirements_file"
+    if [ -n "$target_dir" ]; then
+        pip_cmd="$pip_cmd --target=\"$target_dir\""
+    fi
+    if [ -n "$upgrade_flag" ]; then
+        pip_cmd="$pip_cmd $upgrade_flag"
+    fi
+    pip_cmd="$pip_cmd | ts $TS_FMT"
+    printf %s " , $pip_cmd" >> "$COMMAND_MANIFEST_FILE"
+    
+    # Execute pip install
+    if [ -n "$target_dir" ]; then
+        output=$( ( $python_cmd -m pip install --cache-dir $cache_dir -r $requirements_file --target="$target_dir" $upgrade_flag | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+    else
+        output=$( ( $python_cmd -m pip install --cache-dir $cache_dir -r $requirements_file | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+    fi
+    local exit_code=$?
+    
+    echo "${output}"
+    set -e
+    return $exit_code
+}
+
+# Orchestrator function to install packages with fallback
+install_packages_with_fallback() {
+    local python_cmd=$1
+    local cache_dir=$2
+    local requirements_file=$3
+    local target_dir=$4
+    local upgrade_flag=$5
+    
+    set +e
+    # Try uv first
+    install_via_uv "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
+    local exit_code=$?
+    
+    # Fallback to pip if uv fails
+    if [[ $exit_code != 0 ]]; then
+        echo "uv pip install failed with exit code ${exit_code}, falling back to pip install..."
+        install_via_pip "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
+        exit_code=$?
+    fi
+    set -e
+    
+    return $exit_code
+}
+
 {{ if VirtualEnvironmentName | IsNotBlank }}
     {{ if PackagesDirectory | IsNotBlank }}
         if [ -d "{{ PackagesDirectory }}" ]
@@ -75,17 +175,13 @@ fi
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
         set +e
-        echo "Running uv pip install..."
-        InstallCommand="uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
-        printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-        pipInstallExitCode=${PIPESTATUS[0]}
-
+        install_packages_with_fallback "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
+        pipInstallExitCode=$?
         set -e
-        echo "${output}"
+        
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+            LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
             exit $pipInstallExitCode
         fi
     elif [ -e "setup.py" ]
@@ -174,22 +270,19 @@ fi
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
-        set +e
         echo
-        echo "Running uv pip install..."
         START_TIME=$SECONDS
-        InstallCommand="uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE --target=\"{{ PackagesDirectory }}\" {{ PipUpgradeFlag }} | ts $TS_FMT"
-        printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-        pipInstallExitCode=${PIPESTATUS[0]}
-
+        set +e
+        install_packages_with_fallback "$python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
+        pipInstallExitCode=$?
+        set -e
+        
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
-        set -e
-        echo "${output}"
+        
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+            LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
             exit $pipInstallExitCode
         fi
     elif [ -e "setup.py" ]

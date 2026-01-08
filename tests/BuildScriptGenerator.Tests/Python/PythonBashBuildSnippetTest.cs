@@ -86,7 +86,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            Assert.Contains("uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE", text);
+            Assert.Contains("install_via_uv() {", text);
+            Assert.Contains("uv pip install --cache-dir $cache_dir -r $requirements_file", text);
 
         }
 
@@ -211,8 +212,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            string extectedString = "uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE --target=\"" + snippetProps.PackagesDirectory + "\"  | ts $TS_FMT";
-            Assert.Contains(extectedString, text);
+            Assert.Contains("install_packages_with_fallback", text);
+            Assert.Contains("install_via_uv() {", text);
+            Assert.Contains("install_via_pip() {", text);
         }
 
         [Fact]
@@ -239,8 +241,53 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            string extectedString = "uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE --target=\"" + snippetProps.PackagesDirectory + "\" --upgrade | ts $TS_FMT";
-            Assert.Contains(extectedString, text);
+            Assert.Contains("install_packages_with_fallback", text);
+            Assert.Contains("\"--upgrade\"", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_ContainsFallbackLogic_FromUvToPip()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false,
+                customRequirementsTxtPath: null,
+                pythonPackageWheelProperty: null,
+                pipUpgradeFlag: string.Empty);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            
+            // Verify orchestrator function exists
+            Assert.Contains("install_packages_with_fallback() {", text);
+            
+            // Verify it tries uv first
+            Assert.Contains("install_via_uv \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+            
+            // Verify fallback logic exists
+            Assert.Contains("if [[ $exit_code != 0 ]]; then", text);
+            Assert.Contains("uv pip install failed with exit code", text);
+            Assert.Contains("falling back to pip install", text);
+            
+            // Verify it calls pip on fallback
+            Assert.Contains("install_via_pip \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+            
+            // Verify both installation functions are defined
+            Assert.Contains("install_via_uv() {", text);
+            Assert.Contains("install_via_pip() {", text);
         }
     }
 }
