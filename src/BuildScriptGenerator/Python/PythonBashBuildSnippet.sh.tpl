@@ -176,7 +176,7 @@ fi
     then
         set +e
         echo
-        echo Running uv pip install...
+        echo "Running uv pip install..."
         START_TIME=$SECONDS
         InstallCommand="uv pip install --cache-dir $PIP_CACHE_DIR -r $REQUIREMENTS_TXT_FILE --target=\"{{ PackagesDirectory }}\" {{ PipUpgradeFlag }} | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -207,6 +207,7 @@ fi
         InstallSetuptoolsPipCommand="pip install setuptools"
         printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
         pip install setuptools
+        echo "Not running uv"
         echo "Running pip install..."
         InstallCommand="$python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
