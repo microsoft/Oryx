@@ -41,6 +41,8 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         xz-utils \
+        lz4 \
+        zstd \
         # Install gcc due to error installing viztracer returning gcc not found
         gcc \
     && rm -rf /var/lib/apt/lists/*

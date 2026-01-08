@@ -187,10 +187,31 @@ then
 	{{ end }}
 
 	{{ if CompressDestinationDir }}
+	echo "Deleting existing content of destination directory '$OLD_DESTINATION_DIR'..."
+	rm -rf "$OLD_DESTINATION_DIR"/output* 2>/dev/null || true
+
 	DESTINATION_DIR="$OLD_DESTINATION_DIR"
 	echo "Compressing content of directory '$preCompressedDestinationDir'..."
 	cd "$preCompressedDestinationDir"
-	tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+
+	COMPRESSION_CMD="${ORYX_COMPRESSION_COMMAND:-gzip}"
+
+	case "$COMPRESSION_CMD" in
+	gzip)
+		tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+		;;
+	lz4)
+		tar -I lz4 -cf "$DESTINATION_DIR/output.tar.lz4" .
+		;;
+	zstd*)
+		tar -I "$COMPRESSION_CMD" -cf "$DESTINATION_DIR/output.tar.zst" .
+		;;
+	*)
+		echo "Unsupported compression command: $COMPRESSION_CMD" 1>&2
+		exit 1
+		;;
+	esac
+
 	echo "Copied the compressed output to '$DESTINATION_DIR'"
 	{{ end }}
 fi

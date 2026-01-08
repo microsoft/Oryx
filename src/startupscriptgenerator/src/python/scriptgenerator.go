@@ -64,9 +64,19 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	if gen.Manifest.CompressDestinationDir == "true" {
 		println("Output is compressed. Extracting it...")
-		tarballFile := filepath.Join(gen.AppPath, "output.tar.gz")
-		common.ExtractTarball(tarballFile, gen.Manifest.SourceDirectoryInBuildContainer)
-		println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
+
+		// Try compression formats in order: lz4, zstd, gzip
+		compressionFormats := []string{"output.tar.lz4", "output.tar.zst", "output.tar.gz"}
+		
+		for _, format := range compressionFormats {
+			tarballPath := filepath.Join(gen.AppPath, format)
+			if common.PathExists(tarballPath) {
+				println(fmt.Sprintf("Found %s, extracting...", format))
+				common.ExtractTarball(tarballPath, gen.Manifest.SourceDirectoryInBuildContainer)
+				println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
+				break
+			}
+		}
 	}
 
 	scriptBuilder.WriteString(fmt.Sprintf("echo 'export APP_PATH=\"%s\"' >> ~/.bashrc\n", gen.getAppPath()))

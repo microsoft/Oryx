@@ -12,7 +12,9 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // Untar the output file to the provided destination directory
@@ -43,10 +45,39 @@ func ExtractTarball(tarballFile string, destinationDir string) {
 	}
 
 	println(fmt.Sprintf("Extracting '%s' to directory '%s'...", tarballFile, destinationDir))
-	err = untar(destinationDir, tarballFile)
+	err = extractTar(destinationDir, tarballFile)
 	if err != nil {
 		panic(fmt.Sprintf("An error occurred when trying to extract tarball '%s'.", tarballFile))
 	}
+}
+
+func extractTar(dst string, tarballFile string) error {
+    // Detect compression format based on file extension
+    if strings.HasSuffix(tarballFile, ".tar.lz4") {
+        // Use lz4 command-line tool for decompression
+        return untarWithCommand(dst, tarballFile, "lz4")
+    } else if strings.HasSuffix(tarballFile, ".tar.zst") {
+        // Use zstd command-line tool for decompression
+        return untarWithCommand(dst, tarballFile, "zstd")
+    } else if strings.HasSuffix(tarballFile, ".tar.gz") || strings.HasSuffix(tarballFile, ".tgz") {
+        // Use native Go gzip decompression
+        return untar(dst, tarballFile)
+    } else {
+        return fmt.Errorf("unsupported compression format for file: %s", tarballFile)
+    }
+}
+
+// untarWithCommand uses the tar command with specified compression tool
+func untarWithCommand(dst string, tarballFile string, compressionTool string) error {
+    cmd := exec.Command("tar", "-I", compressionTool, "-xf", tarballFile, "-C", dst)
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    
+    err := cmd.Run()
+    if err != nil {
+        return fmt.Errorf("failed to extract %s archive: %v", compressionTool, err)
+    }
+    return nil
 }
 
 // Credit to https://medium.com/@skdomino/taring-untaring-files-in-go-6b07cf56bc07
