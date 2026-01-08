@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotEmpty(text);
             Assert.NotNull(text);
             Assert.Contains("install_via_uv() {", text);
-            Assert.Contains("uv pip install --cache-dir $cache_dir -r $requirements_file", text);
+            Assert.Contains("uv pip install -r $requirements_file", text);
 
         }
 

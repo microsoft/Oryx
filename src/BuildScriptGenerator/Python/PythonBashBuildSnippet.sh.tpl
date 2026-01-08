@@ -47,7 +47,8 @@ install_via_uv() {
     echo "Running uv pip install..."
     
     # Build and log the command
-    local uv_cmd="uv pip install --cache-dir $cache_dir -r $requirements_file"
+    # Note: uv uses its own cache mechanism, not pip's cache-dir
+    local uv_cmd="uv pip install -r $requirements_file"
     if [ -n "$target_dir" ]; then
         uv_cmd="$uv_cmd --target=\"$target_dir\""
     fi
@@ -57,11 +58,11 @@ install_via_uv() {
     uv_cmd="$uv_cmd | ts $TS_FMT"
     printf %s " , $uv_cmd" >> "$COMMAND_MANIFEST_FILE"
     
-    # Execute uv pip install
+    # Execute uv pip install (uv manages its own cache)
     if [ -n "$target_dir" ]; then
-        output=$( ( uv pip install --cache-dir $cache_dir -r $requirements_file --target="$target_dir" $upgrade_flag | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( uv pip install -r $requirements_file --target="$target_dir" $upgrade_flag | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
     else
-        output=$( ( uv pip install --cache-dir $cache_dir -r $requirements_file | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( uv pip install -r $requirements_file | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
     fi
     local exit_code=$?
     
@@ -300,7 +301,6 @@ install_packages_with_fallback() {
         InstallSetuptoolsPipCommand="pip install setuptools"
         printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
         pip install setuptools
-        echo "Not running uv"
         echo "Running pip install..."
         InstallCommand="$python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
