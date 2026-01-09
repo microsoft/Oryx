@@ -51,7 +51,7 @@ then
 	cd "$SOURCE_DIR"
 	echo
 	echo "Copying files to the intermediate directory..."
-	START_TIME=$SECONDS
+	BASE_START_TIME=$SECONDS
 	excludedDirectories=""
 	{{ for excludedDir in DirectoriesToExcludeFromCopyToIntermediateDir }}
 	excludedDirectories+=" --exclude {{ excludedDir }}"
@@ -63,7 +63,7 @@ then
 	 which is important for us. ## }}
 	rsync -rcE --delete $excludedDirectories . "$INTERMEDIATE_DIR"
 
-	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 	echo "Copying files to intermediate directory done in $ELAPSED_TIME sec(s)."
 	SOURCE_DIR="$INTERMEDIATE_DIR"
 fi
@@ -75,9 +75,9 @@ echo
 
 {{ if PlatformInstallationScript | IsNotBlank }}
 echo "Installing platform..."
-START_TIME=$SECONDS
+BASE_START_TIME=$SECONDS
 {{ PlatformInstallationScript }}
-ELAPSED_TIME=$(($SECONDS - $START_TIME))
+ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "Platform installation done in $ELAPSED_TIME sec(s)."
 {{ end }}
 
@@ -91,9 +91,9 @@ fi
 
 {{ if !OsPackagesToInstall.empty? }}
 echo "Installing OS packages..."
-START_TIME=$SECONDS
+BASE_START_TIME=$SECONDS
 apt-get update && apt-get install --yes --no-install-recommends {{ for PackageName in OsPackagesToInstall }}{{ PackageName }} {{ end }}
-ELAPSED_TIME=$(($SECONDS - $START_TIME))
+ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "OS packages installation done in $ELAPSED_TIME sec(s)."
 {{ end }}
 
@@ -109,21 +109,21 @@ mkdir -p "$DESTINATION_DIR"
 {{ # Make sure to cd to the source directory so that the pre-build script runs from there }}
 cd "$SOURCE_DIR"
 echo "{{ PreBuildCommandPrologue }}"
-START_TIME=$SECONDS
+BASE_START_TIME=$SECONDS
 {{ PreBuildCommand }}
-ELAPSED_TIME=$(($SECONDS - $START_TIME))
+ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "{{ PreBuildCommandEpilogue }}"
 echo "Pre-build command done in $ELAPSED_TIME sec(s)."
 {{ end }}
 
 echo "Running build script snippets..."
-START_TIME=$SECONDS
+BASE_START_TIME=$SECONDS
 {{ for Snippet in BuildScriptSnippets }}
 {{ # Makes sure every snippet starts in the context of the source directory. }}
 cd "$SOURCE_DIR"
 {{~ Snippet }}
 {{ end }}
-ELAPSED_TIME=$(($SECONDS - $START_TIME))
+ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "Build script snippets done in $ELAPSED_TIME sec(s)."
 
 {{ if PostBuildCommand | IsNotBlank }}
@@ -131,9 +131,9 @@ echo "Build script snippets done in $ELAPSED_TIME sec(s)."
 cd $SOURCE_DIR
 echo
 echo "{{ PostBuildCommandPrologue }}"
-START_TIME=$SECONDS
+BASE_START_TIME=$SECONDS
 {{ PostBuildCommand }}
-ELAPSED_TIME=$(($SECONDS - $START_TIME))
+ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "{{ PostBuildCommandEpilogue }}"
 echo "Post-build command done in $ELAPSED_TIME sec(s)."
 {{ end }}
@@ -157,7 +157,7 @@ then
 
 		echo
 		echo "Copying files to destination directory '$DESTINATION_DIR'..."
-		START_TIME=$SECONDS
+		BASE_START_TIME=$SECONDS
 		excludedDirectories=""
 		{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
 		excludedDirectories+=" --exclude {{ excludedDir }}"
@@ -199,7 +199,7 @@ then
 		fi
 		{{ end }}
 
-		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 		echo "Total time for destination directory preparation done in $ELAPSED_TIME sec(s)."
 	{{ else }}
 		{{ if CompressDestinationDir }}
@@ -222,7 +222,7 @@ then
 	{{ if CompressDestinationDir }}
 	DESTINATION_DIR="$OLD_DESTINATION_DIR"
 	echo "Compressing content of directory '$preCompressedDestinationDir'..."
-	START_TIME=$SECONDS
+	BASE_START_TIME=$SECONDS
 	cd "$preCompressedDestinationDir"
 
     if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
@@ -235,7 +235,7 @@ then
         tar -zcf "$DESTINATION_DIR/output.tar.gz" .
     fi
 
-	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 	echo "Copied the compressed output to '$DESTINATION_DIR'"
 	echo "Compression done in $ELAPSED_TIME sec(s)."
 	{{ end }}
