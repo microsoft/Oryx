@@ -229,15 +229,17 @@ then
         rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
 		echo "Using zstd for compression"
         tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .
+		ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
+		echo "Copied the compressed output to '$DESTINATION_DIR'"
+		echo "Compression with zstd done in $ELAPSED_TIME sec(s)."
     else
         rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
 		echo "Using gzip for compression"
         tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+		ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
+		echo "Copied the compressed output to '$DESTINATION_DIR'"
+		echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
     fi
-
-	ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
-	echo "Copied the compressed output to '$DESTINATION_DIR'"
-	echo "Compression done in $ELAPSED_TIME sec(s)."
 	{{ end }}
 fi
 
