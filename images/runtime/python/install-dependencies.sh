@@ -15,7 +15,6 @@ else
     odbcPackage="libodbc1"
 fi
 
-# GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
 # libpq-dev is for PostgreSQL
 apt-get update \
     && apt-get upgrade -y \
@@ -30,6 +29,7 @@ apt-get update \
         $odbcPackage \
         apt-transport-https \
         swig \
+        # GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
         binutils \
         libproj-dev \
         gdal-bin \
