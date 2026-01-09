@@ -55,9 +55,11 @@ func untar(dst string, tarballFile string) error {
     // Detect compression format based on file extension
 	if strings.HasSuffix(tarballFile, ".tar.zst") {
         // Use zstd for decompression
+		println(fmt.Sprintf("Using zstd for decompression of file: %s", tarballFile))
         return untarWithZstd(dst, tarballFile)
     } else if strings.HasSuffix(tarballFile, ".tar.gz") {
         // Use native Go gzip decompression
+		println(fmt.Sprintf("Using gzip for decompression of file: %s", tarballFile))
         return untarWithGzip(dst, tarballFile)
     } else {
         return fmt.Errorf("unsupported compression format for file: %s", tarballFile)
