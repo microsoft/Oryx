@@ -63,12 +63,12 @@ variables:
   node24Version: 24.11.0
   php81Version: 8.1.33
   php81Version_SHA: 9db83bf4590375562bc1a10b353cccbcf9fcfc56c58b7c8fb814e6865bb928d1
-  php82Version: 8.2.29
-  php82Version_SHA: 475f991afd2d5b901fb410be407d929bc00c46285d3f439a02c59e8b6fe3589c
-  php83Version: 8.3.26
-  php83Version_SHA: 2f522eefa02c400c94610d07f25c4fd4c771f95e4a1f55102332ccb40663cbd2
-  php84Version: 8.4.13
-  php84Version_SHA: b4f27adf30bcf262eacf93c78250dd811980f20f3b90d79a3dc11248681842df
+  php82Version: 8.2.30
+  php82Version_SHA: bc90523e17af4db46157e75d0c9ef0b9d0030b0514e62c26ba7b513b8c4eb015
+  php83Version: 8.3.29
+  php83Version_SHA: f7950ca034b15a78f5de9f1b22f4d9bad1dd497114d175cb1672a4ca78077af5
+  php84Version: 8.4.16
+  php84Version_SHA: f66f8f48db34e9e29f7bfd6901178e9cf4a1b163e6e497716dfcb8f88bcfae30
   python39Version: 3.9.24
   python310Version: 3.10.19
   python311Version: 3.11.14
