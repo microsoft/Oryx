@@ -21,6 +21,7 @@ apt-get update \
     && apt-get install -y --no-install-recommends \
         libexpat1 \
         curl \
+        zstd \
         gnupg \
         libpq-dev \
         default-libmysqlclient-dev \

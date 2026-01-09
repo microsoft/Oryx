@@ -190,7 +190,17 @@ then
 	DESTINATION_DIR="$OLD_DESTINATION_DIR"
 	echo "Compressing content of directory '$preCompressedDestinationDir'..."
 	cd "$preCompressedDestinationDir"
-	tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+
+    if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
+        rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
+		echo "Using zstd for compression"
+        tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .
+    else
+        rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+		echo "Using gzip for compression"
+        tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+    fi
+
 	echo "Copied the compressed output to '$DESTINATION_DIR'"
 	{{ end }}
 fi

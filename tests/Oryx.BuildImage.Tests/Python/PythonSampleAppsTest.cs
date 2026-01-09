@@ -1476,8 +1476,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void BuildsAppAndCompressesOutputDirectory()
+        [Theory, Trait("category", "githubactions")]
+        [InlineData("true", "output.tar.zst")]
+        [InlineData("false", "output.tar.gz")]
+        public void BuildsAppAndCompressesOutputDirectory_WithDifferentCompressionFormats(
+            string useZstd, 
+            string expectedCompressedFile)
         {
             // Arrange
             var appName = "flask-app";
@@ -1492,7 +1496,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddCommand(
                 $"oryx build {appDir} -i {buildDir} -o {outputDir} " +
                 $"-p virtualenv_name={virtualEnvName} --compress-destination-dir")
-                .AddFileExistsCheck($"{outputDir}/output.tar.gz")
+                .AddFileExistsCheck($"{outputDir}/{expectedCompressedFile}")
                 .AddFileExistsCheck(manifestFile)
                 .AddFileExistsCheck(osTypeFile)
                 .AddFileDoesNotExistCheck($"{outputDir}/requirements.txt")
@@ -1504,7 +1508,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                EnvironmentVariables = new List<EnvironmentVariable> 
+                { 
+                    CreateAppNameEnvVar(appName),
+                    new EnvironmentVariable("ORYX_COMPRESS_WITH_ZSTD", useZstd)
+                },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
