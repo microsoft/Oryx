@@ -176,7 +176,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("  fi")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
-                .AppendLine("echo \"Downloaded in $PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME sec(s).\"");
+                .AppendLine("echo \"Binaries download done in $PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME sec(s).\"");
 
                 // Search header name ignoring case
                 snippet.AppendLine("echo Verifying checksum...")
@@ -191,6 +191,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"tar -xzf {tarFile} -C .")
 
                 // use sha256 for golang and sha512 for all other platforms
+                .AppendLine("CHECKSUM_VERIFICATION_START=$SECONDS")
                 .AppendLine($"if [ \"$platformName\" = \"golang\" ]; then")
                 .AppendLine($"echo \"performing sha256sum for : {platformName}...\"")
                 .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha256sum -c - >/dev/null 2>&1")
@@ -202,8 +203,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
             snippet
-                .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
-                .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
+                .AppendLine("CHECKSUM_VERIFICATION_ELAPSED_TIME=$(($SECONDS - $CHECKSUM_VERIFICATION_START))")
+                .AppendLine("echo \"Checksum verification done in $CHECKSUM_VERIFICATION_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
                 .AppendLine("oryxImageDetectorFile=\"/opt/oryx/.imagetype\"")
                 .AppendLine("oryxOsDetectorFile=\"/opt/oryx/.ostype\"")
