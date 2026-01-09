@@ -46,24 +46,22 @@ install_via_uv() {
     set +e
     echo "Running uv pip install..."
     
-    # Build and log the command
+    # Build the command
     # Note: uv uses its own cache mechanism, not pip's cache-dir
-    local uv_cmd="uv pip install -r $requirements_file"
+    local base_cmd="uv pip install -r $requirements_file"
     if [ -n "$target_dir" ]; then
-        uv_cmd="$uv_cmd --target=\"$target_dir\""
+        base_cmd="$base_cmd --target=\"$target_dir\""
     fi
     if [ -n "$upgrade_flag" ]; then
-        uv_cmd="$uv_cmd $upgrade_flag"
+        base_cmd="$base_cmd $upgrade_flag"
     fi
-    uv_cmd="$uv_cmd | ts $TS_FMT"
+    
+    # Log the command
+    local uv_cmd="$base_cmd | ts $TS_FMT"
     printf %s " , $uv_cmd" >> "$COMMAND_MANIFEST_FILE"
     
     # Execute uv pip install (uv manages its own cache)
-    if [ -n "$target_dir" ]; then
-        output=$( ( uv pip install -r $requirements_file --target="$target_dir" $upgrade_flag | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-    else
-        output=$( ( uv pip install -r $requirements_file | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-    fi
+    output=$( ( eval $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
     local exit_code=$?
     
     echo "${output}"
@@ -82,23 +80,21 @@ install_via_pip() {
     set +e
     echo "Running pip install..."
     
-    # Build and log the command
-    local pip_cmd="$python_cmd -m pip install --cache-dir $cache_dir -r $requirements_file"
+    # Build the command
+    local base_cmd="$python_cmd -m pip install --cache-dir $cache_dir --prefer-binary -r $requirements_file"
     if [ -n "$target_dir" ]; then
-        pip_cmd="$pip_cmd --target=\"$target_dir\""
+        base_cmd="$base_cmd --target=\"$target_dir\""
     fi
     if [ -n "$upgrade_flag" ]; then
-        pip_cmd="$pip_cmd $upgrade_flag"
+        base_cmd="$base_cmd $upgrade_flag"
     fi
-    pip_cmd="$pip_cmd | ts $TS_FMT"
+    
+    # Log the command
+    local pip_cmd="$base_cmd | ts $TS_FMT"
     printf %s " , $pip_cmd" >> "$COMMAND_MANIFEST_FILE"
     
     # Execute pip install
-    if [ -n "$target_dir" ]; then
-        output=$( ( $python_cmd -m pip install --cache-dir $cache_dir -r $requirements_file --target="$target_dir" $upgrade_flag | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-    else
-        output=$( ( $python_cmd -m pip install --cache-dir $cache_dir -r $requirements_file | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-    fi
+    output=$( ( eval $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
     local exit_code=$?
     
     echo "${output}"
