@@ -73,9 +73,11 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		if common.PathExists(zstdTarballFile) {
 			tarballFile = zstdTarballFile
 			println("Found zstd-compressed tarball.")
-		} else{
+		} else if common.PathExists(gzipTarballFile) {
 			tarballFile = gzipTarballFile
 			println("Found gzip-compressed tarball.")
+		} else {
+			panic(fmt.Sprintf("Could not find compressed output. Expected '%s' or '%s'", zstdTarballFile, gzipTarballFile))
 		}
 
 		common.ExtractTarball(tarballFile, gen.Manifest.SourceDirectoryInBuildContainer)
