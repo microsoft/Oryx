@@ -61,11 +61,9 @@ install_via_uv() {
     printf %s " , $uv_cmd" >> "$COMMAND_MANIFEST_FILE"
     
     # Execute uv pip install (uv manages its own cache)
-    output=$( ( eval $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-    local exit_code=$?
+    eval $base_cmd | ts $TS_FMT
+    local exit_code=${PIPESTATUS[0]}
     
-    echo "${output}"
-    set -e
     return $exit_code
 }
 
@@ -94,11 +92,9 @@ install_via_pip() {
     printf %s " , $pip_cmd" >> "$COMMAND_MANIFEST_FILE"
     
     # Execute pip install
-    output=$( ( eval $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-    local exit_code=$?
+    eval $base_cmd | ts $TS_FMT
+    local exit_code=${PIPESTATUS[0]}
     
-    echo "${output}"
-    set -e
     return $exit_code
 }
 
@@ -171,10 +167,8 @@ install_packages_with_fallback() {
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
-        set +e
         install_packages_with_fallback "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
         pipInstallExitCode=$?
-        set -e
         
         if [[ $pipInstallExitCode != 0 ]]
         then
@@ -269,10 +263,8 @@ install_packages_with_fallback() {
     then
         echo
         START_TIME=$SECONDS
-        set +e
         install_packages_with_fallback "$python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
         pipInstallExitCode=$?
-        set -e
         
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
