@@ -1592,6 +1592,49 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact, Trait("category", "githubactions")]
+        public void UvPipInstall_FallsBackToPip_WhenUvFails()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            
+            // Create a script that makes uv fail to test fallback
+            var script = new ShellScriptBuilder()
+                .AddCommand("mkdir -p /tmp/fake-bin")
+                .AddCommand("echo '#!/bin/bash' > /tmp/fake-bin/uv")
+                .AddCommand("echo 'echo \"Error: uv command failed for testing\"' >> /tmp/fake-bin/uv")
+                .AddCommand("echo 'exit 1' >> /tmp/fake-bin/uv")
+                .AddCommand("chmod +x /tmp/fake-bin/uv")
+                .AddCommand("export PATH=/tmp/fake-bin:$PATH")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Installing uv...", result.StdOut);
+                    Assert.Contains("Running uv pip install...", result.StdOut);
+                    Assert.Contains("falling back to pip install", result.StdOut);
+                    Assert.Contains("Running pip install...", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         private string GetDefaultVirtualEnvName(string version)
         {
             var ver = new SemanticVersioning.Version(version);
