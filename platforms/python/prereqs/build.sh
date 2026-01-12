@@ -110,9 +110,6 @@ then
         --disable-pip-version-check \
         --no-cache-dir \
         --no-warn-script-location
-    rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
-    rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
-    rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
 
     # Install uv and poetry
     echo "Installing uv and poetry..."
@@ -121,6 +118,10 @@ then
         --no-cache-dir \
         --no-warn-script-location
     echo "uv and poetry installed successfully"
+
+    rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
+    rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
+    rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
 else
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
