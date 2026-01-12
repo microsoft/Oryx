@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Python310Version = "3.10.19";
         public const string Python311Version = "3.11.14";
         public const string Python312Version = "3.12.12";
-        public const string Python313Version = "3.13.8";
+        public const string Python313Version = "3.13.11";
         public static readonly List<string> RuntimeVersions = new List<string> { "3.7-debian-bullseye", "3.7-debian-buster", "3.8-debian-bookworm", "3.8-debian-bullseye", "3.8-debian-buster", "3.9-debian-bookworm", "3.9-debian-bullseye", "3.9-debian-buster", "3.10-debian-bookworm", "3.10-debian-bullseye", "3.10-debian-buster", "3.11-debian-bookworm", "3.11-debian-bullseye", "3.12-debian-bookworm", "3.12-debian-bullseye", "3.13-debian-bullseye", "3.13-debian-bookworm", "dynamic-debian-buster" };
     }
 }

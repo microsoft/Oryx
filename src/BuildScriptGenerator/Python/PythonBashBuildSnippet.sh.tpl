@@ -47,9 +47,12 @@ fi
     if [ -e "pyproject.toml" ] && [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ]; then
         echo "Detected uv.lock (and no $REQUIREMENTS_TXT_FILE); creating virtual environment with uv..."
         echo "Installing uv..."
+        START_TIME=$SECONDS
         InstallUv="python -m pip install uv"
         printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
         $python -m pip install uv
+        ELAPSED_TIME=$(($SECONDS - $START_TIME))
+        echo "Installing uv done in $ELAPSED_TIME sec(s)."
         CreateVenvCommand="uv venv --link-mode=copy --system-site-packages $VIRTUALENVIRONMENTNAME"
     else
         if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
@@ -76,11 +79,14 @@ fi
     then
         set +e
         echo "Running pip install..."
+        START_TIME=$SECONDS
         InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
         output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
 
+        ELAPSED_TIME=$(($SECONDS - $START_TIME))
+        echo "pip install done in $ELAPSED_TIME sec(s)."
         set -e
         echo "${output}"
         if [[ $pipInstallExitCode != 0 ]]
@@ -92,14 +98,20 @@ fi
     then
         set +e
         echo "Running pip install setuptools..."
+        START_TIME=$SECONDS
         InstallSetuptoolsPipCommand="pip install setuptools"
         printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
         pip install setuptools
+        ELAPSED_TIME=$(($SECONDS - $START_TIME))
+        echo "pip install setuptools done in $ELAPSED_TIME sec(s)."
         echo "Running python setup.py install..."
+        START_TIME=$SECONDS
         InstallCommand="pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
         output=$( ( pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
+        ELAPSED_TIME=$(($SECONDS - $START_TIME))
+        echo "pip install done in $ELAPSED_TIME sec(s)."
         set -e
         echo "${output}"
         if [[ $pythonBuildExitCode != 0 ]]
@@ -114,10 +126,13 @@ fi
             # Install using uv
             set +e
             echo "Detected uv.lock. Installing dependencies with uv..."
+            START_TIME=$SECONDS
             InstallUvCommand="uv sync --active --link-mode copy"
             printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
             uvExitCode=${PIPESTATUS[0]}
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "uv sync done in $ELAPSED_TIME sec(s)."
             set -e
             echo "${output}"
             if [[ $uvExitCode != 0 ]]; then
@@ -160,7 +175,7 @@ fi
             fi
 
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "Done in $ELAPSED_TIME sec(s)."
+            echo "poetry install done in $ELAPSED_TIME sec(s)."
             set -e
             echo "${output}"
         fi
@@ -184,7 +199,7 @@ fi
         pipInstallExitCode=${PIPESTATUS[0]}
 
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "Done in $ELAPSED_TIME sec(s)."
+        echo "pip install done in $ELAPSED_TIME sec(s)."
         set -e
         echo "${output}"
         if [[ $pipInstallExitCode != 0 ]]
@@ -200,18 +215,24 @@ fi
         printf %s " , $UpgradeCommand" >> "$COMMAND_MANIFEST_FILE"
         pip install --upgrade pip
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "Done in $ELAPSED_TIME sec(s)."
+        echo "pip upgrade done in $ELAPSED_TIME sec(s)."
 
         set +e
         echo "Running pip install setuptools..."
+        START_TIME=$SECONDS
         InstallSetuptoolsPipCommand="pip install setuptools"
         printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
         pip install setuptools
+        ELAPSED_TIME=$(($SECONDS - $START_TIME))
+        echo "pip install setuptools done in $ELAPSED_TIME sec(s)."
         echo "Running pip install..."
-        InstallCommand="$python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT"
+        START_TIME=$SECONDS
+        InstallCommand="$python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target=\"{{ PackagesDirectory }}\" {{ PipUpgradeFlag }} | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
         output=$( ( $python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
+        ELAPSED_TIME=$(($SECONDS - $START_TIME))
+        echo "pip install done in $ELAPSED_TIME sec(s)."
         set -e
         echo "${output}"
         if [[ $pythonBuildExitCode != 0 ]]
@@ -230,6 +251,9 @@ fi
             InstallUv="python -m pip install uv"
             printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
             $python -m pip install uv
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "Installing uv done in $ELAPSED_TIME sec(s)."
+            START_TIME=$SECONDS
             
             set +e
             SITE_PACKAGES_PATH="{{ PackagesDirectory }}"
@@ -240,7 +264,7 @@ fi
             output=$( ( eval $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
             uvExitCode=${PIPESTATUS[0]}
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "Done in $ELAPSED_TIME sec(s)."
+            echo "uv pip install done in $ELAPSED_TIME sec(s)."
             set -e
             echo "${output}"
             if [[ $uvExitCode != 0 ]]; then
@@ -283,7 +307,7 @@ fi
             fi
 
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "Done in $ELAPSED_TIME sec(s)."
+            echo "poetry install done in $ELAPSED_TIME sec(s)."
             set -e
             echo "${output}"
         fi
@@ -356,7 +380,7 @@ fi
                 LogWarning "${output} | Exit code: ${EXIT_CODE} | ${recommendation} | ${moreInformation}"
             fi
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "Done in $ELAPSED_TIME sec(s)."
+            echo "collectstatic done in $ELAPSED_TIME sec(s)."
         else
             output="Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
             recommendation="Add Django to your requirements.txt file."
@@ -391,7 +415,7 @@ fi
                 cd "$VIRTUALENVIRONMENTNAME"
                 {{ CompressVirtualEnvCommand }} ../$zippedVirtualEnvFileName .
                 ELAPSED_TIME=$(($SECONDS - $START_TIME))
-                echo "Done in $ELAPSED_TIME sec(s)."
+                echo "Compressing virtual environment done in $ELAPSED_TIME sec(s)."
             fi
         fi
     {{ end }}
