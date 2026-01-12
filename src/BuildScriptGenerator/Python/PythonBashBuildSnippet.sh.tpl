@@ -48,7 +48,7 @@ install_via_uv() {
     
     # Build the command
     # Note: uv uses its own cache mechanism, not pip's cache-dir
-    local base_cmd="uv pip install -r $requirements_file"
+    local base_cmd="uv pip install --link-mode=copy -r $requirements_file"
     if [ -n "$target_dir" ]; then
         base_cmd="$base_cmd --target=\"$target_dir\""
     fi
@@ -132,12 +132,12 @@ install_python_packages() {
     
     if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
         # Use uv with fallback to pip (fast build)
-        echo "PYTHON_FAST_BUILD_ENABLED is set to false, using uv pip with fallback..."
+        echo "PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback..."
         install_python_packages_impl "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
         return $?
     else
         # Use pip directly (default behavior)
-        echo "PYTHON_FAST_BUILD_ENABLED is not enabled, using pip directly..."
+        echo "PYTHON_FAST_BUILD_ENABLED is set to false, using pip directly..."
         install_via_pip "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
         return $?
     fi

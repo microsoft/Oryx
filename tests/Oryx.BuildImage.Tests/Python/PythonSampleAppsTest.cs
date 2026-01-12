@@ -1601,6 +1601,80 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "githubactions")]
+        public void PythonFastBuildEnabled_UsesUvWithFallback()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> 
+                { 
+                    CreateAppNameEnvVar(appName),
+                    new EnvironmentVariable("PYTHON_FAST_BUILD_ENABLED", "true")
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback...", result.StdOut);
+                    Assert.Contains("Installing uv...", result.StdOut);
+                    Assert.Contains("Running uv pip install...", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PythonFastBuildDisabled_UsesPipDirectly()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("PYTHON_FAST_BUILD_ENABLED is not enabled, using pip directly...", result.StdOut);
+                    Assert.Contains("Running pip install...", result.StdOut);
+                    Assert.DoesNotContain("Installing uv...", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "githubactions")]
         public void UvPipInstall_FallsBackToPip_WhenUvFails()
         {
             // Arrange
@@ -1624,7 +1698,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                EnvironmentVariables = new List<EnvironmentVariable> 
+                { 
+                    CreateAppNameEnvVar(appName),
+                    new EnvironmentVariable("PYTHON_FAST_BUILD_ENABLED", "true")
+                },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -1635,6 +1713,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                    Assert.Contains("PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback...", result.StdOut);
                     Assert.Contains("Installing uv...", result.StdOut);
                     Assert.Contains("Running uv pip install...", result.StdOut);
                     Assert.Contains("falling back to pip install", result.StdOut);
