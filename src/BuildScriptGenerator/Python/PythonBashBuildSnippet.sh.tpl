@@ -98,8 +98,8 @@ install_via_pip() {
     return $exit_code
 }
 
-# Orchestrator function to install packages with fallback
-install_packages_with_fallback() {
+# Internal function to install packages with uv and fallback to pip
+install_python_packages_impl() {
     local python_cmd=$1
     local cache_dir=$2
     local requirements_file=$3
@@ -120,6 +120,27 @@ install_packages_with_fallback() {
     set -e
     
     return $exit_code
+}
+
+# Wrapper function to decide installation method based on PYTHON_FAST_BUILD_ENABLED flag
+install_python_packages() {
+    local python_cmd=$1
+    local cache_dir=$2
+    local requirements_file=$3
+    local target_dir=$4
+    local upgrade_flag=$5
+    
+    if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+        # Use uv with fallback to pip (fast build)
+        echo "PYTHON_FAST_BUILD_ENABLED is set to false, using uv pip with fallback..."
+        install_python_packages_impl "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
+    else
+        # Use pip directly (default behavior)
+        echo "PYTHON_FAST_BUILD_ENABLED is not enabled, using pip directly..."
+        install_via_pip "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
+    fi
 }
 
 {{ if VirtualEnvironmentName | IsNotBlank }}
@@ -170,7 +191,7 @@ install_packages_with_fallback() {
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
-        install_packages_with_fallback "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
+        install_python_packages "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
         pipInstallExitCode=$?
         
         if [[ $pipInstallExitCode != 0 ]]
@@ -275,7 +296,7 @@ install_packages_with_fallback() {
     then
         echo
         START_TIME=$SECONDS
-        install_packages_with_fallback "$python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
+        install_python_packages "$python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
         pipInstallExitCode=$?
         
         ELAPSED_TIME=$(($SECONDS - $START_TIME))

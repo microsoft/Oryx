@@ -212,7 +212,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            Assert.Contains("install_packages_with_fallback", text);
+            Assert.Contains("install_python_packages_impl", text);
             Assert.Contains("install_via_uv() {", text);
             Assert.Contains("install_via_pip() {", text);
         }
@@ -241,7 +241,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            Assert.Contains("install_packages_with_fallback", text);
+            Assert.Contains("install_python_packages_impl", text);
             Assert.Contains("\"--upgrade\"", text);
         }
 
@@ -272,7 +272,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotNull(text);
             
             // Verify orchestrator function exists
-            Assert.Contains("install_packages_with_fallback() {", text);
+            Assert.Contains("install_python_packages_impl() {", text);
             
             // Verify it tries uv first
             Assert.Contains("install_via_uv \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
@@ -288,6 +288,112 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Verify both installation functions are defined
             Assert.Contains("install_via_uv() {", text);
             Assert.Contains("install_via_pip() {", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_Contains_PythonFastBuildEnabled_Check()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false,
+                customRequirementsTxtPath: null,
+                pythonPackageWheelProperty: null,
+                pipUpgradeFlag: string.Empty);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            
+            // Verify the wrapper function exists
+            Assert.Contains("install_python_packages() {", text);
+            
+            // Verify it checks for PYTHON_FAST_BUILD_ENABLED flag
+            Assert.Contains("if [ \"$PYTHON_FAST_BUILD_ENABLED\" = \"true\" ]; then", text);
+            
+            // Verify it has message when enabled
+            Assert.Contains("PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback...", text);
+            
+            // Verify it has message when not enabled (default pip behavior)
+            Assert.Contains("PYTHON_FAST_BUILD_ENABLED is not enabled, using pip directly...", text);
+            
+            // Verify it calls impl function (uv with fallback) when enabled
+            Assert.Contains("install_python_packages_impl \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+            
+            // Verify it calls pip directly when not enabled
+            Assert.Contains("install_via_pip \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_Has_Separate_Implementation_Function()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            
+            // Verify the internal implementation function exists
+            Assert.Contains("install_python_packages_impl() {", text);
+            Assert.Contains("# Internal function to install packages with uv and fallback to pip", text);
+            
+            // Verify it contains uv first logic
+            Assert.Contains("install_via_uv \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+            
+            // Verify fallback to pip
+            Assert.Contains("falling back to pip install...", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_Calls_PythonPackages_Function()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            
+            // Verify install_python_packages is called for requirements.txt
+            Assert.Contains("install_python_packages \"$python\" \"$PIP_CACHE_DIR\" \"$REQUIREMENTS_TXT_FILE\"", text);
         }
     }
 }
