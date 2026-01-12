@@ -114,6 +114,13 @@ then
     rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
     rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
 
+    # Install uv and poetry
+    echo "Installing uv and poetry..."
+    /opt/python/$PYTHON_VERSION/bin/python3 -m pip install uv poetry \
+        --disable-pip-version-check \
+        --no-cache-dir \
+        --no-warn-script-location
+    echo "uv and poetry installed successfully"
 else
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
@@ -128,6 +135,16 @@ else
         --no-cache-dir \
         --no-warn-script-location \
         pip==$PIP_VERSION
+
+    # Install uv and poetry
+    echo "Installing uv and poetry..."
+    LD_LIBRARY_PATH=/usr/src/python \
+    /usr/src/python/python -m pip install uv poetry \
+        --prefix $INSTALLATION_PREFIX \
+        --disable-pip-version-check \
+        --no-cache-dir \
+        --no-warn-script-location
+    echo "uv and poetry installed successfully"
 fi
 
 # Currently only for version '2' of Python, the alias 'python' exists in the 'bin'
