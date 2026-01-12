@@ -37,11 +37,15 @@ install_via_uv() {
     local target_dir=$4
     local upgrade_flag=$5
     
-    # Install uv
-    echo "Installing uv..."
-    local install_uv_cmd="$python_cmd -m pip install uv"
-    printf %s " , $install_uv_cmd" >> "$COMMAND_MANIFEST_FILE"
-    $python_cmd -m pip install uv
+    # Install uv if not already available
+    if ! command -v uv &> /dev/null; then
+        echo "Installing uv..."
+        local install_uv_cmd="$python_cmd -m pip install uv"
+        printf %s " , $install_uv_cmd" >> "$COMMAND_MANIFEST_FILE"
+        $python_cmd -m pip install uv
+    else
+        echo "uv is already installed, skipping installation..."
+    fi
     
     set +e
     echo "Running uv pip install..."
