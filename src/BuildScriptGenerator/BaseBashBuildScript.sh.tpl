@@ -142,105 +142,140 @@ if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	echo "Preparing output..."
 
-	{{ ## When compressing destination directory is chosen, we want to copy the source content to a temporary 
-	destination directory first, compress the content there and then copy that content to the final destination 
-	directory ## }}
-	{{ if CompressDestinationDir }}
-	preCompressedDestinationDir="/tmp/_preCompressedDestinationDir"
-	rm -rf $preCompressedDestinationDir
-	OLD_DESTINATION_DIR="$DESTINATION_DIR"
-	DESTINATION_DIR="$preCompressedDestinationDir"
+	{{ ## Determine if direct tar compression can be used based on build configuration ## }}
+	CAN_USE_DIRECT_COMPRESSION_TO_DEST=false
+	{{ if CompressDestinationDir && CopySourceDirectoryContentToDestinationDirectory && !OutputDirectoryIsNested }}
+	CAN_USE_DIRECT_COMPRESSION_TO_DEST=true
 	{{ end }}
 
-	{{ if CopySourceDirectoryContentToDestinationDirectory }}
-		cd "$SOURCE_DIR"
-
-		echo
-		echo "Copying files to destination directory '$DESTINATION_DIR'..."
+	{{ ## Check if optimized direct tar compression is enabled ## }}
+	if [ "$CAN_USE_DIRECT_COMPRESSION_TO_DEST" = "true" ] && [ "$ENABLE_ORYX_DIRECT_TAR_COMPRESSION" = "true" ]; then
+		{{ ## Optimized path: Create tar directly from source to destination without intermediate copy ## }}
+		echo "Compressing source directory directly to destination (optimized path)..."
 		BASE_START_TIME=$SECONDS
+		cd "$SOURCE_DIR"
+		
 		excludedDirectories=""
 		{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
-		excludedDirectories+=" --exclude {{ excludedDir }}"
+		excludedDirectories+=" --exclude={{ excludedDir }}"
 		{{ end }}
 
-		{{ if OutputDirectoryIsNested }}
-		{{ ## We create destination directory upfront for scenarios where pre or post build commands need access
-		to it. This espceially hanldes the scenario where output directory is a sub-directory of a source directory ## }}
-		tmpDestinationDir="/tmp/__oryxDestinationDir"
-		if [ -d "$DESTINATION_DIR" ]; then
-			echo "Copying existing destination directory to temporary location..."
-			TEMP_START_TIME=$SECONDS
-			mkdir -p "$tmpDestinationDir"
-			rsync -rcE --links "$DESTINATION_DIR/" "$tmpDestinationDir"
-			TEMP_ELAPSED_TIME=$(($SECONDS - $TEMP_START_TIME))
-			echo "Copying to temporary location done in $TEMP_ELAPSED_TIME sec(s)."
-			rm -rf "$DESTINATION_DIR"
+		if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
+			rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
+			echo "Using zstd for compression"
+			tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" $excludedDirectories .
+			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
+			echo "Copied the compressed output to '$DESTINATION_DIR'"
+			echo "Direct compression with zstd done in $ELAPSED_TIME sec(s)."
+		else
+			rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+			echo "Using gzip for compression"
+			tar -zcf "$DESTINATION_DIR/output.tar.gz" $excludedDirectories .
+			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
+			echo "Copied the compressed output to '$DESTINATION_DIR'"
+			echo "Direct compression with gzip done in $ELAPSED_TIME sec(s)."
 		fi
-		{{ end }}
-
-		{{ ## We use checksum and not the '--times' because the destination directory could be from
-		 a different file system (ex: NFS) where setting modification times results in errors.
-		 Even though checksum is slower compared to the '--times' option, it is more reliable
-		 which is important for us. ## }}
-		MAIN_RSYNC_START_TIME=$SECONDS
-		rsync -rcE --links $excludedDirectories . "$DESTINATION_DIR"
-		MAIN_RSYNC_ELAPSED_TIME=$(($SECONDS - $MAIN_RSYNC_START_TIME))
-		echo "Copying to destination directory done in $MAIN_RSYNC_ELAPSED_TIME sec(s)."
-
-		{{ if OutputDirectoryIsNested }}
-		if [ -d "$tmpDestinationDir" ]; then
-			echo "Copying back temporary destination directory contents..."
-			TEMP_START_TIME=$SECONDS
-			{{ # Do not overwrite files in destination directory }}
-			rsync -rcE --links "$tmpDestinationDir/" "$DESTINATION_DIR"
-			TEMP_ELAPSED_TIME=$(($SECONDS - $TEMP_START_TIME))
-			echo "Copying back from temporary location done in $TEMP_ELAPSED_TIME sec(s)."
-			rm -rf "$tmpDestinationDir"
-		fi
-		{{ end }}
-
-		ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
-		echo "Total time for destination directory preparation done in $ELAPSED_TIME sec(s)."
-	{{ else }}
+	else
+		{{ ## When compressing destination directory is chosen, we want to copy the source content to a temporary 
+		destination directory first, compress the content there and then copy that content to the final destination 
+		directory ## }}
 		{{ if CompressDestinationDir }}
-			{{ ## In case of .NET apps, 'dotnet publish' writes to original destination directory. So here we are 
-			trying to move the files to the temporary destination directory so that they get compressed and these 
-			compressed files are copied to final destination directory ## }}
-			origDestDir="$OLD_DESTINATION_DIR"
-			tempDestDir="$DESTINATION_DIR"
-			cd $origDestDir
-			shopt -s dotglob
-			mkdir -p $tempDestDir
-			echo "Moving files to temporary directory for compression..."
-			MV_START_TIME=$SECONDS
-			mv * "$tempDestDir/"
-			MV_ELAPSED_TIME=$(($SECONDS - $MV_START_TIME))
-			echo "Moving files done in $MV_ELAPSED_TIME sec(s)."
+		preCompressedDestinationDir="/tmp/_preCompressedDestinationDir"
+		rm -rf $preCompressedDestinationDir
+		OLD_DESTINATION_DIR="$DESTINATION_DIR"
+		DESTINATION_DIR="$preCompressedDestinationDir"
 		{{ end }}
-	{{ end }}
 
-	{{ if CompressDestinationDir }}
-	DESTINATION_DIR="$OLD_DESTINATION_DIR"
-	echo "Compressing content of directory '$preCompressedDestinationDir'..."
-	BASE_START_TIME=$SECONDS
-	cd "$preCompressedDestinationDir"
+		{{ if CopySourceDirectoryContentToDestinationDirectory }}
+			cd "$SOURCE_DIR"
 
-    if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
-        rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
-		echo "Using zstd for compression"
-        tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .
-		ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
-		echo "Copied the compressed output to '$DESTINATION_DIR'"
-		echo "Compression with zstd done in $ELAPSED_TIME sec(s)."
-    else
-        rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
-		echo "Using gzip for compression"
-        tar -zcf "$DESTINATION_DIR/output.tar.gz" .
-		ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
-		echo "Copied the compressed output to '$DESTINATION_DIR'"
-		echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
-    fi
-	{{ end }}
+			echo
+			echo "Copying files to destination directory '$DESTINATION_DIR'..."
+			BASE_START_TIME=$SECONDS
+			excludedDirectories=""
+			{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
+			excludedDirectories+=" --exclude {{ excludedDir }}"
+			{{ end }}
+
+			{{ if OutputDirectoryIsNested }}
+			{{ ## We create destination directory upfront for scenarios where pre or post build commands need access
+			to it. This espceially hanldes the scenario where output directory is a sub-directory of a source directory ## }}
+			tmpDestinationDir="/tmp/__oryxDestinationDir"
+			if [ -d "$DESTINATION_DIR" ]; then
+				echo "Copying existing destination directory to temporary location..."
+				TEMP_START_TIME=$SECONDS
+				mkdir -p "$tmpDestinationDir"
+				rsync -rcE --links "$DESTINATION_DIR/" "$tmpDestinationDir"
+				TEMP_ELAPSED_TIME=$(($SECONDS - $TEMP_START_TIME))
+				echo "Copying to temporary location done in $TEMP_ELAPSED_TIME sec(s)."
+				rm -rf "$DESTINATION_DIR"
+			fi
+			{{ end }}
+
+			{{ ## We use checksum and not the '--times' because the destination directory could be from
+			 a different file system (ex: NFS) where setting modification times results in errors.
+			 Even though checksum is slower compared to the '--times' option, it is more reliable
+			 which is important for us. ## }}
+			MAIN_RSYNC_START_TIME=$SECONDS
+			rsync -rcE --links $excludedDirectories . "$DESTINATION_DIR"
+			MAIN_RSYNC_ELAPSED_TIME=$(($SECONDS - $MAIN_RSYNC_START_TIME))
+			echo "Copying to destination directory done in $MAIN_RSYNC_ELAPSED_TIME sec(s)."
+
+			{{ if OutputDirectoryIsNested }}
+			if [ -d "$tmpDestinationDir" ]; then
+				echo "Copying back temporary destination directory contents..."
+				TEMP_START_TIME=$SECONDS
+				{{ # Do not overwrite files in destination directory }}
+				rsync -rcE --links "$tmpDestinationDir/" "$DESTINATION_DIR"
+				TEMP_ELAPSED_TIME=$(($SECONDS - $TEMP_START_TIME))
+				echo "Copying back from temporary location done in $TEMP_ELAPSED_TIME sec(s)."
+				rm -rf "$tmpDestinationDir"
+			fi
+			{{ end }}
+
+			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
+			echo "Total time for destination directory preparation done in $ELAPSED_TIME sec(s)."
+		{{ else }}
+			{{ if CompressDestinationDir }}
+				{{ ## In case of .NET apps, 'dotnet publish' writes to original destination directory. So here we are 
+				trying to move the files to the temporary destination directory so that they get compressed and these 
+				compressed files are copied to final destination directory ## }}
+				origDestDir="$OLD_DESTINATION_DIR"
+				tempDestDir="$DESTINATION_DIR"
+				cd $origDestDir
+				shopt -s dotglob
+				mkdir -p $tempDestDir
+				echo "Moving files to temporary directory for compression..."
+				MV_START_TIME=$SECONDS
+				mv * "$tempDestDir/"
+				MV_ELAPSED_TIME=$(($SECONDS - $MV_START_TIME))
+				echo "Moving files done in $MV_ELAPSED_TIME sec(s)."
+			{{ end }}
+		{{ end }}
+
+		{{ if CompressDestinationDir }}
+		DESTINATION_DIR="$OLD_DESTINATION_DIR"
+		echo "Compressing content of directory '$preCompressedDestinationDir'..."
+		BASE_START_TIME=$SECONDS
+		cd "$preCompressedDestinationDir"
+
+		if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
+			rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
+			echo "Using zstd for compression"
+			tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .
+			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
+			echo "Copied the compressed output to '$DESTINATION_DIR'"
+			echo "Compression with zstd done in $ELAPSED_TIME sec(s)."
+		else
+			rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+			echo "Using gzip for compression"
+			tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
+			echo "Copied the compressed output to '$DESTINATION_DIR'"
+			echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
+		fi
+		{{ end }}
+	fi
 fi
 
 {{ if ManifestFileName | IsNotBlank }}
