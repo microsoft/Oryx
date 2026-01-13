@@ -4,7 +4,7 @@ async-generator==1.10
 async-timeout==4.0.2
 attrs==21.2.0
 azure-common==1.1.27
-azure-core==1.17.0
+azure-core==1.38.0
 azure-identity==1.5.0
 azure-keyvault-secrets==4.2.0
 azure-storage-blob==2.1.0
