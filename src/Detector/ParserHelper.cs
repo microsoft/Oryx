@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Detector
         /// <summary>
         /// Default maximum allowed file size for configuration files (10 MB).
         /// </summary>
-        private const long DefaultMaxConfigurationFileSizeInMB = 10;
+        private const int DefaultMaxConfigurationFileSizeInMB = 10;
 
         /// <summary>
         /// Environment variable name to override the maximum configuration file size.
@@ -33,14 +33,14 @@ namespace Microsoft.Oryx.Detector
         /// Gets the maximum allowed file size for configuration files in MB.
         /// Can be overridden via ORYX_MAX_CONFIG_FILE_SIZE_MB environment variable.
         /// </summary>
-        private static long MaxConfigurationFileSizeInMB
+        private static int MaxConfigurationFileSizeInMB
         {
             get
             {
                 var envValue = Environment.GetEnvironmentVariable(MaxFileSizeEnvironmentVariable);
                 if (!string.IsNullOrEmpty(envValue) && double.TryParse(envValue, out var customSize) && customSize > 0)
                 {
-                    return (long)Math.Ceiling(customSize);
+                    return (int)Math.Ceiling(customSize);
                 }
 
                 return DefaultMaxConfigurationFileSizeInMB;
@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.Detector
         /// <returns>A TomlTable object containing information about the .toml file.</returns>
         public static TomlTable ParseTomlFile(ISourceRepo sourceRepo, string filePath)
         {
-            ValidateFileSizeBeforeReading(sourceRepo, filePath);
+            ValidateFileSizeOrThrow(sourceRepo, filePath);
             var tomlContent = sourceRepo.ReadFile(filePath);
 
             try
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Detector
         /// <returns>A YamlMappingNode object containing information about the .yaml file.</returns>
         public static YamlNode ParseYamlFile(ISourceRepo sourceRepo, string filePath)
         {
-            ValidateFileSizeBeforeReading(sourceRepo, filePath);
+            ValidateFileSizeOrThrow(sourceRepo, filePath);
             var yamlContent = sourceRepo.ReadFile(filePath);
             var yamlStream = new YamlStream();
 
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Detector
         /// <returns>A JObject object containing information about the .json file.</returns>
         public static JObject ParseJsonFile(ISourceRepo sourceRepo, string filePath)
         {
-            ValidateFileSizeBeforeReading(sourceRepo, filePath);
+            ValidateFileSizeOrThrow(sourceRepo, filePath);
             var jsonContent = sourceRepo.ReadFile(filePath);
             return JObject.Parse(jsonContent);
         }
@@ -123,7 +123,7 @@ namespace Microsoft.Oryx.Detector
         /// <param name="sourceRepo">Source repo for the application.</param>
         /// <param name="filePath">The path to the file to validate.</param>
         /// <exception cref="InvalidOperationException">Thrown when file size exceeds the maximum allowed size.</exception>
-        private static void ValidateFileSizeBeforeReading(ISourceRepo sourceRepo, string filePath)
+        private static void ValidateFileSizeOrThrow(ISourceRepo sourceRepo, string filePath)
         {
             var fileSize = sourceRepo.GetFileSize(filePath);
 
