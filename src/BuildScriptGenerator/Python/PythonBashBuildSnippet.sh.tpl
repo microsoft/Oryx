@@ -102,6 +102,12 @@ install_via_pip() {
     if [ -n "$upgrade_flag" ]; then
         base_cmd="$base_cmd $upgrade_flag"
     fi
+
+    # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+    if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+        echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+        base_cmd="$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+    fi
     
     # Log the command
     local pip_cmd="$base_cmd | ts $TS_FMT"
@@ -202,7 +208,15 @@ install_python_packages_impl() {
             set +e
             echo "Running pip install..."
             START_TIME=$SECONDS
-            InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
+            InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE" 
+            
+            # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+            if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+                echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+                InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+            fi
+            
+            InstallCommand="$InstallCommand | ts $TS_FMT"
             printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
             pipInstallExitCode=${PIPESTATUS[0]}
@@ -328,7 +342,16 @@ install_python_packages_impl() {
             echo
             echo Running pip install...
             START_TIME=$SECONDS
-            InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT"
+            InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }}" 
+
+            # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+            if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+                echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+                InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+            fi
+
+            InstallCommand="$InstallCommand | ts $TS_FMT"
+
             printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
             pipInstallExitCode=${PIPESTATUS[0]}

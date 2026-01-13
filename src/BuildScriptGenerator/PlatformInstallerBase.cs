@@ -199,12 +199,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"echo \"performing sha512 checksum for: {platformName}...\"")
                 .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha512sum -c - >/dev/null 2>&1")
                 .AppendLine("fi")
-                .AppendLine($"rm -f {tarFile}");
+                .AppendLine($"rm -f {tarFile}")
+                .AppendLine("CHECKSUM_VERIFICATION_ELAPSED_TIME=$(($SECONDS - $CHECKSUM_VERIFICATION_START))")
+                .AppendLine("echo \"Checksum verification done in $CHECKSUM_VERIFICATION_ELAPSED_TIME sec(s).\"");
                 }
 
             snippet
-                .AppendLine("CHECKSUM_VERIFICATION_ELAPSED_TIME=$(($SECONDS - $CHECKSUM_VERIFICATION_START))")
-                .AppendLine("echo \"Checksum verification done in $CHECKSUM_VERIFICATION_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
                 .AppendLine("oryxImageDetectorFile=\"/opt/oryx/.imagetype\"")
                 .AppendLine("oryxOsDetectorFile=\"/opt/oryx/.ostype\"")
