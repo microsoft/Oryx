@@ -31,6 +31,7 @@ fi
 
 # Function to install packages via uv
 install_via_uv() {
+    START_TIME=$SECONDS
     local python_cmd=$1
     local cache_dir=$2
     local requirements_file=$3
@@ -67,12 +68,14 @@ install_via_uv() {
     # Execute uv pip install (uv manages its own cache)
     eval $base_cmd | ts $TS_FMT
     local exit_code=${PIPESTATUS[0]}
-    
+    ELAPSED_TIME=$(($SECONDS - $START_TIME))
+    echo "uv pip install done in $ELAPSED_TIME sec(s)."
     return $exit_code
 }
 
 # Function to install packages via pip
 install_via_pip() {
+    START_TIME=$SECONDS
     local python_cmd=$1
     local cache_dir=$2
     local requirements_file=$3
@@ -98,7 +101,8 @@ install_via_pip() {
     # Execute pip install
     eval $base_cmd | ts $TS_FMT
     local exit_code=${PIPESTATUS[0]}
-    
+    ELAPSED_TIME=$(($SECONDS - $START_TIME))
+    echo "uv pip install done in $ELAPSED_TIME sec(s)."
     return $exit_code
 }
 
@@ -175,9 +179,11 @@ install_python_packages_impl() {
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
         if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+            set +e
             echo "PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback..."
             install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
+            set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
                 LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
@@ -185,6 +191,7 @@ install_python_packages_impl() {
             fi
         else
             set +e
+            echo "PYTHON_FAST_BUILD_ENABLED is not set to true, using pip directly..."
             echo "Running pip install..."
             START_TIME=$SECONDS
             InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
@@ -302,14 +309,15 @@ install_python_packages_impl() {
             echo "PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback..."
             install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
+            set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
                 LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 exit $pipInstallExitCode
             fi
-            set -e
         else
             set +e
+            echo "PYTHON_FAST_BUILD_ENABLED is not set to true, using pip directly..."
             echo
             echo Running pip install...
             START_TIME=$SECONDS

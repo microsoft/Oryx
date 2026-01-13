@@ -242,7 +242,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotEmpty(text);
             Assert.NotNull(text);
             Assert.Contains("install_python_packages_impl", text);
-            Assert.Contains("\"--upgrade\"", text);
+            // The upgrade flag appears in both the PYTHON_FAST_BUILD_ENABLED branch (via functions)
+            // and the default pip branch (inline)
+            Assert.Contains("--upgrade", text);
         }
 
         [Fact]
@@ -316,23 +318,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotEmpty(text);
             Assert.NotNull(text);
             
-            // Verify the wrapper function exists
-            Assert.Contains("install_python_packages() {", text);
-            
-            // Verify it checks for PYTHON_FAST_BUILD_ENABLED flag
+            // Verify it checks for PYTHON_FAST_BUILD_ENABLED flag inline
             Assert.Contains("if [ \"$PYTHON_FAST_BUILD_ENABLED\" = \"true\" ]; then", text);
             
             // Verify it has message when enabled
             Assert.Contains("PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback...", text);
             
             // Verify it has message when not enabled (default pip behavior)
-            Assert.Contains("PYTHON_FAST_BUILD_ENABLED is not enabled, using pip directly...", text);
+            Assert.Contains("PYTHON_FAST_BUILD_ENABLED is not set to true, using pip directly...", text);
             
             // Verify it calls impl function (uv with fallback) when enabled
-            Assert.Contains("install_python_packages_impl \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+            Assert.Contains("install_python_packages_impl \"python\" \"$PIP_CACHE_DIR\" \"$REQUIREMENTS_TXT_FILE\"", text);
             
-            // Verify it calls pip directly when not enabled
-            Assert.Contains("install_via_pip \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+            // Verify it uses pip directly when not enabled
+            Assert.Contains("python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE", text);
         }
 
         [Fact]
@@ -392,8 +391,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotEmpty(text);
             Assert.NotNull(text);
             
-            // Verify install_python_packages is called for requirements.txt
-            Assert.Contains("install_python_packages \"$python\" \"$PIP_CACHE_DIR\" \"$REQUIREMENTS_TXT_FILE\"", text);
+            // Verify install_python_packages_impl is called when flag is set for requirements.txt
+            Assert.Contains("install_python_packages_impl \"python\" \"$PIP_CACHE_DIR\" \"$REQUIREMENTS_TXT_FILE\"", text);
         }
     }
 }
