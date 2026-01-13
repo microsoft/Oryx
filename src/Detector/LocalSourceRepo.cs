@@ -90,6 +90,14 @@ namespace Microsoft.Oryx.Detector
             return File.ReadAllLines(path);
         }
 
+        /// <inheritdoc/>
+        public long? GetFileSize(params string[] paths)
+        {
+            var path = this.ResolvePath(paths);
+            var fileInfo = new FileInfo(path);
+            return fileInfo.Exists ? (long?)fileInfo.Length : null;
+        }
+
         private string ResolvePath(params string[] paths)
         {
             var filePathInRepo = Path.Combine(paths);

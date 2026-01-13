@@ -20,9 +20,32 @@ namespace Microsoft.Oryx.Detector
     internal static class ParserHelper
     {
         /// <summary>
-        /// Maximum allowed file size for configuration files (10 MB).
+        /// Default maximum allowed file size for configuration files (10 MB).
         /// </summary>
-        private const long MaxConfigurationFileSizeInBytes = 10 * 1024 * 1024; // 10 MB
+        private const long DefaultMaxConfigurationFileSizeInMB = 10;
+
+        /// <summary>
+        /// Environment variable name to override the maximum configuration file size.
+        /// </summary>
+        private const string MaxFileSizeEnvironmentVariable = "ORYX_MAX_CONFIG_FILE_SIZE_MB";
+
+        /// <summary>
+        /// Gets the maximum allowed file size for configuration files in MB.
+        /// Can be overridden via ORYX_MAX_CONFIG_FILE_SIZE_MB environment variable.
+        /// </summary>
+        private static long MaxConfigurationFileSizeInMB
+        {
+            get
+            {
+                var envValue = Environment.GetEnvironmentVariable(MaxFileSizeEnvironmentVariable);
+                if (!string.IsNullOrEmpty(envValue) && double.TryParse(envValue, out var customSize) && customSize > 0)
+                {
+                    return (long)Math.Ceiling(customSize);
+                }
+
+                return DefaultMaxConfigurationFileSizeInMB;
+            }
+        }
 
         /// <summary>
         /// Parse a .toml file into a TomlTable from the Tomlyn library.
@@ -103,14 +126,17 @@ namespace Microsoft.Oryx.Detector
         private static void ValidateFileSizeBeforeReading(ISourceRepo sourceRepo, string filePath)
         {
             var fileSize = sourceRepo.GetFileSize(filePath);
-            
-            if (fileSize > MaxConfigurationFileSizeInBytes)
+
+            if (fileSize.HasValue)
             {
-                var fileSizeMB = fileSize / (1024.0 * 1024.0);
-                var maxSizeMB = MaxConfigurationFileSizeInBytes / (1024.0 * 1024.0);
-                throw new InvalidOperationException(
-                    $"Configuration file '{filePath}' is too large ({fileSizeMB:F2} MB). " +
-                    $"The maximum allowed size is {maxSizeMB:F2} MB.");
+                var fileSizeMB = fileSize.Value / (1024.0 * 1024.0);
+
+                if (fileSizeMB > MaxConfigurationFileSizeInMB)
+                {
+                    throw new InvalidOperationException(
+                        $"Configuration file '{filePath}' is too large ({fileSizeMB:F2} MB). " +
+                        $"The maximum allowed size is {MaxConfigurationFileSizeInMB} MB.");
+                }
             }
         }
     }

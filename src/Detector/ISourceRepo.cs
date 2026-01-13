@@ -46,6 +46,13 @@ namespace Microsoft.Oryx.Detector
         string[] ReadAllLines(params string[] paths);
 
         /// <summary>
+        /// Gets the size of a file in bytes.
+        /// </summary>
+        /// <param name="paths">Path to the file inside the repo.</param>
+        /// <returns>The size of the file in bytes, or null if the file does not exist.</returns>
+        long? GetFileSize(params string[] paths);
+
+        /// <summary>
         /// Gets a list of paths to files based on the specified <paramref name="searchPattern"/>.
         /// </summary>
         /// <param name="searchPattern">The search pattern of the file name.</param>
