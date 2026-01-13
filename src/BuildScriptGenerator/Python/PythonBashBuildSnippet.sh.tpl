@@ -29,6 +29,116 @@ fi
     REQUIREMENTS_TXT_FILE="requirements.txt"
 {{ end }}
 
+# Function to install packages via uv
+install_via_uv() {
+    START_TIME=$SECONDS
+    local python_cmd=$1
+    local cache_dir=$2
+    local requirements_file=$3
+    local target_dir=$4
+    local upgrade_flag=$5
+    
+    # Install uv if not already available
+    if ! command -v uv &> /dev/null; then
+        echo "Installing uv..."
+        local install_uv_cmd="$python_cmd -m pip install uv"
+        printf %s " , $install_uv_cmd" >> "$COMMAND_MANIFEST_FILE"
+        $python_cmd -m pip install uv
+    else
+        echo "uv is already installed, skipping installation..."
+    fi
+    
+    set +e
+    echo "Running uv pip install..."
+    
+    # Build the command
+    # Note: uv uses its own cache mechanism, not pip's cache-dir
+    local base_cmd="uv pip install --link-mode=copy"
+    
+    # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+    if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+        echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+        base_cmd="$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+    fi
+    
+    base_cmd="$base_cmd -r $requirements_file"
+    
+    if [ -n "$target_dir" ]; then
+        base_cmd="$base_cmd --target=\"$target_dir\""
+    fi
+    if [ -n "$upgrade_flag" ]; then
+        base_cmd="$base_cmd $upgrade_flag"
+    fi
+    
+    # Log the command
+    local uv_cmd="$base_cmd | ts $TS_FMT"
+    printf %s " , $uv_cmd" >> "$COMMAND_MANIFEST_FILE"
+    
+    # Execute uv pip install (uv manages its own cache)
+    eval $base_cmd | ts $TS_FMT
+    local exit_code=${PIPESTATUS[0]}
+    ELAPSED_TIME=$(($SECONDS - $START_TIME))
+    echo "uv pip install done in $ELAPSED_TIME sec(s)."
+    return $exit_code
+}
+
+# Function to install packages via pip
+install_via_pip() {
+    START_TIME=$SECONDS
+    local python_cmd=$1
+    local cache_dir=$2
+    local requirements_file=$3
+    local target_dir=$4
+    local upgrade_flag=$5
+    
+    set +e
+    echo "Running pip install..."
+    
+    # Build the command
+    local base_cmd="$python_cmd -m pip install --cache-dir $cache_dir --prefer-binary -r $requirements_file"
+    if [ -n "$target_dir" ]; then
+        base_cmd="$base_cmd --target=\"$target_dir\""
+    fi
+    if [ -n "$upgrade_flag" ]; then
+        base_cmd="$base_cmd $upgrade_flag"
+    fi
+    
+    # Log the command
+    local pip_cmd="$base_cmd | ts $TS_FMT"
+    printf %s " , $pip_cmd" >> "$COMMAND_MANIFEST_FILE"
+    
+    # Execute pip install
+    eval $base_cmd | ts $TS_FMT
+    local exit_code=${PIPESTATUS[0]}
+    ELAPSED_TIME=$(($SECONDS - $START_TIME))
+    echo "uv pip install done in $ELAPSED_TIME sec(s)."
+    return $exit_code
+}
+
+# Internal function to install packages with uv and fallback to pip
+install_python_packages_impl() {
+    local python_cmd=$1
+    local cache_dir=$2
+    local requirements_file=$3
+    local target_dir=$4
+    local upgrade_flag=$5
+    
+    set +e
+    # Try uv first
+    install_via_uv "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
+    local exit_code=$?
+    
+    # Fallback to pip if uv fails
+    if [[ $exit_code != 0 ]]; then
+        echo "uv pip install failed with exit code ${exit_code}, falling back to pip install..."
+        install_via_pip "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
+        exit_code=$?
+    fi
+    set -e
+    
+    return $exit_code
+}
+
 {{ if VirtualEnvironmentName | IsNotBlank }}
     {{ if PackagesDirectory | IsNotBlank }}
         if [ -d "{{ PackagesDirectory }}" ]
@@ -77,22 +187,35 @@ fi
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
-        set +e
-        echo "Running pip install..."
-        START_TIME=$SECONDS
-        InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
-        printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-        pipInstallExitCode=${PIPESTATUS[0]}
+        if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+            set +e
+            echo "Fast build is enabled"
+            install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
+            pipInstallExitCode=$?
+            set -e
+            if [[ $pipInstallExitCode != 0 ]]
+            then
+                LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $pipInstallExitCode
+            fi
+        else
+            set +e
+            echo "Running pip install..."
+            START_TIME=$SECONDS
+            InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
+            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            pipInstallExitCode=${PIPESTATUS[0]}
 
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "pip install done in $ELAPSED_TIME sec(s)."
-        set -e
-        echo "${output}"
-        if [[ $pipInstallExitCode != 0 ]]
-        then
-            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-            exit $pipInstallExitCode
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "pip install done in $ELAPSED_TIME sec(s)."
+            set -e
+            echo "${output}"
+            if [[ $pipInstallExitCode != 0 ]]
+            then
+                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $pipInstallExitCode
+            fi
         fi
     elif [ -e "setup.py" ]
     then
@@ -189,23 +312,36 @@ fi
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
-        set +e
-        echo
-        echo Running pip install...
-        START_TIME=$SECONDS
-        InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT"
-        printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-        pipInstallExitCode=${PIPESTATUS[0]}
+        if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+            set +e
+            echo "Fast build is enabled"
+            install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
+            pipInstallExitCode=$?
+            set -e
+            if [[ $pipInstallExitCode != 0 ]]
+            then
+                LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $pipInstallExitCode
+            fi
+        else
+            set +e
+            echo
+            echo Running pip install...
+            START_TIME=$SECONDS
+            InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT"
+            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            pipInstallExitCode=${PIPESTATUS[0]}
 
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "pip install done in $ELAPSED_TIME sec(s)."
-        set -e
-        echo "${output}"
-        if [[ $pipInstallExitCode != 0 ]]
-        then
-            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-            exit $pipInstallExitCode
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "pip install done in $ELAPSED_TIME sec(s)."
+            set -e
+            echo "${output}"
+            if [[ $pipInstallExitCode != 0 ]]
+            then
+                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $pipInstallExitCode
+            fi
         fi
     elif [ -e "setup.py" ]
     then
