@@ -189,7 +189,6 @@ install_python_packages_impl() {
     then
         if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
             set +e
-            echo "PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback..."
             install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
             set -e
@@ -200,7 +199,6 @@ install_python_packages_impl() {
             fi
         else
             set +e
-            echo "PYTHON_FAST_BUILD_ENABLED is not set to true, using pip directly..."
             echo "Running pip install..."
             START_TIME=$SECONDS
             InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
@@ -315,7 +313,6 @@ install_python_packages_impl() {
     then
         if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
             set +e
-            echo "PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback..."
             install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
             set -e
@@ -326,7 +323,6 @@ install_python_packages_impl() {
             fi
         else
             set +e
-            echo "PYTHON_FAST_BUILD_ENABLED is not set to true, using pip directly..."
             echo
             echo Running pip install...
             START_TIME=$SECONDS
