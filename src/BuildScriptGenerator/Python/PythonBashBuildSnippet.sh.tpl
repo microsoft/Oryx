@@ -218,7 +218,7 @@ install_python_packages_impl() {
                 InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
             fi
             
-            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
             pipInstallExitCode=${PIPESTATUS[0]}
 
@@ -351,7 +351,7 @@ install_python_packages_impl() {
                 InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
             fi
 
-            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
             pipInstallExitCode=${PIPESTATUS[0]}
 
