@@ -20,6 +20,11 @@ namespace Microsoft.Oryx.Detector
     internal static class ParserHelper
     {
         /// <summary>
+        /// Maximum allowed file size for configuration files (10 MB).
+        /// </summary>
+        private const long MaxConfigurationFileSizeInBytes = 10 * 1024 * 1024; // 10 MB
+
+        /// <summary>
         /// Parse a .toml file into a TomlTable from the Tomlyn library.
         /// See https://github.com/xoofx/Tomlyn for more information.
         /// </summary>
@@ -28,6 +33,7 @@ namespace Microsoft.Oryx.Detector
         /// <returns>A TomlTable object containing information about the .toml file.</returns>
         public static TomlTable ParseTomlFile(ISourceRepo sourceRepo, string filePath)
         {
+            ValidateFileSizeBeforeReading(sourceRepo, filePath);
             var tomlContent = sourceRepo.ReadFile(filePath);
 
             try
@@ -57,6 +63,7 @@ namespace Microsoft.Oryx.Detector
         /// <returns>A YamlMappingNode object containing information about the .yaml file.</returns>
         public static YamlNode ParseYamlFile(ISourceRepo sourceRepo, string filePath)
         {
+            ValidateFileSizeBeforeReading(sourceRepo, filePath);
             var yamlContent = sourceRepo.ReadFile(filePath);
             var yamlStream = new YamlStream();
 
@@ -82,8 +89,29 @@ namespace Microsoft.Oryx.Detector
         /// <returns>A JObject object containing information about the .json file.</returns>
         public static JObject ParseJsonFile(ISourceRepo sourceRepo, string filePath)
         {
+            ValidateFileSizeBeforeReading(sourceRepo, filePath);
             var jsonContent = sourceRepo.ReadFile(filePath);
             return JObject.Parse(jsonContent);
+        }
+
+        /// <summary>
+        /// Validates that a file size does not exceed the maximum allowed size before reading it into memory.
+        /// </summary>
+        /// <param name="sourceRepo">Source repo for the application.</param>
+        /// <param name="filePath">The path to the file to validate.</param>
+        /// <exception cref="InvalidOperationException">Thrown when file size exceeds the maximum allowed size.</exception>
+        private static void ValidateFileSizeBeforeReading(ISourceRepo sourceRepo, string filePath)
+        {
+            var fileSize = sourceRepo.GetFileSize(filePath);
+            
+            if (fileSize > MaxConfigurationFileSizeInBytes)
+            {
+                var fileSizeMB = fileSize / (1024.0 * 1024.0);
+                var maxSizeMB = MaxConfigurationFileSizeInBytes / (1024.0 * 1024.0);
+                throw new InvalidOperationException(
+                    $"Configuration file '{filePath}' is too large ({fileSizeMB:F2} MB). " +
+                    $"The maximum allowed size is {maxSizeMB:F2} MB.");
+            }
         }
     }
 }
