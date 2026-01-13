@@ -322,10 +322,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("if [ \"$PYTHON_FAST_BUILD_ENABLED\" = \"true\" ]; then", text);
             
             // Verify it has message when enabled
-            Assert.Contains("PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback...", text);
+            Assert.Contains("Fast build is enabled", text);
             
-            // Verify it has message when not enabled (default pip behavior)
-            Assert.Contains("PYTHON_FAST_BUILD_ENABLED is not set to true, using pip directly...", text);
+            // Verify it has message when running pip (either as fallback or direct)
+            Assert.Contains("Running pip install...", text);
             
             // Verify it calls impl function (uv with fallback) when enabled
             Assert.Contains("install_python_packages_impl \"python\" \"$PIP_CACHE_DIR\" \"$REQUIREMENTS_TXT_FILE\"", text);

@@ -189,6 +189,7 @@ install_python_packages_impl() {
     then
         if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
             set +e
+            echo "Fast build is enabled"
             install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
             set -e
@@ -313,6 +314,7 @@ install_python_packages_impl() {
     then
         if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
             set +e
+            echo "Fast build is enabled"
             install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
             set -e
