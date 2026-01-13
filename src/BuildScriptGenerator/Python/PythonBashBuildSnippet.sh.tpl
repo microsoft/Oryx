@@ -53,7 +53,16 @@ install_via_uv() {
     
     # Build the command
     # Note: uv uses its own cache mechanism, not pip's cache-dir
-    local base_cmd="uv pip install --link-mode=copy -r $requirements_file"
+    local base_cmd="uv pip install --link-mode=copy"
+    
+    # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+    if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+        echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+        base_cmd="$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+    fi
+    
+    base_cmd="$base_cmd -r $requirements_file"
+    
     if [ -n "$target_dir" ]; then
         base_cmd="$base_cmd --target=\"$target_dir\""
     fi

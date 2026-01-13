@@ -1722,6 +1722,48 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact, Trait("category", "githubactions")]
+        public void UvPipInstall_UsesPreloadedWheelsDir_WhenProvided()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var wheelsDir = "/tmp/preloaded-wheels";
+            
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {wheelsDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> 
+                { 
+                    CreateAppNameEnvVar(appName),
+                    new EnvironmentVariable("PYTHON_FAST_BUILD_ENABLED", "true"),
+                    new EnvironmentVariable("PYTHON_PRELOADED_WHEELS_DIR", wheelsDir)
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback...", result.StdOut);
+                    Assert.Contains($"Using preloaded wheels from: {wheelsDir}", result.StdOut);
+                    Assert.Contains("Running uv pip install...", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         private string GetDefaultVirtualEnvName(string version)
         {
             var ver = new SemanticVersioning.Version(version);
