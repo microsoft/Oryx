@@ -126,27 +126,6 @@ install_python_packages_impl() {
     return $exit_code
 }
 
-# Wrapper function to decide installation method based on PYTHON_FAST_BUILD_ENABLED flag
-install_python_packages() {
-    local python_cmd=$1
-    local cache_dir=$2
-    local requirements_file=$3
-    local target_dir=$4
-    local upgrade_flag=$5
-    
-    if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-        # Use uv with fallback to pip (fast build)
-        echo "PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback..."
-        install_python_packages_impl "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
-        return $?
-    else
-        # Use pip directly (default behavior)
-        echo "PYTHON_FAST_BUILD_ENABLED is set to false, using pip directly..."
-        install_via_pip "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
-        return $?
-    fi
-}
-
 {{ if VirtualEnvironmentName | IsNotBlank }}
     {{ if PackagesDirectory | IsNotBlank }}
         if [ -d "{{ PackagesDirectory }}" ]
@@ -195,13 +174,33 @@ install_python_packages() {
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
-        install_python_packages "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
-        pipInstallExitCode=$?
-        
-        if [[ $pipInstallExitCode != 0 ]]
-        then
-            LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-            exit $pipInstallExitCode
+        if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+            echo "PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback..."
+            install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
+            pipInstallExitCode=$?
+            if [[ $pipInstallExitCode != 0 ]]
+            then
+                LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $pipInstallExitCode
+            fi
+        else
+            set +e
+            echo "Running pip install..."
+            START_TIME=$SECONDS
+            InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
+            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            pipInstallExitCode=${PIPESTATUS[0]}
+
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "pip install done in $ELAPSED_TIME sec(s)."
+            set -e
+            echo "${output}"
+            if [[ $pipInstallExitCode != 0 ]]
+            then
+                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $pipInstallExitCode
+            fi
         fi
     elif [ -e "setup.py" ]
     then
@@ -298,18 +297,36 @@ install_python_packages() {
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
-        echo
-        START_TIME=$SECONDS
-        install_python_packages "$python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
-        pipInstallExitCode=$?
-        
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "Done in $ELAPSED_TIME sec(s)."
-        
-        if [[ $pipInstallExitCode != 0 ]]
-        then
-            LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-            exit $pipInstallExitCode
+        if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+            set +e
+            echo "PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback..."
+            install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
+            pipInstallExitCode=$?
+            if [[ $pipInstallExitCode != 0 ]]
+            then
+                LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $pipInstallExitCode
+            fi
+            set -e
+        else
+            set +e
+            echo
+            echo Running pip install...
+            START_TIME=$SECONDS
+            InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT"
+            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            pipInstallExitCode=${PIPESTATUS[0]}
+
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "pip install done in $ELAPSED_TIME sec(s)."
+            set -e
+            echo "${output}"
+            if [[ $pipInstallExitCode != 0 ]]
+            then
+                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                exit $pipInstallExitCode
+            fi
         fi
     elif [ -e "setup.py" ]
     then
