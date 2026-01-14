@@ -163,7 +163,7 @@ then
 		COMPRESSION_DONE=false
 		if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
 			rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
-			echo "Usinggg zstd for compression"
+			echo "Using zstd for compression"
 			set +e
 			output=$( ( tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" $excludedDirectories . ; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
 			compressionExitCode=${PIPESTATUS[0]}
