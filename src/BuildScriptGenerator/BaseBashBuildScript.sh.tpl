@@ -176,7 +176,6 @@ then
 			else
 				echo "WARNING: Direct compression with zstd failed: $output, exit code: $compressionExitCode"
 				echo "Falling back to gzip compression."
-				BASE_START_TIME=$SECONDS
 			fi
 		fi
 
@@ -184,6 +183,7 @@ then
 			if [ -f "$DESTINATION_DIR/output.tar.zst" ]; then
 				rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
 			fi
+			BASE_START_TIME=$SECONDS
 			echo "Using gzip for compression"
 			tar -zcf "$DESTINATION_DIR/output.tar.gz" $excludedDirectories .
 			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
@@ -297,10 +297,10 @@ then
 			if [ -f "$DESTINATION_DIR/output.tar.zst" ]; then
 				rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
 			fi
+			BASE_START_TIME=$SECONDS
 			echo "Using gzip for compression"
-			GZIP_START_TIME=$SECONDS
 			tar -zcf "$DESTINATION_DIR/output.tar.gz" .
-			ELAPSED_TIME=$(($SECONDS - $GZIP_START_TIME))
+			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 			echo "Copied the compressed output to '$DESTINATION_DIR'"
 			echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
 		fi
