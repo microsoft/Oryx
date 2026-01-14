@@ -63,7 +63,7 @@ func untar(dst string, tarballFile string) error {
         return untarWithGzip(dst, tarballFile)
     } else {
         errMsg := fmt.Errorf("unsupported compression format for file: %s", tarballFile)
-        Println(errMsg)
+        println(errMsg)
         return errMsg
 	}
 }
@@ -76,7 +76,7 @@ func untarWithZstd(dst string, tarballFile string) error {
     output, err := cmd.CombinedOutput()
     if err != nil {
         errMsg := fmt.Errorf("zstd tar extraction failed: %v, output: %s", err, output)
-        Println(errMsg)
+        println(errMsg)
         return errMsg
     }
     println(fmt.Sprintf("zstd tar Successfully extracted '%s' to '%s'", tarballFile, dst))
