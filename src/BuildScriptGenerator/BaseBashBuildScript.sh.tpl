@@ -160,15 +160,28 @@ then
 		excludedDirectories+=" --exclude={{ excludedDir }}"
 		{{ end }}
 
+		COMPRESSION_DONE=false
 		if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
 			rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
-			echo "Using zstd for compression"
-			tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" $excludedDirectories .
-			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
-			echo "Copied the compressed output to '$DESTINATION_DIR'"
-			echo "Direct compression with zstd done in $ELAPSED_TIME sec(s)."
-		else
-			rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+			echo "Usinggg zstd for compression"
+			output=$( ( tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" $excludedDirectories . ; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+			compressionExitCode=${PIPESTATUS[0]}
+			if [[ $compressionExitCode -eq 0 ]]; then
+				ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
+				echo "Copied the compressed output to '$DESTINATION_DIR'"
+				echo "Direct compression with zstd done in $ELAPSED_TIME sec(s)."
+				COMPRESSION_DONE=true
+			else
+				echo "WARNING: Direct compression with zstd failed: $output, exit code: $compressionExitCode"
+				echo "Falling back to gzip compression."
+				BASE_START_TIME=$SECONDS
+			fi
+		fi
+
+		if [ "$COMPRESSION_DONE" = "false" ]; then
+			if [ -f "$DESTINATION_DIR/output.tar.zst" ]; then
+				rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+			fi
 			echo "Using gzip for compression"
 			tar -zcf "$DESTINATION_DIR/output.tar.gz" $excludedDirectories .
 			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
@@ -259,33 +272,33 @@ then
 		BASE_START_TIME=$SECONDS
 		cd "$preCompressedDestinationDir"
 
-		COMPRESSION_SUCCESS=false
+		COMPRESSION_DONE=false
 		if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
 			rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
 			echo "Using zstd for compression"
-			if tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .; then
+			output=$( ( tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" . ; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+			compressionExitCode=${PIPESTATUS[0]}
+			if [[ $compressionExitCode -eq 0 ]]; then
 				ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 				echo "Copied the compressed output to '$DESTINATION_DIR'"
 				echo "Compression with zstd done in $ELAPSED_TIME sec(s)."
-				COMPRESSION_SUCCESS=true
+				COMPRESSION_DONE=true
 			else
-				echo "WARNING: Compression with zstd failed. Falling back to gzip..." 1>&2
-				rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+				echo "WARNING: Compression with zstd failed: $output, exit code: $compressionExitCode"
+				echo "Falling back to gzip compression."
 			fi
 		fi
 
-		if [ "$COMPRESSION_SUCCESS" = "false" ]; then
-			rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+		if [ "$COMPRESSION_DONE" = "false" ]; then
+			if [ -f "$DESTINATION_DIR/output.tar.zst" ]; then
+				rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+			fi
 			echo "Using gzip for compression"
 			GZIP_START_TIME=$SECONDS
-			if tar -zcf "$DESTINATION_DIR/output.tar.gz" .; then
-				ELAPSED_TIME=$(($SECONDS - $GZIP_START_TIME))
-				echo "Copied the compressed output to '$DESTINATION_DIR'"
-				echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
-			else
-				echo "ERROR: Compression with gzip failed." 1>&2
-				exit 1
-			fi
+			tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+			ELAPSED_TIME=$(($SECONDS - $GZIP_START_TIME))
+			echo "Copied the compressed output to '$DESTINATION_DIR'"
+			echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
 		fi
 	{{ end }}
 fi
