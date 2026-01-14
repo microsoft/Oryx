@@ -4,6 +4,8 @@ set -e
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt, pyproject.toml, or setup.py; Not installing dependencies. More information: https://aka.ms/requirements-not-found'
 echo "Python Version: $python"
+
+# Cache directories for package installation
 PIP_CACHE_DIR=/usr/local/share/pip-cache
 UV_PIP_CACHE_DIR=/usr/local/share/uv-pip-cache
 
@@ -20,6 +22,7 @@ echo "PlatformWithVersion=Python {{ PythonVersion }}" > "$COMMAND_MANIFEST_FILE"
 
 InstallCommand=""
 
+# Create PIP cache directory if it doesn't exist
 if [ ! -d "$PIP_CACHE_DIR" ];then
     mkdir -p $PIP_CACHE_DIR
 fi
@@ -32,6 +35,11 @@ fi
 
 # Function to install packages via uv
 install_via_uv() {
+    # Create UV cache directory if it doesn't exist
+    if [ ! -d "$UV_PIP_CACHE_DIR" ];then
+        mkdir -p $UV_PIP_CACHE_DIR
+    fi
+
     START_TIME=$SECONDS
     local python_cmd=$1
     local requirements_file=$2
