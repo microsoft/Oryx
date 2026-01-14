@@ -199,6 +199,7 @@ RUN tmpDir="/opt/tmp" \
     && chmod +x /opt/oryx/logger \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
+    && mkdir -p /usr/local/share/uv-pip-cache/lib \
     && chmod -R 777 /usr/local/share/uv-pip-cache \
     # Grant read-write permissions to the nuget folder so that dotnet restore
     # can write into it.
