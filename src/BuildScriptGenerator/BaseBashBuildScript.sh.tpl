@@ -259,23 +259,35 @@ then
 		BASE_START_TIME=$SECONDS
 		cd "$preCompressedDestinationDir"
 
+		COMPRESSION_SUCCESS=false
 		if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
 			rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
 			echo "Using zstd for compression"
-			tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .
-			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
-			echo "Copied the compressed output to '$DESTINATION_DIR'"
-			echo "Compression with zstd done in $ELAPSED_TIME sec(s)."
-		else
+			if tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" .; then
+				ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
+				echo "Copied the compressed output to '$DESTINATION_DIR'"
+				echo "Compression with zstd done in $ELAPSED_TIME sec(s)."
+				COMPRESSION_SUCCESS=true
+			else
+				echo "WARNING: Compression with zstd failed. Falling back to gzip..." 1>&2
+				rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
+			fi
+		fi
+
+		if [ "$COMPRESSION_SUCCESS" = "false" ]; then
 			rm -f "$DESTINATION_DIR/output.tar.zst" 2>/dev/null || true
 			echo "Using gzip for compression"
-			tar -zcf "$DESTINATION_DIR/output.tar.gz" .
-			ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
-			echo "Copied the compressed output to '$DESTINATION_DIR'"
-			echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
+			GZIP_START_TIME=$SECONDS
+			if tar -zcf "$DESTINATION_DIR/output.tar.gz" .; then
+				ELAPSED_TIME=$(($SECONDS - $GZIP_START_TIME))
+				echo "Copied the compressed output to '$DESTINATION_DIR'"
+				echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
+			else
+				echo "ERROR: Compression with gzip failed." 1>&2
+				exit 1
+			fi
 		fi
-		{{ end }}
-	fi
+	{{ end }}
 fi
 
 {{ if ManifestFileName | IsNotBlank }}
