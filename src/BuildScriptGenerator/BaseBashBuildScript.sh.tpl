@@ -304,7 +304,7 @@ then
 			echo "Copied the compressed output to '$DESTINATION_DIR'"
 			echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
 		fi
-	{{ end }}
+		{{ end }}
 	fi
 fi
 
