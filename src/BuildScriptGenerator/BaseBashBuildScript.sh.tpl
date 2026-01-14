@@ -164,8 +164,10 @@ then
 		if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
 			rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
 			echo "Usinggg zstd for compression"
+			set +e
 			output=$( ( tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" $excludedDirectories . ; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
 			compressionExitCode=${PIPESTATUS[0]}
+			set -e
 			if [[ $compressionExitCode -eq 0 ]]; then
 				ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 				echo "Copied the compressed output to '$DESTINATION_DIR'"
@@ -276,8 +278,10 @@ then
 		if [ "$ORYX_COMPRESS_WITH_ZSTD" = "true" ]; then
 			rm -f "$DESTINATION_DIR/output.tar.gz" 2>/dev/null || true
 			echo "Using zstd for compression"
+			set +e
 			output=$( ( tar -I zstd -cf "$DESTINATION_DIR/output.tar.zst" . ; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
 			compressionExitCode=${PIPESTATUS[0]}
+			set -e
 			if [[ $compressionExitCode -eq 0 ]]; then
 				ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 				echo "Copied the compressed output to '$DESTINATION_DIR'"
@@ -301,6 +305,7 @@ then
 			echo "Compression with gzip done in $ELAPSED_TIME sec(s)."
 		fi
 	{{ end }}
+	fi
 fi
 
 {{ if ManifestFileName | IsNotBlank }}
