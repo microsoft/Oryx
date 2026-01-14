@@ -75,8 +75,9 @@ install_via_uv() {
     printf %s " , $uv_cmd" >> "$COMMAND_MANIFEST_FILE"
     
     # Execute uv pip install (uv manages its own cache)
-    eval $base_cmd | ts $TS_FMT
+    output=$( ( $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} ) 
     local exit_code=${PIPESTATUS[0]}
+    echo "${output}"
     ELAPSED_TIME=$(($SECONDS - $START_TIME))
     echo "uv pip install done in $ELAPSED_TIME sec(s)."
     return $exit_code
@@ -102,16 +103,23 @@ install_via_pip() {
     if [ -n "$upgrade_flag" ]; then
         base_cmd="$base_cmd $upgrade_flag"
     fi
+
+    # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+    if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+        echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+        base_cmd="$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+    fi
     
     # Log the command
     local pip_cmd="$base_cmd | ts $TS_FMT"
     printf %s " , $pip_cmd" >> "$COMMAND_MANIFEST_FILE"
     
     # Execute pip install
-    eval $base_cmd | ts $TS_FMT
+    output=$( ( $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} ) 
     local exit_code=${PIPESTATUS[0]}
+    echo "${output}"
     ELAPSED_TIME=$(($SECONDS - $START_TIME))
-    echo "uv pip install done in $ELAPSED_TIME sec(s)."
+    echo "pip install done in $ELAPSED_TIME sec(s)."
     return $exit_code
 }
 
@@ -202,15 +210,22 @@ install_python_packages_impl() {
             set +e
             echo "Running pip install..."
             START_TIME=$SECONDS
-            InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
-            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE" 
+            
+            # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+            if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+                echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+                InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+            fi
+            
+            printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
             pipInstallExitCode=${PIPESTATUS[0]}
 
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "pip install done in $ELAPSED_TIME sec(s)."
             set -e
             echo "${output}"
+            echo "pip install done in $ELAPSED_TIME sec(s)."
             if [[ $pipInstallExitCode != 0 ]]
             then
                 LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
@@ -234,9 +249,9 @@ install_python_packages_impl() {
         output=$( ( pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "pip install done in $ELAPSED_TIME sec(s)."
         set -e
         echo "${output}"
+        echo "pip install done in $ELAPSED_TIME sec(s)."
         if [[ $pythonBuildExitCode != 0 ]]
         then
             LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
@@ -328,15 +343,22 @@ install_python_packages_impl() {
             echo
             echo Running pip install...
             START_TIME=$SECONDS
-            InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT"
-            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }}" 
+
+            # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+            if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+                echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+                InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+            fi
+
+            printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
             pipInstallExitCode=${PIPESTATUS[0]}
 
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "pip install done in $ELAPSED_TIME sec(s)."
             set -e
             echo "${output}"
+            echo "pip install done in $ELAPSED_TIME sec(s)."
             if [[ $pipInstallExitCode != 0 ]]
             then
                 LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
@@ -368,9 +390,9 @@ install_python_packages_impl() {
         output=$( ( $python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "pip install done in $ELAPSED_TIME sec(s)."
         set -e
         echo "${output}"
+        echo "pip install done in $ELAPSED_TIME sec(s)."
         if [[ $pythonBuildExitCode != 0 ]]
         then
             LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
@@ -400,9 +422,9 @@ install_python_packages_impl() {
             output=$( ( eval $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
             uvExitCode=${PIPESTATUS[0]}
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "uv pip install done in $ELAPSED_TIME sec(s)."
             set -e
             echo "${output}"
+            echo "uv pip install done in $ELAPSED_TIME sec(s)."
             if [[ $uvExitCode != 0 ]]; then
                 LogError "${output} | Exit code: ${uvExitCode} | Please review your uv.lock | ${moreInformation}"
                 exit $uvExitCode

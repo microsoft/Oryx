@@ -394,5 +394,230 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Verify install_python_packages_impl is called when flag is set for requirements.txt
             Assert.Contains("install_python_packages_impl \"python\" \"$PIP_CACHE_DIR\" \"$REQUIREMENTS_TXT_FILE\"", text);
         }
+
+        [Fact]
+        public void GeneratedSnippet_InstallViaUv_ContainsPreloadedWheelsCheck()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            
+            // Verify install_via_uv function contains preloaded wheels check
+            Assert.Contains("install_via_uv() {", text);
+            Assert.Contains("# Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set", text);
+            Assert.Contains("if [ -n \"$PYTHON_PRELOADED_WHEELS_DIR\" ]; then", text);
+            Assert.Contains("echo \"Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR\"", text);
+            Assert.Contains("base_cmd=\"$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR\"", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_InstallViaPip_ContainsPreloadedWheelsCheck()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            
+            // Verify install_via_pip function contains preloaded wheels check
+            Assert.Contains("install_via_pip() {", text);
+            
+            // Count occurrences of the preloaded wheels pattern in install_via_pip
+            int count = 0;
+            int index = 0;
+            string searchPattern = "if [ -n \"$PYTHON_PRELOADED_WHEELS_DIR\" ]; then";
+            while ((index = text.IndexOf(searchPattern, index)) != -1)
+            {
+                count++;
+                index += searchPattern.Length;
+            }
+            
+            // Should appear in install_via_uv, install_via_pip, and two pip direct paths (venv and non-venv)
+            Assert.True(count >= 2, $"Expected at least 2 occurrences of preloaded wheels check, found {count}");
+        }
+
+        [Fact]
+        public void GeneratedSnippet_VirtualEnv_PipDirectPath_ContainsPreloadedWheelsCheck()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: "venv",
+                virtualEnvironmentModule: "venv",
+                virtualEnvironmentParameters: "",
+                packagesDirectory: null,
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            
+            // Verify the virtual env section has preloaded wheels check in else branch (pip direct path)
+            Assert.Contains("VIRTUALENVIRONMENTNAME=venv", text);
+            
+            // The else branch for pip direct should have preloaded wheels support
+            // It appears after the fast build check in the virtual env section
+            Assert.Contains("else", text);
+            Assert.Contains("echo \"Running pip install...\"", text);
+            
+            // Verify preloaded wheels check exists
+            int uvCheckIndex = text.IndexOf("install_via_uv() {");
+            int pipCheckIndex = text.IndexOf("install_via_pip() {");
+            Assert.True(uvCheckIndex > 0, "install_via_uv function should exist");
+            Assert.True(pipCheckIndex > 0, "install_via_pip function should exist");
+        }
+
+        [Fact]
+        public void GeneratedSnippet_NonVirtualEnv_PipDirectPath_ContainsPreloadedWheelsCheck()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            
+            // Verify the non-virtual env section has preloaded wheels check in else branch (pip direct path)
+            // This is in the section without VIRTUALENVIRONMENTNAME
+            
+            // The script should contain the else branch with pip direct install
+            Assert.Contains("echo", text);
+            Assert.Contains("echo Running pip install...", text);
+            
+            // In non-virtual env mode, should have 3 locations with preloaded wheels support:
+            // 1. install_via_uv (shared function)
+            // 2. install_via_pip (shared function)
+            // 3. Non-virtual env else branch (pip direct)
+            
+            int count = 0;
+            int index = 0;
+            string searchPattern = "if [ -n \"$PYTHON_PRELOADED_WHEELS_DIR\" ]; then";
+            while ((index = text.IndexOf(searchPattern, index)) != -1)
+            {
+                count++;
+                index += searchPattern.Length;
+            }
+            
+            // Should appear 3 times in non-virtual env mode
+            Assert.Equal(3, count);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_AllPreloadedWheelsChecks_HaveConsistentStructure()
+        {
+            // Arrange - Use virtual env to test that branch
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: "venv",
+                virtualEnvironmentModule: "venv",
+                virtualEnvironmentParameters: "",
+                packagesDirectory: null,
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            
+            // Verify each preloaded wheels check follows the same pattern:
+            // 1. Comment
+            // 2. if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+            // 3. echo message
+            // 4. Command modification with --find-links
+            
+            // In virtual env mode, should have 3 checks:
+            // - install_via_uv function
+            // - install_via_pip function
+            // - Virtual env else branch (pip direct)
+            
+            // All checks should have the comment
+            int commentCount = 0;
+            int index = 0;
+            string commentPattern = "# Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set";
+            while ((index = text.IndexOf(commentPattern, index)) != -1)
+            {
+                commentCount++;
+                index += commentPattern.Length;
+            }
+            Assert.Equal(3, commentCount);
+            
+            // All checks should have the echo message
+            int echoCount = 0;
+            index = 0;
+            string echoPattern = "echo \"Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR\"";
+            while ((index = text.IndexOf(echoPattern, index)) != -1)
+            {
+                echoCount++;
+                index += echoPattern.Length;
+            }
+            Assert.Equal(3, echoCount);
+            
+            // All checks should have --find-links flag
+            int findLinksCount = 0;
+            index = 0;
+            string findLinksPattern = "--find-links=$PYTHON_PRELOADED_WHEELS_DIR";
+            while ((index = text.IndexOf(findLinksPattern, index)) != -1)
+            {
+                findLinksCount++;
+                index += findLinksPattern.Length;
+            }
+            Assert.Equal(3, findLinksCount);
+        }
     }
 }

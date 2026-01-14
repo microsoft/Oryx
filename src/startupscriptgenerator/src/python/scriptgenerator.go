@@ -77,7 +77,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			tarballFile = gzipTarballFile
 			println("Found gzip-compressed tarball.")
 		} else {
-			panic(fmt.Sprintf("Could not find compressed output. Expected '%s' or '%s'", zstdTarballFile, gzipTarballFile))
+			panic(fmt.Sprintf("zstd/gzip output not found: '%s' or '%s'", zstdTarballFile, gzipTarballFile))
 		}
 
 		common.ExtractTarball(tarballFile, gen.Manifest.SourceDirectoryInBuildContainer)
