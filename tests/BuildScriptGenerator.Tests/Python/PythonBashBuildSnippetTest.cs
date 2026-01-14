@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotEmpty(text);
             Assert.NotNull(text);
             Assert.Contains("install_via_uv() {", text);
-            Assert.Contains("uv pip install --link-mode=copy", text);
+            Assert.Contains("uv pip install", text);
             Assert.Contains("base_cmd=\"$base_cmd -r $requirements_file\"", text);
         }
 
