@@ -57,6 +57,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             return content.Split(new[] { '\r', '\n' });
         }
 
+        public long? GetFileSize(params string[] paths)
+        {
+            var path = Path.Combine(paths);
+            if (_pathsToFiles.TryGetValue(path, out var content))
+            {
+                return content?.Length;
+            }
+            return null;
+        }
+
         public string GetGitCommitId() => null;
     }
 }
