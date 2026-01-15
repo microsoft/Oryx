@@ -60,7 +60,7 @@ install_via_uv() {
     echo "Running uv pip install..."
     
     # Build the command with --no-build to only use pre-built wheels
-    local base_cmd="uv pip install --cache-dir $UV_PIP_CACHE_DIR --no-build"
+    local base_cmd="uv pip install --cache-dir $UV_PIP_CACHE_DIR --no-build --compile-bytecode"
     
     # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
     if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
