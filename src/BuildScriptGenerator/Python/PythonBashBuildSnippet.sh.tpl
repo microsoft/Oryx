@@ -4,7 +4,10 @@ set -e
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt, pyproject.toml, or setup.py; Not installing dependencies. More information: https://aka.ms/requirements-not-found'
 echo "Python Version: $python"
+
+# Cache directories for package installation
 PIP_CACHE_DIR=/usr/local/share/pip-cache
+UV_PIP_CACHE_DIR=/usr/local/share/uv-pip-cache
 
 {{ if PythonBuildCommandsFileName | IsNotBlank }}
 COMMAND_MANIFEST_FILE="{{ PythonBuildCommandsFileName }}"
@@ -19,6 +22,7 @@ echo "PlatformWithVersion=Python {{ PythonVersion }}" > "$COMMAND_MANIFEST_FILE"
 
 InstallCommand=""
 
+# Create PIP cache directory if it doesn't exist
 if [ ! -d "$PIP_CACHE_DIR" ];then
     mkdir -p $PIP_CACHE_DIR
 fi
@@ -31,12 +35,16 @@ fi
 
 # Function to install packages via uv
 install_via_uv() {
+    # Create UV cache directory if it doesn't exist
+    if [ ! -d "$UV_PIP_CACHE_DIR" ];then
+        mkdir -p $UV_PIP_CACHE_DIR
+    fi
+
     START_TIME=$SECONDS
     local python_cmd=$1
-    local cache_dir=$2
-    local requirements_file=$3
-    local target_dir=$4
-    local upgrade_flag=$5
+    local requirements_file=$2
+    local target_dir=$3
+    local upgrade_flag=$4
     
     # Install uv if not already available
     if ! command -v uv &> /dev/null; then
@@ -51,9 +59,8 @@ install_via_uv() {
     set +e
     echo "Running uv pip install..."
     
-    # Build the command
-    # Note: uv uses its own cache mechanism, not pip's cache-dir
-    local base_cmd="uv pip install"
+    # Build the command with --no-build to only use pre-built wheels
+    local base_cmd="uv pip install --cache-dir $UV_PIP_CACHE_DIR --no-build"
     
     # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
     if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
@@ -87,16 +94,15 @@ install_via_uv() {
 install_via_pip() {
     START_TIME=$SECONDS
     local python_cmd=$1
-    local cache_dir=$2
-    local requirements_file=$3
-    local target_dir=$4
-    local upgrade_flag=$5
+    local requirements_file=$2
+    local target_dir=$3
+    local upgrade_flag=$4
     
     set +e
     echo "Running pip install..."
     
     # Build the command
-    local base_cmd="$python_cmd -m pip install --cache-dir $cache_dir --prefer-binary -r $requirements_file"
+    local base_cmd="$python_cmd -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $requirements_file"
     if [ -n "$target_dir" ]; then
         base_cmd="$base_cmd --target=\"$target_dir\""
     fi
@@ -126,20 +132,19 @@ install_via_pip() {
 # Internal function to install packages with uv and fallback to pip
 install_python_packages_impl() {
     local python_cmd=$1
-    local cache_dir=$2
-    local requirements_file=$3
-    local target_dir=$4
-    local upgrade_flag=$5
+    local requirements_file=$2
+    local target_dir=$3
+    local upgrade_flag=$4
     
     set +e
     # Try uv first
-    install_via_uv "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
+    install_via_uv "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
     local exit_code=$?
     
     # Fallback to pip if uv fails
     if [[ $exit_code != 0 ]]; then
         echo "uv pip install failed with exit code ${exit_code}, falling back to pip install..."
-        install_via_pip "$python_cmd" "$cache_dir" "$requirements_file" "$target_dir" "$upgrade_flag"
+        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
         exit_code=$?
     fi
     set -e
@@ -198,7 +203,7 @@ install_python_packages_impl() {
         if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
             set +e
             echo "Fast build is enabled"
-            install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
+            install_python_packages_impl "python" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
             set -e
             if [[ $pipInstallExitCode != 0 ]]
@@ -330,7 +335,7 @@ install_python_packages_impl() {
         if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
             set +e
             echo "Fast build is enabled"
-            install_python_packages_impl "python" "$PIP_CACHE_DIR" "$REQUIREMENTS_TXT_FILE" "" ""
+            install_python_packages_impl "python" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
             set -e
             if [[ $pipInstallExitCode != 0 ]]

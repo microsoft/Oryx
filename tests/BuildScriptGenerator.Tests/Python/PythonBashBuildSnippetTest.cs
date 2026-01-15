@@ -276,16 +276,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Verify orchestrator function exists
             Assert.Contains("install_python_packages_impl() {", text);
             
-            // Verify it tries uv first
-            Assert.Contains("install_via_uv \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+            // Verify it tries uv first - note: cache_dir param removed from signature
+            Assert.Contains("install_via_uv \"$python_cmd\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
             
             // Verify fallback logic exists
             Assert.Contains("if [[ $exit_code != 0 ]]; then", text);
             Assert.Contains("uv pip install failed with exit code", text);
             Assert.Contains("falling back to pip install", text);
             
-            // Verify it calls pip on fallback
-            Assert.Contains("install_via_pip \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+            // Verify it calls pip on fallback - note: cache_dir param removed from signature
+            Assert.Contains("install_via_pip \"$python_cmd\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
             
             // Verify both installation functions are defined
             Assert.Contains("install_via_uv() {", text);
@@ -327,8 +327,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Verify it has message when running pip (either as fallback or direct)
             Assert.Contains("Running pip install...", text);
             
-            // Verify it calls impl function (uv with fallback) when enabled
-            Assert.Contains("install_python_packages_impl \"python\" \"$PIP_CACHE_DIR\" \"$REQUIREMENTS_TXT_FILE\"", text);
+            // Verify it calls impl function (uv with fallback) when enabled - note: cache_dir param removed
+            Assert.Contains("install_python_packages_impl \"python\" \"$REQUIREMENTS_TXT_FILE\"", text);
             
             // Verify it uses pip directly when not enabled
             Assert.Contains("python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE", text);
@@ -361,8 +361,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("install_python_packages_impl() {", text);
             Assert.Contains("# Internal function to install packages with uv and fallback to pip", text);
             
-            // Verify it contains uv first logic
-            Assert.Contains("install_via_uv \"$python_cmd\" \"$cache_dir\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
+            // Verify it contains uv first logic - note: cache_dir param removed from signature
+            Assert.Contains("install_via_uv \"$python_cmd\" \"$requirements_file\" \"$target_dir\" \"$upgrade_flag\"", text);
             
             // Verify fallback to pip
             Assert.Contains("falling back to pip install...", text);
@@ -392,7 +392,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotNull(text);
             
             // Verify install_python_packages_impl is called when flag is set for requirements.txt
-            Assert.Contains("install_python_packages_impl \"python\" \"$PIP_CACHE_DIR\" \"$REQUIREMENTS_TXT_FILE\"", text);
+            // Note: cache_dir param removed, now it's just: python_cmd, requirements_file, target_dir, upgrade_flag
+            Assert.Contains("install_python_packages_impl \"python\" \"$REQUIREMENTS_TXT_FILE\"", text);
         }
 
         [Fact]
@@ -424,6 +425,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("if [ -n \"$PYTHON_PRELOADED_WHEELS_DIR\" ]; then", text);
             Assert.Contains("echo \"Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR\"", text);
             Assert.Contains("base_cmd=\"$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR\"", text);
+            
+            // Verify UV_PIP_CACHE_DIR is used
+            Assert.Contains("UV_PIP_CACHE_DIR=", text);
+            Assert.Contains("uv pip install --cache-dir $UV_PIP_CACHE_DIR", text);
         }
 
         [Fact]
