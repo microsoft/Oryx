@@ -191,6 +191,7 @@ then
 			echo "Direct compression with gzip done in $ELAPSED_TIME sec(s)."
 		fi
 	else
+		echo "Using standard output preparation..."
 		{{ ## When compressing destination directory is chosen, we want to copy the source content to a temporary 
 		destination directory first, compress the content there and then copy that content to the final destination 
 		directory ## }}
