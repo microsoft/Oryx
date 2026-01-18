@@ -1003,8 +1003,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
             var appOutputDir = "/tmp/nextjs-yarn2-example";
             var appDir = volume.ContainerDir;
+            // Next.js 14 requires Node.js >=18.17.0
             var script = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {NodeVersions.Node20Version}")
                 .ToString();
 
             // Act
