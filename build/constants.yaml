@@ -388,7 +388,7 @@
     directory: src/startupscriptgenerator/src/common/consts
 - name: hugo-constants
   constants:
-    version: 0.121.2
+    version: 0.152.2
     platform-name: hugo
     installed-hugo-versions-dir: /opt/hugo
     installation-url-format: https://github.com/gohugoio/hugo/releases/download/v#VERSION#/#TAR_FILE#
