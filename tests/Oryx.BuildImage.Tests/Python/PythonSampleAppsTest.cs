@@ -1632,7 +1632,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("Fast build is enabled", result.StdOut);
+                    Assert.Contains("PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback...", result.StdOut);
                     Assert.Contains("Installing uv...", result.StdOut);
                     Assert.Contains("Running uv pip install...", result.StdOut);
                 },
@@ -1667,8 +1667,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                    Assert.Contains("PYTHON_FAST_BUILD_ENABLED is not enabled, using pip directly...", result.StdOut);
                     Assert.Contains("Running pip install...", result.StdOut);
-                    Assert.DoesNotContain("Fast build is enabled", result.StdOut);
                     Assert.DoesNotContain("Installing uv...", result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1713,7 +1713,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("Fast build is enabled", result.StdOut);
+                    Assert.Contains("PYTHON_FAST_BUILD_ENABLED is set to true, using uv pip with fallback...", result.StdOut);
                     Assert.Contains("Installing uv...", result.StdOut);
                     Assert.Contains("Running uv pip install...", result.StdOut);
                     Assert.Contains("falling back to pip install", result.StdOut);
