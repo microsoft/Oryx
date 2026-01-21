@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(hugoPlatform);
                     Assert.NotNull(hugoPlatform.Versions);
                     Assert.True(hugoPlatform.Versions.Any());
-                    Assert.True(hugoPlatform.Versions.Contains("0.152.2"));
+                    Assert.True(hugoPlatform.Versions.Contains("0.121.2"));
                 },
             result.GetDebugInfo());
         }
