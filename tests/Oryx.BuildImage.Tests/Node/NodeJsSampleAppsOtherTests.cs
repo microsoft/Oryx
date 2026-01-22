@@ -701,7 +701,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
+        [Fact(Skip = "Lerna is not installed in the GitHub Actions build image"), Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir_WhenPackageDirAndSourceDirAreSame()
         {
             // Arrange
