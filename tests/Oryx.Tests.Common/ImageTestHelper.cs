@@ -515,6 +515,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsBuster = "github-actions-debian-buster";
         public const string GitHubActionsBullseye = "github-actions-debian-bullseye";
         public const string GitHubActionsBookworm = "github-actions-debian-bookworm";
+        public const string GitHubActionsNoble = "github-actions-ubuntu-noble";
         public const string GitHubActionsStretchBase = "github-actions-debian-stretch-base";
         public const string GitHubActionsBusterBase = "github-actions-debian-buster-base";
         public const string GitHubActionsBullseyeBase = "github-actions-debian-bullseye-base";
