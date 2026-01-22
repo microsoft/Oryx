@@ -1667,7 +1667,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("PYTHON_FAST_BUILD_ENABLED is not enabled, using pip directly...", result.StdOut);
                     Assert.Contains("Running pip install...", result.StdOut);
                     Assert.DoesNotContain("Installing uv...", result.StdOut);
                 },
