@@ -194,8 +194,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";
         }
-
-        [Fact, Trait("category", "githubactions")]
+        
+        [Fact(Skip = "Go is no longer pre-installed in the GitHub Actions build image"), Trait("category", "githubactions")]
         public void GithubActionsImageHasGoLangInstalled()
         {
             // Arrange
