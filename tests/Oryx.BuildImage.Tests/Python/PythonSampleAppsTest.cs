@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
             JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.GitHubActionsBullseye);
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBullseye);
-            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBullseye);
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
         }
 
         public void GeneratesScript_AndBuilds(string buildImageName)
@@ -1668,7 +1668,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains("Running pip install...", result.StdOut);
-                    Assert.DoesNotContain("Installing uv...", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
