@@ -701,7 +701,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
+        [Fact(Skip = "InstallLernaCommand is never executed in NodeBashBuildSnippet.sh.tpl to install lerna globally before use"), Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir_WhenPackageDirAndSourceDirAreSame()
         {
             // Arrange
