@@ -12,7 +12,6 @@ namespace Microsoft.Oryx.Tests.Common
     {
         private readonly static List<(string Version, string OsType)> NodeVersions = new List<(string, string)>
         {
-            ("18", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("20", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("20", ImageTestHelperConstants.OsTypeDebianBookworm),
             ("22", ImageTestHelperConstants.OsTypeDebianBookworm),
@@ -20,7 +19,6 @@ namespace Microsoft.Oryx.Tests.Common
 
         private readonly static List<(string Version, string OsType)> NodeBullseyeVersions = new List<(string, string)>
         {
-            ("18", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("20", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("22", ImageTestHelperConstants.OsTypeDebianBullseye),
         };
