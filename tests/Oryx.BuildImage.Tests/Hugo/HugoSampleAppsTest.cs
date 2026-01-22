@@ -38,8 +38,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddFileExistsCheck($"{appOutputDir}/public/index.xml")
                 .ToString();
 
-            Console.WriteLine(script);
-
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
