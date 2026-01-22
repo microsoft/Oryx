@@ -36,6 +36,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActionsBuster = ImageTestHelperConstants.GitHubActionsBuster;
         private const string _gitHubActionsBullseye = ImageTestHelperConstants.GitHubActionsBullseye;
         private const string _gitHubActionsBookworm = ImageTestHelperConstants.GitHubActionsBookworm;
+        private const string _gitHubActionsNoble = ImageTestHelperConstants.GitHubActionsNoble;
         private const string _gitHubActionsStretchBase = ImageTestHelperConstants.GitHubActionsStretchBase;
         private const string _gitHubActionsBusterBase = ImageTestHelperConstants.GitHubActionsBusterBase;
         private const string _gitHubActionsBullseyeBase = ImageTestHelperConstants.GitHubActionsBullseyeBase;
@@ -316,6 +317,10 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string GetGitHubActionsBuildImage(string buildImageTag = null)
         {
+            if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsNoble))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsNoble}{_tagSuffix}";
+            }
             if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBookworm))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBookworm}{_tagSuffix}";
