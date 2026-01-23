@@ -22,7 +22,7 @@ click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.2.0
 crispy-bootstrap5==0.6
-cryptography==39.0.1
+cryptography==41.0.4
 cssselect==1.1.0
 data-wizard==1.3.0
 dateparser==1.0.0
