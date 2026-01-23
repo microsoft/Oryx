@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
 
             // Assert
             var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}-{osType}";
-            Assert.Equal(expectedImage, runtimeImage);
+            Assert.Equal(expectedImage, "random");
         }
 
         [Fact]
