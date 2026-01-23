@@ -187,6 +187,12 @@ namespace Microsoft.Oryx.Tests.Common
                 return $"{runtimeRepoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
             }
 
+            // If osType was explicitly provided, include it in the image tag
+            if (!string.IsNullOrEmpty(osType))
+            {
+                return $"{runtimeRepoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
+            }
+
             return $"{runtimeRepoPrefix}/{platformName}:{platformVersion}{_tagSuffix}";
         }
 
@@ -533,8 +539,8 @@ namespace Microsoft.Oryx.Tests.Common
         public const string CliBusterTag = "debian-buster";
         public const string CliBullseyeTag = "debian-bullseye";
         public const string CliBuilderBullseyeTag = "builder-debian-bullseye";
-        public const string LatestStretchTag = "debian-stretch";
-        public const string LtsVersionsStretch = "lts-versions-debian-stretch";
+        public const string LatestStretchTag = "debian-bullseye";
+        public const string LtsVersionsStretch = "lts-versions-debian-bullseye";
         public const string LtsVersionsBuster = "lts-versions-debian-buster";
         public const string FullStretch = "full-debian-stretch";
         public const string FullBuster = "full-debian-buster";

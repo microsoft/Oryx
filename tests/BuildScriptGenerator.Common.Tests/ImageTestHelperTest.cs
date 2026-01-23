@@ -132,8 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
             var buildImage = imageHelper.GetBuildImage();
 
             // Assert
-            var expectedTag = tagSuffixValue.TrimStart('-');
-            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{expectedTag}";
+            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_latestTag}{tagSuffixValue}";
             Assert.Equal(expectedImage, buildImage);
         }
 
@@ -197,8 +196,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
             var packImage = imageHelper.GetPackImage();
 
             // Assert
-            var expectedTag = tagSuffixValue.TrimStart('-');
-            var expectedImage = $"{_defaultImageBase}/{_packRepository}:{expectedTag}";
+            var expectedImage = $"{_defaultImageBase}/{_packRepository}:{_latestTag}{tagSuffixValue}";
             Assert.Equal(expectedImage, packImage);
         }
 
@@ -251,13 +249,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:github-actions-debian-stretch";
+            var expected = "oryxtests/build:github-actions-debian-bullseye";
 
             // Act
             var actual = imageHelper.GetGitHubActionsBuildImage();
 
             // Assert
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -265,13 +263,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:debian-stretch";
+            var expected = "oryxtests/build:debian-bullseye";
 
             // Act
             var actual = imageHelper.GetBuildImage();
 
             // Assert
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -279,13 +277,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:lts-versions-debian-stretch";
+            var expected = "oryxtests/build:lts-versions-debian-bullseye";
 
             // Act
             var actual = imageHelper.GetLtsVersionsBuildImage();
 
             // Assert
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

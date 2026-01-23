@@ -114,7 +114,17 @@ namespace Microsoft.Oryx.Detector
         {
             ValidateFileSizeOrThrow(sourceRepo, filePath);
             var jsonContent = sourceRepo.ReadFile(filePath);
-            return JObject.Parse(jsonContent);
+            try
+            {
+                return JObject.Parse(jsonContent);
+            }
+            catch (Exception ex)
+            {
+                throw new FailedToParseFileException(
+                    filePath,
+                    string.Format(Messages.FailedToParseFileExceptionFormat, filePath),
+                    ex);
+            }
         }
 
         /// <summary>
