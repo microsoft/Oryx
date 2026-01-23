@@ -694,6 +694,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 outputDirPath = "build";
             }
+            if (buildCommand.Contains("vite build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "dist";
+            }
             else if (buildCommand.Contains("next build", StringComparison.OrdinalIgnoreCase))
             {
                 outputDirPath = ".next";
