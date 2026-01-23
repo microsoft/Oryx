@@ -969,12 +969,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
             var appOutputDir = "/tmp/nextjs-yarn2-example";
             var appDir = volume.ContainerDir;
+            // Next.js 14 requires Node.js >=18.17.0
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"yarn set version berry")
                 .AddCommand($"yarn plugin import workspace-tools@2.2.0")
                 .AddCommand($"yarn set version 2.4.1")
-                .AddCommand($"oryx build . -o {appOutputDir}")
+                .AddBuildCommand($". -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {NodeVersions.Node20Version}")
                 .ToString();
 
             // Act
@@ -1003,8 +1004,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
             var appOutputDir = "/tmp/nextjs-yarn2-example";
             var appDir = volume.ContainerDir;
+            // Next.js 14 requires Node.js >=18.17.0
             var script = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {NodeVersions.Node20Version}")
                 .ToString();
 
             // Act
