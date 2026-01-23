@@ -18,7 +18,6 @@ using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 
 namespace Oryx.Integration.Tests
 {
