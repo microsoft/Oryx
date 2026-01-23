@@ -126,7 +126,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
+        [Fact(Skip = "GitHub Actions build image does not have Conda installed."), Trait("category", "githubactions")]
         public void CanBuildAppWithCondaEnviornmentYmlFileHavingPipPackages()
         {
             // Arrange
@@ -162,7 +162,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
+        [Fact(Skip = "GitHub Actions build image does not have Conda installed."), Trait("category", "githubactions")]
         public void CanBuildJuliaPythonSampleApp()
         {
             // Arrange
