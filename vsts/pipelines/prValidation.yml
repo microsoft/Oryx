@@ -1,0 +1,240 @@
+parameters:
+  - name: Subscription
+    default: 'Oryx (e13e3c2a-b6ed-4969-875a-28bec9f4513f)'
+    type: string
+
+stages:
+- stage: build_sdk
+  displayName: Build SDK
+  jobs:
+  - job: Build_SDK_Job
+    timeoutInMinutes: 120
+    steps:
+    - task: AzureCLI@2
+      displayName: Initiating Build SDK pipeline run
+      env:
+        AZURE_STORAGE_AUTH_MODE: 'login'
+        AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        azureSubscription: ${{ parameters.Subscription }}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              RUN_ID=$(az pipelines run \
+                --name AAPT-Antares-Oryx-Publish-Binaries-Buddy \
+                --organization https://msazure.visualstudio.com/ \
+                --project Antares \
+                --query id \
+                --parameters "github_branchname=$(system.pullRequest.sourceBranch)"
+              )
+              echo "Pipeline run has been initiated with RUN ID: " $RUN_ID
+              echo "##vso[task.setvariable variable=RUN_ID_BUILD_SDK;]$RUN_ID"
+    - task: AzureCLI@2
+      displayName: Monitoring Build SDK pipeline run
+      env:
+        AZURE_STORAGE_AUTH_MODE: 'login'
+        AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        azureSubscription: ${{ parameters.Subscription }}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              echo "Monitoring Build SDK pipeline having RUN ID: " $RUN_ID_BUILD_SDK
+              STATUS=$(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
+              while [ "$STATUS" == "inProgress" ] || [ "$STATUS" == "notStarted" ]; do
+                echo "Current Status: "$STATUS
+                sleep 120
+                STATUS=$(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
+              done
+              echo "Pipeline run has been completed with status: " $STATUS
+    - task: AzureCLI@2
+      displayName: Result of Build SDK pipeline run
+      condition: always()
+      env:
+        AZURE_STORAGE_AUTH_MODE: 'login'
+        AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        azureSubscription: ${{ parameters.Subscription }}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              if [ "$AGENT_JOBSTATUS" = "Canceled" ]; then
+                if [ -n "$RUN_ID_BUILD_SDK" ]; then
+                  echo "Pipeline abandoned"
+                  echo $(az pipelines build cancel --build-id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com --project Antares --query status -o tsv) 
+                fi
+              fi
+              if [ -n "$RUN_ID_BUILD_SDK" ]; then
+                RESULT=$(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com --project Antares --query result -o tsv)
+                echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com --project Antares --query status -o tsv)
+                echo "Pipeline Result: " $RESULT
+                echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_BUILD_SDK&view=results"
+                if [ "$RESULT" != "succeeded" ]; then
+                  echo "Pipeline run failed with result: $RESULT"
+                  exit 1
+                fi
+              else
+                echo "Run was not initiated"
+              fi
+
+- stage: build_image
+  displayName: Build Image
+  dependsOn: build_sdk
+  jobs:
+  - job: Build_Image_Job
+    timeoutInMinutes: 120
+    steps:
+    - task: AzureCLI@2
+      displayName: Initiating Build Image pipeline run
+      name: Init_Build_Image_Pipe
+      env:
+        AZURE_STORAGE_AUTH_MODE: 'login'
+        AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        azureSubscription: ${{ parameters.Subscription }}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              RUN_ID=$(az pipelines run \
+                --name AAPT-Antares-Oryx-Buddy \
+                --organization https://msazure.visualstudio.com/ \
+                --project Antares \
+                --query id \
+                --parameters "github_branchname=$(system.pullRequest.sourceBranch)"
+              )
+              echo "Pipeline run has been initiated with RUN ID: " $RUN_ID
+              echo "##vso[task.setvariable variable=RUN_ID_BUILD_IMAGE;]$RUN_ID"
+              BUILD_NUMBER=$(az pipelines runs show \
+                --id $RUN_ID \
+                --organization https://msazure.visualstudio.com/ \
+                --project Antares \
+                --query buildNumber \
+                -o tsv
+              )
+              echo "Pipeline run has Build Number: " $BUILD_NUMBER
+              echo "##vso[task.setvariable variable=BUILD_NUMBER_BUILD_IMAGE;isoutput=true]$BUILD_NUMBER"
+    - task: AzureCLI@2
+      displayName: Monitoring Build Image pipeline run
+      env:
+        AZURE_STORAGE_AUTH_MODE: 'login'
+        AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        azureSubscription: ${{ parameters.Subscription }}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              echo "Monitoring Build Image pipeline having RUN ID: " $RUN_ID_BUILD_IMAGE
+              STATUS=$(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
+              while [ "$STATUS" == "inProgress" ] || [ "$STATUS" == "notStarted" ]; do
+                echo "Current Status: "$STATUS
+                sleep 120
+                STATUS=$(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
+              done
+              echo "Pipeline run has been completed with status: " $STATUS
+    - task: AzureCLI@2
+      displayName: Result of Build Image pipeline run
+      condition: always()
+      env:
+        AZURE_STORAGE_AUTH_MODE: 'login'
+        AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        azureSubscription: ${{ parameters.Subscription }}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              if [ "$AGENT_JOBSTATUS" = "Canceled" ]; then
+                if [ -n "$RUN_ID_BUILD_IMAGE" ]; then
+                  echo "Pipeline abandoned"
+                  echo $(az pipelines build cancel --build-id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com --project Antares --query status -o tsv) 
+                fi
+              fi
+              if [ -n "$RUN_ID_BUILD_IMAGE" ]; then
+                RESULT=$(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com --project Antares --query result -o tsv)
+                echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com --project Antares --query status -o tsv)
+                echo "Pipeline Result: " $RESULT
+                echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_BUILD_IMAGE&view=results"
+                if [ "$RESULT" != "succeeded" ]; then
+                  echo "Pipeline run failed with result: $RESULT"
+                  exit 1
+                fi
+              else
+                echo "Run was not initiated"
+              fi
+
+- stage: Test
+  displayName: Testing
+  dependsOn: build_image
+  jobs:
+  - job: Test_Job
+    timeoutInMinutes: 120
+    variables:
+      BUILD_NUMBER_BUILD_IMAGE: $[stageDependencies.build_image.Build_Image_Job.outputs['Init_Build_Image_Pipe.BUILD_NUMBER_BUILD_IMAGE']]
+    steps:
+    - task: AzureCLI@2
+      displayName: Initiating Test pipeline run
+      env:
+        AZURE_STORAGE_AUTH_MODE: 'login'
+        AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        azureSubscription: ${{ parameters.Subscription }}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              echo "Using Build Number: " $BUILD_NUMBER_BUILD_IMAGE
+              RUN_ID=$(az pipelines run \
+                --name OryxTests \
+                --organization https://msazure.visualstudio.com/ \
+                --project Antares \
+                --query id \
+                --parameters "BuildNumber=$BUILD_NUMBER_BUILD_IMAGE" "github_branchname=$(system.pullRequest.sourceBranch)" "GitCommit=$(system.pullRequest.sourceCommitId)"
+              )
+              echo "Pipeline run has been initiated with RUN ID: " $RUN_ID
+              echo "##vso[task.setvariable variable=RUN_ID_TEST;]$RUN_ID"
+    - task: AzureCLI@2
+      displayName: Monitoring Test pipeline run
+      env:
+        AZURE_STORAGE_AUTH_MODE: 'login'
+        AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        azureSubscription: ${{ parameters.Subscription }}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              echo "Monitoring Test pipeline having RUN ID: " $RUN_ID_TEST
+              STATUS=$(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
+              while [ "$STATUS" == "inProgress" ] || [ "$STATUS" == "notStarted" ]; do
+                echo "Current Status: "$STATUS
+                sleep 120
+                STATUS=$(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
+              done
+              echo "Pipeline run has been completed with status: " $STATUS
+    - task: AzureCLI@2
+      displayName: Result of Test pipeline run
+      condition: always()
+      env:
+        AZURE_STORAGE_AUTH_MODE: 'login'
+        AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        azureSubscription: ${{ parameters.Subscription }}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              if [ "$AGENT_JOBSTATUS" = "Canceled" ]; then
+                if [ -n "$RUN_ID_TEST" ]; then
+                  echo "Pipeline abandoned"
+                  echo $(az pipelines build cancel --build-id $RUN_ID_TEST --organization https://msazure.visualstudio.com --project Antares --query status -o tsv) 
+                fi
+              fi
+              if [ -n "$RUN_ID_TEST" ]; then
+                RESULT=$(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com --project Antares --query result -o tsv)
+                echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com --project Antares --query status -o tsv)
+                echo "Pipeline Result: " $RESULT
+                echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_TEST&view=results"
+                if [ "$RESULT" != "succeeded" ]; then
+                  echo "Pipeline run failed with result: $RESULT"
+                  exit 1
+                fi
+              else
+                echo "Run was not initiated"
+              fi
+  
