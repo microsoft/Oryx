@@ -29,7 +29,7 @@ dateparser==1.0.0
 defusedxml==0.7.1
 Deprecated==1.2.13
 diff-match-patch==20200713
-Django==3.2.19
+Django==3.2.20
 django-appconf==1.0.4
 django-axes==5.8.0
 django-compressor==2.4
