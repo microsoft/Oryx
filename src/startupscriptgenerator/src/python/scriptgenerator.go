@@ -209,9 +209,9 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 				scriptBuilder.WriteString("  echo WARNING: Could not find virtual environment directory '" + virtualEnvDir + "'.\n")
 			}
 		} else {
-			scriptBuilder.WriteString(fmt.Sprintf("echo '. /%s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
-			compressedFile := gen.Manifest.CompressedVirtualEnvFile
 			virtualEnvDir := "/" + virtualEnvironmentName
+			scriptBuilder.WriteString(fmt.Sprintf("echo 'if [ -f %s/bin/activate ]; then . %s/bin/activate; fi' >> ~/.bashrc\n", virtualEnvDir, virtualEnvDir))
+			compressedFile := gen.Manifest.CompressedVirtualEnvFile
 			if strings.HasSuffix(compressedFile, ".zip") {
 				scriptBuilder.WriteString("echo Found virtual environment .zip archive.\n")
 				scriptBuilder.WriteString(
@@ -290,7 +290,7 @@ func (gen *PythonStartupScriptGenerator) getVenvHandlingScript(virtualEnvName st
 				scriptBuilder.WriteString(fmt.Sprintf(". %s/bin/activate\n", virtualEnvName))
 			}
 		} else {
-			scriptBuilder.WriteString(fmt.Sprintf(". /%s/bin/activate\n", virtualEnvName))
+			scriptBuilder.WriteString(fmt.Sprintf("if [ -f %s/bin/activate ]; then . %s/bin/activate; fi\n", virtualEnvDir, virtualEnvDir))
 		}
 	}
 
