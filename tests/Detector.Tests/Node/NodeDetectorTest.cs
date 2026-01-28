@@ -165,10 +165,10 @@ namespace Microsoft.Oryx.Detector.Tests.Node
 
         private const string SampleValidYAMLYarnLockfile = "name: mynodeapp";
 
-        private const string SampleInvalidYAMLYarnLockfile = @"{
-         abcdefg 1234 - :: []
-            -- 5
-        }";
+        // Use tab characters at the start to create invalid indentation which YAML parsers reject
+        private const string SampleInvalidYAMLYarnLockfile = @"key: value
+	invalid tab indented: value
+  properly indented: value";
 
         [Fact]
         public void Detect_ReturnsNull_IfSourceDirectory_DoesNotHaveAnyFiles()

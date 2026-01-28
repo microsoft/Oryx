@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 
         [Theory]
         [InlineData("net6.0", true)]
-        [InlineData("net5.0", false)]
+        [InlineData("net5.0", true)]  // All Blazor WebAssembly apps now have AOT workloads installed
         public void Detect_ReturnsExpected_BlazorWebAssemblyApp_ProjectFileHaveTargetFrameworkSpecified(
             string targetFrameworkName,
             bool installAOTWorkloads)
