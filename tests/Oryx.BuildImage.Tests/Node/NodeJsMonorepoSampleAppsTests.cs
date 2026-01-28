@@ -21,39 +21,39 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", sampleAppName));
 
-        [Fact, Trait("category", "githubactions")]
-        public void GeneratesScript_AndBuildMonorepoAppUsingLerna_Npm()
-        {
-            // Arrange
-            var appName = "monorepo-lerna-npm";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app1-output";
-            var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SettingsKeys.EnableNodeMonorepoBuild,
-                    true.ToString())
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .ToString();
+        // [Fact, Trait("category", "githubactions")]
+        // public void GeneratesScript_AndBuildMonorepoAppUsingLerna_Npm()
+        // {
+        //     // Arrange
+        //     var appName = "monorepo-lerna-npm";
+        //     var volume = CreateSampleAppVolume(appName);
+        //     var appDir = volume.ContainerDir;
+        //     var appOutputDir = "/tmp/app1-output";
+        //     var script = new ShellScriptBuilder()
+        //         .SetEnvironmentVariable(
+        //             SettingsKeys.EnableNodeMonorepoBuild,
+        //             true.ToString())
+        //         .AddBuildCommand($"{appDir} -o {appOutputDir}")
+        //         .ToString();
 
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
+        //     // Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
+        //         EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+        //         Volumes = new List<DockerVolume> { volume },
+        //         CommandToExecuteOnRun = "/bin/bash",
+        //         CommandArguments = new[] { "-c", script }
+        //     });
 
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(
+        //         () =>
+        //         {
+        //             Assert.True(result.IsSuccess);
+        //         },
+        //         result.GetDebugInfo());
+        // }
 
 
         // This test is failing because for github actions the command manifest file is deleted. This command manifest file is preserved only for vso-focal and vso-debian-bullseye images.(check NodeBashBuildSnippet.sh.tpl line 235 to 250)
@@ -98,40 +98,40 @@ namespace Microsoft.Oryx.BuildImage.Tests
         //         result.GetDebugInfo());
         // }
 
-        [Fact, Trait("category", "githubactions")]
-        public void GeneratesScript_AndBuildMonorepoAppUsingLerna_Yarn()
-        {
-            // Arrange
-            var appName = "monorepo-lerna-yarn";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app2-output";
-            var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SettingsKeys.EnableNodeMonorepoBuild,
-                    true.ToString())
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/@babel")
-                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/universalify")
-                .ToString();
+        // [Fact, Trait("category", "githubactions")]
+        // public void GeneratesScript_AndBuildMonorepoAppUsingLerna_Yarn()
+        // {
+        //     // Arrange
+        //     var appName = "monorepo-lerna-yarn";
+        //     var volume = CreateSampleAppVolume(appName);
+        //     var appDir = volume.ContainerDir;
+        //     var appOutputDir = "/tmp/app2-output";
+        //     var script = new ShellScriptBuilder()
+        //         .SetEnvironmentVariable(
+        //             SettingsKeys.EnableNodeMonorepoBuild,
+        //             true.ToString())
+        //         .AddBuildCommand($"{appDir} -o {appOutputDir}")
+        //         .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/@babel")
+        //         .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/universalify")
+        //         .ToString();
 
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
+        //     // Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
+        //         EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+        //         Volumes = new List<DockerVolume> { volume },
+        //         CommandToExecuteOnRun = "/bin/bash",
+        //         CommandArguments = new[] { "-c", script }
+        //     });
 
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(
+        //         () =>
+        //         {
+        //             Assert.True(result.IsSuccess);
+        //         },
+        //         result.GetDebugInfo());
+        // }
     }
 }

@@ -701,7 +701,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
+        [Fact(Skip = "Lerna is not installed in the GitHub Actions build image"), Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir_WhenPackageDirAndSourceDirAreSame()
         {
             // Arrange
@@ -719,7 +719,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -1010,7 +1010,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }

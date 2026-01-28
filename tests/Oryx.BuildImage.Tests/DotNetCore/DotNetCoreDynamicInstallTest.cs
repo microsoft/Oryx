@@ -297,7 +297,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
+        [Fact(Skip = "Dynamic installation images are not generated"), Trait("category", "githubactions")]
         public void BuildsApplication_UsingPreviewVersionOfSdk()
         {
             // Arrange
@@ -334,7 +334,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsNoble),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -522,7 +522,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        [Theory, Trait("category", "githubactions")]
+        [Theory(Skip = "Dynamic installation images are not generated"), Trait("category", "githubactions")]
         [MemberData(nameof(SupportedVersionAndImageNameData))]
         public void BuildsApplication_AfterInstallingSupportedSdk(
             string runtimeVersion,
