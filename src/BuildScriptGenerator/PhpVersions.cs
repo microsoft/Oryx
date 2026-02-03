@@ -20,6 +20,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Composer26Version = "2.6.2";
         public const string Composer27Version = "2.7.7";
         public const string Composer28Version = "2.8.8";
+        public const string Php85Version = "8.5.1";
+        public const string Php85Keys = "1198C0117593497A5EC5C199286AF1F9897469DC 49D9AF6BC72A80D6691719C8AA23F5BE9C7097D4";
+        public const string Php85TarSha256 = "3f5bf99ce81201f526d25e288eddb2cfa111d068950d1e9a869530054ff98815";
         public const string Php84Version = "8.4.13";
         public const string Php84Keys = "AFD8691FDAEDF03BDF6E460563F15A9B715376CA 9D7F99A0CB8F05C8A6958D6256A97AF7600A39A6";
         public const string Php84TarSha256 = "b4f27adf30bcf262eacf93c78250dd811980f20f3b90d79a3dc11248681842df";
