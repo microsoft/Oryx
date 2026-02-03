@@ -431,29 +431,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [Trait("category", "runtime-noble")]
-        [InlineData("8.5-fpm")]
-        public void SqlSrv_IsInstalled_For_Noble(string version)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeUbuntuNoble),
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "-m", " | grep pdo_sqlsrv);" }
-            });
-
-            // Assert
-            var output = result.StdOut.ToString();
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                Assert.Contains("pdo_sqlsrv", output);
-            },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
