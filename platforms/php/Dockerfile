@@ -14,14 +14,3 @@ RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
 RUN /tmp/platforms/php/buildPhp.sh ${OS_FLAVOR} "" "php"
-
-# ARG PHP_VERSION
-# ARG GPG_KEYS
-# ARG PHP_SHA256
-# ARG OS_FLAVOR
-# ENV OS_FLAVOR=$OS_FLAVOR
-
-# RUN PHP_VERSION=$PHP_VERSION \
-#     GPG_KEYS=$GPG_KEYS \
-#     PHP_SHA256=$PHP_SHA256 \
-#     /php/build.sh
