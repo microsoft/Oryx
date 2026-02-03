@@ -29,7 +29,7 @@ variables:
   osFlavors: bullseye,bookworm,noble
   dotnetosFlavors: bookworm,bullseye,noble
   nodejsosFlavors: bookworm,bullseye,noble
-  phposFlavors: bookworm,bullseye
+  phposFlavors: bookworm,bullseye,noble
   pythonosFlavors: bookworm,bullseye,noble
   cliDebianFlavors: bullseye
   cliBuilderDebianFlavors: bullseye

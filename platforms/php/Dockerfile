@@ -1,7 +1,7 @@
-ARG DEBIAN_FLAVOR
-FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_FLAVOR} AS php-buildpack-prereqs
-ARG DEBIAN_FLAVOR
-ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+ARG OS_FLAVOR
+FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${OS_FLAVOR} AS php-buildpack-prereqs
+ARG OS_FLAVOR
+ENV OS_FLAVOR=$OS_FLAVOR
 COPY platforms/php/prereqs /php
 COPY platforms/php/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
@@ -13,13 +13,13 @@ COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
-RUN /tmp/platforms/php/buildPhp.sh ${DEBIAN_FLAVOR} "" "php"
+RUN /tmp/platforms/php/buildPhp.sh ${OS_FLAVOR} "" "php"
 
 # ARG PHP_VERSION
 # ARG GPG_KEYS
 # ARG PHP_SHA256
-# ARG DEBIAN_FLAVOR
-# ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+# ARG OS_FLAVOR
+# ENV OS_FLAVOR=$OS_FLAVOR
 
 # RUN PHP_VERSION=$PHP_VERSION \
 #     GPG_KEYS=$GPG_KEYS \
