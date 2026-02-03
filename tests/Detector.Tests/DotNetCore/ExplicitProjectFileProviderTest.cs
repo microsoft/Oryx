@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             // Act & Assert
             var exception = Assert.Throws<InvalidProjectFileException>(
                 () => provider.GetRelativePathToProjectFile(context));
-            Assert.Contains("Could not find the .NET Core project file.", exception.Message);
+            Assert.Contains("Could not find the .NET Core project file specified in PROJECT environment variable", exception.Message);
         }
 
         [Theory]

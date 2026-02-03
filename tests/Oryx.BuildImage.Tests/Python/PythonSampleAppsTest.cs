@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
             JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.GitHubActionsBullseye);
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBullseye);
-            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBullseye);
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
         }
 
         public void GeneratesScript_AndBuilds(string buildImageName)
@@ -1594,8 +1594,170 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    string expectedOutput = "$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target=\"" + PackagesDirectory + "\" " + pipUpgradeCommand + " | ts $TS_FMT";
+                    string expectedOutput = "$uv pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target=\"" + PackagesDirectory + "\" " + pipUpgradeCommand + " | ts $TS_FMT";
                     Assert.Contains(expectedOutput, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PythonFastBuildEnabled_UsesUvWithFallback()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> 
+                { 
+                    CreateAppNameEnvVar(appName),
+                    new EnvironmentVariable("PYTHON_FAST_BUILD_ENABLED", "true")
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Fast build is enabled", result.StdOut);
+                    Assert.Contains("Installing uv...", result.StdOut);
+                    Assert.Contains("Running uv pip install...", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PythonFastBuildDisabled_UsesPipDirectly()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Running pip install...", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void UvPipInstall_FallsBackToPip_WhenUvFails()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            
+            // Create a script that makes uv fail to test fallback
+            var script = new ShellScriptBuilder()
+                .AddCommand("mkdir -p /tmp/fake-bin")
+                .AddCommand("echo '#!/bin/bash' > /tmp/fake-bin/uv")
+                .AddCommand("echo 'echo \"Error: uv command failed for testing\"' >> /tmp/fake-bin/uv")
+                .AddCommand("echo 'exit 1' >> /tmp/fake-bin/uv")
+                .AddCommand("chmod +x /tmp/fake-bin/uv")
+                .AddCommand("export PATH=/tmp/fake-bin:$PATH")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> 
+                { 
+                    CreateAppNameEnvVar(appName),
+                    new EnvironmentVariable("PYTHON_FAST_BUILD_ENABLED", "true")
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Fast build is enabled", result.StdOut);
+                    Assert.Contains("Installing uv...", result.StdOut);
+                    Assert.Contains("Running uv pip install...", result.StdOut);
+                    Assert.Contains("falling back to pip install", result.StdOut);
+                    Assert.Contains("Running pip install...", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void UvPipInstall_UsesPreloadedWheelsDir_WhenProvided()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var wheelsDir = "/tmp/preloaded-wheels";
+            
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {wheelsDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> 
+                { 
+                    CreateAppNameEnvVar(appName),
+                    new EnvironmentVariable("PYTHON_FAST_BUILD_ENABLED", "true"),
+                    new EnvironmentVariable("PYTHON_PRELOADED_WHEELS_DIR", wheelsDir)
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Fast build is enabled", result.StdOut);
+                    Assert.Contains($"Using preloaded wheels from: {wheelsDir}", result.StdOut);
+                    Assert.Contains("Running uv pip install...", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

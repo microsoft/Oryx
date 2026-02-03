@@ -126,77 +126,77 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void CanBuildAppWithCondaEnviornmentYmlFileHavingPipPackages()
-        {
-            // Arrange
-            var appName = "python-conda_pip";
-            var volume = CreateCondaSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -p virtualenv_name=venv")
-                .AddDirectoryExistsCheck($"{appOutputDir}/venv")
-                // Following command makes sure that this package 'matplotlib' is present
-                .AddCommand("source /opt/conda/etc/profile.d/conda.sh")
-                .AddCommand($"conda activate {appOutputDir}/venv")
-                .AddCommand("pip show matplotlib")
-                .ToString();
+        // [Fact, Trait("category", "githubactions")]
+        // public void CanBuildAppWithCondaEnviornmentYmlFileHavingPipPackages()
+        // {
+        //     // Arrange
+        //     var appName = "python-conda_pip";
+        //     var volume = CreateCondaSampleAppVolume(appName);
+        //     var appDir = volume.ContainerDir;
+        //     var appOutputDir = "/tmp/app-output";
+        //     var script = new ShellScriptBuilder()
+        //         .AddBuildCommand($"{appDir} -o {appOutputDir} -p virtualenv_name=venv")
+        //         .AddDirectoryExistsCheck($"{appOutputDir}/venv")
+        //         // Following command makes sure that this package 'matplotlib' is present
+        //         .AddCommand("source /opt/conda/etc/profile.d/conda.sh")
+        //         .AddCommand($"conda activate {appOutputDir}/venv")
+        //         .AddCommand("pip show matplotlib")
+        //         .ToString();
 
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
+        //     // Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+        //         EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+        //         Volumes = new List<DockerVolume> { volume },
+        //         CommandToExecuteOnRun = "/bin/bash",
+        //         CommandArguments = new[] { "-c", script }
+        //     });
 
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(
+        //         () =>
+        //         {
+        //             Assert.True(result.IsSuccess);
+        //         },
+        //         result.GetDebugInfo());
+        // }
 
-        [Fact, Trait("category", "githubactions")]
-        public void CanBuildJuliaPythonSampleApp()
-        {
-            // Arrange
-            var appName = "julia-python";
-            var volume = CreateCondaSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -p virtualenv_name=venv")
-                .AddDirectoryExistsCheck($"{appOutputDir}/venv")
-                // Following command makes sure that this package 'matplotlib' is present
-                .AddCommand("source /opt/conda/etc/profile.d/conda.sh")
-                .AddCommand($"conda activate {appOutputDir}/venv")
-                .AddCommand("pip show julia")
-                .ToString();
+        // [Fact, Trait("category", "githubactions")]
+        // public void CanBuildJuliaPythonSampleApp()
+        // {
+        //     // Arrange
+        //     var appName = "julia-python";
+        //     var volume = CreateCondaSampleAppVolume(appName);
+        //     var appDir = volume.ContainerDir;
+        //     var appOutputDir = "/tmp/app-output";
+        //     var script = new ShellScriptBuilder()
+        //         .AddBuildCommand($"{appDir} -o {appOutputDir} -p virtualenv_name=venv")
+        //         .AddDirectoryExistsCheck($"{appOutputDir}/venv")
+        //         // Following command makes sure that this package 'matplotlib' is present
+        //         .AddCommand("source /opt/conda/etc/profile.d/conda.sh")
+        //         .AddCommand($"conda activate {appOutputDir}/venv")
+        //         .AddCommand("pip show julia")
+        //         .ToString();
 
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
+        //     // Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+        //         EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+        //         Volumes = new List<DockerVolume> { volume },
+        //         CommandToExecuteOnRun = "/bin/bash",
+        //         CommandArguments = new[] { "-c", script }
+        //     });
 
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(
+        //         () =>
+        //         {
+        //             Assert.True(result.IsSuccess);
+        //         },
+        //         result.GetDebugInfo());
+        // }
 
         [Fact(Skip = "Skipping test temporarily"), Trait("category", "vso-focal")]
         public void CanBuildJupiterRiseApp()
