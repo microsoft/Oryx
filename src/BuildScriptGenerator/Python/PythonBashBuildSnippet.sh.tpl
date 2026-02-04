@@ -572,7 +572,7 @@ then
     then
         echo
         echo "Copying '$REQUIREMENTS_TXT_FILE' to destination directory..."
-        cp "$SOURCE_DIR/$REQUIREMENTS_TXT_FILE" "$DESTINATION_DIR/requirements.txt"
+        cp "$SOURCE_DIR/$REQUIREMENTS_TXT_FILE" "$DESTINATION_DIR/requirements.txt" || true
         echo "Done copying requirements.txt to destination directory."
     fi
 fi
