@@ -6,6 +6,8 @@
 
 set -eux
 
+# Supported OS flavors: bullseye, bookworm (Debian), noble (Ubuntu 24.04)
+
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
 {
@@ -15,8 +17,7 @@ set -eux
 } > /etc/apt/preferences.d/no-debian-php
 
 # Create the sources.list file for bookworm since it doesn't exist in the buildpack-deps image
-if [ "$DEBIAN_FLAVOR" = bookworm ]
-then
+if [ "$OS_FLAVOR" = "bookworm" ]; then
     {
         echo 'deb http://deb.debian.org/debian bookworm main';
         echo 'deb http://deb.debian.org/debian-security bookworm-security main';
@@ -27,14 +28,6 @@ fi
 # dependencies required for running "phpize"
 # (see persistent deps below)
 PHPIZE_DEPS="autoconf dpkg-dev file g++ gcc libc-dev make pkg-config re2c"
-
-# persistent / runtime deps
-# libcurl3 and libcurl4 both needs to be supported in ubuntu focal for php
-# https://github.com/xapienz/curl-debian-scripts
-if [ "$DEBIAN_FLAVOR" = focal ]
-then
-    add-apt-repository ppa:xapienz/curl34 -y
-fi
 
 # Set DEBIAN_FRONTEND environment variable
 export DEBIAN_FRONTEND=noninteractive
@@ -48,22 +41,5 @@ apt-get update \
         curl \
         xz-utils \
         libonig-dev \
+        libsodium-dev \
     --no-install-recommends && rm -r /var/lib/apt/lists/*
-
-##<argon2>##
-sed -e 's/# deb http:\/\/deb.debian.org\/debian stretch-updates/deb http:\/\/deb.debian.org\/debian stretch-updates/g' \
-    -e 's/deb http:\/\/archive.debian.org\/debian stretch/deb http:\/\/deb.debian.org\/debian stretch/g' \
-    -e 's/deb http:\/\/archive.debian.org\/debian-security stretch/deb http:\/\/security.debian.org\/debian-security stretch/g' \
-    -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
-{ \
-	echo 'Package: *';
-	echo 'Pin: release n=buster';
-	echo 'Pin-Priority: -10';
-	echo;
-	echo 'Package: libargon2*';
-	echo 'Pin: release n=buster';
-	echo 'Pin-Priority: 990';
-} > /etc/apt/preferences.d/argon2-buster;
-apt-get update;
-apt-get install -y --no-install-recommends libsodium-dev;
-##</argon2>##

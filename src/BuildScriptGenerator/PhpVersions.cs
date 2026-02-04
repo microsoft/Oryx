@@ -20,6 +20,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Composer26Version = "2.6.2";
         public const string Composer27Version = "2.7.7";
         public const string Composer28Version = "2.8.8";
+        public const string Php85Version = "8.5.1";
+        public const string Php85Keys = "1198C0117593497A5EC5C199286AF1F9897469DC 49D9AF6BC72A80D6691719C8AA23F5BE9C7097D4";
+        public const string Php85TarSha256 = "3f5bf99ce81201f526d25e288eddb2cfa111d068950d1e9a869530054ff98815";
         public const string Php84Version = "8.4.16";
         public const string Php84Keys = "AFD8691FDAEDF03BDF6E460563F15A9B715376CA 9D7F99A0CB8F05C8A6958D6256A97AF7600A39A6";
         public const string Php84TarSha256 = "f66f8f48db34e9e29f7bfd6901178e9cf4a1b163e6e497716dfcb8f88bcfae30";
@@ -51,6 +54,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Php56Keys = "0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3";
         public const string Php56TarSha256 = "1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c";
         public static readonly List<string> RuntimeVersions = new List<string> { "7.4-debian-bullseye", "7.4-debian-buster", "8.0-debian-bullseye", "8.0-debian-buster", "8.1-debian-bullseye", "8.1-debian-buster", "8.2-debian-bullseye", "8.2-debian-buster", "8.3-debian-bullseye", "8.3-debian-buster", "8.3-debian-bookworm" };
-        public static readonly List<string> FpmRuntimeVersions = new List<string> { "7.4-fpm-debian-bullseye", "8.0-fpm-debian-bullseye", "8.1-fpm-debian-bullseye", "8.2-fpm-debian-bullseye", "8.3-fpm-debian-bullseye", "8.3-fpm-debian-bookworm", "8.4-fpm-debian-bullseye", "8.4-fpm-debian-bookworm" };
+        public static readonly List<string> FpmRuntimeVersions = new List<string> { "7.4-fpm-debian-bullseye", "8.0-fpm-debian-bullseye", "8.1-fpm-debian-bullseye", "8.2-fpm-debian-bullseye", "8.3-fpm-debian-bullseye", "8.3-fpm-debian-bookworm", "8.4-fpm-debian-bullseye", "8.4-fpm-debian-bookworm", "8.5-fpm-ubuntu-noble" };
     }
 }

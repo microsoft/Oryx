@@ -26,14 +26,14 @@ PHP_ASC_URL="" # "https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/th
 GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
 
-debianFlavor=$DEBIAN_FLAVOR
+osFlavor=$OS_FLAVOR
 phpSdkFileName=""
 
-if [ "$debianFlavor" == "stretch" ]; then
+if [ "$osFlavor" == "stretch" ]; then
 	# Use default php sdk file name
 	phpSdkFileName=php-$PHP_VERSION.tar.gz
 else
-	phpSdkFileName=php-$debianFlavor-$PHP_VERSION.tar.gz
+	phpSdkFileName=php-$osFlavor-$PHP_VERSION.tar.gz
 	# for buster and ubuntu we would need following libraries to build php 
 	apt-get update && \
 	apt-get upgrade -y && \
@@ -43,7 +43,6 @@ else
 		libsqlite3-dev \
 		libreadline-dev \
 		libgdm-dev \
-		libdb4o-cil-dev \
 		libpcap-dev \
 		libxml2 \
 		libxml2-dev
