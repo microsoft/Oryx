@@ -38,6 +38,17 @@ namespace Microsoft.Oryx.Common.Extensions
         }
 
         /// <summary>
+        /// Directories to skip during recursive file enumeration.
+        /// These are typically dependency or build output directories that don't help with platform detection.
+        /// </summary>
+        private static readonly HashSet<string> DirectoriesToSkip = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase)
+        {
+            "node_modules",
+            ".git",
+            "__pycache__",
+        };
+
+        /// <summary>
         /// This method will recursively enumerate the files under a given path since the Directory.EnumerateFiles
         /// call does not check to see if a directory exists, or if the directory is accessible, before
         /// enumerating it.
@@ -49,7 +60,7 @@ namespace Microsoft.Oryx.Common.Extensions
         {
             var fileResult = Directory.EnumerateFiles(path, searchPattern);
             var directoryResult = Directory.EnumerateDirectories(path)
-                                            .Where(Directory.Exists)
+                                            .Where(d => Directory.Exists(d) && !DirectoriesToSkip.Contains(Path.GetFileName(d)))
                                             .SelectMany(d => d.SafeEnumerateFiles(searchPattern));
             return fileResult.Concat(directoryResult);
         }
