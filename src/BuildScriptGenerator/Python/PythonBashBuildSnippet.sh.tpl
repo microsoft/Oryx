@@ -565,6 +565,18 @@ else
     rm "$COMMAND_MANIFEST_FILE"
 fi
 
+# Copy requirements.txt to the destination directory if it exists
+if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
+then
+    if [ -e "$SOURCE_DIR/$REQUIREMENTS_TXT_FILE" ]
+    then
+        echo
+        echo "Copying '$REQUIREMENTS_TXT_FILE' to destination directory..."
+        cp "$SOURCE_DIR/$REQUIREMENTS_TXT_FILE" "$DESTINATION_DIR/requirements.txt"
+        echo "Done copying requirements.txt to destination directory."
+    fi
+fi
+
 {{ if VirtualEnvironmentName | IsNotBlank }}
     {{ if CompressVirtualEnvCommand | IsNotBlank }}
         if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
