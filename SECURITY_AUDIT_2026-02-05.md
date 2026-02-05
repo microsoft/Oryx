@@ -179,7 +179,7 @@ ASPNET_CORE_APP_90: 9.0.12   ✅
 ## References
 
 ### Official Sources
-- Node.js Security Release: https://nodejs.org/en/blog/vulnerability/december-2025-security-releases
+- Node.js Security Release (January 13, 2026): https://nodejs.org/en/blog/vulnerability/december-2025-security-releases
 - PHP Releases: https://www.php.net/releases/index.php
 - Python Downloads: https://www.python.org/downloads/
 - .NET Updates: https://dotnet.microsoft.com/download/dotnet/
