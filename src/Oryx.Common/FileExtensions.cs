@@ -15,6 +15,17 @@ namespace Microsoft.Oryx.Common.Extensions
     public static class FileExtensions
     {
         /// <summary>
+        /// Directories to skip during recursive file enumeration.
+        /// These are typically dependency or build output directories that don't help with platform detection.
+        /// </summary>
+        private static readonly HashSet<string> DirectoriesToSkip = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase)
+        {
+            "node_modules",
+            ".git",
+            "__pycache__",
+        };
+
+        /// <summary>
         /// This method will write the given contents to the path provided and create any non-existent directories
         /// along the path since File.WriteAllText will throw if one of the directories in the path does not exist.
         /// </summary>
@@ -36,17 +47,6 @@ namespace Microsoft.Oryx.Common.Extensions
 
             File.WriteAllText(outputPath, contents);
         }
-
-        /// <summary>
-        /// Directories to skip during recursive file enumeration.
-        /// These are typically dependency or build output directories that don't help with platform detection.
-        /// </summary>
-        private static readonly HashSet<string> DirectoriesToSkip = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase)
-        {
-            "node_modules",
-            ".git",
-            "__pycache__",
-        };
 
         /// <summary>
         /// This method will recursively enumerate the files under a given path since the Directory.EnumerateFiles
