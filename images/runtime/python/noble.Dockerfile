@@ -2,7 +2,7 @@ ARG OS_FLAVOR
 ARG BASE_IMAGE
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.3-bookworm as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.7-bookworm as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
