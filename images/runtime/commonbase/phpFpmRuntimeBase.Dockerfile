@@ -24,7 +24,7 @@ ENV PHPIZE_DEPS \
 		re2c
 
 # persistent / runtime deps
-# Note: libjpeg62-turbo-dev is only available on Debian, not Ubuntu
+# Note: libjpeg62-turbo-dev is for Debian, libjpeg-turbo8-dev is for Ubuntu
 ARG OS_TYPE=debian
 RUN set -eux; \
 	apt-get update; \
@@ -37,6 +37,7 @@ RUN set -eux; \
 		libpng-dev \
 		libjpeg-dev \
 		$([ "$OS_TYPE" = "debian" ] && echo "libjpeg62-turbo-dev") \
+		$([ "$OS_TYPE" = "ubuntu" ] && echo "libjpeg-turbo8-dev") \
 		libpq-dev \
 		libldap2-dev \
 		libldb-dev \
