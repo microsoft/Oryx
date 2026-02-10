@@ -25,10 +25,11 @@ variables:
   php82osFlavors: bullseye
   php83osFlavors: bullseye,bookworm
   php84osFlavors: bullseye,bookworm
+  php85osFlavors: noble
   osFlavors: bullseye,bookworm,noble
   dotnetosFlavors: bookworm,bullseye,noble
   nodejsosFlavors: bookworm,bullseye,noble
-  phposFlavors: bookworm,bullseye
+  phposFlavors: bookworm,bullseye,noble
   pythonosFlavors: bookworm,bullseye,noble
   cliDebianFlavors: bullseye
   cliBuilderDebianFlavors: bullseye
@@ -69,6 +70,8 @@ variables:
   php83Version_SHA: f7950ca034b15a78f5de9f1b22f4d9bad1dd497114d175cb1672a4ca78077af5
   php84Version: 8.4.16
   php84Version_SHA: f66f8f48db34e9e29f7bfd6901178e9cf4a1b163e6e497716dfcb8f88bcfae30
+  php85Version: 8.5.1
+  php85Version_SHA: 3f5bf99ce81201f526d25e288eddb2cfa111d068950d1e9a869530054ff98815
   python39Version: 3.9.24
   python310Version: 3.10.19
   python311Version: 3.11.14

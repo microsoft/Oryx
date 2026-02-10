@@ -10,7 +10,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
 source $REPO_DIR/platforms/__common.sh
 # source $REPO_DIR/build/__phpVersions.sh
-debianFlavor=$1
+osFlavor=$1
 sdkStorageAccountUrl="$2"
 phpType=$3
 phpPlatformDir="$REPO_DIR/platforms/php"
@@ -28,11 +28,11 @@ buildPhp() {
 
 	mkdir -p "$targetDir"
 
-	phpSdkFileName=php-$debianFlavor-$version.tar.gz
-	metadataFile="$targetDir/php-$debianFlavor-$version-metadata.txt"
+	phpSdkFileName=php-$osFlavor-$version.tar.gz
+	metadataFile="$targetDir/php-$osFlavor-$version-metadata.txt"
 	sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 
-	cp "$phpPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
+	cp "$phpPlatformDir/versions/$osFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$osFlavor.txt"
 
 	if shouldBuildSdk php $phpSdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk php; then
 
@@ -52,7 +52,7 @@ buildPhp() {
 		# 	$REPO_DIR
 		
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
-		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$osFlavor" >> $metadataFile
 	fi
 }
 
@@ -66,10 +66,10 @@ buildPhpComposer() {
 	local sdkVersionMetadataName=""
 	mkdir -p "$targetDir"
 
-	cp "$phpPlatformDir/composer/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
+	cp "$phpPlatformDir/composer/versions/$osFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$osFlavor.txt"
 
-	composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
-	metadataFile="$targetDir/php-composer-$debianFlavor-$version-metadata.txt"
+	composerSdkFileName=php-composer-$osFlavor-$version.tar.gz
+	metadataFile="$targetDir/php-composer-$osFlavor-$version-metadata.txt"
 	sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 
 	if shouldBuildSdk php-composer $composerSdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk php-composer; then
@@ -84,7 +84,7 @@ buildPhpComposer() {
 		# docker build \
 		# 	-f "$phpPlatformDir/composer/Dockerfile" \
 		# 	--build-arg PHP_VERSION="$PHP81_VERSION" \
-		# 	--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		# 	--build-arg OS_FLAVOR=$osFlavor \
 		# 	--build-arg PHP_SHA256="$PHP81_TAR_SHA256" \
 		# 	--build-arg GPG_KEYS="$PHP81_KEYS" \
 		# 	--build-arg COMPOSER_VERSION="$version" \
@@ -100,25 +100,25 @@ buildPhpComposer() {
 		compressedSdkDir="/tmp/compressedSdk/php-composer"
 		mkdir -p "$compressedSdkDir"
 		cd "$composerDir"
-		echo 'debian flavor is: $debianFlavor' 
-		composerSdkFile="php-composer-$debianFlavor-$version.tar.gz"
+		echo 'os flavor is: $osFlavor' 
+		composerSdkFile="php-composer-$osFlavor-$version.tar.gz"
 		tar -zcf "$compressedSdkDir/$composerSdkFile" .
         # Removing php sdk that is generated as part of composer build
-		rm -r /tmp/compressedSdk/php/php-$debianFlavor-$PHP_VERSION.tar.gz
+		rm -r /tmp/compressedSdk/php/php-$osFlavor-$PHP_VERSION.tar.gz
 		rm -r ./*
 		rm -r /opt/php/*
 
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
-		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$osFlavor" >> $metadataFile
 	fi
 }
 
 if [ "$phpType" == "php" ]; then
 	echo "Building Php..."
 	echo
-	buildPlatform "$phpPlatformDir/versions/$debianFlavor/versionsToBuild.txt" buildPhp
+	buildPlatform "$phpPlatformDir/versions/$osFlavor/versionsToBuild.txt" buildPhp
 else
 	echo "Building Php composer..."
 	echo
-	buildPlatform "$phpPlatformDir/composer/versions/$debianFlavor/versionsToBuild.txt" buildPhpComposer
+	buildPlatform "$phpPlatformDir/composer/versions/$osFlavor/versionsToBuild.txt" buildPhpComposer
 fi

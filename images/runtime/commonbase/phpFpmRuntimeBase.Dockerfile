@@ -24,6 +24,8 @@ ENV PHPIZE_DEPS \
 		re2c
 
 # persistent / runtime deps
+# Note: libjpeg62-turbo-dev is for Debian, libjpeg-turbo8-dev is for Ubuntu
+ARG OS_TYPE=debian
 RUN set -eux; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
@@ -34,6 +36,8 @@ RUN set -eux; \
 		libzip-dev \
 		libpng-dev \
 		libjpeg-dev \
+		$([ "$OS_TYPE" = "debian" ] && echo "libjpeg62-turbo-dev") \
+		$([ "$OS_TYPE" = "ubuntu" ] && echo "libjpeg-turbo8-dev") \
 		libpq-dev \
 		libldap2-dev \
 		libldb-dev \
@@ -54,7 +58,6 @@ RUN set -eux; \
 		libedit-dev \
 		libsodium-dev \
 		libfreetype6-dev \
-		libjpeg62-turbo-dev \
 		libonig-dev \
 		libcurl4-openssl-dev \
 		libldap2-dev \

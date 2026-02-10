@@ -118,6 +118,10 @@ case $stack_name in
             "8.4")
                 docker build -f ./images/runtime/php-fpm/8.4/$os_flavor.Dockerfile -t phpfpm84_image_$os_flavor --build-arg PHP_VERSION=$php84Version --build-arg PHP_SHA256=$php84Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$os_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
             ;;
+
+            "8.5")
+                docker build -f ./images/runtime/php-fpm/8.5/$os_flavor.Dockerfile -t phpfpm85_image_$os_flavor --build-arg PHP_VERSION=$php85Version --build-arg PHP_SHA256=$php85Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$os_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+            ;;
         esac
     ;;
 
