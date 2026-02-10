@@ -27,8 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AddDotNetCoreScriptGeneratorServices()
                 .AddPhpScriptGeneratorServices()
                 .AddScriptGeneratorServicesRuby()
-                .AddScriptGeneratorServicesGolang()
-                .AddScriptGeneratorServicesForJava();
+                .AddScriptGeneratorServicesGolang();
 
             services.AddSingleton<IBuildScriptGenerator, DefaultBuildScriptGenerator>();
             services.AddSingleton<ICompatiblePlatformDetector, DefaultCompatiblePlatformDetector>();
