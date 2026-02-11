@@ -207,8 +207,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	if gen.shouldApplicationInsightsBeConfigured() {
 		loaderFile := filepath.Join(consts.NodeGlobalModulesPath, consts.NodeAppInsightsLoaderFileName)
 
-		var nodeOptions = "'--require " + loaderFile + " ' $NODE_OPTIONS"
-		scriptBuilder.WriteString("export NODE_OPTIONS=" + nodeOptions + "\n")
+		var nodeOptions = "' --require " + loaderFile + "'"
+		scriptBuilder.WriteString("export NODE_OPTIONS+=" + nodeOptions + "\n")
 	}
 	scriptBuilder.WriteString(startupCommand + "\n")
 
