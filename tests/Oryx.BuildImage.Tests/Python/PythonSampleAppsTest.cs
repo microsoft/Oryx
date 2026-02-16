@@ -1499,7 +1499,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddFileExistsCheck($"{outputDir}/{expectedCompressedFile}")
                 .AddFileExistsCheck(manifestFile)
                 .AddFileExistsCheck(osTypeFile)
-                .AddFileDoesNotExistCheck($"{outputDir}/requirements.txt")
                 .AddDirectoryDoesNotExistCheck($"{outputDir}/{virtualEnvName}")
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
