@@ -25,13 +25,11 @@ RUN set -eux \
 	&& apt-get install -y --no-install-recommends \
 		gnupg2 \
 		apt-transport-https \
-		unixodbc \
-		unixodbc-dev \
 	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
 	&& curl https://packages.microsoft.com/config/ubuntu/24.04/prod.list > /etc/apt/sources.list.d/mssql-release.list \
 	&& curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
 	&& apt-get update \
-	&& ACCEPT_EULA=Y apt-get install -y msodbcsql18
+	&& ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.6.1.1-1 libodbcinst2=2.3.12-1ubuntu0.24.04.1 odbcinst=2.3.12-1ubuntu0.24.04.1 unixodbc=2.3.12-1ubuntu0.24.04.1 unixodbc-dev=2.3.12-1ubuntu0.24.04.1
 
 ENV PHP_INI_DIR=/usr/local/etc/php
 RUN set -eux; \

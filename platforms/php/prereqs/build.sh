@@ -43,6 +43,7 @@ else
 		libsqlite3-dev \
 		libreadline-dev \
 		libgdm-dev \
+		$(echo "$OS_FLAVOR" | grep -qE "^(bullseye|bookworm)$" && echo "libdb4o-cil-dev") \
 		libpcap-dev \
 		libxml2 \
 		libxml2-dev
