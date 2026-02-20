@@ -102,7 +102,7 @@ function copyPlatformBlobsToProdForOsFlavor() {
     # - platformName=python and osFlavor=noble
     # Not allowed combinations:
     # - Any platformName other than dotnet, node js, python and php with osFlavor=bookworm
-    # - Any platformName other than dotnet, python and node with osFlavor=noble
+    # - Any platformName other than dotnet, python, php and node with osFlavor=noble
     if [ "$osFlavor" == "bookworm" ] && \
        [ "$platformName" != "dotnet" ] && \
        [ "$platformName" != "nodejs" ] && \
@@ -114,6 +114,8 @@ function copyPlatformBlobsToProdForOsFlavor() {
     elif [ "$osFlavor" == "noble" ] && \
          [ "$platformName" != "dotnet" ] && \
          [ "$platformName" != "nodejs" ] && \
+         [ "$platformName" != "php" ] && \
+         [ "$platformName" != "php-composer" ] && \
          [ "$platformName" != "python" ]; then
         # Do not copy blobs
         echo "Copying blobs for platformName=$platformName and osFlavor=$osFlavor is not supported yet."
