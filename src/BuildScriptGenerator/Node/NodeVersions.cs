@@ -19,10 +19,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string Node18Version = "18.20.8";
         public const string Node20Version = "20.20.0";
         public const string Node22Version = "22.22.0";
-        public const string Node24Version = "24.13.0";
+        public const string Node24Version = "24.14.0";
         public const string NodeAppInsightsSdkVersion = "1.8.7";
         public const string Pm2Version = "6.0.5";
         public const string NpmVersion = "10.9.2";
-        public static readonly List<string> RuntimeVersions = new List<string> { "14-debian-bullseye", "14-debian-buster", "16-debian-bullseye", "16-debian-buster", "18-debian-bullseye", "20-debian-bullseye", "20-debian-bookworm", "22-debian-bullseye", "22-debian-bookworm", "dynamic-debian-buster" };
+        public static readonly List<string> RuntimeVersions = new List<string> { "14-debian-bullseye", "14-debian-buster", "16-debian-bullseye", "16-debian-buster", "18-debian-bullseye", "20-debian-bullseye", "20-debian-bookworm", "22-debian-bullseye", "22-debian-bookworm", "24-ubuntu-noble", "dynamic-debian-buster" };
     }
 }
