@@ -176,16 +176,15 @@ install_python_packages_impl() {
         $python -m pip install uv
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Installing uv done in $ELAPSED_TIME sec(s)."
-        CreateVenvCommand="uv venv --link-mode=copy --system-site-packages $VIRTUALENVIRONMENTNAME"
     else
         if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
             VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
         fi
-        CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
     fi
-
-    echo Creating virtual environment...
     
+    CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
+    echo Creating virtual environment...
+
     echo "BuildCommands=$CreateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
     
     # Execute the resolved CreateVenvCommand
