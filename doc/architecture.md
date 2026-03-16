@@ -30,8 +30,7 @@ or have a TypeScript frontend for their Python app. You can take a look at its
 [Dockerfile](../images/build/Dockerfiles/Dockerfile) to better understand its contents.
 
 Note that some layers of this build image come from yet another set of images, which we build independently for
-modularization and for faster build times. You can see what are those images and how they are built in their
-[build script](../build/buildBuildImageBases.sh).
+modularization and for faster build times.
 
 To help the user select which version they want for each platform, they can use the `benv` script pre-installed
 in the build image. For example, `source benv python=3.6 node=8` will make Python 3.6 and the latest supported
@@ -203,10 +202,9 @@ The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 
 * `build`: scripts for building the script generator and build and runtime images
 * `images`: Dockerfiles for the build and runtime images
-* `platforms`:platform SDK versions to be built
+* `platforms`: platform SDK versions to be built
 * `src`: source code for the build and startup script generators
 * `tests`: tests.
-* `vsts`: CI/CD configuration.
 
 ## Prerequisites
 

@@ -1,14 +1,13 @@
 ## Why so many scripts?
-The scripts in this folder are broken down into different layers to enable a good development as a well as CI experience.  
-So if a user wants to just build and test build images, they can do so by running its respective script.  
-These scripts are actually called in VSTS pipelines too (Check the `vsts/pipelines/templates/_buildTemplate.yml` file).
+The scripts in this folder are broken down into different layers to enable a good development as well as CI experience.  
+If a user wants to just build and test build images, they can do so by running the respective script.  
+These scripts are called from GitHub Actions workflows (see `.github/workflows/`) and the OneBranch pipelines in ADO.
 
 ## Artifact files
 Building build and runtime images can conceptually be viewed as building a .NET repo's 'src' folder where after successfully  
-building the output is written to a artifacts folder. In a similar way, after building build/runtime images, we write out   
+building the output is written to an artifacts folder. In a similar way, after building build/runtime images, we write out   
 the names of the images that were built to files '/artifacts/images/build-images.txt' and '/artifacts/images/runtime-images.txt'.  
-This is the same experience if the images were built locally on a dev machine or a CI agent. The idea is that in case of CI agent,  
-when a VSTS task needs to push images to a docker registry, it can just consume these artifact files to figure out which images to push.
+This is the same experience if the images were built locally on a dev machine or a CI agent.
 
 ## Untagging images
 Taggig a docker image is actually tagging or pinning docker layers. Since a CI agent can go through several builds a day we would be  

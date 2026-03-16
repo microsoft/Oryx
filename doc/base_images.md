@@ -3,8 +3,7 @@
 The Oryx [build image][] layers on Docker's
 [`buildpack-deps`][library/buildpack-deps:stable] image, itself layered on
 Docker's basic [debian][library/debian:stable] image.
-The build image copies some required platforms from separate intermediate images,
-which can be built locally using the [`buildBuildImageBases.sh`](../build/buildBuildImageBases.sh) script.
+The build image copies some required platforms from separate intermediate images.
 
 [build image]: https://hub.docker.com/_/microsoft-oryx-images
 [library/buildpack-deps:stable]: https://hub.docker.com/_/buildpack-deps
