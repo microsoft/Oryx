@@ -42,7 +42,10 @@ apt-get update \
 export ACCEPT_EULA=Y \
     && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
-if [ "$osFlavor" == "bookworm" ]; then \
+if [ "$osFlavor" == "noble" ]; then \
+    curl https://packages.microsoft.com/config/ubuntu/24.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+elif [ "$osFlavor" == "bookworm" ]; then \
     curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list
     curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
 elif [ "$osFlavor" == "bullseye" ]; then \
@@ -56,12 +59,14 @@ apt-get update \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen 
 
-if [ "$osFlavor" != "bookworm" ]; then \
-    ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.4.1-1 \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.2.2.1-1
-else
+if [ "$osFlavor" == "noble" ]; then \
+    ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.6.1.1-1
+elif [ "$osFlavor" == "bookworm" ]; then \
     ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.6.1-1 \
     && ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.3.3.1-1
+else
+    ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.4.1-1 \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.2.2.1-1
 fi
 
 ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
