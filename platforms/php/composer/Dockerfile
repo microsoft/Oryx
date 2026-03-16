@@ -3,7 +3,6 @@ FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${OS_FLAVOR} AS php-
 ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
 COPY platforms/php/prereqs /php
-# COPY build/__phpVersions.sh /php/
 COPY platforms/php/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 

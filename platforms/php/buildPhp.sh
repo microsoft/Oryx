@@ -9,7 +9,6 @@ set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
 source $REPO_DIR/platforms/__common.sh
-# source $REPO_DIR/build/__phpVersions.sh
 osFlavor=$1
 sdkStorageAccountUrl="$2"
 phpType=$3

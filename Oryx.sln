@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{33D6DAAC-19A1-43DC-A586-A5F18EE98718}"
 	ProjectSection(SolutionItems) = preProject
 		images\build\benv.sh = images\build\benv.sh
-		images\build\Dockerfile = images\build\Dockerfile
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C0150C21-3EC8-4973-B57C-26BC27A4ED57}"

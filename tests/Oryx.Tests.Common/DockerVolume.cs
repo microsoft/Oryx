@@ -22,8 +22,7 @@ namespace Microsoft.Oryx.Tests.Common
         // VSTS variable used to identify if the tests are running in VSTS or not (for example, on dev machines)
         public const string VstsAgentNameEnivronmentVariable = "AGENT_NAME";
 
-        // NOTE: Make sure to change the file "vsts\scripts\dockerCleanup.sh" if the name of the following directory
-        // is changed.
+        // NOTE: If the name of the following directory is changed, update any Docker cleanup scripts accordingly.
         public const string MountedHostDirRootName = "OryxTestsMountedDirs";
 
         public const string ContainerDirRoot = "/oryxtests";

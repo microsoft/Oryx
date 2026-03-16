@@ -117,8 +117,7 @@ docker run --detach --rm \
 ## Build Server Invocation
 1. Build the Oryx solution
     1. ![Build Solutionpng](doc/buildServer/buildSolution.png)
-1. Create image with oryx and platform binaries
-    1. `time build/buildBuildImages.sh -t ltsversion`
+1. Create image with oryx and platform binaries (see [images/build/Dockerfiles](./images/build/Dockerfiles/))
 1. Run docker to port map, volume mount a directory, specify the image with `oryx build`, and invoke BuildServer
     1. ```bash
         docker run -it -p 8086:80 \
