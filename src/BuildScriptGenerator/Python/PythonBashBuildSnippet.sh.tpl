@@ -168,7 +168,7 @@ install_python_packages_impl() {
     echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
 
     if [ -e "pyproject.toml" ] && [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ]; then
-        echo "Detected uv.lock (and no $REQUIREMENTS_TXT_FILE); creating virtual environment with uv..."
+        echo "Detected uv.lock (and no $REQUIREMENTS_TXT_FILE)"
         echo "Installing uv..."
         START_TIME=$SECONDS
         InstallUv="python -m pip install uv"
@@ -176,13 +176,19 @@ install_python_packages_impl() {
         $python -m pip install uv
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Installing uv done in $ELAPSED_TIME sec(s)."
+        CreateVenvCommand="uv venv --link-mode=copy --system-site-packages $VIRTUALENVIRONMENTNAME"
+        VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
     else
         if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
             VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
         fi
+        CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
+    fi
+
+    if [ "$CreateVenvWithPythonVenv" = "true" ]; then
+        CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
     fi
     
-    CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
     echo Creating virtual environment...
 
     echo "BuildCommands=$CreateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
