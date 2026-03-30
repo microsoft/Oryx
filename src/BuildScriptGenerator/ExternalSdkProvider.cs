@@ -44,41 +44,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
       try
       {
-        var request = new SdkProviderRequest
+        var urlParameters = new Dictionary<string, string>
         {
-          PlatformName = platformName,
-          BlobName = null,
-          UrlParameters = new Dictionary<string, string>
-          {
-            { "restype", "container" },
-            { "comp", "list" },
-            { "include", "metadata" },
-          },
+          { "restype", "container" },
+          { "comp", "list" },
+          { "include", "metadata" },
         };
 
         var filePath = Path.Combine(ExternalSdksStorageDir, platformName, platformName);
         this.logger.LogInformation("Requesting metadata for platform {} from external SDK provider, expected filepath: {filePath}", platformName, filePath);
         this.outputWriter.WriteLine($"Requesting metadata for platform {platformName} from external SDK provider");
-        var response = await this.SendRequestAsync(request);
 
-        if (response && File.Exists(filePath))
+        var xdoc = await this.FetchMetadataPageAsync(platformName, urlParameters, filePath);
+
+        // Iterate through paginated results using NextMarker, aggregating all blobs
+        var marker = xdoc.Root?.Element("NextMarker")?.Value;
+        while (!string.IsNullOrEmpty(marker))
         {
-          this.logger.LogInformation("Successfully got metadata for platform {platformName}, available at filePath: {filePath}", platformName, filePath);
-          try
+          var nextPageParams = new Dictionary<string, string>(urlParameters)
           {
-            return XDocument.Load(filePath);
-          }
-          catch (Exception ex)
-          {
-            throw new InvalidOperationException($"Error loading metadata file {filePath} for platform {platformName}", ex);
-          }
+            { "marker", marker },
+          };
+
+          this.logger.LogInformation("Fetching next page of metadata for platform {platformName} with marker {marker}", platformName, marker);
+          var nextPageDoc = await this.FetchMetadataPageAsync(platformName, nextPageParams, filePath);
+
+          marker = nextPageDoc.Root?.Element("NextMarker")?.Value;
+          var nextPageBlobs = nextPageDoc.Descendants("Blobs");
+          xdoc.Descendants("Blobs").LastOrDefault()?.AddAfterSelf(nextPageBlobs);
         }
-        else
-        {
-          throw new InvalidOperationException($"Failed to get metadata for platform {platformName} from external SDK provider");
-        }
+
+        return xdoc;
       }
-      catch (Exception ex)
+      catch (Exception ex) when (!(ex is InvalidOperationException))
       {
         this.outputWriter.WriteLine($"Error getting metadata for platform {platformName} from external provider: {ex.Message}");
         throw new InvalidOperationException($"Error getting metadata for platform {platformName} from external provider.", ex);
@@ -202,6 +200,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       {
         this.logger.LogError("Checksum verification failed for downloaded blob: platform {platformName}, blobName {blobName}, actual checksum {actualChecksum} , expected checksum {expectedChecksum}", platformName, blobName, actualChecksum, expectedChecksum);
         return false;
+      }
+    }
+
+    private async Task<XDocument> FetchMetadataPageAsync(
+      string platformName,
+      Dictionary<string, string> urlParameters,
+      string filePath)
+    {
+      var request = new SdkProviderRequest
+      {
+        PlatformName = platformName,
+        BlobName = null,
+        UrlParameters = urlParameters,
+      };
+
+      var response = await this.SendRequestAsync(request);
+
+      if (response && File.Exists(filePath))
+      {
+        this.logger.LogInformation("Successfully got metadata for platform {platformName}, available at filePath: {filePath}", platformName, filePath);
+        try
+        {
+          return XDocument.Load(filePath);
+        }
+        catch (Exception ex)
+        {
+          throw new InvalidOperationException($"Error loading metadata file {filePath} for platform {platformName}", ex);
+        }
+      }
+      else
+      {
+        throw new InvalidOperationException($"Failed to get metadata for platform {platformName} from external SDK provider");
       }
     }
 
