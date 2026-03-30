@@ -44,41 +44,68 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
       try
       {
-        var request = new SdkProviderRequest
+        var filePath = Path.Combine(ExternalSdksStorageDir, platformName, platformName);
+        this.logger.LogInformation("Requesting metadata for platform {} from external SDK provider, expected filepath: {filePath}", platformName, filePath);
+        this.outputWriter.WriteLine($"Requesting metadata for platform {platformName} from external SDK provider");
+
+        XDocument xdoc = null;
+        var marker = string.Empty;
+
+        // Iterate through all pages of blob listing results, following NextMarker pagination.
+        do
         {
-          PlatformName = platformName,
-          BlobName = null,
-          UrlParameters = new Dictionary<string, string>
+          var urlParameters = new Dictionary<string, string>
           {
             { "restype", "container" },
             { "comp", "list" },
             { "include", "metadata" },
-          },
-        };
+          };
 
-        var filePath = Path.Combine(ExternalSdksStorageDir, platformName, platformName);
-        this.logger.LogInformation("Requesting metadata for platform {} from external SDK provider, expected filepath: {filePath}", platformName, filePath);
-        this.outputWriter.WriteLine($"Requesting metadata for platform {platformName} from external SDK provider");
-        var response = await this.SendRequestAsync(request);
+          if (!string.IsNullOrEmpty(marker))
+          {
+            urlParameters["marker"] = marker;
+          }
 
-        if (response && File.Exists(filePath))
-        {
-          this.logger.LogInformation("Successfully got metadata for platform {platformName}, available at filePath: {filePath}", platformName, filePath);
+          var request = new SdkProviderRequest
+          {
+            PlatformName = platformName,
+            BlobName = null,
+            UrlParameters = urlParameters,
+          };
+
+          var response = await this.SendRequestAsync(request);
+          if (!response || !File.Exists(filePath))
+          {
+            throw new InvalidOperationException($"Failed to get metadata for platform {platformName} from external SDK provider");
+          }
+
+          XDocument pageXdoc;
           try
           {
-            return XDocument.Load(filePath);
+            pageXdoc = XDocument.Load(filePath);
           }
           catch (Exception ex)
           {
             throw new InvalidOperationException($"Error loading metadata file {filePath} for platform {platformName}", ex);
           }
+
+          marker = pageXdoc.Root.Element("NextMarker")?.Value;
+
+          if (xdoc == null)
+          {
+            xdoc = pageXdoc;
+          }
+          else
+          {
+            xdoc.Descendants("Blobs").LastOrDefault().AddAfterSelf(pageXdoc.Descendants("Blobs"));
+          }
         }
-        else
-        {
-          throw new InvalidOperationException($"Failed to get metadata for platform {platformName} from external SDK provider");
-        }
+        while (!string.IsNullOrEmpty(marker));
+
+        this.logger.LogInformation("Successfully got metadata for platform {platformName}, available at filePath: {filePath}", platformName, filePath);
+        return xdoc;
       }
-      catch (Exception ex)
+      catch (Exception ex) when (!(ex is InvalidOperationException))
       {
         this.outputWriter.WriteLine($"Error getting metadata for platform {platformName} from external provider: {ex.Message}");
         throw new InvalidOperationException($"Error getting metadata for platform {platformName} from external provider.", ex);
