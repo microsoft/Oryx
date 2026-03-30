@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         return xdoc;
       }
-      catch (Exception ex)
+      catch (Exception ex) when (!(ex is InvalidOperationException))
       {
         this.outputWriter.WriteLine($"Error getting metadata for platform {platformName} from external provider: {ex.Message}");
         throw new InvalidOperationException($"Error getting metadata for platform {platformName} from external provider.", ex);
