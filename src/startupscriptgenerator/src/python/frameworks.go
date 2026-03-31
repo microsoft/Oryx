@@ -7,9 +7,10 @@ package main
 
 import (
 	"common"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
-	"fmt"
+	"strings"
 )
 
 type PyAppFramework interface {
@@ -30,10 +31,20 @@ type flaskDetector struct {
 	mainFile	string
 }
 
+type fastAPIDetector struct {
+	appPath		string
+	mainFile	string
+}
+
 func DetectFramework(appPath string, venvName string) PyAppFramework {
 	var detector PyAppFramework
 
 	detector = &djangoDetector{ appPath: appPath, venvName: venvName }
+	if detector.detect() {
+		return detector
+	}
+
+	detector = &fastAPIDetector{ appPath: appPath }
 	if detector.detect() {
 		return detector
 	}
@@ -136,4 +147,54 @@ func (detector *flaskDetector) GetDebuggableModule() string {
 
 	// Default is 127.0.0.1:5000 (https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run)
 	return fmt.Sprintf("flask run --host $HOST --port $PORT")
+}
+
+func (detector *fastAPIDetector) Name() string {
+	return "FastAPI"
+}
+
+// Checks if the app is based on FastAPI:
+// Returns true if there's a Python file in the app's root that imports FastAPI.
+// Looks for 'from fastapi import' or 'FastAPI()' in common entry point files.
+func (detector *fastAPIDetector) detect() bool {
+	logger := common.GetLogger("python.frameworks.fastAPIDetector.detect")
+	defer logger.Shutdown()
+
+	filesToSearch := []string{"main.py", "app.py", "application.py", "server.py"}
+
+	for _, file := range filesToSearch {
+		fullPath := filepath.Join(detector.appPath, file)
+		if !common.FileExists(fullPath) {
+			continue
+		}
+
+		content, err := ioutil.ReadFile(fullPath)
+		if err != nil {
+			logger.LogError("Failed to read file '%s': %s", fullPath, err.Error())
+			continue
+		}
+
+		contentStr := string(content)
+		if strings.Contains(contentStr, "from fastapi import") ||
+			strings.Contains(contentStr, "from fastapi\nimport") ||
+			strings.Contains(contentStr, "FastAPI()") {
+			logger.LogInformation("Detected FastAPI app in '%s'.", file)
+			detector.mainFile = file
+			return true
+		}
+	}
+
+	return false
+}
+
+// Returns the gunicorn module argument with uvicorn worker class for ASGI support.
+func (detector *fastAPIDetector) GetGunicornModuleArg() string {
+	module := detector.mainFile[0 : len(detector.mainFile) - 3] // Remove the '.py' from the end
+	return "-k uvicorn.workers.UvicornWorker " + module + ":app"
+}
+
+func (detector *fastAPIDetector) GetDebuggableModule() string {
+	module := detector.mainFile[0 : len(detector.mainFile) - 3] // Remove the '.py' from the end
+	// Use uvicorn directly for debugging since it supports --reload
+	return fmt.Sprintf("uvicorn %s:app --host $HOST --port $PORT", module)
 }
