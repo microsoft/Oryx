@@ -42,9 +42,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp90Sha = "db0db0b9e709ffe463dead94fb4e77b9b0c7086bbaa78a78aa6b5366bef77ba3c33899a81c3c1aef3c11027a1e6cdebf4a7ad30532bdc193f0decc71972e5dda";
         public const string AspnetCoreApp90 = "9.0.14";
         public const string AspnetCoreApp90Sha = "6d0947390f9ec316297f21a9ec022528a27205a44328f9417fb8675783edc56022e5e15ea65650c5e73cb73917c09c52305d3e85e4c12acd5e11074871bb0679";
-        public const string NetCoreApp100 = "10.0.4";
+        public const string NetCoreApp100 = "10.0.5";
         public const string NetCoreApp100Sha = "2e2730ca465838f3655c8d0576a2477531a9c764329d9e3c88c8c8b87b2708f981819e939def8bec204b90e98654b3a0f6e47b816f44ebab95b30c5028060d6c";
-        public const string AspnetCoreApp100 = "10.0.4";
+        public const string AspnetCoreApp100 = "10.0.5";
         public const string AspnetCoreApp100Sha = "4af66b60ab2094a69f788dffb6f838f97bf57869cb9f8798dad166f9d303ab1e88fb3f4a488ea5fbff036a24db4c5a3f19dff3648d02f0fde46c285cbbc912ca";
     }
 }
