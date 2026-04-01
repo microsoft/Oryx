@@ -10,7 +10,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -37,6 +36,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
+        /// Gets the first layer digest from a manifest (SDK images are single-layer FROM scratch images).
+        /// </summary>
+        public static string GetFirstLayerDigest(OciManifest manifest)
+        {
+            return manifest?.Layers?.FirstOrDefault()?.Digest;
+        }
+
+        /// <summary>
         /// Lists all tags for a repository, handling Link-header pagination.
         /// Replaces <see cref="ListBlobsHelper.GetAllBlobs"/> for ACR-based discovery.
         /// </summary>
@@ -48,30 +55,35 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             while (!string.IsNullOrEmpty(url))
             {
                 this.logger.LogDebug("Fetching tags from {url}", url);
-                var response = await this.httpClient.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-
-                var json = await response.Content.ReadAsStringAsync();
-                var tagList = JsonSerializer.Deserialize<OciTagList>(json);
-                if (tagList?.Tags != null)
+                using (var response = await this.httpClient.GetAsync(url))
                 {
-                    allTags.AddRange(tagList.Tags);
-                }
-
-                // Handle OCI pagination via Link header (RFC 5988)
-                url = null;
-                if (response.Headers.TryGetValues("Link", out var linkValues))
-                {
-                    var linkHeader = linkValues.FirstOrDefault();
-                    if (linkHeader != null)
+                    if (!response.IsSuccessStatusCode)
                     {
-                        var match = Regex.Match(linkHeader, @"<([^>]+)>;\s*rel=""next""");
-                        if (match.Success)
+                        throw new HttpRequestException($"Request to {url} failed with status code {response.StatusCode}");
+                    }
+
+                    var json = await response.Content.ReadAsStringAsync();
+                    var tagList = JsonSerializer.Deserialize<OciTagList>(json);
+                    if (tagList?.Tags != null)
+                    {
+                        allTags.AddRange(tagList.Tags);
+                    }
+
+                    // Handle OCI pagination via Link header (RFC 5988)
+                    url = null;
+                    if (response.Headers.TryGetValues("Link", out var linkValues))
+                    {
+                        var linkHeader = linkValues.FirstOrDefault();
+                        if (linkHeader != null)
                         {
-                            url = match.Groups[1].Value;
-                            if (!url.StartsWith("http"))
+                            var match = Regex.Match(linkHeader, @"<([^>]+)>;\s*rel=""next""");
+                            if (match.Success)
                             {
-                                url = $"{this.registryUrl}{url}";
+                                url = match.Groups[1].Value;
+                                if (!url.StartsWith("http"))
+                                {
+                                    url = $"{this.registryUrl}{url}";
+                                }
                             }
                         }
                     }
@@ -88,22 +100,35 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public async Task<OciManifest> GetManifestAsync(string repository, string tag)
         {
             var url = $"{this.registryUrl}/v2/{repository}/manifests/{tag}";
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Add("Accept", "application/vnd.oci.image.manifest.v1+json");
-
-            var response = await this.httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode)
+            using (var request = new HttpRequestMessage(HttpMethod.Get, url))
             {
-                // Fall back to Docker manifest v2
-                request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json");
-                response = await this.httpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-            }
+                request.Headers.Add("Accept", "application/vnd.oci.image.manifest.v1+json");
 
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<OciManifest>(json);
+                using (var response = await this.httpClient.SendAsync(request))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        // Fall back to Docker manifest v2
+                        using (var fallbackRequest = new HttpRequestMessage(HttpMethod.Get, url))
+                        {
+                            fallbackRequest.Headers.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json");
+                            using (var fallbackResponse = await this.httpClient.SendAsync(fallbackRequest))
+                            {
+                                if (!fallbackResponse.IsSuccessStatusCode)
+                                {
+                                    throw new HttpRequestException($"Fallback request to {url} failed with status code {fallbackResponse.StatusCode}");
+                                }
+
+                                var fallbackJson = await fallbackResponse.Content.ReadAsStringAsync();
+                                return JsonSerializer.Deserialize<OciManifest>(fallbackJson);
+                            }
+                        }
+                    }
+
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<OciManifest>(json);
+                }
+            }
         }
 
         /// <summary>
@@ -112,11 +137,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public async Task<OciImageConfig> GetImageConfigAsync(string repository, string configDigest)
         {
             var url = $"{this.registryUrl}/v2/{repository}/blobs/{configDigest}";
-            var response = await this.httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
+            using (var response = await this.httpClient.GetAsync(url))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException($"Request to {url} failed with status code {response.StatusCode}");
+                }
 
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<OciImageConfig>(json);
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<OciImageConfig>(json);
+            }
         }
 
         /// <summary>
@@ -163,13 +193,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var url = $"{this.registryUrl}/v2/{repository}/blobs/{layerDigest}";
             this.logger.LogDebug("Downloading layer blob {digest} from {repository}", layerDigest, repository);
 
-            using var response = await this.httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-
-            using (var stream = await response.Content.ReadAsStreamAsync())
-            using (var fileStream = File.Create(outputPath))
+            using (var response = await this.httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
             {
-                await stream.CopyToAsync(fileStream);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException($"Request to {url} failed with status code {response.StatusCode}");
+                }
+
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                using (var fileStream = File.Create(outputPath))
+                {
+                    await stream.CopyToAsync(fileStream);
+                }
             }
 
             // Verify SHA256 digest
@@ -187,7 +222,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     this.logger.LogError(
                         "SHA256 digest mismatch for {repository} blob {digest}. Expected: {expected}, Actual: {actual}",
-                        repository, layerDigest, expectedSha, actualSha);
+                        repository,
+                        layerDigest,
+                        expectedSha,
+                        actualSha);
                     File.Delete(outputPath);
                     return false;
                 }
@@ -196,65 +234,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Successfully downloaded and verified layer blob {digest}", layerDigest);
             return true;
         }
-
-        /// <summary>
-        /// Gets the first layer digest from a manifest (SDK images are single-layer FROM scratch images).
-        /// </summary>
-        public static string GetFirstLayerDigest(OciManifest manifest)
-        {
-            return manifest?.Layers?.FirstOrDefault()?.Digest;
-        }
     }
-
-    #region OCI JSON Models
-
-    public class OciTagList
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-
-        [JsonPropertyName("tags")]
-        public List<string> Tags { get; set; }
-    }
-
-    public class OciManifest
-    {
-        [JsonPropertyName("schemaVersion")]
-        public int SchemaVersion { get; set; }
-
-        [JsonPropertyName("mediaType")]
-        public string MediaType { get; set; }
-
-        [JsonPropertyName("config")]
-        public OciDescriptor Config { get; set; }
-
-        [JsonPropertyName("layers")]
-        public List<OciDescriptor> Layers { get; set; }
-    }
-
-    public class OciDescriptor
-    {
-        [JsonPropertyName("mediaType")]
-        public string MediaType { get; set; }
-
-        [JsonPropertyName("digest")]
-        public string Digest { get; set; }
-
-        [JsonPropertyName("size")]
-        public long Size { get; set; }
-    }
-
-    public class OciImageConfig
-    {
-        [JsonPropertyName("config")]
-        public OciContainerConfig Config { get; set; }
-    }
-
-    public class OciContainerConfig
-    {
-        [JsonPropertyName("Labels")]
-        public Dictionary<string, string> Labels { get; set; }
-    }
-
-    #endregion
 }

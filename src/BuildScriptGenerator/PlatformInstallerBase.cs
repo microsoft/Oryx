@@ -316,32 +316,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
         }
 
-        private string GetPlatformBinariesStorageBaseUrl()
-        {
-            var platformBinariesStorageBaseUrl = this.CommonOptions.OryxSdkStorageBaseUrl;
-            if (string.IsNullOrEmpty(platformBinariesStorageBaseUrl))
-            {
-                throw new InvalidOperationException(
-                    $"Environment variable '{SdkStorageConstants.SdkStorageBaseUrlKeyName}' is required.");
-            }
-
-            platformBinariesStorageBaseUrl = platformBinariesStorageBaseUrl.TrimEnd('/');
-            return platformBinariesStorageBaseUrl;
-        }
-
-        private string GetPlatformBinariesBackupStorageBaseUrl()
-        {
-            var platformBinariesBackupStorageBaseUrl = this.CommonOptions.OryxSdkStorageBackupBaseUrl;
-            if (string.IsNullOrEmpty(platformBinariesBackupStorageBaseUrl))
-            {
-                this.Logger.LogWarning($"Environment variable '{SdkStorageConstants.SdkStorageBackupBaseUrlKeyName}' for Backup SDK storage base URL is not set.");
-                return null;
-            }
-
-            platformBinariesBackupStorageBaseUrl = platformBinariesBackupStorageBaseUrl.TrimEnd('/');
-            return platformBinariesBackupStorageBaseUrl;
-        }
-
         /// <summary>
         /// Generates a bash script snippet that downloads and extracts an SDK from an OCI-compliant
         /// container registry (ACR) using only curl, grep, sha256sum, and tar.
@@ -419,6 +393,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine();
 
             return snippet.ToString();
+        }
+
+        private string GetPlatformBinariesStorageBaseUrl()
+        {
+            var platformBinariesStorageBaseUrl = this.CommonOptions.OryxSdkStorageBaseUrl;
+            if (string.IsNullOrEmpty(platformBinariesStorageBaseUrl))
+            {
+                throw new InvalidOperationException(
+                    $"Environment variable '{SdkStorageConstants.SdkStorageBaseUrlKeyName}' is required.");
+            }
+
+            platformBinariesStorageBaseUrl = platformBinariesStorageBaseUrl.TrimEnd('/');
+            return platformBinariesStorageBaseUrl;
+        }
+
+        private string GetPlatformBinariesBackupStorageBaseUrl()
+        {
+            var platformBinariesBackupStorageBaseUrl = this.CommonOptions.OryxSdkStorageBackupBaseUrl;
+            if (string.IsNullOrEmpty(platformBinariesBackupStorageBaseUrl))
+            {
+                this.Logger.LogWarning($"Environment variable '{SdkStorageConstants.SdkStorageBackupBaseUrlKeyName}' for Backup SDK storage base URL is not set.");
+                return null;
+            }
+
+            platformBinariesBackupStorageBaseUrl = platformBinariesBackupStorageBaseUrl.TrimEnd('/');
+            return platformBinariesBackupStorageBaseUrl;
         }
     }
 }
