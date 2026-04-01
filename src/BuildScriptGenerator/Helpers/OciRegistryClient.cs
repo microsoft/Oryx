@@ -29,6 +29,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly string registryUrl;
         private readonly ILogger logger;
 
+        /// <summary>
+        /// Gets the first layer digest from a manifest (SDK images are single-layer FROM scratch images).
+        /// </summary>
+        public static string GetFirstLayerDigest(OciManifest manifest)
+        {
+            return manifest?.Layers?.FirstOrDefault()?.Digest;
+        }
+
         public OciRegistryClient(string registryUrl, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
         {
             this.registryUrl = registryUrl.TrimEnd('/');
@@ -197,16 +205,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return true;
         }
 
-        /// <summary>
-        /// Gets the first layer digest from a manifest (SDK images are single-layer FROM scratch images).
-        /// </summary>
-        public static string GetFirstLayerDigest(OciManifest manifest)
-        {
-            return manifest?.Layers?.FirstOrDefault()?.Digest;
-        }
     }
-
-    #region OCI JSON Models
 
     public class OciTagList
     {
@@ -255,6 +254,4 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         [JsonPropertyName("Labels")]
         public Dictionary<string, string> Labels { get; set; }
     }
-
-    #endregion
 }

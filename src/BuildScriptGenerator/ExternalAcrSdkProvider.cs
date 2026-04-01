@@ -76,7 +76,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogInformation(
                 "Requesting SDK from ACR via LWASv2: platform={PlatformName}, version={Version}, " +
                 "debianFlavor={DebianFlavor}",
-                platformName, version, debianFlavor);
+                platformName,
+                version,
+                debianFlavor);
             this.outputWriter.WriteLine(
                 $"Requesting SDK from ACR via external provider: {platformName} {version} ({debianFlavor})");
 
@@ -116,7 +118,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     this.logger.LogInformation(
                         "Successfully pulled SDK from ACR via LWASv2: {PlatformName} {Version}, " +
                         "available at {FilePath}",
-                        platformName, version, expectedFilePath);
+                        platformName,
+                        version,
+                        expectedFilePath);
                     this.outputWriter.WriteLine(
                         $"Successfully pulled SDK from ACR: {platformName} {version}");
                     return true;
@@ -126,7 +130,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     this.logger.LogWarning(
                         "ACR SDK pull via LWASv2 did not produce expected file: {PlatformName} {Version} " +
                         "at {FilePath}. Response: {Response}",
-                        platformName, version, expectedFilePath, response);
+                        platformName,
+                        version,
+                        expectedFilePath,
+                        response);
                     this.outputWriter.WriteLine(
                         $"Failed to pull SDK from ACR via external provider: {platformName} {version}");
                     return false;
@@ -134,9 +141,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex,
+                this.logger.LogError(
+                    ex,
                     "Error requesting SDK from ACR via LWASv2: {PlatformName} {Version}",
-                    platformName, version);
+                    platformName,
+                    version);
                 this.outputWriter.WriteLine(
                     $"Error pulling SDK from ACR via external provider: {platformName} {version}: {ex.Message}");
                 return false;
@@ -151,7 +160,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 this.logger.LogInformation(
                     "Sending ACR SDK request to external provider: {PlatformName}, {BlobName}, " +
                     "UrlParameters: {UrlParamsJson}",
-                    request.PlatformName, request.BlobName,
+                    request.PlatformName,
+                    request.BlobName,
                     JsonSerializer.Serialize(request.UrlParameters));
 
                 using (var cts = new CancellationTokenSource(

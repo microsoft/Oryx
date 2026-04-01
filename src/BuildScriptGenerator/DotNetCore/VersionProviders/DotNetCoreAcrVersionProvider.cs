@@ -86,6 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // Download the catalog layer (small JSON blob)
                 var url = $"{this.commonOptions.OryxAcrSdkRegistryUrl?.TrimEnd('/') ?? SdkStorageConstants.DefaultAcrSdkRegistryUrl}/v2/{repository}/blobs/{layerDigest}";
                 var httpClient = this.OciClient.GetAllTagsAsync(repository).Result; // We need a different approach
+
                 // Actually, we can get the blob content via the same pattern
 
                 // Use a simpler approach: read config labels from the catalog image

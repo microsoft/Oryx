@@ -329,19 +329,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return platformBinariesStorageBaseUrl;
         }
 
-        private string GetPlatformBinariesBackupStorageBaseUrl()
-        {
-            var platformBinariesBackupStorageBaseUrl = this.CommonOptions.OryxSdkStorageBackupBaseUrl;
-            if (string.IsNullOrEmpty(platformBinariesBackupStorageBaseUrl))
-            {
-                this.Logger.LogWarning($"Environment variable '{SdkStorageConstants.SdkStorageBackupBaseUrlKeyName}' for Backup SDK storage base URL is not set.");
-                return null;
-            }
-
-            platformBinariesBackupStorageBaseUrl = platformBinariesBackupStorageBaseUrl.TrimEnd('/');
-            return platformBinariesBackupStorageBaseUrl;
-        }
-
         /// <summary>
         /// Generates a bash script snippet that downloads and extracts an SDK from an OCI-compliant
         /// container registry (ACR) using only curl, grep, sha256sum, and tar.
@@ -419,6 +406,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine();
 
             return snippet.ToString();
+        }
+
+        private string GetPlatformBinariesBackupStorageBaseUrl()
+        {
+            var platformBinariesBackupStorageBaseUrl = this.CommonOptions.OryxSdkStorageBackupBaseUrl;
+            if (string.IsNullOrEmpty(platformBinariesBackupStorageBaseUrl))
+            {
+                this.Logger.LogWarning($"Environment variable '{SdkStorageConstants.SdkStorageBackupBaseUrlKeyName}' for Backup SDK storage base URL is not set.");
+                return null;
+            }
+
+            platformBinariesBackupStorageBaseUrl = platformBinariesBackupStorageBaseUrl.TrimEnd('/');
+            return platformBinariesBackupStorageBaseUrl;
         }
     }
 }
