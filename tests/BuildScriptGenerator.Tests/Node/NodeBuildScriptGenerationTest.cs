@@ -984,6 +984,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new TestEnvironment(),
                 new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
                 externalSdkProvider,
+                new TestMcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());
         }
 

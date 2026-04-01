@@ -1025,6 +1025,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 environment,
                 platformInstaller,
                 externalSdkProvider,
+                new TestMcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -1048,7 +1049,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 detector,
                 environment,
                 platformInstaller,
-                externalSdkProvider, 
+                externalSdkProvider,
+                new TestMcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());  
         }
 
@@ -1077,6 +1079,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 environment,
                 installer,
                 externalSdkProvider,
+                new TestMcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -1101,6 +1104,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 IEnvironment environment,
                 NodePlatformInstaller nodePlatformInstaller,
                 IExternalSdkProvider externalSdkProvider,
+                IMcrSdkProvider mcrSdkProvider,
                 TelemetryClient telemetryClient)
                 : base(
                       cliOptions,
@@ -1111,6 +1115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                       environment,
                       nodePlatformInstaller,
                       externalSdkProvider,
+                      mcrSdkProvider,
                       telemetryClient)
             {
             }

@@ -18,6 +18,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string CompressDestinationDir = "COMPRESS_DESTINATION_DIR";
         public const string EnableDynamicInstall = "ENABLE_DYNAMIC_INSTALL";
         public const string EnableExternalSdkProvider = "ORYX_ENABLE_EXTERNAL_SDK_PROVIDER";
+        public const string EnableMcrSdkProvider = "ORYX_ENABLE_MCR_SDK_PROVIDER";
+        public const string McrSdkImageBaseUrl = "ORYX_MCR_SDK_IMAGE_BASE_URL";
         public const string DisableCheckers = "DISABLE_CHECKERS";
         public const string DisableDotNetCoreBuild = "DISABLE_DOTNETCORE_BUILD";
         public const string DisableGolangBuild = "DISABLE_GOLANG_BUILD";

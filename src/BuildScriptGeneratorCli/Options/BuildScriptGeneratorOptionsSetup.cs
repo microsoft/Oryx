@@ -62,6 +62,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             // Dynamic install
             options.EnableDynamicInstall = this.GetBooleanValue(SettingsKeys.EnableDynamicInstall);
             options.EnableExternalSdkProvider = this.GetBooleanValue(SettingsKeys.EnableExternalSdkProvider);
+            options.EnableMcrSdkProvider = this.GetBooleanValue(SettingsKeys.EnableMcrSdkProvider);
+            options.McrSdkImageBaseUrl = this.GetStringValue(SettingsKeys.McrSdkImageBaseUrl);
 
             var dynamicInstallRootDir = this.GetStringValue(SettingsKeys.DynamicInstallRootDir);
 
