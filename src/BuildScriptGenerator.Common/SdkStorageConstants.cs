@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         // ACR-based SDK distribution constants
         public const string EnableAcrSdkProviderKey = "ORYX_ENABLE_ACR_SDK_PROVIDER";
         public const string AcrSdkRegistryUrlKeyName = "ORYX_ACR_SDK_REGISTRY_URL";
-        public const string DefaultAcrSdkRegistryUrl = "https://oryxsdks.azurecr.io";
+        public const string DefaultAcrSdkRegistryUrl = "https://oryxacr.azurecr.io";
         public const string AcrSdkRepositoryPrefix = "sdks";
         public const string AcrDefaultVersionTag = "default";
         public const string AcrCatalogTag = "catalog";
