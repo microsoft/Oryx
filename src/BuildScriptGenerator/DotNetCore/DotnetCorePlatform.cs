@@ -236,97 +236,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     $"'{typeof(DotNetCorePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            string installationScriptSnippet = null;
+            if (!this.commonOptions.EnableAcrSdkProvider && !this.commonOptions.EnableDynamicInstall)
+            {
+                this.logger.LogDebug("Dynamic install is not enabled.");
+                return null;
+            }
+
+            var sdkVersion = dotNetCorePlatformDetectorResult.SdkVersion;
+
+            if (this.platformInstaller.IsVersionAlreadyInstalled(sdkVersion))
+            {
+                this.logger.LogDebug(
+                    "DotNetCore SDK version {globalJsonSdkVersion} is already installed. So skipping installing it again.",
+                    sdkVersion);
+                return null;
+            }
+
             if (this.commonOptions.EnableAcrSdkProvider)
             {
                 this.logger.LogDebug("ACR SDK provider is enabled.");
-
-                if (this.platformInstaller.IsVersionAlreadyInstalled(dotNetCorePlatformDetectorResult.SdkVersion))
-                {
-                    this.logger.LogDebug("DotNetCore SDK version {globalJsonSdkVersion} is already installed. So skipping installing it again.", dotNetCorePlatformDetectorResult.SdkVersion);
-                }
-                else
-                {
-                    if (this.commonOptions.EnableExternalSdkProvider)
-                    {
-                        this.logger.LogDebug("DotNetCore SDK version {version} is not installed. External ACR SDK provider is enabled so trying to pull SDK image from WAWS ACR.", dotNetCorePlatformDetectorResult.SdkVersion);
-
-                        try
-                        {
-                            var isExternalAcrFetchSuccess = this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
-                                this.Name, dotNetCorePlatformDetectorResult.SdkVersion, this.commonOptions.DebianFlavor).Result;
-                            if (isExternalAcrFetchSuccess)
-                            {
-                                this.logger.LogDebug("DotNetCore SDK version {version} is fetched successfully using external ACR SDK provider. So generating an installation script snippet which skips platform binary download.", dotNetCorePlatformDetectorResult.SdkVersion);
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion, skipSdkBinaryDownload: true);
-                            }
-                            else
-                            {
-                                this.logger.LogDebug("DotNetCore SDK version {version} is not fetched via external ACR SDK provider. Falling back to direct Oryx ACR download.", dotNetCorePlatformDetectorResult.SdkVersion);
-                                installationScriptSnippet = this.platformInstaller.GetAcrInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError(ex, "Error while fetching DotNetCore SDK version {version} using external ACR SDK provider. Falling back to direct Oryx ACR download.", dotNetCorePlatformDetectorResult.SdkVersion);
-                            installationScriptSnippet = this.platformInstaller.GetAcrInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                        }
-                    }
-                    else
-                    {
-                        this.logger.LogDebug("DotNetCore SDK version {globalJsonSdkVersion} is not installed. Generating direct Oryx ACR download installation script snippet.", dotNetCorePlatformDetectorResult.SdkVersion);
-                        installationScriptSnippet = this.platformInstaller.GetAcrInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                    }
-                }
+                return this.TryInstallFromAcrSdkProvider(sdkVersion);
             }
-            else if (this.commonOptions.EnableDynamicInstall)
+
+            // EnableDynamicInstall path
+            this.logger.LogDebug("Dynamic install is enabled.");
+
+            if (this.commonOptions.EnableExternalSdkProvider)
             {
-                this.logger.LogDebug("Dynamic install is enabled.");
-
-                if (this.platformInstaller.IsVersionAlreadyInstalled(dotNetCorePlatformDetectorResult.SdkVersion))
-                {
-                    this.logger.LogDebug("DotNetCore SDK version {globalJsonSdkVersion} is already installed. So skipping installing it again.", dotNetCorePlatformDetectorResult.SdkVersion);
-                }
-                else
-                {
-                    if (this.commonOptions.EnableExternalSdkProvider)
-                    {
-                        this.logger.LogDebug("DotNetCore SDK version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", dotNetCorePlatformDetectorResult.SdkVersion);
-
-                        try
-                        {
-                            var blobName = BlobNameHelper.GetBlobNameForVersion(this.Name, dotNetCorePlatformDetectorResult.SdkVersion, this.commonOptions.DebianFlavor);
-                            var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
-                            if (isExternalFetchSuccess)
-                            {
-                                this.logger.LogDebug("DotNetCore SDK version {version} is fetched successfully using external SDK provider. So generating an installation script snippet which skips platform binary download.", dotNetCorePlatformDetectorResult.SdkVersion);
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion, skipSdkBinaryDownload: true);
-                            }
-                            else
-                            {
-                                this.logger.LogDebug("DotNetCore SDK version {version} is not fetched successfully using external SDK provider. So generating an installation script snippet for it.", dotNetCorePlatformDetectorResult.SdkVersion);
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError(ex, "Error while fetching DotNetCore SDK version version {version} using external SDK provider.", dotNetCorePlatformDetectorResult.SdkVersion);
-                            installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                        }
-                    }
-                    else
-                    {
-                        this.logger.LogDebug("DotNetCore SDK version {globalJsonSdkVersion} is not installed. So generating an installation script snippet for it.", dotNetCorePlatformDetectorResult.SdkVersion);
-                        installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                    }
-                }
-            }
-            else
-            {
-                this.logger.LogDebug("Dynamic install is not enabled.");
+                return this.TryInstallFromExternalSdkProvider(sdkVersion);
             }
 
-            return installationScriptSnippet;
+            this.logger.LogDebug(
+                "DotNetCore SDK version {globalJsonSdkVersion} is not installed. So generating an installation script snippet for it.",
+                sdkVersion);
+            return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion);
         }
 
         /// <inheritdoc/>
@@ -402,6 +345,79 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
+        }
+
+        private string TryInstallFromAcrSdkProvider(string sdkVersion)
+        {
+            if (this.commonOptions.EnableExternalSdkProvider)
+            {
+                this.logger.LogDebug(
+                    "DotNetCore SDK version {version} is not installed. External ACR SDK provider is enabled so trying to pull SDK image from WAWS ACR.",
+                    sdkVersion);
+
+                try
+                {
+                    if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                        this.Name, sdkVersion, this.commonOptions.DebianFlavor).Result)
+                    {
+                        this.logger.LogDebug(
+                            "DotNetCore SDK version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.",
+                            sdkVersion);
+                        return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, skipSdkBinaryDownload: true);
+                    }
+
+                    this.logger.LogDebug(
+                        "DotNetCore SDK version {version} is not fetched via external ACR SDK provider. Falling back to direct Oryx ACR download.",
+                        sdkVersion);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(
+                        ex,
+                        "Error while fetching DotNetCore SDK version {version} using external ACR SDK provider. Falling back to direct Oryx ACR download.",
+                        sdkVersion);
+                }
+            }
+            else
+            {
+                this.logger.LogDebug(
+                    "DotNetCore SDK version {globalJsonSdkVersion} is not installed. Generating direct Oryx ACR download installation script snippet.",
+                    sdkVersion);
+            }
+
+            return this.platformInstaller.GetAcrInstallerScriptSnippet(sdkVersion);
+        }
+
+        private string TryInstallFromExternalSdkProvider(string sdkVersion)
+        {
+            this.logger.LogDebug(
+                "DotNetCore SDK version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.",
+                sdkVersion);
+
+            try
+            {
+                var blobName = BlobNameHelper.GetBlobNameForVersion(this.Name, sdkVersion, this.commonOptions.DebianFlavor);
+                if (this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result)
+                {
+                    this.logger.LogDebug(
+                        "DotNetCore SDK version {version} is fetched successfully using external SDK provider. Skipping platform binary download.",
+                        sdkVersion);
+                    return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, skipSdkBinaryDownload: true);
+                }
+
+                this.logger.LogDebug(
+                    "DotNetCore SDK version {version} is not fetched successfully using external SDK provider. Generating installation script snippet.",
+                    sdkVersion);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Error while fetching DotNetCore SDK version version {version} using external SDK provider.",
+                    sdkVersion);
+            }
+
+            return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion);
         }
 
         private string GetSdkVersion(
