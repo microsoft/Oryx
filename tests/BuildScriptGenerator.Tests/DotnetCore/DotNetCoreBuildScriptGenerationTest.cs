@@ -99,6 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 DotNetCoreInstaller,
                 globalJsonSdkResolver,
                 externalSdkProvider, 
+                new TestExternalAcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -113,6 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 DotNetCorePlatformInstaller DotNetCoreInstaller,
                 GlobalJsonSdkResolver globalJsonSdkResolver,
                 IExternalSdkProvider externalSdkProvider,
+                IExternalAcrSdkProvider externalAcrSdkProvider,
                 TelemetryClient telemetryClient)
                 : base(
                       DotNetCoreVersionProvider,
@@ -123,6 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                       DotNetCoreInstaller,
                       globalJsonSdkResolver,
                       externalSdkProvider,
+                      externalAcrSdkProvider,
                       telemetryClient)
             {
             }

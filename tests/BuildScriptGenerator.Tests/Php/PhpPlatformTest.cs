@@ -591,6 +591,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 phpInstaller,
                 phpComposerInstaller,
                 externalSdkProvider,
+                new TestExternalAcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -616,6 +617,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 PhpPlatformInstaller phpInstaller,
                 PhpComposerInstaller phpComposerInstaller,
                 IExternalSdkProvider externalSdkProvider,
+                IExternalAcrSdkProvider externalAcrSdkProvider,
                 TelemetryClient telemetryClient)
                 : base(
                       phpScriptGeneratorOptions,
@@ -627,6 +629,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                       phpInstaller,
                       phpComposerInstaller,
                       externalSdkProvider,
+                      externalAcrSdkProvider,
                       telemetryClient)
             {
             }

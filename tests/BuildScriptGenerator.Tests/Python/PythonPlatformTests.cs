@@ -433,6 +433,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 detector: null,
                 platformInstaller,
                 externalSdkProvider,
+                new TestExternalAcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -460,6 +461,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 detector,
                 new PythonPlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
                 externalSdkProvider,
+                new TestExternalAcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());
         }
 

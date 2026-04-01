@@ -137,6 +137,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 onDiskProvider,
                 storageProvider,
                 externalProvider,
+                new NodeAcrVersionProvider(commonOptions, new TestHttpClientFactory(), NullLoggerFactory.Instance),
                 NullLogger<NodeVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);
         }
