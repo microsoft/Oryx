@@ -688,43 +688,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string TryInstallFromAcrSdkProvider(string version)
         {
-            if (this.commonOptions.EnableExternalSdkProvider)
+            this.logger.LogDebug(
+                "Node version {version} is not installed. ACR SDK provider is enabled, so trying to fetch SDK using it.",
+                version);
+
+            try
             {
-                this.logger.LogDebug(
-                    "Node version {version} is not installed. External ACR SDK provider is enabled so trying to pull SDK image from WAWS ACR.",
-                    version);
-
-                try
+                if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                    this.Name, version, this.commonOptions.DebianFlavor).Result)
                 {
-                    if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
-                        this.Name, version, this.commonOptions.DebianFlavor).Result)
-                    {
-                        this.logger.LogDebug(
-                            "Node version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.",
-                            version);
-                        return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
-                    }
-
                     this.logger.LogDebug(
-                        "Node version {version} is not fetched via external ACR SDK provider. Falling back to direct Oryx ACR download.",
+                        "Node version {version} is fetched successfully using ACR SDK provider. Skipping platform binary download.",
                         version);
+                    return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
                 }
-                catch (Exception ex)
-                {
-                    this.logger.LogError(
-                        ex,
-                        "Error while fetching Node.js version {version} using external ACR SDK provider. Falling back to direct Oryx ACR download.",
-                        version);
-                }
-            }
-            else
-            {
+
                 this.logger.LogDebug(
-                    "Node version {version} is not installed. Generating direct Oryx ACR download installation script snippet.",
+                    "Node version {version} is not fetched via ACR SDK provider. Falling back to CDN download.",
+                    version);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Error while fetching Node.js version {version} using ACR SDK provider. Falling back to CDN download.",
                     version);
             }
 
-            return this.platformInstaller.GetAcrInstallerScriptSnippet(version);
+            return this.platformInstaller.GetInstallerScriptSnippet(version);
         }
 
         private string TryInstallFromExternalSdkProvider(string version)

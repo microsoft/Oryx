@@ -349,43 +349,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private string TryInstallFromAcrSdkProvider(string sdkVersion)
         {
-            if (this.commonOptions.EnableExternalSdkProvider)
+            this.logger.LogDebug(
+                "DotNetCore SDK version {version} is not installed. ACR SDK provider is enabled, so trying to fetch SDK using it.",
+                sdkVersion);
+
+            try
             {
-                this.logger.LogDebug(
-                    "DotNetCore SDK version {version} is not installed. External ACR SDK provider is enabled so trying to pull SDK image from WAWS ACR.",
-                    sdkVersion);
-
-                try
+                if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                    this.Name, sdkVersion, this.commonOptions.DebianFlavor).Result)
                 {
-                    if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
-                        this.Name, sdkVersion, this.commonOptions.DebianFlavor).Result)
-                    {
-                        this.logger.LogDebug(
-                            "DotNetCore SDK version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.",
-                            sdkVersion);
-                        return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, skipSdkBinaryDownload: true);
-                    }
-
                     this.logger.LogDebug(
-                        "DotNetCore SDK version {version} is not fetched via external ACR SDK provider. Falling back to direct Oryx ACR download.",
+                        "DotNetCore SDK version {version} is fetched successfully using ACR SDK provider. Skipping platform binary download.",
                         sdkVersion);
+                    return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, skipSdkBinaryDownload: true);
                 }
-                catch (Exception ex)
-                {
-                    this.logger.LogError(
-                        ex,
-                        "Error while fetching DotNetCore SDK version {version} using external ACR SDK provider. Falling back to direct Oryx ACR download.",
-                        sdkVersion);
-                }
-            }
-            else
-            {
+
                 this.logger.LogDebug(
-                    "DotNetCore SDK version {globalJsonSdkVersion} is not installed. Generating direct Oryx ACR download installation script snippet.",
+                    "DotNetCore SDK version {version} is not fetched via ACR SDK provider. Falling back to CDN download.",
+                    sdkVersion);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Error while fetching DotNetCore SDK version {version} using ACR SDK provider. Falling back to CDN download.",
                     sdkVersion);
             }
 
-            return this.platformInstaller.GetAcrInstallerScriptSnippet(sdkVersion);
+            return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion);
         }
 
         private string TryInstallFromExternalSdkProvider(string sdkVersion)

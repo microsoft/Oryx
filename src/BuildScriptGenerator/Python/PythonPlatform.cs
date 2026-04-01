@@ -598,18 +598,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 }
 
                 this.logger.LogDebug(
-                    "Python version {version} is not fetched via ACR SDK provider. Falling back to direct Oryx ACR download.",
+                    "Python version {version} is not fetched via ACR SDK provider. Falling back to CDN download.",
                     version);
             }
             catch (Exception ex)
             {
                 this.logger.LogError(
                     ex,
-                    "Error while fetching python version {version} using ACR SDK provider. Falling back to direct Oryx ACR download.",
+                    "Error while fetching python version {version} using ACR SDK provider. Falling back to CDN download.",
                     version);
             }
 
-            return this.platformInstaller.GetAcrInstallerScriptSnippet(version);
+            return this.platformInstaller.GetInstallerScriptSnippet(version);
         }
 
         private BuildScriptSnippet GetBuildScriptSnippetForConda(
