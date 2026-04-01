@@ -28,14 +28,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly string registryUrl;
         private readonly ILogger logger;
 
-        /// <summary>
-        /// Gets the first layer digest from a manifest (SDK images are single-layer FROM scratch images).
-        /// </summary>
-        public static string GetFirstLayerDigest(OciManifest manifest)
-        {
-            return manifest?.Layers?.FirstOrDefault()?.Digest;
-        }
-
         public OciRegistryClient(string registryUrl, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
         {
             this.registryUrl = registryUrl.TrimEnd('/');
@@ -53,7 +45,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         /// <summary>
         /// Lists all tags for a repository, handling Link-header pagination.
-        /// Replaces <see cref="ListBlobsHelper.GetAllBlobs"/> for ACR-based discovery.
         /// </summary>
         public async Task<List<string>> GetAllTagsAsync(string repository)
         {
