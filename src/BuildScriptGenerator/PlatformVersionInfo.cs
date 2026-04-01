@@ -49,5 +49,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PlatformVersionSourceType = PlatformVersionSourceType.AvailableViaExternalProvider,
             };
         }
+
+        public static PlatformVersionInfo CreateAvailableOnAcr(
+            IEnumerable<string> supportedVersions,
+            string defaultVersion)
+        {
+            return new PlatformVersionInfo
+            {
+                SupportedVersions = supportedVersions,
+                DefaultVersion = defaultVersion,
+                PlatformVersionSourceType = PlatformVersionSourceType.AvailableOnAcr,
+            };
+        }
     }
 }

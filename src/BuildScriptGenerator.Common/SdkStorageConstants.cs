@@ -21,5 +21,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string DotnetRuntimeVersionMetadataName = "Dotnet_runtime_version";
         public const string LegacyDotnetRuntimeVersionMetadataName = "Runtime_version";
         public const string OsTypeMetadataName = "Os_type";
+
+        // ACR-based SDK distribution constants
+        public const string EnableAcrSdkProviderKey = "ORYX_ENABLE_ACR_SDK_PROVIDER";
+        public const string AcrSdkRegistryUrlKeyName = "ORYX_ACR_SDK_REGISTRY_URL";
+        public const string DefaultAcrSdkRegistryUrl = "https://oryxsdks.azurecr.io";
+        public const string AcrSdkRepositoryPrefix = "sdks";
+        public const string AcrDefaultVersionTag = "default";
+        public const string AcrCatalogTag = "catalog";
+        public const string AcrVersionLabelName = "org.oryx.version";
+        public const string AcrPlatformLabelName = "org.oryx.platform";
+        public const string AcrOsFlavorLabelName = "org.oryx.os-flavor";
+        public const string AcrDotnetRuntimeVersionLabelName = "org.oryx.dotnet-runtime-version";
+        public const string AcrDotnetSdkVersionLabelName = "org.oryx.dotnet-sdk-version";
     }
 }

@@ -35,6 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCorePlatformInstaller platformInstaller;
         private readonly GlobalJsonSdkResolver globalJsonSdkResolver;
         private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -56,6 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCorePlatformInstaller platformInstaller,
             GlobalJsonSdkResolver globalJsonSdkResolver,
             IExternalSdkProvider externalSdkProvider,
+            IExternalAcrSdkProvider externalAcrSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.versionProvider = versionProvider;
@@ -66,6 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.platformInstaller = platformInstaller;
             this.globalJsonSdkResolver = globalJsonSdkResolver;
             this.externalSdkProvider = externalSdkProvider;
+            this.externalAcrSdkProvider = externalAcrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -234,7 +237,49 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             string installationScriptSnippet = null;
-            if (this.commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableAcrSdkProvider)
+            {
+                this.logger.LogDebug("ACR SDK provider is enabled.");
+
+                if (this.platformInstaller.IsVersionAlreadyInstalled(dotNetCorePlatformDetectorResult.SdkVersion))
+                {
+                    this.logger.LogDebug("DotNetCore SDK version {globalJsonSdkVersion} is already installed. So skipping installing it again.", dotNetCorePlatformDetectorResult.SdkVersion);
+                }
+                else
+                {
+                    if (this.commonOptions.EnableExternalSdkProvider)
+                    {
+                        this.logger.LogDebug("DotNetCore SDK version {version} is not installed. External ACR SDK provider is enabled so trying to pull SDK image from WAWS ACR.", dotNetCorePlatformDetectorResult.SdkVersion);
+
+                        try
+                        {
+                            var isExternalAcrFetchSuccess = this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                                this.Name, dotNetCorePlatformDetectorResult.SdkVersion, this.commonOptions.DebianFlavor).Result;
+                            if (isExternalAcrFetchSuccess)
+                            {
+                                this.logger.LogDebug("DotNetCore SDK version {version} is fetched successfully using external ACR SDK provider. So generating an installation script snippet which skips platform binary download.", dotNetCorePlatformDetectorResult.SdkVersion);
+                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion, skipSdkBinaryDownload: true);
+                            }
+                            else
+                            {
+                                this.logger.LogDebug("DotNetCore SDK version {version} is not fetched via external ACR SDK provider. Falling back to direct Oryx ACR download.", dotNetCorePlatformDetectorResult.SdkVersion);
+                                installationScriptSnippet = this.platformInstaller.GetAcrInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogError(ex, "Error while fetching DotNetCore SDK version {version} using external ACR SDK provider. Falling back to direct Oryx ACR download.", dotNetCorePlatformDetectorResult.SdkVersion);
+                            installationScriptSnippet = this.platformInstaller.GetAcrInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
+                        }
+                    }
+                    else
+                    {
+                        this.logger.LogDebug("DotNetCore SDK version {globalJsonSdkVersion} is not installed. Generating direct Oryx ACR download installation script snippet.", dotNetCorePlatformDetectorResult.SdkVersion);
+                        installationScriptSnippet = this.platformInstaller.GetAcrInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
+                    }
+                }
+            }
+            else if (this.commonOptions.EnableDynamicInstall)
             {
                 this.logger.LogDebug("Dynamic install is enabled.");
 

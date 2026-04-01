@@ -24,6 +24,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return this.GetInstallerScriptSnippet(PythonConstants.PlatformName, version, skipSdkBinaryDownload: skipSdkBinaryDownload);
         }
 
+        public virtual string GetAcrInstallerScriptSnippet(string version)
+        {
+            return this.GetAcrInstallerScriptSnippet(PythonConstants.PlatformName, version);
+        }
+
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
             return this.IsVersionInstalled(

@@ -1,0 +1,95 @@
+# Pipeline: Publish SDK Platform Binaries to ACR
+# Pushes built SDK tarballs as OCI images to Azure Container Registry.
+# Triggered after platform binary builds complete.
+#
+# This pipeline has two stages:
+# 1. DryRun - Lists what would be pushed without making changes
+# 2. PublishToAcr - Pushes images after manual approval
+
+trigger: none
+
+pr: none
+
+parameters:
+  - name: acrName
+    displayName: 'ACR Name (without .azurecr.io)'
+    type: string
+    default: 'oryxsdks'
+  - name: artifactPipeline
+    displayName: 'Source pipeline with SDK artifacts'
+    type: string
+    default: ''
+  - name: overwriteExisting
+    displayName: 'Overwrite existing images in ACR'
+    type: boolean
+    default: false
+
+resources:
+  pipelines:
+    - pipeline: platformBinaries
+      source: 'Oryx-PlatformBinaries'
+      trigger:
+        enabled: false
+
+variables:
+  - name: AcrName
+    value: ${{ parameters.acrName }}
+
+stages:
+  - stage: DryRun
+    displayName: 'Dry Run - Preview'
+    jobs:
+      - job: DryRunPublish
+        displayName: 'Preview ACR Publish'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download SDK Artifacts'
+            inputs:
+              buildType: 'specific'
+              project: '$(System.TeamProject)'
+              definition: '${{ parameters.artifactPipeline }}'
+              buildVersionToDownload: 'latest'
+              targetPath: '$(Pipeline.Workspace)/artifacts'
+
+          - task: AzureCLI@2
+            displayName: 'Dry Run - ACR Publish'
+            inputs:
+              azureSubscription: 'OryxSdkAcrServiceConnection'
+              scriptType: 'bash'
+              scriptPath: '$(Build.SourcesDirectory)/vsts/scripts/publishSdkImageToAcr.sh'
+              arguments: '"$(Pipeline.Workspace)/artifacts" "$(AcrName)" "True"'
+
+  - stage: PublishToAcr
+    displayName: 'Publish SDKs to ACR'
+    dependsOn: DryRun
+    condition: succeeded()
+    jobs:
+      - deployment: PublishSdksToAcr
+        displayName: 'Publish SDKs to ACR'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'oryx-acr-prod'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: DownloadPipelineArtifact@2
+                  displayName: 'Download SDK Artifacts'
+                  inputs:
+                    buildType: 'specific'
+                    project: '$(System.TeamProject)'
+                    definition: '${{ parameters.artifactPipeline }}'
+                    buildVersionToDownload: 'latest'
+                    targetPath: '$(Pipeline.Workspace)/artifacts'
+
+                - task: AzureCLI@2
+                  displayName: 'Publish SDKs to ACR'
+                  inputs:
+                    azureSubscription: 'OryxSdkAcrServiceConnection'
+                    scriptType: 'bash'
+                    scriptPath: '$(Build.SourcesDirectory)/vsts/scripts/publishSdkImageToAcr.sh'
+                    arguments: '"$(Pipeline.Workspace)/artifacts" "$(AcrName)" "False"'

@@ -80,6 +80,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
             options.OsFlavor = this.GetStringValue(SettingsKeys.OsFlavor);
             options.DebianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
+
+            // ACR-based SDK provider
+            options.EnableAcrSdkProvider = this.GetBooleanValue(SettingsKeys.EnableAcrSdkProvider);
+            options.OryxAcrSdkRegistryUrl = this.GetStringValue(SettingsKeys.OryxAcrSdkRegistryUrl);
         }
     }
 }

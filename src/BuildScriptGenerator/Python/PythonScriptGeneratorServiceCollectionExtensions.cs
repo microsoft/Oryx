@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<PythonOnDiskVersionProvider>();
             services.AddSingleton<PythonSdkStorageVersionProvider>();
             services.AddSingleton<PythonExternalVersionProvider>();
+            services.AddSingleton<PythonAcrVersionProvider>();
             return services;
         }
     }

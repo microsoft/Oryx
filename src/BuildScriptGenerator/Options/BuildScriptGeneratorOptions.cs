@@ -98,5 +98,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string ImageType { get; set; }
 
         public bool OryxDisablePipUpgrade { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether ACR-based SDK provider is enabled.
+        /// When true, Oryx will discover and download SDKs from an OCI-compliant container registry.
+        /// </summary>
+        public bool EnableAcrSdkProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base URL of the ACR registry hosting SDK images.
+        /// e.g. "https://oryxsdks.azurecr.io"
+        /// </summary>
+        public string OryxAcrSdkRegistryUrl { get; set; }
     }
 }

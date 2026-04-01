@@ -24,6 +24,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return this.GetInstallerScriptSnippet(NodeConstants.PlatformName, version, skipSdkBinaryDownload: skipSdkBinaryDownload);
         }
 
+        public virtual string GetAcrInstallerScriptSnippet(string version)
+        {
+            return this.GetAcrInstallerScriptSnippet(NodeConstants.PlatformName, version);
+        }
+
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
             return this.IsVersionInstalled(

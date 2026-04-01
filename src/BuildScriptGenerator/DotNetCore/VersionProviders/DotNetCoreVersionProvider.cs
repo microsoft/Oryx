@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCoreOnDiskVersionProvider onDiskVersionProvider;
         private readonly DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider;
         private readonly DotNetCoreExternalVersionProvider externalVersionProvider;
+        private readonly DotNetCoreAcrVersionProvider acrVersionProvider;
         private readonly ILogger<DotNetCoreVersionProvider> logger;
         private string defaultRuntimeVersion;
         private Dictionary<string, string> supportedVersions;
@@ -24,12 +25,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCoreOnDiskVersionProvider onDiskVersionProvider,
             DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider,
             DotNetCoreExternalVersionProvider externalVersionProvider,
+            DotNetCoreAcrVersionProvider acrVersionProvider,
             ILogger<DotNetCoreVersionProvider> logger)
         {
             this.cliOptions = cliOptions.Value;
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
             this.externalVersionProvider = externalVersionProvider;
+            this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
         }
 
@@ -37,7 +40,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (string.IsNullOrEmpty(this.defaultRuntimeVersion))
             {
-                if (this.cliOptions.EnableDynamicInstall)
+                if (this.cliOptions.EnableAcrSdkProvider)
+                {
+                    try
+                    {
+                        this.defaultRuntimeVersion = this.acrVersionProvider.GetDefaultRuntimeVersion();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        this.logger.LogError($"Failed to get default runtime version from ACR provider. Falling back to blob storage. Ex: {ex}");
+                    }
+                }
+
+                if (string.IsNullOrEmpty(this.defaultRuntimeVersion) && this.cliOptions.EnableDynamicInstall)
                 {
                     if (this.cliOptions.EnableExternalSdkProvider)
                     {
@@ -56,7 +71,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         this.defaultRuntimeVersion = this.sdkStorageVersionProvider.GetDefaultRuntimeVersion();
                     }
                 }
-                else
+
+                if (string.IsNullOrEmpty(this.defaultRuntimeVersion))
                 {
                     this.defaultRuntimeVersion = this.onDiskVersionProvider.GetDefaultRuntimeVersion();
                 }
@@ -71,7 +87,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (this.supportedVersions == null)
             {
-                if (this.cliOptions.EnableDynamicInstall)
+                if (this.cliOptions.EnableAcrSdkProvider)
+                {
+                    try
+                    {
+                        this.supportedVersions = this.acrVersionProvider.GetSupportedVersions();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        this.logger.LogError($"Failed to get supported versions from ACR provider. Falling back to blob storage. Ex: {ex}");
+                    }
+                }
+
+                if (this.supportedVersions == null && this.cliOptions.EnableDynamicInstall)
                 {
                     if (this.cliOptions.EnableExternalSdkProvider)
                     {
@@ -90,7 +118,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         this.supportedVersions = this.sdkStorageVersionProvider.GetSupportedVersions();
                     }
                 }
-                else
+
+                if (this.supportedVersions == null)
                 {
                     this.supportedVersions = this.onDiskVersionProvider.GetSupportedVersions();
                 }

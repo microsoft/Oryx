@@ -89,6 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly IPythonPlatformDetector detector;
         private readonly PythonPlatformInstaller platformInstaller;
         private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -108,6 +109,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IPythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller,
             IExternalSdkProvider externalSdkProvider,
+            IExternalAcrSdkProvider externalAcrSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.commonOptions = commonOptions.Value;
@@ -117,6 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.detector = detector;
             this.platformInstaller = platformInstaller;
             this.externalSdkProvider = externalSdkProvider;
+            this.externalAcrSdkProvider = externalAcrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -383,7 +386,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             string installationScriptSnippet = null;
-            if (this.commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableAcrSdkProvider)
+            {
+                this.logger.LogDebug("ACR SDK provider is enabled.");
+
+                if (this.platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
+                {
+                    this.logger.LogDebug(
+                       "Python version {version} is already installed. So skipping installing it again.",
+                       detectorResult.PlatformVersion);
+                }
+                else
+                {
+                    if (this.commonOptions.EnableExternalSdkProvider)
+                    {
+                        this.logger.LogDebug("Python version {version} is not installed. External ACR SDK provider is enabled so trying to pull SDK image from WAWS ACR.", detectorResult.PlatformVersion);
+
+                        try
+                        {
+                            var isExternalAcrFetchSuccess = this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                                this.Name, detectorResult.PlatformVersion, this.commonOptions.DebianFlavor).Result;
+                            if (isExternalAcrFetchSuccess)
+                            {
+                                this.logger.LogDebug("Python version {version} is fetched successfully using external ACR SDK provider. So generating an installation script snippet which skips platform binary download.", detectorResult.PlatformVersion);
+                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion, skipSdkBinaryDownload: true);
+                            }
+                            else
+                            {
+                                this.logger.LogDebug("Python version {version} is not fetched via external ACR SDK provider. Falling back to direct Oryx ACR download.", detectorResult.PlatformVersion);
+                                installationScriptSnippet = this.platformInstaller.GetAcrInstallerScriptSnippet(detectorResult.PlatformVersion);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogError(ex, "Error while fetching python version {version} using external ACR SDK provider. Falling back to direct Oryx ACR download.", detectorResult.PlatformVersion);
+                            installationScriptSnippet = this.platformInstaller.GetAcrInstallerScriptSnippet(detectorResult.PlatformVersion);
+                        }
+                    }
+                    else
+                    {
+                        this.logger.LogDebug("Python version {version} is not installed. Generating direct Oryx ACR download installation script snippet.", detectorResult.PlatformVersion);
+                        installationScriptSnippet = this.platformInstaller.GetAcrInstallerScriptSnippet(detectorResult.PlatformVersion);
+                    }
+                }
+            }
+            else if (this.commonOptions.EnableDynamicInstall)
             {
                 this.logger.LogDebug("Dynamic install is enabled.");
 

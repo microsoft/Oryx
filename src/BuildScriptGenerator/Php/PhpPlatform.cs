@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly PhpPlatformInstaller phpInstaller;
         private readonly PhpComposerInstaller phpComposerInstaller;
         private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -57,6 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             PhpPlatformInstaller phpInstaller,
             PhpComposerInstaller phpComposerInstaller,
             IExternalSdkProvider externalSdkProvider,
+            IExternalAcrSdkProvider externalAcrSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
@@ -68,6 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             this.phpInstaller = phpInstaller;
             this.phpComposerInstaller = phpComposerInstaller;
             this.externalSdkProvider = externalSdkProvider;
+            this.externalAcrSdkProvider = externalAcrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -226,7 +229,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     $"'{typeof(PhpPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (this.commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableAcrSdkProvider)
+            {
+                this.logger.LogDebug("ACR SDK provider is enabled.");
+
+                var scriptBuilder = new StringBuilder();
+
+                this.InstallPhpAcr(phpPlatformDetectorResult.PlatformVersion, scriptBuilder);
+
+                this.InstallPhpComposerAcr(phpPlatformDetectorResult.PhpComposerVersion, scriptBuilder);
+
+                if (scriptBuilder.Length == 0)
+                {
+                    return null;
+                }
+
+                return scriptBuilder.ToString();
+            }
+            else if (this.commonOptions.EnableDynamicInstall)
             {
                 this.logger.LogDebug("Dynamic install is enabled.");
 
@@ -384,6 +404,97 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     this.logger.LogDebug("Php composer version {version} is not installed. So generating an installation script snippet for it.", phpComposerVersion);
                     script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
                 }
+            }
+
+            scriptBuilder.AppendLine(script);
+        }
+
+        private void InstallPhpAcr(string phpVersion, StringBuilder scriptBuilder)
+        {
+            string script = null;
+            if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
+            {
+                this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
+                return;
+            }
+
+            if (this.commonOptions.EnableExternalSdkProvider)
+            {
+                this.logger.LogDebug("PHP version {version} is not installed. External ACR SDK provider is enabled so trying to pull SDK image from WAWS ACR.", phpVersion);
+
+                try
+                {
+                    var isExternalAcrFetchSuccess = this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                        "php", phpVersion, this.commonOptions.DebianFlavor).Result;
+                    if (isExternalAcrFetchSuccess)
+                    {
+                        this.logger.LogDebug("PHP version {version} is fetched successfully using external ACR SDK provider. So generating an installation script snippet which skips platform binary download.", phpVersion);
+                        script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true);
+                    }
+                    else
+                    {
+                        this.logger.LogDebug("PHP version {version} is not fetched via external ACR SDK provider. Falling back to direct Oryx ACR download.", phpVersion);
+                        script = this.phpInstaller.GetAcrInstallerScriptSnippet(phpVersion);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(ex, "Error while fetching PHP version {version} using external ACR SDK provider. Falling back to direct Oryx ACR download.", phpVersion);
+                    script = this.phpInstaller.GetAcrInstallerScriptSnippet(phpVersion);
+                }
+            }
+            else
+            {
+                this.logger.LogDebug("PHP version {version} is not installed. Generating direct Oryx ACR download installation script snippet.", phpVersion);
+                script = this.phpInstaller.GetAcrInstallerScriptSnippet(phpVersion);
+            }
+
+            scriptBuilder.AppendLine(script);
+        }
+
+        private void InstallPhpComposerAcr(string phpComposerVersion, StringBuilder scriptBuilder)
+        {
+            string script = null;
+            if (string.IsNullOrEmpty(phpComposerVersion))
+            {
+                phpComposerVersion = PhpVersions.ComposerDefaultVersion;
+            }
+
+            if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
+            {
+                this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
+                return;
+            }
+
+            if (this.commonOptions.EnableExternalSdkProvider)
+            {
+                this.logger.LogDebug("PHP Composer version {version} is not installed. External ACR SDK provider is enabled so trying to pull SDK image from WAWS ACR.", phpComposerVersion);
+
+                try
+                {
+                    var isExternalAcrFetchSuccess = this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                        "php-composer", phpComposerVersion, this.commonOptions.DebianFlavor).Result;
+                    if (isExternalAcrFetchSuccess)
+                    {
+                        this.logger.LogDebug("PHP Composer version {version} is fetched successfully using external ACR SDK provider. So generating an installation script snippet which skips platform binary download.", phpComposerVersion);
+                        script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true);
+                    }
+                    else
+                    {
+                        this.logger.LogDebug("PHP Composer version {version} is not fetched via external ACR SDK provider. Falling back to direct Oryx ACR download.", phpComposerVersion);
+                        script = this.phpComposerInstaller.GetAcrInstallerScriptSnippet(phpComposerVersion);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(ex, "Error while fetching PHP Composer version {version} using external ACR SDK provider. Falling back to direct Oryx ACR download.", phpComposerVersion);
+                    script = this.phpComposerInstaller.GetAcrInstallerScriptSnippet(phpComposerVersion);
+                }
+            }
+            else
+            {
+                this.logger.LogDebug("PHP Composer version {version} is not installed. Generating direct Oryx ACR download installation script snippet.", phpComposerVersion);
+                script = this.phpComposerInstaller.GetAcrInstallerScriptSnippet(phpComposerVersion);
             }
 
             scriptBuilder.AppendLine(script);

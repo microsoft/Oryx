@@ -27,6 +27,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return this.GetInstallerScriptSnippet(PhpConstants.PlatformName, version, skipSdkBinaryDownload: skipSdkBinaryDownload);
         }
 
+        public virtual string GetAcrInstallerScriptSnippet(string version)
+        {
+            return this.GetAcrInstallerScriptSnippet(PhpConstants.PlatformName, version);
+        }
+
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
             return this.IsVersionInstalled(

@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly NodeOnDiskVersionProvider onDiskVersionProvider;
         private readonly NodeSdkStorageVersionProvider sdkStorageVersionProvider;
         private readonly NodeExternalVersionProvider externalVersionProvider;
+        private readonly NodeAcrVersionProvider acrVersionProvider;
         private readonly ILogger<NodeVersionProvider> logger;
         private PlatformVersionInfo versionInfo;
 
@@ -23,12 +24,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             NodeOnDiskVersionProvider onDiskVersionProvider,
             NodeSdkStorageVersionProvider sdkStorageVersionProvider,
             NodeExternalVersionProvider externalVersionProvider,
+            NodeAcrVersionProvider acrVersionProvider,
             ILogger<NodeVersionProvider> logger)
         {
             this.options = options.Value;
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
             this.externalVersionProvider = externalVersionProvider;
+            this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
         }
 
@@ -36,6 +39,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             if (this.versionInfo == null)
             {
+                if (this.options.EnableAcrSdkProvider)
+                {
+                    if (this.options.EnableExternalSdkProvider)
+                    {
+                        try
+                        {
+                            return this.externalVersionProvider.GetVersionInfo();
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogError($"Failed to get version info from external SDK provider (ACR mode). Falling back to direct ACR provider. Ex: {ex}");
+                        }
+                    }
+
+                    try
+                    {
+                        return this.acrVersionProvider.GetVersionInfo();
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.LogError($"Failed to get version info from ACR provider. Falling back to blob storage. Ex: {ex}");
+                    }
+                }
+
                 if (this.options.EnableDynamicInstall)
                 {
                     if (this.options.EnableExternalSdkProvider)
