@@ -150,7 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var versionProvider = new TestDotNetCoreVersionProvider(
                 supportedVersions,
                 defaultVersion);
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var externalSdkProvider = new TestSdkResolver();
             var commonOptions = new BuildScriptGeneratorOptions();
             var dotNetCoreScriptGeneratorOptions = new DotNetCoreScriptGeneratorOptions();
             dotNetCoreScriptGeneratorOptions.DefaultRuntimeVersion = envVarDefaultVersion;
@@ -178,7 +178,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
                 DotNetCorePlatformInstaller platformInstaller,
                 GlobalJsonSdkResolver globalJsonSdkResolver,
-                IExternalSdkProvider externalSdkProvider,
+                ISdkResolver sdkResolver,
                 TelemetryClient telemetryClient)
                 : base(
                       versionProvider,
@@ -188,7 +188,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                       dotNetCoreScriptGeneratorOptions,
                       platformInstaller,
                       globalJsonSdkResolver,
-                      externalSdkProvider,
+                      sdkResolver,
                       telemetryClient)
             {
             }

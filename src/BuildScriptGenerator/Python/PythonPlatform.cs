@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly ILogger<PythonPlatform> logger;
         private readonly IPythonPlatformDetector detector;
         private readonly PythonPlatformInstaller platformInstaller;
-        private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly ISdkResolver sdkResolver;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -100,6 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <param name="logger">The logger of Python platform.</param>
         /// <param name="detector">The detector of Python platform.</param>
         /// <param name="platformInstaller">The <see cref="PythonPlatformInstaller"/>.</param>
+        /// <param name="sdkResolver">The <see cref="ISdkResolver"/>.</param>
         public PythonPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
@@ -107,7 +108,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             ILogger<PythonPlatform> logger,
             IPythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller,
-            IExternalSdkProvider externalSdkProvider,
+            ISdkResolver sdkResolver,
             TelemetryClient telemetryClient)
         {
             this.commonOptions = commonOptions.Value;
@@ -116,7 +117,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.logger = logger;
             this.detector = detector;
             this.platformInstaller = platformInstaller;
-            this.externalSdkProvider = externalSdkProvider;
+            this.sdkResolver = sdkResolver;
             this.telemetryClient = telemetryClient;
         }
 
@@ -395,36 +396,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 }
                 else
                 {
-                    if (this.commonOptions.EnableExternalSdkProvider)
-                    {
-                        this.logger.LogDebug("Python version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", detectorResult.PlatformVersion);
+                    this.logger.LogDebug(
+                        "Python version {version} is not installed. Trying to fetch SDK.",
+                        detectorResult.PlatformVersion);
 
-                        try
-                        {
-                            var blobName = BlobNameHelper.GetBlobNameForVersion(this.Name, detectorResult.PlatformVersion, this.commonOptions.DebianFlavor);
-                            var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
-                            if (isExternalFetchSuccess)
-                            {
-                                this.logger.LogDebug("Python version {version} is fetched successfully using external SDK provider. So generating an installation script snippet which skips platform binary download.", detectorResult.PlatformVersion);
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion, skipSdkBinaryDownload: true);
-                            }
-                            else
-                            {
-                                this.logger.LogDebug("Python version {version} is not fetched successfully using external SDK provider. So generating an installation script snippet for it.", detectorResult.PlatformVersion);
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError(ex, "Error while fetching python version {version} using external SDK provider.", detectorResult.PlatformVersion);
-                            installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion);
-                        }
-                    }
-                    else
-                    {
-                        this.logger.LogDebug("Python version {version} is not installed. So generating an installation script snippet for it.", detectorResult.PlatformVersion);
-                        installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion);
-                    }
+                    var sdkFetched = this.sdkResolver.TryFetchSdk(
+                        this.Name, detectorResult.PlatformVersion, this.commonOptions.DebianFlavor);
+
+                    installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
+                        detectorResult.PlatformVersion, skipSdkBinaryDownload: sdkFetched);
                 }
             }
             else

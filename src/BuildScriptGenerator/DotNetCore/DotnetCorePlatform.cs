@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly DotNetCorePlatformInstaller platformInstaller;
         private readonly GlobalJsonSdkResolver globalJsonSdkResolver;
-        private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly ISdkResolver sdkResolver;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -47,6 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <param name="dotNetCoreScriptGeneratorOptions">The options if .NET platform.</param>
         /// <param name="platformInstaller">The <see cref="DotNetCorePlatformInstaller"/>.</param>
         /// <param name="globalJsonSdkResolver">The <see cref="GlobalJsonSdkResolver"/>.</param>
+        /// <param name="sdkResolver">The <see cref="ISdkResolver"/>.</param>
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
             ILogger<DotNetCorePlatform> logger,
@@ -55,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
             DotNetCorePlatformInstaller platformInstaller,
             GlobalJsonSdkResolver globalJsonSdkResolver,
-            IExternalSdkProvider externalSdkProvider,
+            ISdkResolver sdkResolver,
             TelemetryClient telemetryClient)
         {
             this.versionProvider = versionProvider;
@@ -65,7 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.commonOptions = commonOptions.Value;
             this.platformInstaller = platformInstaller;
             this.globalJsonSdkResolver = globalJsonSdkResolver;
-            this.externalSdkProvider = externalSdkProvider;
+            this.sdkResolver = sdkResolver;
             this.telemetryClient = telemetryClient;
         }
 
@@ -244,36 +245,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
                 else
                 {
-                    if (this.commonOptions.EnableExternalSdkProvider)
-                    {
-                        this.logger.LogDebug("DotNetCore SDK version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", dotNetCorePlatformDetectorResult.SdkVersion);
+                    this.logger.LogDebug(
+                        "DotNetCore SDK version {version} is not installed. Trying to fetch SDK.",
+                        dotNetCorePlatformDetectorResult.SdkVersion);
 
-                        try
-                        {
-                            var blobName = BlobNameHelper.GetBlobNameForVersion(this.Name, dotNetCorePlatformDetectorResult.SdkVersion, this.commonOptions.DebianFlavor);
-                            var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
-                            if (isExternalFetchSuccess)
-                            {
-                                this.logger.LogDebug("DotNetCore SDK version {version} is fetched successfully using external SDK provider. So generating an installation script snippet which skips platform binary download.", dotNetCorePlatformDetectorResult.SdkVersion);
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion, skipSdkBinaryDownload: true);
-                            }
-                            else
-                            {
-                                this.logger.LogDebug("DotNetCore SDK version {version} is not fetched successfully using external SDK provider. So generating an installation script snippet for it.", dotNetCorePlatformDetectorResult.SdkVersion);
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError(ex, "Error while fetching DotNetCore SDK version version {version} using external SDK provider.", dotNetCorePlatformDetectorResult.SdkVersion);
-                            installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                        }
-                    }
-                    else
-                    {
-                        this.logger.LogDebug("DotNetCore SDK version {globalJsonSdkVersion} is not installed. So generating an installation script snippet for it.", dotNetCorePlatformDetectorResult.SdkVersion);
-                        installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                    }
+                    var sdkFetched = this.sdkResolver.TryFetchSdk(
+                        this.Name, dotNetCorePlatformDetectorResult.SdkVersion, this.commonOptions.DebianFlavor);
+
+                    installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
+                        dotNetCorePlatformDetectorResult.SdkVersion, skipSdkBinaryDownload: sdkFetched);
                 }
             }
             else

@@ -1010,7 +1010,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             nodeScriptGeneratorOptions = nodeScriptGeneratorOptions ?? new NodeScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             var versionProvider = new TestNodeVersionProvider(supportedNodeVersions, defaultVersion);
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var sdkResolver = new TestSdkResolver();
             var environment = new TestEnvironment();
             var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
             var platformInstaller = new NodePlatformInstaller(
@@ -1024,7 +1024,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 detector,
                 environment,
                 platformInstaller,
-                externalSdkProvider,
+                sdkResolver,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -1037,7 +1037,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var environment = new TestEnvironment();
 
             var versionProvider = new TestNodeVersionProvider();
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var sdkResolver = new TestSdkResolver();
             var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
         
             return new TestNodePlatform(
@@ -1048,7 +1048,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 detector,
                 environment,
                 platformInstaller,
-                externalSdkProvider, 
+                sdkResolver, 
                 TelemetryClientHelper.GetTelemetryClient());  
         }
 
@@ -1065,7 +1065,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 sdkAlreadyInstalled,
                 NullLoggerFactory.Instance);
             var versionProvider = new TestNodeVersionProvider();
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var sdkResolver = new TestSdkResolver();
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
             var detector = new TestNodePlatformDetector();
             return new TestNodePlatform(
@@ -1076,7 +1076,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 detector,
                 environment,
                 installer,
-                externalSdkProvider,
+                sdkResolver,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -1100,7 +1100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 INodePlatformDetector detector,
                 IEnvironment environment,
                 NodePlatformInstaller nodePlatformInstaller,
-                IExternalSdkProvider externalSdkProvider,
+                ISdkResolver sdkResolver,
                 TelemetryClient telemetryClient)
                 : base(
                       cliOptions,
@@ -1110,7 +1110,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                       detector,
                       environment,
                       nodePlatformInstaller,
-                      externalSdkProvider,
+                      sdkResolver,
                       telemetryClient)
             {
             }

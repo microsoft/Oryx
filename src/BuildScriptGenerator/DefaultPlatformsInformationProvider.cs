@@ -52,6 +52,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 this.outputWriter.WriteLine("External SDK provider is enabled.");
             }
 
+            if (this.commonOptions.EnableMcrSdkProvider)
+            {
+                this.outputWriter.WriteLine("MCR SDK provider is enabled.");
+            }
+
             foreach (var platform in this.platforms)
             {
                 // Check if a platform is enabled or not

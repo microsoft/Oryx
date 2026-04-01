@@ -83,7 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             isDotNetCoreVersionAlreadyInstalled = isDotNetCoreVersionAlreadyInstalled ?? true;
             DotNetCoreInstallationScript = DotNetCoreInstallationScript ?? "default-DotNetCore-installation-script";
             var versionProvider = new TestDotNetCoreVersionProvider(supportedDotNetCoreVersions, defaultVersion);
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var externalSdkProvider = new TestSdkResolver();
             var detector = new TestDotNetCorePlatformDetector(detectedVersion: detectedVersion);
             var DotNetCoreInstaller = new TestDotNetCorePlatformInstaller(
                 Options.Create(commonOptions),
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 IDotNetCorePlatformDetector detector,
                 DotNetCorePlatformInstaller DotNetCoreInstaller,
                 GlobalJsonSdkResolver globalJsonSdkResolver,
-                IExternalSdkProvider externalSdkProvider,
+                ISdkResolver sdkResolver,
                 TelemetryClient telemetryClient)
                 : base(
                       DotNetCoreVersionProvider,
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                       DotNetCoreScriptGeneratorOptions,
                       DotNetCoreInstaller,
                       globalJsonSdkResolver,
-                      externalSdkProvider,
+                      sdkResolver,
                       telemetryClient)
             {
             }
