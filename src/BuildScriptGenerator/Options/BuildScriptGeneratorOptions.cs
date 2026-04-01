@@ -98,5 +98,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string ImageType { get; set; }
 
         public bool OryxDisablePipUpgrade { get; set; }
+
+        public bool EnableMcrSdkProvider { get; set; }
+
+        public string McrSdkImageBaseUrl { get; set; }
     }
 }

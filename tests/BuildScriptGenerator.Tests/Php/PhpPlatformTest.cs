@@ -568,7 +568,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             isPhpVersionAlreadyInstalled = isPhpVersionAlreadyInstalled ?? true;
             isPhpComposerAlreadyInstalled = isPhpComposerAlreadyInstalled ?? true;
             var versionProvider = new TestPhpVersionProvider(supportedPhpVersions, defaultVersion);
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var externalSdkProvider = new TestSdkResolver();
             supportedPhpComposerVersions = supportedPhpComposerVersions ?? new[] { PhpVersions.ComposerDefaultVersion };
             defaultComposerVersion = defaultComposerVersion ?? PhpVersions.ComposerDefaultVersion;
             var composerVersionProvider = new TestPhpComposerVersionProvider(
@@ -615,7 +615,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 IPhpPlatformDetector detector,
                 PhpPlatformInstaller phpInstaller,
                 PhpComposerInstaller phpComposerInstaller,
-                IExternalSdkProvider externalSdkProvider,
+                ISdkResolver sdkResolver,
                 TelemetryClient telemetryClient)
                 : base(
                       phpScriptGeneratorOptions,
@@ -626,7 +626,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                       detector,
                       phpInstaller,
                       phpComposerInstaller,
-                      externalSdkProvider,
+                      sdkResolver,
                       telemetryClient)
             {
             }

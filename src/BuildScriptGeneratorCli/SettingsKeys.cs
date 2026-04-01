@@ -75,5 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string DebianFlavor = "DEBIAN_FLAVOR";
         public const string CallerId = "CALLER_ID";
         public const string OryxDisablePipUpgrade = "ORYX_DISABLE_PIP_UPGRADE";
+        public const string EnableMcrSdkProvider = "ORYX_ENABLE_MCR_SDK_PROVIDER";
+        public const string McrSdkImageBaseUrl = "ORYX_MCR_SDK_IMAGE_BASE_URL";
     }
 }

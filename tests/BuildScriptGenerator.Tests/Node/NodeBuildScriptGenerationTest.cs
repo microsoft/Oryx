@@ -971,7 +971,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new[] { "6.11.0", NodeVersions.Node8Version, NodeVersions.Node10Version, NodeVersions.Node12Version },
                 defaultVersion: defaultNodeVersion);
 
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var sdkResolver = new TestSdkResolver();
 
             nodeScriptGeneratorOptions = nodeScriptGeneratorOptions ?? new NodeScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
@@ -983,7 +983,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 detector: null,
                 new TestEnvironment(),
                 new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
-                externalSdkProvider,
+                sdkResolver,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 

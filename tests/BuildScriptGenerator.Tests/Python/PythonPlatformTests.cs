@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions();
             var commonOptions = new BuildScriptGeneratorOptions() { EnableDynamicInstall = false };
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var externalSdkProvider = new TestSdkResolver();
             var platformInstaller = new TestPythonPlatformInstaller(
                 isVersionAlreadyInstalled: false,
                 Options.Create(commonOptions),
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions();
             var commonOptions = new BuildScriptGeneratorOptions() { EnableDynamicInstall = true };
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var externalSdkProvider = new TestSdkResolver();
             var platformInstaller = new TestPythonPlatformInstaller(
                 isVersionAlreadyInstalled: false,
                 Options.Create(commonOptions),
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                  DebianFlavor = OsTypes.DebianBookworm,
                 };
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var externalSdkProvider = new TestSdkResolver();
             var platformInstaller = new TestPythonPlatformInstaller(
                 isVersionAlreadyInstalled: false,
                 Options.Create(commonOptions),
@@ -148,7 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions();
             var commonOptions = new BuildScriptGeneratorOptions() { EnableDynamicInstall = true };
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var externalSdkProvider = new TestSdkResolver();
             var platformInstaller = new TestPythonPlatformInstaller(
                 isVersionAlreadyInstalled: true,
                 Options.Create(commonOptions),
@@ -187,7 +187,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 CustomRequirementsTxtPath = "foo/requirements.txt"
             };
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var externalSdkProvider = new TestSdkResolver();
             var platformInstaller = new TestPythonPlatformInstaller(
                 isVersionAlreadyInstalled: false,
                 Options.Create(commonOptions),
@@ -418,7 +418,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
         private PythonPlatform CreatePlatform(
             IPythonVersionProvider pythonVersionProvider,
-            IExternalSdkProvider externalSdkProvider,
+            ISdkResolver sdkResolver,
             PythonPlatformInstaller platformInstaller,
             BuildScriptGeneratorOptions commonOptions = null,
             PythonScriptGeneratorOptions pythonScriptGeneratorOptions = null)
@@ -432,7 +432,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLogger<PythonPlatform>.Instance,
                 detector: null,
                 platformInstaller,
-                externalSdkProvider,
+                sdkResolver,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -448,7 +448,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var versionProvider = new TestPythonVersionProvider(
                 supportedPythonVersions: supportedVersions,
                 defaultVersion: defaultVersion);
-            var externalSdkProvider = new TestExternalSdkProvider();
+            var externalSdkProvider = new TestSdkResolver();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             pythonScriptGeneratorOptions = pythonScriptGeneratorOptions ?? new PythonScriptGeneratorOptions();
             var detector = new TestPythonPlatformDetector(detectedVersion: detectedVersion);  

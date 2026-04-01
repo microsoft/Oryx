@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly INodePlatformDetector detector;
         private readonly IEnvironment environment;
         private readonly NodePlatformInstaller platformInstaller;
-        private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly ISdkResolver sdkResolver;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <param name="detector">The detector of Node.js platform.</param>
         /// <param name="environment">The environment of Node.js platform.</param>
         /// <param name="nodePlatformInstaller">The <see cref="NodePlatformInstaller"/>.</param>
-        /// <param name="externalSdkProvider">The <see cref="ExternalSdkProvider"/>.</param>
+        /// <param name="sdkResolver">The <see cref="ISdkResolver"/>.</param>
         public NodePlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             INodePlatformDetector detector,
             IEnvironment environment,
             NodePlatformInstaller nodePlatformInstaller,
-            IExternalSdkProvider externalSdkProvider,
+            ISdkResolver sdkResolver,
             TelemetryClient telemetryClient)
         {
             this.commonOptions = commonOptions.Value;
@@ -117,7 +117,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.detector = detector;
             this.environment = environment;
             this.platformInstaller = nodePlatformInstaller;
-            this.externalSdkProvider = externalSdkProvider;
+            this.sdkResolver = sdkResolver;
             this.telemetryClient = telemetryClient;
         }
 
@@ -506,53 +506,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
                 else
                 {
-                    if (this.commonOptions.EnableExternalSdkProvider)
-                    {
-                        this.logger.LogDebug(
-                            "Node version {version} is not installed. " +
-                            "External SDK provider is enabled so trying to fetch SDK using it.",
-                            detectorResult.PlatformVersion);
+                    this.logger.LogDebug(
+                        "Node version {version} is not installed. Trying to fetch SDK.",
+                        detectorResult.PlatformVersion);
 
-                        try
-                        {
-                            var blobName = BlobNameHelper.GetBlobNameForVersion(this.Name, detectorResult.PlatformVersion, this.commonOptions.DebianFlavor);
-                            var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
-                            if (isExternalFetchSuccess)
-                            {
-                                this.logger.LogDebug(
-                                    "Node version {version} is fetched successfully using external SDK provider. " +
-                                    "So generating an installation script snippet which skips platform binary download.",
-                                    detectorResult.PlatformVersion);
+                    var sdkFetched = this.sdkResolver.TryFetchSdk(
+                        this.Name, detectorResult.PlatformVersion, this.commonOptions.DebianFlavor);
 
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion, skipSdkBinaryDownload: true);
-                            }
-                            else
-                            {
-                                this.logger.LogDebug(
-                                    "Node version {version} is not fetched successfully using external SDK provider. " +
-                                    "So generating an installation script snippet for it.",
-                                    detectorResult.PlatformVersion);
-
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
-                                    detectorResult.PlatformVersion);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError(ex, "Error while fetching Node.js version {version} using external SDK provider.", detectorResult.PlatformVersion);
-                            installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion);
-                        }
-                    }
-                    else
-                    {
-                        this.logger.LogDebug(
-                            "Node version {version} is not installed. " +
-                            "So generating an installation script snippet for it.",
-                            detectorResult.PlatformVersion);
-
-                        installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
-                            detectorResult.PlatformVersion);
-                    }
+                    installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
+                        detectorResult.PlatformVersion, skipSdkBinaryDownload: sdkFetched);
                 }
             }
             else
