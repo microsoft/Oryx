@@ -70,16 +70,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 debianFlavor = this.options.DebianFlavor ?? "bookworm";
             }
 
-            var repository = $"{SdkStorageConstants.AcrSdkRepositoryPrefix}/{platformName}";
-            var tag = $"{debianFlavor}-{version}";
-
             // Construct a blob name for the output file path (same naming as blob-based downloads)
             var blobName = $"{platformName}-{debianFlavor}-{version}.tar.gz";
 
             this.logger.LogInformation(
                 "Requesting SDK from ACR via LWASv2: platform={PlatformName}, version={Version}, " +
-                "debianFlavor={DebianFlavor}, repository={Repository}, tag={Tag}",
-                platformName, version, debianFlavor, repository, tag);
+                "debianFlavor={DebianFlavor}",
+                platformName, version, debianFlavor);
             this.outputWriter.WriteLine(
                 $"Requesting SDK from ACR via external provider: {platformName} {version} ({debianFlavor})");
 
@@ -97,6 +94,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             try
             {
+                // Send a simple request to LWASv2 with source=acr.
+                // LWASv2 will resolve the corresponding SDK companion image
+                // from the site's runtime image (respecting pinning) and pull it.
                 var request = new AcrSdkProviderRequest
                 {
                     PlatformName = platformName,
@@ -104,8 +104,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     UrlParameters = new Dictionary<string, string>
                     {
                         { "source", "acr" },
-                        { "repository", repository },
-                        { "tag", tag },
+                        { "version", version },
+                        { "debianFlavor", debianFlavor },
                     },
                 };
 
