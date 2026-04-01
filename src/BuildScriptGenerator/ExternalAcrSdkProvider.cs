@@ -171,7 +171,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     var requestJson = JsonSerializer.Serialize(request);
                     this.logger.LogInformation(
                         "Connected to socket {SocketPath} and sending ACR request: {RequestJson}",
-                        SocketPath, requestJson);
+                        SocketPath,
+                        requestJson);
 
                     requestJson += "$";
                     var requestBytes = Encoding.UTF8.GetBytes(requestJson);
