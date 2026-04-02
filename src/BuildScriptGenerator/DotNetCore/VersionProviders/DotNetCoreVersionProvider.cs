@@ -73,25 +73,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (this.cliOptions.EnableExternalSdkProvider)
             {
-                var result = this.TryGet(
-                    () => this.externalVersionProvider.GetDefaultRuntimeVersion(),
-                    "external SDK provider",
-                    "sdkStorageVersionProvider");
-                if (result != null)
+                try
                 {
-                    return result;
+                    return this.externalVersionProvider.GetDefaultRuntimeVersion();
+                }
+                catch (System.Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get default runtime version from external SDK provider. Falling back. Ex: {ex}");
                 }
             }
 
             if (this.cliOptions.EnableAcrSdkProvider)
             {
-                var result = this.TryGet(
-                    () => this.acrVersionProvider.GetDefaultRuntimeVersion(),
-                    "ACR provider",
-                    "blob storage");
-                if (result != null)
+                try
                 {
-                    return result;
+                    return this.acrVersionProvider.GetDefaultRuntimeVersion();
+                }
+                catch (System.Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get default runtime version from ACR provider. Falling back to blob storage. Ex: {ex}");
                 }
             }
 
@@ -102,47 +104,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (this.cliOptions.EnableExternalSdkProvider)
             {
-                var result = this.TryGet(
-                    () => this.externalVersionProvider.GetSupportedVersions(),
-                    "external SDK provider",
-                    "sdkStorageVersionProvider");
-                if (result != null)
+                try
                 {
-                    return result;
+                    return this.externalVersionProvider.GetSupportedVersions();
+                }
+                catch (System.Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get supported versions from external SDK provider. Falling back. Ex: {ex}");
                 }
             }
 
             if (this.cliOptions.EnableAcrSdkProvider)
             {
-                var result = this.TryGet(
-                    () => this.acrVersionProvider.GetSupportedVersions(),
-                    "ACR provider",
-                    "blob storage");
-                if (result != null)
+                try
                 {
-                    return result;
+                    return this.acrVersionProvider.GetSupportedVersions();
+                }
+                catch (System.Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get supported versions from ACR provider. Falling back to blob storage. Ex: {ex}");
                 }
             }
 
             return this.sdkStorageVersionProvider.GetSupportedVersions();
-        }
-
-        private T TryGet<T>(
-            System.Func<T> getter,
-            string providerName,
-            string fallbackName)
-            where T : class
-        {
-            try
-            {
-                return getter();
-            }
-            catch (System.Exception ex)
-            {
-                this.logger.LogError(
-                    $"Failed to get data from {providerName}. Falling back to {fallbackName}. Ex: {ex}");
-                return null;
-            }
         }
     }
 }

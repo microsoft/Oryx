@@ -53,47 +53,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             if (this.options.EnableExternalSdkProvider)
             {
-                var result = this.TryGetVersionInfo(
-                    () => this.externalVersionProvider.GetVersionInfo(),
-                    "external SDK provider",
-                    "sdkStorageVersionProvider");
-                if (result != null)
+                try
                 {
-                    return result;
+                    return this.externalVersionProvider.GetVersionInfo();
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get version info from external SDK provider. Falling back. Ex: {ex}");
                 }
             }
 
-            // ACR-based version discovery
             if (this.options.EnableAcrSdkProvider)
             {
-                var acrResult = this.TryGetVersionInfo(
-                    () => this.acrVersionProvider.GetVersionInfo(),
-                    "ACR provider",
-                    "blob storage");
-                if (acrResult != null)
+                try
                 {
-                    return acrResult;
+                    return this.acrVersionProvider.GetVersionInfo();
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get version info from ACR provider. Falling back to blob storage. Ex: {ex}");
                 }
             }
 
             return this.sdkStorageVersionProvider.GetVersionInfo();
-        }
-
-        private PlatformVersionInfo TryGetVersionInfo(
-            Func<PlatformVersionInfo> getVersionInfo,
-            string providerName,
-            string fallbackName)
-        {
-            try
-            {
-                return getVersionInfo();
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(
-                    $"Failed to get version info from {providerName}. Falling back to {fallbackName}. Ex: {ex}");
-                return null;
-            }
         }
     }
 }
