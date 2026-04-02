@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Interface for ACR-based SDK provider that pulls SDK tarballs directly from an
-    /// OCI-compliant container registry using the OCI Distribution API.
-    /// This is the ACR equivalent of <see cref="IExternalSdkProvider"/> which uses blob storage.
+    /// Pulls SDK tarballs directly from an OCI-compliant container registry (ACR)
+    /// using the OCI Distribution API. SDK images are single-layer <c>FROM scratch</c>
+    /// images where the layer IS the SDK tarball.
     /// </summary>
     /// <remarks>
     /// Gated by the <c>ORYX_ENABLE_ACR_SDK_PROVIDER</c> feature flag.
-    /// SDK images are single-layer <c>FROM scratch</c> images where the layer IS the SDK tarball.
+    /// This is an alternative to <see cref="IExternalSdkProvider"/> (blob storage via LWAS socket).
     /// </remarks>
     public interface IAcrSdkProvider
     {
         /// <summary>
-        /// Pulls an SDK image from the ACR registry and extracts the SDK tarball to the local cache.
+        /// Pulls an SDK image from the ACR registry and saves the SDK tarball to the local cache.
         /// </summary>
         /// <param name="platformName">The platform name (e.g., "nodejs", "python", "dotnet", "php").</param>
         /// <param name="version">The SDK version (e.g., "20.19.3").</param>

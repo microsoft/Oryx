@@ -8,7 +8,7 @@ using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class TestExternalAcrSdkProvider : IExternalAcrSdkProvider
+    public class TestAcrSdkProvider : IAcrSdkProvider
     {
         public Task<bool> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor)
         {
