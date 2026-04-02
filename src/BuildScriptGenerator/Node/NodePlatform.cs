@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly IEnvironment environment;
         private readonly NodePlatformInstaller platformInstaller;
         private readonly IExternalSdkProvider externalSdkProvider;
-        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
+        private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IEnvironment environment,
             NodePlatformInstaller nodePlatformInstaller,
             IExternalSdkProvider externalSdkProvider,
-            IExternalAcrSdkProvider externalAcrSdkProvider,
+            IAcrSdkProvider acrSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.commonOptions = commonOptions.Value;
@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.environment = environment;
             this.platformInstaller = nodePlatformInstaller;
             this.externalSdkProvider = externalSdkProvider;
-            this.externalAcrSdkProvider = externalAcrSdkProvider;
+            this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -692,7 +692,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             try
             {
-                if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                if (this.acrSdkProvider.RequestSdkFromAcrAsync(
                     this.Name, version, this.commonOptions.DebianFlavor).Result)
                 {
                     this.logger.LogDebug(

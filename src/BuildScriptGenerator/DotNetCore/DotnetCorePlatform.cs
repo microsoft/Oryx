@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCorePlatformInstaller platformInstaller;
         private readonly GlobalJsonSdkResolver globalJsonSdkResolver;
         private readonly IExternalSdkProvider externalSdkProvider;
-        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
+        private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCorePlatformInstaller platformInstaller,
             GlobalJsonSdkResolver globalJsonSdkResolver,
             IExternalSdkProvider externalSdkProvider,
-            IExternalAcrSdkProvider externalAcrSdkProvider,
+            IAcrSdkProvider acrSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.versionProvider = versionProvider;
@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.platformInstaller = platformInstaller;
             this.globalJsonSdkResolver = globalJsonSdkResolver;
             this.externalSdkProvider = externalSdkProvider;
-            this.externalAcrSdkProvider = externalAcrSdkProvider;
+            this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -353,7 +353,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             try
             {
-                if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                if (this.acrSdkProvider.RequestSdkFromAcrAsync(
                     this.Name, sdkVersion, this.commonOptions.DebianFlavor).Result)
                 {
                     this.logger.LogDebug(

@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly PhpPlatformInstaller phpInstaller;
         private readonly PhpComposerInstaller phpComposerInstaller;
         private readonly IExternalSdkProvider externalSdkProvider;
-        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
+        private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             PhpPlatformInstaller phpInstaller,
             PhpComposerInstaller phpComposerInstaller,
             IExternalSdkProvider externalSdkProvider,
-            IExternalAcrSdkProvider externalAcrSdkProvider,
+            IAcrSdkProvider acrSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             this.phpInstaller = phpInstaller;
             this.phpComposerInstaller = phpComposerInstaller;
             this.externalSdkProvider = externalSdkProvider;
-            this.externalAcrSdkProvider = externalAcrSdkProvider;
+            this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -390,7 +390,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             try
             {
-                if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                if (this.acrSdkProvider.RequestSdkFromAcrAsync(
                     "php", phpVersion, this.commonOptions.DebianFlavor).Result)
                 {
                     this.logger.LogDebug("PHP version {version} is fetched successfully using ACR SDK provider. Skipping platform binary download.", phpVersion);
@@ -425,7 +425,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             try
             {
-                if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(
+                if (this.acrSdkProvider.RequestSdkFromAcrAsync(
                     "php-composer", phpComposerVersion, this.commonOptions.DebianFlavor).Result)
                 {
                     this.logger.LogDebug("PHP Composer version {version} is fetched successfully using ACR SDK provider. Skipping platform binary download.", phpComposerVersion);

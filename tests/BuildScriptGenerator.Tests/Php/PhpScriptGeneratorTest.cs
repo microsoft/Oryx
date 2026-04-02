@@ -146,7 +146,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 phpInstaller: null,
                 phpComposerInstaller: null,
                 externalSdkProvider,
-                new TestExternalAcrSdkProvider(),
+                new TestAcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
