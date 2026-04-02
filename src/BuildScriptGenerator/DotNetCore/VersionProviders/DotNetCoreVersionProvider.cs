@@ -40,15 +40,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (string.IsNullOrEmpty(this.defaultRuntimeVersion))
             {
-                if (this.cliOptions.EnableAcrSdkProvider)
+                if (this.cliOptions.EnableDynamicInstall)
                 {
-                    try
+                    // ACR-based version discovery (requires dynamic install for SDK installation to work)
+                    if (this.cliOptions.EnableAcrSdkProvider)
                     {
-                        this.defaultRuntimeVersion = this.acrVersionProvider.GetDefaultRuntimeVersion();
-                    }
-                    catch (System.Exception ex)
-                    {
-                        this.logger.LogError($"Failed to get default runtime version from ACR provider. Falling back to blob storage. Ex: {ex}");
+                        try
+                        {
+                            this.defaultRuntimeVersion = this.acrVersionProvider.GetDefaultRuntimeVersion();
+                        }
+                        catch (System.Exception ex)
+                        {
+                            this.logger.LogError($"Failed to get default runtime version from ACR provider. Falling back to blob storage. Ex: {ex}");
+                        }
                     }
                 }
 
@@ -87,15 +91,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (this.supportedVersions == null)
             {
-                if (this.cliOptions.EnableAcrSdkProvider)
+                if (this.cliOptions.EnableDynamicInstall)
                 {
-                    try
+                    // ACR-based version discovery (requires dynamic install for SDK installation to work)
+                    if (this.cliOptions.EnableAcrSdkProvider)
                     {
-                        this.supportedVersions = this.acrVersionProvider.GetSupportedVersions();
-                    }
-                    catch (System.Exception ex)
-                    {
-                        this.logger.LogError($"Failed to get supported versions from ACR provider. Falling back to blob storage. Ex: {ex}");
+                        try
+                        {
+                            this.supportedVersions = this.acrVersionProvider.GetSupportedVersions();
+                        }
+                        catch (System.Exception ex)
+                        {
+                            this.logger.LogError($"Failed to get supported versions from ACR provider. Falling back to blob storage. Ex: {ex}");
+                        }
                     }
                 }
 
