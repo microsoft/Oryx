@@ -39,32 +39,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             if (this.versionInfo == null)
             {
-                if (this.options.EnableAcrSdkProvider)
+                if (this.options.EnableDynamicInstall)
                 {
-                    if (this.options.EnableExternalSdkProvider)
+                    // ACR-based version discovery (requires dynamic install for SDK installation to work)
+                    if (this.options.EnableAcrSdkProvider)
                     {
+                        if (this.options.EnableExternalSdkProvider)
+                        {
+                            try
+                            {
+                                return this.externalVersionProvider.GetVersionInfo();
+                            }
+                            catch (Exception ex)
+                            {
+                                this.logger.LogError($"Failed to get version info from external SDK provider (ACR mode). Falling back to direct ACR provider. Ex: {ex}");
+                            }
+                        }
+
                         try
                         {
-                            return this.externalVersionProvider.GetVersionInfo();
+                            return this.acrVersionProvider.GetVersionInfo();
                         }
                         catch (Exception ex)
                         {
-                            this.logger.LogError($"Failed to get version info from external SDK provider (ACR mode). Falling back to direct ACR provider. Ex: {ex}");
+                            this.logger.LogError($"Failed to get version info from ACR provider. Falling back to blob storage. Ex: {ex}");
                         }
                     }
 
-                    try
-                    {
-                        return this.acrVersionProvider.GetVersionInfo();
-                    }
-                    catch (Exception ex)
-                    {
-                        this.logger.LogError($"Failed to get version info from ACR provider. Falling back to blob storage. Ex: {ex}");
-                    }
-                }
-
-                if (this.options.EnableDynamicInstall)
-                {
+                    // LWAS / CDN blob storage version discovery
                     if (this.options.EnableExternalSdkProvider)
                     {
                         try
