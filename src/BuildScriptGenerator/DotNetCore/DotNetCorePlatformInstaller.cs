@@ -24,11 +24,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return this.GetInstallerScriptSnippet(DotNetCoreConstants.PlatformName, version, skipSdkBinaryDownload: skipSdkBinaryDownload);
         }
 
-        public virtual string GetAcrInstallerScriptSnippet(string version)
-        {
-            return this.GetAcrInstallerScriptSnippet(DotNetCoreConstants.PlatformName, version);
-        }
-
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
             return this.IsVersionInstalled(
