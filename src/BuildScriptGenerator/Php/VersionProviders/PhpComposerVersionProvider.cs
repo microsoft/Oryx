@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly PhpComposerOnDiskVersionProvider onDiskVersionProvider;
         private readonly PhpComposerSdkStorageVersionProvider sdkStorageVersionProvider;
         private readonly PhpComposerExternalVersionProvider externalVersionProvider;
+        private readonly PhpComposerAcrVersionProvider acrVersionProvider;
         private readonly ILogger<PhpComposerVersionProvider> logger;
         private PlatformVersionInfo versionInfo;
 
@@ -23,40 +24,76 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             PhpComposerOnDiskVersionProvider onDiskVersionProvider,
             PhpComposerSdkStorageVersionProvider sdkStorageVersionProvider,
             PhpComposerExternalVersionProvider externalVersionProvider,
+            PhpComposerAcrVersionProvider acrVersionProvider,
             ILogger<PhpComposerVersionProvider> logger)
         {
             this.options = options.Value;
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
             this.externalVersionProvider = externalVersionProvider;
+            this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
         }
 
         public PlatformVersionInfo GetVersionInfo()
         {
-            if (this.versionInfo == null)
+            if (this.versionInfo != null)
             {
-                if (this.options.EnableDynamicInstall)
-                {
-                    if (this.options.EnableExternalSdkProvider)
-                    {
-                        try
-                        {
-                            return this.externalVersionProvider.GetVersionInfo();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError($"Failed to get version info from external SDK provider. Falling back to http based sdkStorageVersionProvider. Ex: {ex}");
-                        }
-                    }
-
-                    return this.sdkStorageVersionProvider.GetVersionInfo();
-                }
-
-                this.versionInfo = this.onDiskVersionProvider.GetVersionInfo();
+                return this.versionInfo;
             }
 
+            this.versionInfo = this.options.EnableDynamicInstall
+                ? this.ResolveDynamicVersionInfo()
+                : this.onDiskVersionProvider.GetVersionInfo();
+
             return this.versionInfo;
+        }
+
+        private PlatformVersionInfo ResolveDynamicVersionInfo()
+        {
+            if (this.options.EnableExternalSdkProvider)
+            {
+                var result = this.TryGetVersionInfo(
+                    () => this.externalVersionProvider.GetVersionInfo(),
+                    "external SDK provider",
+                    "sdkStorageVersionProvider");
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // ACR-based version discovery
+            if (this.options.EnableAcrSdkProvider)
+            {
+                var acrResult = this.TryGetVersionInfo(
+                    () => this.acrVersionProvider.GetVersionInfo(),
+                    "ACR provider",
+                    "blob storage");
+                if (acrResult != null)
+                {
+                    return acrResult;
+                }
+            }
+
+            return this.sdkStorageVersionProvider.GetVersionInfo();
+        }
+
+        private PlatformVersionInfo TryGetVersionInfo(
+            Func<PlatformVersionInfo> getVersionInfo,
+            string providerName,
+            string fallbackName)
+        {
+            try
+            {
+                return getVersionInfo();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    $"Failed to get version info from {providerName}. Falling back to {fallbackName}. Ex: {ex}");
+                return null;
+            }
         }
     }
 }
