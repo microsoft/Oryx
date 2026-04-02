@@ -236,11 +236,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     $"'{typeof(DotNetCorePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (!this.commonOptions.EnableAcrSdkProvider && !this.commonOptions.EnableDynamicInstall)
+            if (!this.commonOptions.EnableDynamicInstall)
             {
                 this.logger.LogDebug("Dynamic install is not enabled.");
                 return null;
             }
+
+            this.logger.LogDebug("Dynamic install is enabled.");
 
             var sdkVersion = dotNetCorePlatformDetectorResult.SdkVersion;
 
@@ -252,18 +254,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            if (this.commonOptions.EnableAcrSdkProvider)
-            {
-                this.logger.LogDebug("ACR SDK provider is enabled.");
-                return this.TryInstallFromAcrSdkProvider(sdkVersion);
-            }
-
-            // EnableDynamicInstall path
-            this.logger.LogDebug("Dynamic install is enabled.");
-
             if (this.commonOptions.EnableExternalSdkProvider)
             {
                 return this.TryInstallFromExternalSdkProvider(sdkVersion);
+            }
+
+            if (this.commonOptions.EnableAcrSdkProvider)
+            {
+                return this.TryInstallFromAcrSdkProvider(sdkVersion);
             }
 
             this.logger.LogDebug(

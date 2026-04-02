@@ -496,11 +496,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             BuildScriptGeneratorContext context,
             PlatformDetectorResult detectorResult)
         {
-            if (!this.commonOptions.EnableAcrSdkProvider && !this.commonOptions.EnableDynamicInstall)
+            if (!this.commonOptions.EnableDynamicInstall)
             {
                 this.logger.LogDebug("Dynamic install not enabled.");
                 return null;
             }
+
+            this.logger.LogDebug("Dynamic install is enabled.");
 
             var version = detectorResult.PlatformVersion;
 
@@ -512,18 +514,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 return null;
             }
 
-            if (this.commonOptions.EnableAcrSdkProvider)
-            {
-                this.logger.LogDebug("ACR SDK provider is enabled.");
-                return this.TryInstallFromAcrSdkProvider(version);
-            }
-
-            // EnableDynamicInstall path
-            this.logger.LogDebug("Dynamic install is enabled.");
-
             if (this.commonOptions.EnableExternalSdkProvider)
             {
                 return this.TryInstallFromExternalSdkProvider(version);
+            }
+
+            if (this.commonOptions.EnableAcrSdkProvider)
+            {
+                return this.TryInstallFromAcrSdkProvider(version);
             }
 
             this.logger.LogDebug(

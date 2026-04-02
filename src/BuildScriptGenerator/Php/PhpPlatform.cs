@@ -229,23 +229,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     $"'{typeof(PhpPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (!this.commonOptions.EnableAcrSdkProvider && !this.commonOptions.EnableDynamicInstall)
+            if (!this.commonOptions.EnableDynamicInstall)
             {
                 this.logger.LogDebug("Dynamic install not enabled.");
                 return null;
             }
 
+            this.logger.LogDebug("Dynamic install is enabled.");
+
             var scriptBuilder = new StringBuilder();
 
-            if (this.commonOptions.EnableAcrSdkProvider)
+            if (this.commonOptions.EnableExternalSdkProvider)
             {
-                this.logger.LogDebug("ACR SDK provider is enabled.");
+                this.InstallPhp(phpPlatformDetectorResult.PlatformVersion, scriptBuilder);
+                this.InstallPhpComposer(phpPlatformDetectorResult.PhpComposerVersion, scriptBuilder);
+            }
+            else if (this.commonOptions.EnableAcrSdkProvider)
+            {
                 this.InstallPhpAcr(phpPlatformDetectorResult.PlatformVersion, scriptBuilder);
                 this.InstallPhpComposerAcr(phpPlatformDetectorResult.PhpComposerVersion, scriptBuilder);
             }
             else
             {
-                this.logger.LogDebug("Dynamic install is enabled.");
                 this.InstallPhp(phpPlatformDetectorResult.PlatformVersion, scriptBuilder);
                 this.InstallPhpComposer(phpPlatformDetectorResult.PhpComposerVersion, scriptBuilder);
             }
