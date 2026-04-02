@@ -21,27 +21,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public class AcrVersionProviderBase
     {
         private readonly ILogger logger;
-        private readonly BuildScriptGeneratorOptions commonOptions;
-        private readonly OciRegistryClient ociClient;
+        private readonly string debianFlavor;
 
         public AcrVersionProviderBase(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IHttpClientFactory httpClientFactory,
             ILoggerFactory loggerFactory)
         {
-            this.commonOptions = commonOptions.Value;
+            var options = commonOptions.Value;
             this.logger = loggerFactory.CreateLogger(this.GetType());
+            this.debianFlavor = options.DebianFlavor;
 
-            var registryUrl = this.commonOptions.OryxAcrSdkRegistryUrl;
-            if (string.IsNullOrEmpty(registryUrl))
-            {
-                registryUrl = SdkStorageConstants.DefaultAcrSdkRegistryUrl;
-            }
+            var registryUrl = string.IsNullOrEmpty(options.OryxAcrSdkRegistryUrl)
+                ? SdkStorageConstants.DefaultAcrSdkRegistryUrl
+                : options.OryxAcrSdkRegistryUrl;
 
-            this.ociClient = new OciRegistryClient(registryUrl, httpClientFactory, loggerFactory);
+            this.OciClient = new OciRegistryClient(registryUrl, httpClientFactory, loggerFactory);
         }
 
-        protected OciRegistryClient OciClient => this.ociClient;
+        protected OciRegistryClient OciClient { get; }
 
         /// <summary>
         /// Lists available versions for a platform from ACR tags.
@@ -50,44 +48,58 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         protected PlatformVersionInfo GetAvailableVersionsFromAcr(string platformName)
         {
-            this.logger.LogDebug("Getting list of available versions for platform {platformName} from ACR.", platformName);
-
             var repository = $"{SdkStorageConstants.AcrSdkRepositoryPrefix}/{platformName}";
-            var debianFlavor = this.commonOptions.DebianFlavor;
 
-            List<string> allTags;
+            this.logger.LogDebug("Getting available versions for {platformName} from ACR repository {repository}.", platformName, repository);
+
+            var allTags = this.GetTags(repository);
+            var supportedVersions = this.FilterVersionTags(allTags);
+            var defaultVersion = this.GetDefaultVersion(repository);
+
+            this.logger.LogDebug(
+                "Found {count} versions for {platformName} on ACR (default: {default}).",
+                supportedVersions.Count,
+                platformName,
+                defaultVersion ?? "none");
+
+            return PlatformVersionInfo.CreateAvailableOnAcr(supportedVersions, defaultVersion);
+        }
+
+        private List<string> GetTags(string repository)
+        {
             try
             {
-                allTags = this.ociClient.GetAllTagsAsync(repository).Result;
+                return this.OciClient.GetAllTagsAsync(repository).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "Failed to get tags from ACR for {repository}", repository);
+                this.logger.LogError(ex, "Failed to get tags from ACR for {repository}.", repository);
                 throw;
             }
+        }
 
-            // Filter tags: match "{debianFlavor}-{version}", exclude "-default" and "-catalog" suffixes
-            var prefix = $"{debianFlavor}-";
-            var supportedVersions = allTags
+        private List<string> FilterVersionTags(List<string> allTags)
+        {
+            var prefix = $"{this.debianFlavor}-";
+            return allTags
                 .Where(t => t.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
                          && !t.EndsWith($"-{SdkStorageConstants.AcrDefaultVersionTag}", StringComparison.OrdinalIgnoreCase)
                          && !t.EndsWith($"-{SdkStorageConstants.AcrCatalogTag}", StringComparison.OrdinalIgnoreCase))
                 .Select(t => t.Substring(prefix.Length))
                 .ToList();
+        }
 
-            this.logger.LogDebug("Found {count} versions for {platformName} on ACR.", supportedVersions.Count, platformName);
-
-            string defaultVersion = null;
+        private string GetDefaultVersion(string repository)
+        {
             try
             {
-                defaultVersion = this.ociClient.GetDefaultVersionAsync(repository, debianFlavor).Result;
+                return this.OciClient.GetDefaultVersionAsync(repository, this.debianFlavor).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                this.logger.LogWarning(ex, "Failed to get default version for {platformName} from ACR.", platformName);
+                this.logger.LogWarning(ex, "Failed to get default version from ACR for {repository}.", repository);
+                return null;
             }
-
-            return PlatformVersionInfo.CreateAvailableOnAcr(supportedVersions, defaultVersion);
         }
     }
 }
