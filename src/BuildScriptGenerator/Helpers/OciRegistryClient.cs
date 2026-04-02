@@ -233,5 +233,58 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Successfully downloaded and verified layer blob {digest}", layerDigest);
             return true;
         }
+
+        /// <summary>
+        /// Pulls an SDK tarball from an OCI image built with <c>FROM scratch; COPY sdk.tar.gz /</c>.
+        /// Because the image contains a single layer, that layer IS the SDK tarball.
+        /// Flow: fetch manifest → extract single layer digest → download blob → verify SHA256.
+        /// </summary>
+        /// <param name="repository">The repository name, e.g. "sdks/python".</param>
+        /// <param name="tag">The image tag, e.g. "bookworm-3.11.0".</param>
+        /// <param name="outputFilePath">The full path where the downloaded tarball should be saved.</param>
+        /// <returns>True if the SDK was pulled and verified successfully.</returns>
+        public async Task<bool> PullSdkAsync(string repository, string tag, string outputFilePath)
+        {
+            this.logger.LogInformation(
+                "Pulling SDK directly from ACR: {repository}:{tag} -> {outputPath}",
+                repository,
+                tag,
+                outputFilePath);
+
+            // Step 1: Fetch the OCI manifest
+            var manifest = await this.GetManifestAsync(repository, tag);
+            if (manifest == null)
+            {
+                this.logger.LogError("Failed to get manifest for {repository}:{tag}", repository, tag);
+                return false;
+            }
+
+            // Step 2: Get the single layer digest (FROM scratch images have exactly 1 layer)
+            var layerDigest = GetFirstLayerDigest(manifest);
+            if (string.IsNullOrEmpty(layerDigest))
+            {
+                this.logger.LogError(
+                    "No layer found in manifest for {repository}:{tag}. Expected a single-layer FROM scratch image.",
+                    repository,
+                    tag);
+                return false;
+            }
+
+            this.logger.LogDebug(
+                "Manifest for {repository}:{tag} has layer digest: {digest}",
+                repository,
+                tag,
+                layerDigest);
+
+            // Ensure the output directory exists
+            var outputDir = Path.GetDirectoryName(outputFilePath);
+            if (!string.IsNullOrEmpty(outputDir))
+            {
+                Directory.CreateDirectory(outputDir);
+            }
+
+            // Step 3: Download the layer blob (this IS the SDK tarball) and verify SHA256
+            return await this.DownloadLayerBlobAsync(repository, layerDigest, outputFilePath);
+        }
     }
 }
