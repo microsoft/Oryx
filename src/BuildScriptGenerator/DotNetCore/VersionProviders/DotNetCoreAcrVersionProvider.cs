@@ -39,17 +39,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public string GetDefaultRuntimeVersion()
         {
-            this.GetVersionInfo();
+            this.EnsureVersionInfo();
             return this.defaultRuntimeVersion;
         }
 
         public Dictionary<string, string> GetSupportedVersions()
         {
-            this.GetVersionInfo();
+            this.EnsureVersionInfo();
             return this.versionMap;
         }
 
-        public void GetVersionInfo()
+        private void EnsureVersionInfo()
         {
             if (this.versionMap != null)
             {
@@ -60,13 +60,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var debianFlavor = this.commonOptions.DebianFlavor;
 
             // Try catalog tag first — single HTTP round-trip for the full runtime→SDK mapping
-            if (this.TryGetVersionInfoFromCatalog(repository, debianFlavor))
+            if (!this.TryGetVersionInfoFromCatalog(repository, debianFlavor))
             {
-                return;
+                // Fallback: inspect individual tag configs (more HTTP calls)
+                this.GetVersionInfoFromTags(repository, debianFlavor);
             }
-
-            // Fallback: inspect individual tag configs (more HTTP calls)
-            this.GetVersionInfoFromTags(repository, debianFlavor);
         }
 
         private bool TryGetVersionInfoFromCatalog(string repository, string debianFlavor)
@@ -76,46 +74,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 var catalogTag = $"{debianFlavor}-{SdkStorageConstants.AcrCatalogTag}";
                 this.logger.LogDebug("Trying .NET catalog tag {tag} from ACR", catalogTag);
 
-                var manifest = this.OciClient.GetManifestAsync(repository, catalogTag).Result;
-                var layerDigest = OciRegistryClient.GetFirstLayerDigest(manifest);
-                if (string.IsNullOrEmpty(layerDigest))
-                {
-                    return false;
-                }
-
-                // Download the catalog layer (small JSON blob)
-                var url = $"{this.commonOptions.OryxAcrSdkRegistryUrl?.TrimEnd('/') ?? SdkStorageConstants.DefaultAcrSdkRegistryUrl}/v2/{repository}/blobs/{layerDigest}";
-                var httpClient = this.OciClient.GetAllTagsAsync(repository).Result; // We need a different approach
-
-                // Actually, we can get the blob content via the same pattern
-
-                // Use a simpler approach: read config labels from the catalog image
+                var manifest = this.OciClient.GetManifestAsync(repository, catalogTag).GetAwaiter().GetResult();
                 var configDigest = manifest.Config?.Digest;
                 if (string.IsNullOrEmpty(configDigest))
                 {
                     return false;
                 }
 
-                var config = this.OciClient.GetImageConfigAsync(repository, configDigest).Result;
-                if (config?.Config?.Labels == null)
+                var config = this.OciClient.GetImageConfigAsync(repository, configDigest).GetAwaiter().GetResult();
+                if (config?.Config?.Labels == null ||
+                    !config.Config.Labels.TryGetValue("org.oryx.dotnet-version-map", out var mapJson))
                 {
                     return false;
                 }
 
-                // Catalog image labels contain the version mapping as JSON
-                if (config.Config.Labels.TryGetValue("org.oryx.dotnet-version-map", out var mapJson))
+                var catalog = JsonSerializer.Deserialize<DotNetCatalog>(mapJson);
+                if (catalog?.Mappings == null)
                 {
-                    var catalog = JsonSerializer.Deserialize<DotNetCatalog>(mapJson);
-                    if (catalog?.Mappings != null)
-                    {
-                        this.versionMap = new Dictionary<string, string>(catalog.Mappings, StringComparer.OrdinalIgnoreCase);
-                        this.defaultRuntimeVersion = catalog.DefaultRuntimeVersion;
-                        this.logger.LogDebug("Got .NET version map from catalog tag with {count} entries", this.versionMap.Count);
-                        return true;
-                    }
+                    return false;
                 }
 
-                return false;
+                this.versionMap = new Dictionary<string, string>(catalog.Mappings, StringComparer.OrdinalIgnoreCase);
+                this.defaultRuntimeVersion = catalog.DefaultRuntimeVersion;
+                this.logger.LogDebug("Got .NET version map from catalog tag with {count} entries.", this.versionMap.Count);
+                return true;
             }
             catch (Exception ex)
             {
@@ -128,16 +110,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             this.logger.LogDebug("Getting .NET version info from individual ACR tags.");
 
-            List<string> allTags;
-            try
-            {
-                allTags = this.OciClient.GetAllTagsAsync(repository).Result;
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "Failed to get tags from ACR for {repository}", repository);
-                throw;
-            }
+            var allTags = this.OciClient.GetAllTagsAsync(repository).GetAwaiter().GetResult();
 
             var prefix = $"{debianFlavor}-";
             var versionTags = allTags
@@ -150,44 +123,56 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             foreach (var tag in versionTags)
             {
-                try
-                {
-                    var manifest = this.OciClient.GetManifestAsync(repository, tag).Result;
-                    var configDigest = manifest.Config?.Digest;
-                    if (string.IsNullOrEmpty(configDigest))
-                    {
-                        continue;
-                    }
-
-                    var config = this.OciClient.GetImageConfigAsync(repository, configDigest).Result;
-                    if (config?.Config?.Labels == null)
-                    {
-                        continue;
-                    }
-
-                    var labels = config.Config.Labels;
-                    if (labels.TryGetValue(SdkStorageConstants.AcrDotnetRuntimeVersionLabelName, out var runtimeVersion) &&
-                        labels.TryGetValue(SdkStorageConstants.AcrDotnetSdkVersionLabelName, out var sdkVersion))
-                    {
-                        supportedVersions[runtimeVersion] = sdkVersion;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogWarning(ex, "Failed to inspect config for tag {tag}", tag);
-                }
+                this.TryExtractDotNetVersionFromTag(repository, tag, supportedVersions);
             }
 
             this.versionMap = supportedVersions;
+            this.defaultRuntimeVersion = this.GetDefaultRuntimeVersionFromAcr(repository, debianFlavor);
+        }
 
-            // Get default runtime version
+        private void TryExtractDotNetVersionFromTag(
+            string repository,
+            string tag,
+            Dictionary<string, string> supportedVersions)
+        {
             try
             {
-                this.defaultRuntimeVersion = this.OciClient.GetDefaultVersionAsync(repository, debianFlavor).Result;
+                var manifest = this.OciClient.GetManifestAsync(repository, tag).GetAwaiter().GetResult();
+                var configDigest = manifest.Config?.Digest;
+                if (string.IsNullOrEmpty(configDigest))
+                {
+                    return;
+                }
+
+                var config = this.OciClient.GetImageConfigAsync(repository, configDigest).GetAwaiter().GetResult();
+                var labels = config?.Config?.Labels;
+                if (labels == null)
+                {
+                    return;
+                }
+
+                if (labels.TryGetValue(SdkStorageConstants.AcrDotnetRuntimeVersionLabelName, out var runtimeVersion) &&
+                    labels.TryGetValue(SdkStorageConstants.AcrDotnetSdkVersionLabelName, out var sdkVersion))
+                {
+                    supportedVersions[runtimeVersion] = sdkVersion;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogWarning(ex, "Failed to inspect config for tag {tag}.", tag);
+            }
+        }
+
+        private string GetDefaultRuntimeVersionFromAcr(string repository, string debianFlavor)
+        {
+            try
+            {
+                return this.OciClient.GetDefaultVersionAsync(repository, debianFlavor).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
                 this.logger.LogWarning(ex, "Failed to get default .NET runtime version from ACR.");
+                return null;
             }
         }
 

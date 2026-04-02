@@ -27,12 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            if (this.platformVersionInfo == null)
-            {
-                this.platformVersionInfo = this.GetAvailableVersionsFromAcr(platformName: ToolNameConstants.PythonName);
-            }
-
-            return this.platformVersionInfo;
+            return this.platformVersionInfo
+                ??= this.GetAvailableVersionsFromAcr(platformName: ToolNameConstants.PythonName);
         }
     }
 }
