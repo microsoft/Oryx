@@ -40,46 +40,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (string.IsNullOrEmpty(this.defaultRuntimeVersion))
             {
-                if (this.cliOptions.EnableDynamicInstall)
-                {
-                    // ACR-based version discovery (requires dynamic install for SDK installation to work)
-                    if (this.cliOptions.EnableAcrSdkProvider)
-                    {
-                        try
-                        {
-                            this.defaultRuntimeVersion = this.acrVersionProvider.GetDefaultRuntimeVersion();
-                        }
-                        catch (System.Exception ex)
-                        {
-                            this.logger.LogError($"Failed to get default runtime version from ACR provider. Falling back to blob storage. Ex: {ex}");
-                        }
-                    }
-                }
-
-                if (string.IsNullOrEmpty(this.defaultRuntimeVersion) && this.cliOptions.EnableDynamicInstall)
-                {
-                    if (this.cliOptions.EnableExternalSdkProvider)
-                    {
-                        try
-                        {
-                            this.defaultRuntimeVersion = this.externalVersionProvider.GetDefaultRuntimeVersion();
-                        }
-                        catch (System.Exception ex)
-                        {
-                            this.logger.LogError($"Failed to get default runtime version from external SDK provider. Falling back to http based sdkStorageVersionProvider. Ex: {ex}");
-                            this.defaultRuntimeVersion = this.sdkStorageVersionProvider.GetDefaultRuntimeVersion();
-                        }
-                    }
-                    else
-                    {
-                        this.defaultRuntimeVersion = this.sdkStorageVersionProvider.GetDefaultRuntimeVersion();
-                    }
-                }
-
-                if (string.IsNullOrEmpty(this.defaultRuntimeVersion))
-                {
-                    this.defaultRuntimeVersion = this.onDiskVersionProvider.GetDefaultRuntimeVersion();
-                }
+                this.defaultRuntimeVersion = this.cliOptions.EnableDynamicInstall
+                    ? this.ResolveDynamicDefaultRuntimeVersion()
+                    : this.onDiskVersionProvider.GetDefaultRuntimeVersion();
             }
 
             this.logger.LogDebug("Default runtime version is {defaultRuntimeVersion}", this.defaultRuntimeVersion);
@@ -91,46 +54,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (this.supportedVersions == null)
             {
-                if (this.cliOptions.EnableDynamicInstall)
-                {
-                    // ACR-based version discovery (requires dynamic install for SDK installation to work)
-                    if (this.cliOptions.EnableAcrSdkProvider)
-                    {
-                        try
-                        {
-                            this.supportedVersions = this.acrVersionProvider.GetSupportedVersions();
-                        }
-                        catch (System.Exception ex)
-                        {
-                            this.logger.LogError($"Failed to get supported versions from ACR provider. Falling back to blob storage. Ex: {ex}");
-                        }
-                    }
-                }
-
-                if (this.supportedVersions == null && this.cliOptions.EnableDynamicInstall)
-                {
-                    if (this.cliOptions.EnableExternalSdkProvider)
-                    {
-                        try
-                        {
-                            this.supportedVersions = this.externalVersionProvider.GetSupportedVersions();
-                        }
-                        catch (System.Exception ex)
-                        {
-                            this.logger.LogError($"Failed to get supported versions from external SDK provider. Falling back to http based sdkStorageVersionProvider. Ex: {ex}");
-                            this.supportedVersions = this.sdkStorageVersionProvider.GetSupportedVersions();
-                        }
-                    }
-                    else
-                    {
-                        this.supportedVersions = this.sdkStorageVersionProvider.GetSupportedVersions();
-                    }
-                }
-
-                if (this.supportedVersions == null)
-                {
-                    this.supportedVersions = this.onDiskVersionProvider.GetSupportedVersions();
-                }
+                this.supportedVersions = this.cliOptions.EnableDynamicInstall
+                    ? this.ResolveDynamicSupportedVersions()
+                    : this.onDiskVersionProvider.GetSupportedVersions();
 
                 // A temporary fix to make building netcoreapp1.0 versions using the 1.1 SDK
                 // This SDK has 2 runtimes: 1.1.13 and 1.0.16
@@ -141,6 +67,82 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.logger.LogDebug("Got the list of supported versions");
 
             return this.supportedVersions;
+        }
+
+        private string ResolveDynamicDefaultRuntimeVersion()
+        {
+            if (this.cliOptions.EnableExternalSdkProvider)
+            {
+                var result = this.TryGet(
+                    () => this.externalVersionProvider.GetDefaultRuntimeVersion(),
+                    "external SDK provider",
+                    "sdkStorageVersionProvider");
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            if (this.cliOptions.EnableAcrSdkProvider)
+            {
+                var result = this.TryGet(
+                    () => this.acrVersionProvider.GetDefaultRuntimeVersion(),
+                    "ACR provider",
+                    "blob storage");
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return this.sdkStorageVersionProvider.GetDefaultRuntimeVersion();
+        }
+
+        private Dictionary<string, string> ResolveDynamicSupportedVersions()
+        {
+            if (this.cliOptions.EnableExternalSdkProvider)
+            {
+                var result = this.TryGet(
+                    () => this.externalVersionProvider.GetSupportedVersions(),
+                    "external SDK provider",
+                    "sdkStorageVersionProvider");
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            if (this.cliOptions.EnableAcrSdkProvider)
+            {
+                var result = this.TryGet(
+                    () => this.acrVersionProvider.GetSupportedVersions(),
+                    "ACR provider",
+                    "blob storage");
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return this.sdkStorageVersionProvider.GetSupportedVersions();
+        }
+
+        private T TryGet<T>(
+            System.Func<T> getter,
+            string providerName,
+            string fallbackName)
+            where T : class
+        {
+            try
+            {
+                return getter();
+            }
+            catch (System.Exception ex)
+            {
+                this.logger.LogError(
+                    $"Failed to get data from {providerName}. Falling back to {fallbackName}. Ex: {ex}");
+                return null;
+            }
         }
     }
 }

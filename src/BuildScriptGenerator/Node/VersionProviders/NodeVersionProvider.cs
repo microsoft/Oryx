@@ -37,55 +37,63 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public PlatformVersionInfo GetVersionInfo()
         {
-            if (this.versionInfo == null)
+            if (this.versionInfo != null)
             {
-                if (this.options.EnableDynamicInstall)
-                {
-                    // ACR-based version discovery (requires dynamic install for SDK installation to work)
-                    if (this.options.EnableAcrSdkProvider)
-                    {
-                        if (this.options.EnableExternalSdkProvider)
-                        {
-                            try
-                            {
-                                return this.externalVersionProvider.GetVersionInfo();
-                            }
-                            catch (Exception ex)
-                            {
-                                this.logger.LogError($"Failed to get version info from external SDK provider (ACR mode). Falling back to direct ACR provider. Ex: {ex}");
-                            }
-                        }
-
-                        try
-                        {
-                            return this.acrVersionProvider.GetVersionInfo();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError($"Failed to get version info from ACR provider. Falling back to blob storage. Ex: {ex}");
-                        }
-                    }
-
-                    // LWAS / CDN blob storage version discovery
-                    if (this.options.EnableExternalSdkProvider)
-                    {
-                        try
-                        {
-                            return this.externalVersionProvider.GetVersionInfo();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError($"Failed to get version info from external SDK provider. Falling back to http based sdkStorageVersionProvider. Ex: {ex}");
-                        }
-                    }
-
-                    return this.sdkStorageVersionProvider.GetVersionInfo();
-                }
-
-                this.versionInfo = this.onDiskVersionProvider.GetVersionInfo();
+                return this.versionInfo;
             }
 
+            this.versionInfo = this.options.EnableDynamicInstall
+                ? this.ResolveDynamicVersionInfo()
+                : this.onDiskVersionProvider.GetVersionInfo();
+
             return this.versionInfo;
+        }
+
+        private PlatformVersionInfo ResolveDynamicVersionInfo()
+        {
+            if (this.options.EnableExternalSdkProvider)
+            {
+                var result = this.TryGetVersionInfo(
+                    this.externalVersionProvider,
+                    "external SDK provider",
+                    "sdkStorageVersionProvider");
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // ACR-based version discovery
+            if (this.options.EnableAcrSdkProvider)
+            {
+                var acrResult = this.TryGetVersionInfo(
+                    this.acrVersionProvider,
+                    "ACR provider",
+                    "blob storage");
+                if (acrResult != null)
+                {
+                    return acrResult;
+                }
+            }
+
+            return this.sdkStorageVersionProvider.GetVersionInfo();
+        }
+
+        private PlatformVersionInfo TryGetVersionInfo(
+            INodeVersionProvider provider,
+            string providerName,
+            string fallbackName)
+        {
+            try
+            {
+                return provider.GetVersionInfo();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    $"Failed to get version info from {providerName}. Falling back to {fallbackName}. Ex: {ex}");
+                return null;
+            }
         }
     }
 }
