@@ -247,12 +247,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             var composerVersion = phpPlatformDetectorResult.PhpComposerVersion;
 
             // 1. Try External-ACR (socket → ACR)
+            // Fallback of this is External SDK provider.
             bool phpInstalledViaExternalAcr = false;
             bool composerInstalledViaExternalAcr = false;
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 phpInstalledViaExternalAcr = this.TryInstallPhpExternalAcr(phpVersion, scriptBuilder);
                 composerInstalledViaExternalAcr = this.TryInstallPhpComposerExternalAcr(composerVersion, scriptBuilder);
+
+                // If External-ACR failed, fallback to External-blob
+                if (!phpInstalledViaExternalAcr)
+                {
+                    this.logger.LogDebug(
+                        "PHP version {version} is not fetched successfully using external ACR SDK provider. "
+                        + "Try getting installation script snippet from external SDK provider.",
+                        phpVersion);
+                    this.InstallPhp(phpVersion, scriptBuilder);
+                    phpInstalledViaExternalAcr = true;
+                }
+
+                if (!composerInstalledViaExternalAcr)
+                {
+                    this.logger.LogDebug(
+                        "PHP Composer version {version} is not fetched successfully using external ACR SDK provider. "
+                        + "Try getting installation script snippet from external SDK provider.",
+                        composerVersion);
+                    this.InstallPhpComposer(composerVersion, scriptBuilder);
+                    composerInstalledViaExternalAcr = true;
+                }
             }
 
             // 2. Try External-blob, 3. Direct-ACR, 4. CDN for anything not yet installed

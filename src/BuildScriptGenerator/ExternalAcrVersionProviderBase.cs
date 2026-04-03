@@ -51,6 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets the list of available versions and default version for <paramref name="platformName"/>
         /// from ACR via the external host socket.
         /// </summary>
+        /// Update this method to read the version list from a file written by the external host after it queries ACR,
         protected PlatformVersionInfo GetAvailableVersionsFromExternalAcr(string platformName)
         {
             var debianFlavor = this.commonOptions.DebianFlavor ?? "bookworm";

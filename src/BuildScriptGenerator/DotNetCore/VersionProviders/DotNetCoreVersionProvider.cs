@@ -75,42 +75,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         // Priority: External-ACR → External-blob → Direct-ACR → CDN
         private string ResolveDynamicDefaultRuntimeVersion()
         {
+            // If external ACR provider is enabled, try it first.
+            // If it fails, fallback to external blob provider.
             if (this.cliOptions.EnableExternalAcrSdkProvider)
             {
-                try
+                var version = this.TryGetDefaultRuntimeVersionFromExternalAcr();
+                if (string.IsNullOrEmpty(version))
                 {
-                    return this.externalAcrVersionProvider.GetDefaultRuntimeVersion();
+                    version = this.TryGetDefaultRuntimeVersionFromExternalBlob();
                 }
-                catch (System.Exception ex)
+
+                if (!string.IsNullOrEmpty(version))
                 {
-                    this.logger.LogError(
-                        $"Failed to get default runtime version from external ACR provider. Falling back. Ex: {ex}");
+                    return version;
                 }
             }
 
             if (this.cliOptions.EnableExternalSdkProvider)
             {
-                try
+                var version = this.TryGetDefaultRuntimeVersionFromExternalBlob();
+                if (!string.IsNullOrEmpty(version))
                 {
-                    return this.externalVersionProvider.GetDefaultRuntimeVersion();
-                }
-                catch (System.Exception ex)
-                {
-                    this.logger.LogError(
-                        $"Failed to get default runtime version from external SDK provider. Falling back. Ex: {ex}");
+                    return version;
                 }
             }
 
             if (this.cliOptions.EnableAcrSdkProvider)
             {
-                try
+                var version = this.TryGetDefaultRuntimeVersionFromAcr();
+                if (!string.IsNullOrEmpty(version))
                 {
-                    return this.acrVersionProvider.GetDefaultRuntimeVersion();
-                }
-                catch (System.Exception ex)
-                {
-                    this.logger.LogError(
-                        $"Failed to get default runtime version from direct ACR provider. Falling back to CDN. Ex: {ex}");
+                    return version;
                 }
             }
 
@@ -119,46 +114,125 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private Dictionary<string, string> ResolveDynamicSupportedVersions()
         {
+            // If external ACR provider is enabled, try it first.
+            // If it fails, fallback to external blob provider.
             if (this.cliOptions.EnableExternalAcrSdkProvider)
             {
-                try
+                var versions = this.TryGetSupportedVersionsFromExternalAcr();
+                if (versions == null)
                 {
-                    return this.externalAcrVersionProvider.GetSupportedVersions();
+                    versions = this.TryGetSupportedVersionsFromExternalBlob();
                 }
-                catch (System.Exception ex)
+
+                if (versions != null)
                 {
-                    this.logger.LogError(
-                        $"Failed to get supported versions from external ACR provider. Falling back. Ex: {ex}");
+                    return versions;
                 }
             }
 
             if (this.cliOptions.EnableExternalSdkProvider)
             {
-                try
+                var versions = this.TryGetSupportedVersionsFromExternalBlob();
+                if (versions != null)
                 {
-                    return this.externalVersionProvider.GetSupportedVersions();
-                }
-                catch (System.Exception ex)
-                {
-                    this.logger.LogError(
-                        $"Failed to get supported versions from external SDK provider. Falling back. Ex: {ex}");
+                    return versions;
                 }
             }
 
             if (this.cliOptions.EnableAcrSdkProvider)
             {
-                try
+                var versions = this.TryGetSupportedVersionsFromAcr();
+                if (versions != null)
                 {
-                    return this.acrVersionProvider.GetSupportedVersions();
-                }
-                catch (System.Exception ex)
-                {
-                    this.logger.LogError(
-                        $"Failed to get supported versions from direct ACR provider. Falling back to CDN. Ex: {ex}");
+                    return versions;
                 }
             }
 
             return this.sdkStorageVersionProvider.GetSupportedVersions();
+        }
+
+        private string TryGetDefaultRuntimeVersionFromExternalAcr()
+        {
+            try
+            {
+                return this.externalAcrVersionProvider.GetDefaultRuntimeVersion();
+            }
+            catch (System.Exception ex)
+            {
+                this.logger.LogError(
+                    $"Error while getting default runtime version from external ACR provider. Ex: {ex}");
+                return null;
+            }
+        }
+
+        private string TryGetDefaultRuntimeVersionFromExternalBlob()
+        {
+            try
+            {
+                return this.externalVersionProvider.GetDefaultRuntimeVersion();
+            }
+            catch (System.Exception ex)
+            {
+                this.logger.LogError(
+                    $"Error while getting default runtime version from external blob provider. Ex: {ex}");
+                return null;
+            }
+        }
+
+        private string TryGetDefaultRuntimeVersionFromAcr()
+        {
+            try
+            {
+                return this.acrVersionProvider.GetDefaultRuntimeVersion();
+            }
+            catch (System.Exception ex)
+            {
+                this.logger.LogError(
+                    $"Error while getting default runtime version from direct ACR provider. Ex: {ex}");
+                return null;
+            }
+        }
+
+        private Dictionary<string, string> TryGetSupportedVersionsFromExternalAcr()
+        {
+            try
+            {
+                return this.externalAcrVersionProvider.GetSupportedVersions();
+            }
+            catch (System.Exception ex)
+            {
+                this.logger.LogError(
+                    $"Error while getting supported versions from external ACR provider. Ex: {ex}");
+                return null;
+            }
+        }
+
+        private Dictionary<string, string> TryGetSupportedVersionsFromExternalBlob()
+        {
+            try
+            {
+                return this.externalVersionProvider.GetSupportedVersions();
+            }
+            catch (System.Exception ex)
+            {
+                this.logger.LogError(
+                    $"Error while getting supported versions from external blob provider. Ex: {ex}");
+                return null;
+            }
+        }
+
+        private Dictionary<string, string> TryGetSupportedVersionsFromAcr()
+        {
+            try
+            {
+                return this.acrVersionProvider.GetSupportedVersions();
+            }
+            catch (System.Exception ex)
+            {
+                this.logger.LogError(
+                    $"Error while getting supported versions from direct ACR provider. Ex: {ex}");
+                return null;
+            }
         }
     }
 }
