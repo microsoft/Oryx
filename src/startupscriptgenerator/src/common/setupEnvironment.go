@@ -38,9 +38,11 @@ func GetSetupScript(platformName string, version string, installationDir string)
 		return ""
 	}
 
-	// Check if ACR SDK provider is enabled
+	// Check if ACR SDK provider is enabled (external or direct)
+	enableExternalAcrSdkProvider := os.Getenv(consts.EnableExternalAcrSdkProviderKey)
 	enableAcrSdkProvider := os.Getenv(consts.EnableAcrSdkProviderKey)
-	if strings.EqualFold(enableAcrSdkProvider, "true") || enableAcrSdkProvider == "1" {
+	if strings.EqualFold(enableExternalAcrSdkProvider, "true") || enableExternalAcrSdkProvider == "1" ||
+		strings.EqualFold(enableAcrSdkProvider, "true") || enableAcrSdkProvider == "1" {
 		return GetAcrSetupScript(platformName, version, installationDir, sentinelFilePath)
 	}
 

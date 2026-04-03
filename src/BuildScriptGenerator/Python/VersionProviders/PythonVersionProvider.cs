@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
             // Priority: External-ACR → External-blob → Direct-ACR → CDN
-            if (this.options.EnableAcrSdkProvider)
+            if (this.options.EnableExternalAcrSdkProvider)
             {
                 try
                 {

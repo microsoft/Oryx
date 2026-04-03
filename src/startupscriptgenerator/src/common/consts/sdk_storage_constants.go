@@ -20,6 +20,7 @@ const LegacyDotnetRuntimeVersionMetadataName string = "Runtime_version"
 const OsTypeMetadataName string = "Os_type"
 
 // ACR-based SDK distribution constants
+const EnableExternalAcrSdkProviderKey string = "ORYX_ENABLE_EXTERNAL_ACR_SDK_PROVIDER"
 const EnableAcrSdkProviderKey string = "ORYX_ENABLE_ACR_SDK_PROVIDER"
 const AcrSdkRegistryUrlKeyName string = "ORYX_ACR_SDK_REGISTRY_URL"
 const DefaultAcrSdkRegistryUrl string = "https://oryxacr.azurecr.io"

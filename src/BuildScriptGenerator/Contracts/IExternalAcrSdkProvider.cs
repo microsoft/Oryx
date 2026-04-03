@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     /// <remarks>
     /// Flow: Oryx → socket → external host → ACR.
-    /// Gated by the <c>ORYX_ENABLE_ACR_SDK_PROVIDER</c> feature flag.
+    /// Gated by the <c>ORYX_ENABLE_EXTERNAL_ACR_SDK_PROVIDER</c> feature flag.
     /// </remarks>
     public interface IExternalAcrSdkProvider
     {

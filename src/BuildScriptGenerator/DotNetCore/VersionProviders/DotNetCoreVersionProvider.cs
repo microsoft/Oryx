@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         // Priority: External-ACR → External-blob → Direct-ACR → CDN
         private string ResolveDynamicDefaultRuntimeVersion()
         {
-            if (this.cliOptions.EnableAcrSdkProvider)
+            if (this.cliOptions.EnableExternalAcrSdkProvider)
             {
                 try
                 {
@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private Dictionary<string, string> ResolveDynamicSupportedVersions()
         {
-            if (this.cliOptions.EnableAcrSdkProvider)
+            if (this.cliOptions.EnableExternalAcrSdkProvider)
             {
                 try
                 {

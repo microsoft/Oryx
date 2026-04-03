@@ -249,7 +249,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             // 1. Try External-ACR (socket → ACR)
             bool phpInstalledViaExternalAcr = false;
             bool composerInstalledViaExternalAcr = false;
-            if (this.commonOptions.EnableAcrSdkProvider)
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 phpInstalledViaExternalAcr = this.TryInstallPhpExternalAcr(phpVersion, scriptBuilder);
                 composerInstalledViaExternalAcr = this.TryInstallPhpComposerExternalAcr(composerVersion, scriptBuilder);

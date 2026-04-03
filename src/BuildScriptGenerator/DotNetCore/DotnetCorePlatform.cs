@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // Priority: External-ACR → External-blob → Direct-ACR → CDN
 
             // 1. Try External-ACR (socket → ACR)
-            if (this.commonOptions.EnableAcrSdkProvider)
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 var result = this.TryInstallFromExternalAcrSdkProvider(sdkVersion);
                 if (result != null)
