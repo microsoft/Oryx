@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         }
 
         /// <inheritdoc/>
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context, bool resolveVersions = true)
         {
             PlatformDetectorResult detectionResult;
 
@@ -77,7 +77,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 return null;
             }
 
-            this.ResolveVersions(context, detectionResult);
+            if (resolveVersions)
+            {
+                this.ResolveVersions(context, detectionResult);
+            }
+
             return detectionResult;
         }
 

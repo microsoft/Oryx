@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
         /// </summary>
         /// <param name="context">The repository context.</param>
         /// <returns>The results of language detector operations.</returns>
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context, bool resolveVersions = true)
         {
             var detectionResult = this.detector.Detect(new DetectorContext
             {
@@ -89,7 +89,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                 return null;
             }
 
-            this.ResolveVersions(context, detectionResult);
+            if (resolveVersions)
+            {
+                this.ResolveVersions(context, detectionResult);
+            }
+
             return detectionResult;
         }
 

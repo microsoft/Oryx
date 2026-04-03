@@ -141,7 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         }
 
         /// <inheritdoc/>
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context, bool resolveVersions = true)
         {
             var detectionResult = this.detector.Detect(new DetectorContext
             {
@@ -153,7 +153,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 return null;
             }
 
-            this.ResolveVersions(context, detectionResult);
+            if (resolveVersions)
+            {
+                this.ResolveVersions(context, detectionResult);
+            }
+
             return detectionResult;
         }
 

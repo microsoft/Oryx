@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public IEnumerable<string> SupportedVersions { get; }
 
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context, bool resolveVersions = true)
         {
             return _detector?.Detect(new DetectorContext
             {

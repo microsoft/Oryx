@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         }
 
         /// <inheritdoc/>
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context, bool resolveVersions = true)
         {
             try
             {
@@ -104,7 +104,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     return null;
                 }
 
-                this.ResolveVersions(context, detectionResult);
+                if (resolveVersions)
+                {
+                    this.ResolveVersions(context, detectionResult);
+                }
+
                 return detectionResult;
             }
             catch (InvalidProjectFileException e)
