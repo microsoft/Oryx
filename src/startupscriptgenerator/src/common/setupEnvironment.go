@@ -63,7 +63,7 @@ func GetSetupScript(platformName string, version string, installationDir string)
 	scriptBuilder.WriteString(fmt.Sprintf("cd %s\n", installationDir))
 	if debianFlavor == "" || debianFlavor == consts.DebianStretch {
 		scriptBuilder.WriteString(
-			fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s.tar.gz%s\" --output %s\n",
+			fmt.Sprintf("curl --fail -D headers.txt -SL \"%s/%s/%s-%s.tar.gz%s\" --output %s\n",
 				sdkStorageBaseUrl,
 				platformName,
 				platformName,
@@ -72,7 +72,7 @@ func GetSetupScript(platformName string, version string, installationDir string)
 				tarFile))
 	} else {
 		scriptBuilder.WriteString(
-			fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s-%s.tar.gz%s\" --output %s\n",
+			fmt.Sprintf("curl --fail -D headers.txt -SL \"%s/%s/%s-%s-%s.tar.gz%s\" --output %s\n",
 				sdkStorageBaseUrl,
 				platformName,
 				platformName,
@@ -111,6 +111,11 @@ func GetAcrSetupScript(platformName string, version string, installationDir stri
 		acrRegistryUrl = consts.DefaultAcrSdkRegistryUrl
 	}
 
+	// Enforce HTTPS
+	if !strings.HasPrefix(acrRegistryUrl, "https://") {
+		panic(fmt.Sprintf("ACR registry URL must use HTTPS: '%s'", acrRegistryUrl))
+	}
+
 	// Remove trailing slash
 	acrRegistryUrl = strings.TrimRight(acrRegistryUrl, "/")
 
@@ -131,12 +136,12 @@ func GetAcrSetupScript(platformName string, version string, installationDir stri
 	scriptBuilder.WriteString(fmt.Sprintf("mkdir -p %s\n", installationDir))
 	scriptBuilder.WriteString(fmt.Sprintf("cd %s\n", installationDir))
 
-	// Fetch the OCI manifest
+	// Fetch the OCI manifest (--fail ensures HTTP errors are not silently treated as content)
 	manifestUrl := fmt.Sprintf("%s/v2/%s/manifests/%s", acrRegistryUrl, repository, tag)
 	scriptBuilder.WriteString(fmt.Sprintf(
 		"echo Fetching OCI manifest from ACR for %s:%s...\n", repository, tag))
 	scriptBuilder.WriteString(fmt.Sprintf(
-		"MANIFEST=$(curl -sSL -H 'Accept: application/vnd.oci.image.manifest.v1+json' '%s')\n", manifestUrl))
+		"MANIFEST=$(curl --fail -sSL -H 'Accept: application/vnd.oci.image.manifest.v1+json' '%s')\n", manifestUrl))
 
 	// Extract the layer digest (first/only layer in a FROM scratch image)
 	scriptBuilder.WriteString(
@@ -152,10 +157,9 @@ func GetAcrSetupScript(platformName string, version string, installationDir stri
 
 	// Download the layer blob
 	blobUrl := fmt.Sprintf("%s/v2/%s/blobs/", acrRegistryUrl, repository)
+	scriptBuilder.WriteString("echo Downloading SDK blob from ACR...\n")
 	scriptBuilder.WriteString(fmt.Sprintf(
-		"echo Downloading SDK blob from ACR...\n"))
-	scriptBuilder.WriteString(fmt.Sprintf(
-		"curl -sSL '%s'\"$LAYER_DIGEST\" --output sdk.tar.gz\n", blobUrl))
+		"curl --fail -sSL '%s'\"$LAYER_DIGEST\" --output sdk.tar.gz\n", blobUrl))
 
 	// Verify SHA256 checksum
 	scriptBuilder.WriteString("echo Verifying SHA256 checksum...\n")
