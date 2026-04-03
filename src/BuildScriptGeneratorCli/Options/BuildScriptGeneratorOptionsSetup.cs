@@ -62,6 +62,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             // Dynamic install
             options.EnableDynamicInstall = this.GetBooleanValue(SettingsKeys.EnableDynamicInstall);
             options.EnableExternalSdkProvider = this.GetBooleanValue(SettingsKeys.EnableExternalSdkProvider);
+            options.EnableExternalAcrSdkProvider = !options.EnableMultiPlatformBuild && this.GetBooleanValue(SettingsKeys.EnableExternalAcrSdkProvider);
+            options.EnableAcrSdkProvider = this.GetBooleanValue(SettingsKeys.EnableAcrSdkProvider);
+            options.OryxAcrSdkRegistryUrl = this.GetStringValue(SettingsKeys.OryxAcrSdkRegistryUrl);
 
             var dynamicInstallRootDir = this.GetStringValue(SettingsKeys.DynamicInstallRootDir);
 
@@ -80,11 +83,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
             options.OsFlavor = this.GetStringValue(SettingsKeys.OsFlavor);
             options.DebianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
-
-            // ACR-based SDK providers
-            options.EnableExternalAcrSdkProvider = this.GetBooleanValue(SettingsKeys.EnableExternalAcrSdkProvider);
-            options.EnableAcrSdkProvider = this.GetBooleanValue(SettingsKeys.EnableAcrSdkProvider);
-            options.OryxAcrSdkRegistryUrl = this.GetStringValue(SettingsKeys.OryxAcrSdkRegistryUrl);
         }
     }
 }
