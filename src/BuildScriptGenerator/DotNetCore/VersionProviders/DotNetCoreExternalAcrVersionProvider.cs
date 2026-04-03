@@ -7,35 +7,40 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     /// <summary>
-    /// ACR-based version provider for .NET SDKs via external socket provider.
+    /// ACR-based version provider for .NET SDKs via external socket.
     /// Unlike simple platforms, .NET requires a runtime→SDK version mapping.
-    /// The external host writes a JSON file with the mapping to the cache directory.
-    /// Parallel to <see cref="DotNetCoreExternalVersionProvider"/> (blob) and
-    /// <see cref="DotNetCoreAcrVersionProvider"/> (direct OCI).
+    /// The external host writes a JSON mapping file to the cache directory.
+    /// This class owns its socket communication for version discovery.
     /// </summary>
     public class DotNetCoreExternalAcrVersionProvider : IDotNetCoreVersionProvider
     {
+        private const string SocketPath = "/var/sockets/oryx-pull-sdk.socket";
+        private const string ExternalSdksStorageDir = "/var/OryxSdks";
+        private const int MaxTimeoutForSocketOperationInSeconds = 120;
+
         private readonly BuildScriptGeneratorOptions commonOptions;
-        private readonly IExternalAcrSdkProvider externalAcrProvider;
         private readonly ILogger<DotNetCoreExternalAcrVersionProvider> logger;
         private Dictionary<string, string> versionMap;
         private string defaultRuntimeVersion;
 
         public DotNetCoreExternalAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IExternalAcrSdkProvider externalAcrSdkProvider,
             ILoggerFactory loggerFactory)
         {
             this.commonOptions = commonOptions.Value;
-            this.externalAcrProvider = externalAcrSdkProvider;
             this.logger = loggerFactory.CreateLogger<DotNetCoreExternalAcrVersionProvider>();
         }
 
@@ -59,27 +64,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             var platformName = DotNetCoreConstants.PlatformName;
-            var debianFlavor = this.commonOptions.DebianFlavor;
+            var debianFlavor = this.commonOptions.DebianFlavor ?? "bookworm";
 
             this.logger.LogInformation(
-                "Getting .NET version info from ACR via external provider for {DebianFlavor}.",
+                "Getting .NET version info from ACR via external socket for {DebianFlavor}.",
                 debianFlavor);
 
-            // External host writes a JSON mapping file: {"mappings": {"8.0.5": "8.0.301", ...}, "defaultRuntimeVersion": "8.0.5"}
-            var mappingFileName = $"acr-dotnet-versions-{debianFlavor}.json";
+            // Send a socket request to fetch version info
+            var request = new ExternalAcrVersionRequest
+            {
+                PlatformName = platformName,
+                BlobName = null,
+                UrlParameters = new Dictionary<string, string>
+                {
+                    { "source", "acr" },
+                    { "action", "list-versions" },
+                    { "debianFlavor", debianFlavor },
+                },
+            };
+
+            var response = this.SendRequestAsync(request).GetAwaiter().GetResult();
+
+            // External host writes a JSON mapping file:
+            // {"mappings": {"8.0.5": "8.0.301", ...}, "defaultRuntimeVersion": "8.0.5"}
             var mappingFilePath = Path.Combine(
-                ExternalAcrSdkProvider.ExternalSdksStorageDir,
-                platformName,
-                mappingFileName);
+                ExternalSdksStorageDir, platformName, $"acr-dotnet-versions-{debianFlavor}.json");
 
-            // Request the mapping file from the external provider
-            var versions = this.externalAcrProvider
-                .GetVersionsAsync(platformName, debianFlavor)
-                .GetAwaiter()
-                .GetResult();
-
-            // Try to read the JSON mapping file that the external host writes
-            if (File.Exists(mappingFilePath))
+            if (response && File.Exists(mappingFilePath))
             {
                 try
                 {
@@ -91,7 +102,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                             catalog.Mappings, StringComparer.OrdinalIgnoreCase);
                         this.defaultRuntimeVersion = catalog.DefaultRuntimeVersion;
                         this.logger.LogInformation(
-                            "Got .NET version map from external ACR provider with {Count} entries.",
+                            "Got .NET version map from external ACR socket with {Count} entries.",
                             this.versionMap.Count);
                         return;
                     }
@@ -105,25 +116,89 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
             }
 
-            // Fallback: use the flat version list (1:1 mapping, version = SDK version)
+            // Fallback: read flat version list file
+            var versionsFilePath = Path.Combine(
+                ExternalSdksStorageDir, platformName, $"acr-versions-{debianFlavor}.txt");
+
             this.versionMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            if (versions != null)
+            if (File.Exists(versionsFilePath))
             {
+                var content = File.ReadAllText(versionsFilePath).Trim();
+                var versions = content
+                    .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(v => v.Trim())
+                    .Where(v => !string.IsNullOrEmpty(v));
                 foreach (var version in versions)
                 {
                     this.versionMap[version] = version;
                 }
             }
 
-            this.defaultRuntimeVersion = this.externalAcrProvider
-                .GetDefaultVersionAsync(platformName, debianFlavor)
-                .GetAwaiter()
-                .GetResult();
+            // Read default version
+            var defaultVersionFilePath = Path.Combine(
+                ExternalSdksStorageDir, platformName, $"acr-default-version-{debianFlavor}.txt");
+            if (File.Exists(defaultVersionFilePath))
+            {
+                this.defaultRuntimeVersion = File.ReadAllText(defaultVersionFilePath).Trim();
+                if (string.IsNullOrEmpty(this.defaultRuntimeVersion))
+                {
+                    this.defaultRuntimeVersion = null;
+                }
+            }
 
             this.logger.LogInformation(
-                "Using flat version list from external ACR provider with {Count} entries for .NET (default: {Default}).",
+                "Using .NET version info from external ACR socket with {Count} entries (default: {Default}).",
                 this.versionMap.Count,
                 this.defaultRuntimeVersion ?? "none");
+        }
+
+        private async Task<bool> SendRequestAsync(ExternalAcrVersionRequest request)
+        {
+            using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
+            try
+            {
+                using (var cts = new CancellationTokenSource(
+                    TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
+                {
+                    await socket.ConnectAsync(new UnixDomainSocketEndPoint(SocketPath), cts.Token);
+                    var requestJson = JsonSerializer.Serialize(request) + "$";
+                    var requestBytes = Encoding.UTF8.GetBytes(requestJson);
+
+                    await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
+                    var buffer = new byte[4096];
+                    var received = await socket.ReceiveAsync(
+                        new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
+                    var responseString = Encoding.UTF8.GetString(buffer, 0, received);
+
+                    if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
+                    {
+                        return true;
+                    }
+
+                    this.logger.LogError(
+                        ".NET ACR version request via socket was unsuccessful. Response: {Response}",
+                        responseString);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                this.logger.LogError(".NET ACR version request via socket timed out.");
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Error communicating with external ACR provider for .NET version info.");
+            }
+
+            return false;
+        }
+
+        private class ExternalAcrVersionRequest
+        {
+            public string PlatformName { get; set; }
+
+            public string BlobName { get; set; }
+
+            public IDictionary<string, string> UrlParameters { get; set; }
         }
 
         private class DotNetExternalAcrCatalog

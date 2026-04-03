@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -20,14 +19,14 @@ using Microsoft.Oryx.Common.Extensions;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// ACR-based SDK provider that communicates over a Unix socket.
-    /// The external host proxies ACR calls (tag listing, image pull) on behalf of Oryx.
+    /// Pulls SDK tarballs from ACR via an external host over a Unix socket.
     /// This is the ACR equivalent of <see cref="ExternalSdkProvider"/> (blob storage via socket).
     /// </summary>
     /// <remarks>
     /// Flow: Oryx → Unix socket → external host → ACR.
     /// Uses the same socket path as <see cref="ExternalSdkProvider"/> but sets
     /// <c>source=acr</c> in UrlParameters so the external host routes to ACR logic.
+    /// Version discovery is handled by <see cref="ExternalAcrVersionProviderBase"/>.
     /// </remarks>
     public class ExternalAcrSdkProvider : IExternalAcrSdkProvider
     {
@@ -51,129 +50,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger = logger;
             this.outputWriter = outputWriter;
             this.options = options.Value;
-        }
-
-        /// <inheritdoc/>
-        public async Task<IList<string>> GetVersionsAsync(string platformName, string debianFlavor)
-        {
-            if (string.IsNullOrEmpty(platformName))
-            {
-                throw new ArgumentException("Platform name cannot be null or empty.", nameof(platformName));
-            }
-
-            if (string.IsNullOrEmpty(debianFlavor))
-            {
-                debianFlavor = this.options.DebianFlavor ?? "bookworm";
-            }
-
-            this.logger.LogInformation(
-                "Requesting ACR version list via external provider: platform={PlatformName}, debianFlavor={DebianFlavor}",
-                platformName,
-                debianFlavor);
-            this.outputWriter.WriteLine(
-                $"Requesting ACR version list via external provider: {platformName} ({debianFlavor})");
-
-            var request = new ExternalAcrSdkProviderRequest
-            {
-                PlatformName = platformName,
-                BlobName = null,
-                UrlParameters = new Dictionary<string, string>
-                {
-                    { "source", "acr" },
-                    { "action", "list-versions" },
-                    { "debianFlavor", debianFlavor },
-                },
-            };
-
-            // External host writes the version list to this file
-            var versionsFileName = $"acr-versions-{debianFlavor}.txt";
-            var versionsFilePath = Path.Combine(ExternalSdksStorageDir, platformName, versionsFileName);
-
-            var response = await this.SendRequestAsync(request);
-
-            if (response && File.Exists(versionsFilePath))
-            {
-                var content = File.ReadAllText(versionsFilePath).Trim();
-                var versions = content
-                    .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(v => v.Trim())
-                    .Where(v => !string.IsNullOrEmpty(v))
-                    .ToList();
-
-                this.logger.LogInformation(
-                    "Got {Count} versions for {PlatformName} from ACR via external provider.",
-                    versions.Count,
-                    platformName);
-
-                return versions;
-            }
-            else
-            {
-                this.logger.LogWarning(
-                    "Failed to get ACR version list via external provider for {PlatformName}. " +
-                    "Response: {Response}, file exists: {FileExists}",
-                    platformName,
-                    response,
-                    File.Exists(versionsFilePath));
-                throw new InvalidOperationException(
-                    $"Failed to get ACR version list via external provider for platform {platformName}");
-            }
-        }
-
-        /// <inheritdoc/>
-        public async Task<string> GetDefaultVersionAsync(string platformName, string debianFlavor)
-        {
-            if (string.IsNullOrEmpty(platformName))
-            {
-                throw new ArgumentException("Platform name cannot be null or empty.", nameof(platformName));
-            }
-
-            if (string.IsNullOrEmpty(debianFlavor))
-            {
-                debianFlavor = this.options.DebianFlavor ?? "bookworm";
-            }
-
-            this.logger.LogInformation(
-                "Requesting ACR default version via external provider: platform={PlatformName}, debianFlavor={DebianFlavor}",
-                platformName,
-                debianFlavor);
-
-            var request = new ExternalAcrSdkProviderRequest
-            {
-                PlatformName = platformName,
-                BlobName = null,
-                UrlParameters = new Dictionary<string, string>
-                {
-                    { "source", "acr" },
-                    { "action", "get-default-version" },
-                    { "debianFlavor", debianFlavor },
-                },
-            };
-
-            // External host writes the default version to this file
-            var defaultVersionFileName = $"acr-default-version-{debianFlavor}.txt";
-            var defaultVersionFilePath = Path.Combine(ExternalSdksStorageDir, platformName, defaultVersionFileName);
-
-            var response = await this.SendRequestAsync(request);
-
-            if (response && File.Exists(defaultVersionFilePath))
-            {
-                var defaultVersion = File.ReadAllText(defaultVersionFilePath).Trim();
-
-                if (!string.IsNullOrEmpty(defaultVersion))
-                {
-                    this.logger.LogInformation(
-                        "Got default version {DefaultVersion} for {PlatformName} from ACR via external provider.",
-                        defaultVersion,
-                        platformName);
-                    return defaultVersion;
-                }
-            }
-
-            this.logger.LogWarning(
-                "Failed to get ACR default version via external provider for {PlatformName}.",
-                platformName);
-            return null;
         }
 
         /// <inheritdoc/>

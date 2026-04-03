@@ -17,9 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         public NodeExternalAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IExternalAcrSdkProvider externalAcrSdkProvider,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, externalAcrSdkProvider, loggerFactory)
+            : base(commonOptions, loggerFactory)
         {
         }
 
