@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly IPythonPlatformDetector detector;
         private readonly PythonPlatformInstaller platformInstaller;
         private readonly IExternalSdkProvider externalSdkProvider;
-        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
+        private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IPythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller,
             IExternalSdkProvider externalSdkProvider,
-            IExternalAcrSdkProvider externalAcrSdkProvider,
+            IAcrSdkProvider acrSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.commonOptions = commonOptions.Value;
@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.detector = detector;
             this.platformInstaller = platformInstaller;
             this.externalSdkProvider = externalSdkProvider;
-            this.externalAcrSdkProvider = externalAcrSdkProvider;
+            this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -589,7 +589,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             try
             {
-                if (this.externalAcrSdkProvider.RequestSdkFromAcrAsync(this.Name, version, this.commonOptions.DebianFlavor).Result)
+                if (this.acrSdkProvider.RequestSdkFromAcrAsync(this.Name, version, this.commonOptions.DebianFlavor).Result)
                 {
                     this.logger.LogDebug(
                         "Python version {version} is fetched successfully using ACR SDK provider. Skipping platform binary download.",
