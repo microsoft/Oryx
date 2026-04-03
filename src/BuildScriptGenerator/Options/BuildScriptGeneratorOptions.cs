@@ -100,8 +100,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool OryxDisablePipUpgrade { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether ACR-based SDK provider is enabled.
-        /// When true, Oryx will discover and download SDKs from an OCI-compliant container registry.
+        /// Gets or sets a value indicating whether the external ACR SDK provider (socket → ACR) is enabled.
+        /// When true, Oryx will request SDKs from ACR via the external host over a Unix socket.
+        /// </summary>
+        public bool EnableExternalAcrSdkProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the direct ACR SDK provider is enabled.
+        /// When true, Oryx will discover and download SDKs directly from an OCI-compliant container registry.
         /// </summary>
         public bool EnableAcrSdkProvider { get; set; }
 
