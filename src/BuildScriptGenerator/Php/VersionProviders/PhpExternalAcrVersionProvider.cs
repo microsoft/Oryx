@@ -17,9 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     {
         public PhpExternalAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IExternalAcrSdkProvider externalAcrSdkProvider,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, externalAcrSdkProvider, loggerFactory)
+            : base(commonOptions, loggerFactory)
         {
         }
 
