@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     /// <remarks>
     /// Gated by the <c>ORYX_ENABLE_ACR_SDK_PROVIDER</c> feature flag.
-    /// This is an alternative to <see cref="IExternalSdkProvider"/> (blob storage via LWAS socket).
+    /// This is an alternative to <see cref="IExternalSdkProvider"/> (blob storage via socket).
     /// </remarks>
     public interface IAcrSdkProvider
     {

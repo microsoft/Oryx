@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly NodeOnDiskVersionProvider onDiskVersionProvider;
         private readonly NodeSdkStorageVersionProvider sdkStorageVersionProvider;
         private readonly NodeExternalVersionProvider externalVersionProvider;
+        private readonly NodeExternalAcrVersionProvider externalAcrVersionProvider;
         private readonly NodeAcrVersionProvider acrVersionProvider;
         private readonly ILogger<NodeVersionProvider> logger;
         private PlatformVersionInfo versionInfo;
@@ -24,6 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             NodeOnDiskVersionProvider onDiskVersionProvider,
             NodeSdkStorageVersionProvider sdkStorageVersionProvider,
             NodeExternalVersionProvider externalVersionProvider,
+            NodeExternalAcrVersionProvider externalAcrVersionProvider,
             NodeAcrVersionProvider acrVersionProvider,
             ILogger<NodeVersionProvider> logger)
         {
@@ -31,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
             this.externalVersionProvider = externalVersionProvider;
+            this.externalAcrVersionProvider = externalAcrVersionProvider;
             this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
         }
@@ -51,6 +54,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
+            // Priority: External-ACR → External-blob → Direct-ACR → CDN
+            if (this.options.EnableAcrSdkProvider)
+            {
+                try
+                {
+                    return this.externalAcrVersionProvider.GetVersionInfo();
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get version info from external ACR provider. Falling back. Ex: {ex}");
+                }
+            }
+
             if (this.options.EnableExternalSdkProvider)
             {
                 try
@@ -73,7 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 catch (Exception ex)
                 {
                     this.logger.LogError(
-                        $"Failed to get version info from ACR provider. Falling back to blob storage. Ex: {ex}");
+                        $"Failed to get version info from direct ACR provider. Falling back to CDN. Ex: {ex}");
                 }
             }
 

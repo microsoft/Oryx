@@ -19,9 +19,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <c>FROM scratch</c> images where the layer IS the SDK tarball.
     /// </summary>
     /// <remarks>
-    /// This provider makes direct HTTP calls to the registry — no Unix socket, no LWAS
-    /// intermediary. A future phase will add socket→LWAS→ACR support in the existing
-    /// <see cref="ExternalSdkProvider"/> path.
+    /// This provider makes direct HTTP calls to the registry — no Unix socket, no external
+    /// intermediary. See <see cref="ExternalAcrSdkProvider"/> for the socket-based variant.
     /// </remarks>
     public class AcrSdkProvider : IAcrSdkProvider
     {

@@ -1,0 +1,346 @@
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.Common.Extensions;
+
+namespace Microsoft.Oryx.BuildScriptGenerator
+{
+    /// <summary>
+    /// ACR-based SDK provider that communicates over a Unix socket.
+    /// The external host proxies ACR calls (tag listing, image pull) on behalf of Oryx.
+    /// This is the ACR equivalent of <see cref="ExternalSdkProvider"/> (blob storage via socket).
+    /// </summary>
+    /// <remarks>
+    /// Flow: Oryx → Unix socket → external host → ACR.
+    /// Uses the same socket path as <see cref="ExternalSdkProvider"/> but sets
+    /// <c>source=acr</c> in UrlParameters so the external host routes to ACR logic.
+    /// </remarks>
+    public class ExternalAcrSdkProvider : IExternalAcrSdkProvider
+    {
+        /// <summary>
+        /// The directory where SDKs and version files are cached (shared with blob-based provider).
+        /// </summary>
+        public const string ExternalSdksStorageDir = "/var/OryxSdks";
+
+        private const string SocketPath = "/var/sockets/oryx-pull-sdk.socket";
+        private const int MaxTimeoutForSocketOperationInSeconds = 120;
+
+        private readonly ILogger<ExternalAcrSdkProvider> logger;
+        private readonly IStandardOutputWriter outputWriter;
+        private readonly BuildScriptGeneratorOptions options;
+
+        public ExternalAcrSdkProvider(
+            IStandardOutputWriter outputWriter,
+            ILogger<ExternalAcrSdkProvider> logger,
+            IOptions<BuildScriptGeneratorOptions> options)
+        {
+            this.logger = logger;
+            this.outputWriter = outputWriter;
+            this.options = options.Value;
+        }
+
+        /// <inheritdoc/>
+        public async Task<IList<string>> GetVersionsAsync(string platformName, string debianFlavor)
+        {
+            if (string.IsNullOrEmpty(platformName))
+            {
+                throw new ArgumentException("Platform name cannot be null or empty.", nameof(platformName));
+            }
+
+            if (string.IsNullOrEmpty(debianFlavor))
+            {
+                debianFlavor = this.options.DebianFlavor ?? "bookworm";
+            }
+
+            this.logger.LogInformation(
+                "Requesting ACR version list via external provider: platform={PlatformName}, debianFlavor={DebianFlavor}",
+                platformName,
+                debianFlavor);
+            this.outputWriter.WriteLine(
+                $"Requesting ACR version list via external provider: {platformName} ({debianFlavor})");
+
+            var request = new ExternalAcrSdkProviderRequest
+            {
+                PlatformName = platformName,
+                BlobName = null,
+                UrlParameters = new Dictionary<string, string>
+                {
+                    { "source", "acr" },
+                    { "action", "list-versions" },
+                    { "debianFlavor", debianFlavor },
+                },
+            };
+
+            // External host writes the version list to this file
+            var versionsFileName = $"acr-versions-{debianFlavor}.txt";
+            var versionsFilePath = Path.Combine(ExternalSdksStorageDir, platformName, versionsFileName);
+
+            var response = await this.SendRequestAsync(request);
+
+            if (response && File.Exists(versionsFilePath))
+            {
+                var content = File.ReadAllText(versionsFilePath).Trim();
+                var versions = content
+                    .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(v => v.Trim())
+                    .Where(v => !string.IsNullOrEmpty(v))
+                    .ToList();
+
+                this.logger.LogInformation(
+                    "Got {Count} versions for {PlatformName} from ACR via external provider.",
+                    versions.Count,
+                    platformName);
+
+                return versions;
+            }
+            else
+            {
+                this.logger.LogWarning(
+                    "Failed to get ACR version list via external provider for {PlatformName}. " +
+                    "Response: {Response}, file exists: {FileExists}",
+                    platformName,
+                    response,
+                    File.Exists(versionsFilePath));
+                throw new InvalidOperationException(
+                    $"Failed to get ACR version list via external provider for platform {platformName}");
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<string> GetDefaultVersionAsync(string platformName, string debianFlavor)
+        {
+            if (string.IsNullOrEmpty(platformName))
+            {
+                throw new ArgumentException("Platform name cannot be null or empty.", nameof(platformName));
+            }
+
+            if (string.IsNullOrEmpty(debianFlavor))
+            {
+                debianFlavor = this.options.DebianFlavor ?? "bookworm";
+            }
+
+            this.logger.LogInformation(
+                "Requesting ACR default version via external provider: platform={PlatformName}, debianFlavor={DebianFlavor}",
+                platformName,
+                debianFlavor);
+
+            var request = new ExternalAcrSdkProviderRequest
+            {
+                PlatformName = platformName,
+                BlobName = null,
+                UrlParameters = new Dictionary<string, string>
+                {
+                    { "source", "acr" },
+                    { "action", "get-default-version" },
+                    { "debianFlavor", debianFlavor },
+                },
+            };
+
+            // External host writes the default version to this file
+            var defaultVersionFileName = $"acr-default-version-{debianFlavor}.txt";
+            var defaultVersionFilePath = Path.Combine(ExternalSdksStorageDir, platformName, defaultVersionFileName);
+
+            var response = await this.SendRequestAsync(request);
+
+            if (response && File.Exists(defaultVersionFilePath))
+            {
+                var defaultVersion = File.ReadAllText(defaultVersionFilePath).Trim();
+
+                if (!string.IsNullOrEmpty(defaultVersion))
+                {
+                    this.logger.LogInformation(
+                        "Got default version {DefaultVersion} for {PlatformName} from ACR via external provider.",
+                        defaultVersion,
+                        platformName);
+                    return defaultVersion;
+                }
+            }
+
+            this.logger.LogWarning(
+                "Failed to get ACR default version via external provider for {PlatformName}.",
+                platformName);
+            return null;
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> RequestSdkAsync(string platformName, string version, string debianFlavor)
+        {
+            if (string.IsNullOrEmpty(platformName))
+            {
+                throw new ArgumentException("Platform name cannot be null or empty.", nameof(platformName));
+            }
+
+            if (string.IsNullOrEmpty(version))
+            {
+                throw new ArgumentException("Version cannot be null or empty.", nameof(version));
+            }
+
+            if (string.IsNullOrEmpty(debianFlavor))
+            {
+                debianFlavor = this.options.DebianFlavor ?? "bookworm";
+            }
+
+            var blobName = $"{platformName}-{debianFlavor}-{version}.tar.gz";
+
+            this.logger.LogInformation(
+                "Requesting SDK from ACR via external provider: platform={PlatformName}, version={Version}, " +
+                "debianFlavor={DebianFlavor}",
+                platformName,
+                version,
+                debianFlavor);
+            this.outputWriter.WriteLine(
+                $"Requesting SDK from ACR via external provider: {platformName} {version} ({debianFlavor})");
+
+            // Check if the file is already cached locally
+            var expectedFilePath = Path.Combine(ExternalSdksStorageDir, platformName, blobName);
+            if (File.Exists(expectedFilePath))
+            {
+                this.logger.LogInformation(
+                    "SDK already cached at {FilePath}, skipping ACR pull via external provider.",
+                    expectedFilePath);
+                this.outputWriter.WriteLine(
+                    $"SDK already cached at {expectedFilePath}");
+                return true;
+            }
+
+            try
+            {
+                var request = new ExternalAcrSdkProviderRequest
+                {
+                    PlatformName = platformName,
+                    BlobName = blobName,
+                    UrlParameters = new Dictionary<string, string>
+                    {
+                        { "source", "acr" },
+                        { "action", "pull-sdk" },
+                        { "version", version },
+                        { "debianFlavor", debianFlavor },
+                    },
+                };
+
+                var response = await this.SendRequestAsync(request);
+
+                if (response && File.Exists(expectedFilePath))
+                {
+                    this.logger.LogInformation(
+                        "Successfully pulled SDK from ACR via external provider: {PlatformName} {Version}, " +
+                        "available at {FilePath}",
+                        platformName,
+                        version,
+                        expectedFilePath);
+                    this.outputWriter.WriteLine(
+                        $"Successfully pulled SDK from ACR via external provider: {platformName} {version}");
+                    return true;
+                }
+                else
+                {
+                    this.logger.LogWarning(
+                        "ACR SDK pull via external provider did not produce expected file: {PlatformName} {Version} " +
+                        "at {FilePath}. Response: {Response}",
+                        platformName,
+                        version,
+                        expectedFilePath,
+                        response);
+                    this.outputWriter.WriteLine(
+                        $"Failed to pull SDK from ACR via external provider: {platformName} {version}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Error requesting SDK from ACR via external provider: {PlatformName} {Version}",
+                    platformName,
+                    version);
+                this.outputWriter.WriteLine(
+                    $"Error pulling SDK from ACR via external provider: {platformName} {version}: {ex.Message}");
+                return false;
+            }
+        }
+
+        private async Task<bool> SendRequestAsync(ExternalAcrSdkProviderRequest request)
+        {
+            using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
+            try
+            {
+                this.logger.LogInformation(
+                    "Sending ACR request via socket: {PlatformName}, {BlobName}, " +
+                    "UrlParameters: {UrlParamsJson}",
+                    request.PlatformName,
+                    request.BlobName,
+                    JsonSerializer.Serialize(request.UrlParameters));
+
+                using (var cts = new CancellationTokenSource(
+                    TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
+                {
+                    await socket.ConnectAsync(new UnixDomainSocketEndPoint(SocketPath), cts.Token);
+                    var requestJson = JsonSerializer.Serialize(request);
+                    this.logger.LogInformation(
+                        "Connected to socket {SocketPath} and sending ACR request: {RequestJson}",
+                        SocketPath,
+                        requestJson);
+
+                    // Append $ to indicate end of request (same protocol as ExternalSdkProvider)
+                    requestJson += "$";
+                    var requestBytes = Encoding.UTF8.GetBytes(requestJson);
+
+                    await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
+                    var buffer = new byte[4096];
+                    var received = await socket.ReceiveAsync(
+                        new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
+                    var responseString = Encoding.UTF8.GetString(buffer, 0, received);
+                    this.logger.LogInformation(
+                        "Received response from external ACR provider: {Response}", responseString);
+
+                    if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        this.logger.LogError(
+                            "ACR request via socket was unsuccessful. Response: {Response}",
+                            responseString);
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                this.outputWriter.WriteLine("The external ACR provider operation was canceled due to timeout.");
+                this.logger.LogError("The external ACR provider operation was canceled due to timeout.");
+            }
+            catch (Exception ex)
+            {
+                this.outputWriter.WriteLine(
+                    $"Error communicating with external ACR provider: {ex.Message}");
+                this.logger.LogError(ex, "Error communicating with external ACR provider.");
+            }
+
+            return false;
+        }
+
+        private class ExternalAcrSdkProviderRequest
+        {
+            public string PlatformName { get; set; }
+
+            public string BlobName { get; set; }
+
+            public IDictionary<string, string> UrlParameters { get; set; }
+        }
+    }
+}
