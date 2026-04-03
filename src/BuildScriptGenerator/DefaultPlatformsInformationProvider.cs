@@ -47,28 +47,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // build environment is setup with detected platforms' sdks.
             this.outputWriter.WriteLine("Detecting platforms...");
 
-            // If EnableAcrSdkProvider is enabled and its a multi-platform scenario, then dont use ExternalAcrProvider.
-            if (this.commonOptions.EnableAcrSdkProvider)
-            {
-                this.outputWriter.WriteLine("Direct ACR SDK provider is enabled.");
-
-                int platformDetectedCount = 0;
-
-                foreach (var platform in this.platforms)
-                {
-                    if (platform.IsEnabled(context) && platform.Detect(context, false) != null)
-                    {
-                        platformDetectedCount++;
-                    }
-                }
-
-                if (platformDetectedCount > 1)
-                {
-                    this.outputWriter.WriteLine("Multiple platforms detected. Disabling Direct ACR SDK provider to avoid potential issues with dynamic installation in multi-platform scenarios.");
-                    this.commonOptions.EnableAcrSdkProvider = false;
-                }
-            }
-
             if (this.commonOptions.EnableExternalSdkProvider)
             {
                 this.outputWriter.WriteLine("External SDK provider is enabled.");

@@ -27,10 +27,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Detects the programming platform name and version required by the application in source directory.
         /// </summary>
         /// <param name="context">The <see cref="RepositoryContext"/>.</param>
-        /// <param name="resolveVersions">When true, resolves version info (which may trigger remote calls). When false, performs lightweight detection only.</param>
         /// <returns>An instance of <see cref="PlatformDetectorResult"/> if detection was
         /// successful, <c>null</c> otherwise.</returns>
-        PlatformDetectorResult Detect(RepositoryContext context, bool resolveVersions = true);
+        PlatformDetectorResult Detect(RepositoryContext context);
 
         /// <summary>
         /// Generates a build Bash script based on the application in source directory.

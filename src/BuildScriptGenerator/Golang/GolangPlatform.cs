@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
             }
         }
 
-        public PlatformDetectorResult Detect(RepositoryContext context, bool resolveVersions = true)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             var detectionResult = this.detector.Detect(new DetectorContext
             {
@@ -73,11 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
                 return null;
             }
 
-            if (resolveVersions)
-            {
-                this.ResolveVersions(context, detectionResult);
-            }
-
+            this.ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 

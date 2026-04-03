@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -20,14 +20,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var platform1 = new Mock<IProgrammingPlatform>();
             platform1
-                .Setup(p => p.Detect(It.IsAny<RepositoryContext>(), It.IsAny<bool>()))
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
                 .Returns(new PlatformDetectorResult { Platform = "platform1", PlatformVersion = "1.0.0" });
             platform1
                 .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
                 .Returns(true);
             var platform2 = new Mock<IProgrammingPlatform>();
             platform2
-                .Setup(p => p.Detect(It.IsAny<RepositoryContext>(), It.IsAny<bool>()))
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
                 .Returns(new PlatformDetectorResult { Platform = "platform2", PlatformVersion = "1.0.0" });
             platform2
                 .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
@@ -54,14 +54,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var platform1 = new Mock<IProgrammingPlatform>();
             platform1
-                .Setup(p => p.Detect(It.IsAny<RepositoryContext>(), It.IsAny<bool>()))
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
                 .Returns(new PlatformDetectorResult { Platform = "platform1", PlatformVersion = "1.0.0" });
             platform1
                 .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
                 .Returns(true);
             var platform2 = new Mock<IProgrammingPlatform>();
             platform2
-                .Setup(p => p.Detect(It.IsAny<RepositoryContext>(), It.IsAny<bool>()))
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
                 .Returns(new PlatformDetectorResult { Platform = "platform2", PlatformVersion = "1.0.0" });
             platform2
                 .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
@@ -85,14 +85,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var platform1 = new Mock<IProgrammingPlatform>();
             platform1
-                .Setup(p => p.Detect(It.IsAny<RepositoryContext>(), It.IsAny<bool>()))
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
                 .Returns(value: null);
             platform1
                 .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
                 .Returns(true);
             var platform2 = new Mock<IProgrammingPlatform>();
             platform2
-                .Setup(p => p.Detect(It.IsAny<RepositoryContext>(), It.IsAny<bool>()))
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
                 .Returns(new PlatformDetectorResult { Platform = "platform2", PlatformVersion = "1.0.0" });
             platform2
                 .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
