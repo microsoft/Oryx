@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// </summary>
         /// <param name="context">The repository context.</param>
         /// <returns>The results of language detector operations.</returns>
-        public PlatformDetectorResult Detect(RepositoryContext context, bool resolveVersions = true)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             var detectionResult = this.detector.Detect(new DetectorContext
             {
@@ -111,11 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return null;
             }
 
-            if (resolveVersions)
-            {
-                this.ResolveVersions(context, detectionResult);
-            }
-
+            this.ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 

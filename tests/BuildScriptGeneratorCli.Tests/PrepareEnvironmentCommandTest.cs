@@ -341,7 +341,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             public IEnumerable<string> SupportedVersions => throw new NotImplementedException();
 
-            public PlatformDetectorResult Detect(RepositoryContext context, bool resolveVersions = true)
+            public PlatformDetectorResult Detect(RepositoryContext context)
             {
                 if (!_canBeDetected)
                 {
