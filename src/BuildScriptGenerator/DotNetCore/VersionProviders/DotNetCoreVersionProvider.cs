@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCoreOnDiskVersionProvider onDiskVersionProvider;
         private readonly DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider;
         private readonly DotNetCoreExternalVersionProvider externalVersionProvider;
+        private readonly DotNetCoreExternalAcrVersionProvider externalAcrVersionProvider;
         private readonly DotNetCoreAcrVersionProvider acrVersionProvider;
         private readonly ILogger<DotNetCoreVersionProvider> logger;
         private string defaultRuntimeVersion;
@@ -25,6 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCoreOnDiskVersionProvider onDiskVersionProvider,
             DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider,
             DotNetCoreExternalVersionProvider externalVersionProvider,
+            DotNetCoreExternalAcrVersionProvider externalAcrVersionProvider,
             DotNetCoreAcrVersionProvider acrVersionProvider,
             ILogger<DotNetCoreVersionProvider> logger)
         {
@@ -32,6 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
             this.externalVersionProvider = externalVersionProvider;
+            this.externalAcrVersionProvider = externalAcrVersionProvider;
             this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
         }
@@ -69,8 +72,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return this.supportedVersions;
         }
 
+        // Priority: External-ACR → External-blob → Direct-ACR → CDN
         private string ResolveDynamicDefaultRuntimeVersion()
         {
+            if (this.cliOptions.EnableAcrSdkProvider)
+            {
+                try
+                {
+                    return this.externalAcrVersionProvider.GetDefaultRuntimeVersion();
+                }
+                catch (System.Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get default runtime version from external ACR provider. Falling back. Ex: {ex}");
+                }
+            }
+
             if (this.cliOptions.EnableExternalSdkProvider)
             {
                 try
@@ -93,7 +110,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 catch (System.Exception ex)
                 {
                     this.logger.LogError(
-                        $"Failed to get default runtime version from ACR provider. Falling back to blob storage. Ex: {ex}");
+                        $"Failed to get default runtime version from direct ACR provider. Falling back to CDN. Ex: {ex}");
                 }
             }
 
@@ -102,6 +119,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private Dictionary<string, string> ResolveDynamicSupportedVersions()
         {
+            if (this.cliOptions.EnableAcrSdkProvider)
+            {
+                try
+                {
+                    return this.externalAcrVersionProvider.GetSupportedVersions();
+                }
+                catch (System.Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get supported versions from external ACR provider. Falling back. Ex: {ex}");
+                }
+            }
+
             if (this.cliOptions.EnableExternalSdkProvider)
             {
                 try
@@ -124,7 +154,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 catch (System.Exception ex)
                 {
                     this.logger.LogError(
-                        $"Failed to get supported versions from ACR provider. Falling back to blob storage. Ex: {ex}");
+                        $"Failed to get supported versions from direct ACR provider. Falling back to CDN. Ex: {ex}");
                 }
             }
 

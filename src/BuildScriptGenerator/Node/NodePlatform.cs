@@ -86,6 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly IEnvironment environment;
         private readonly NodePlatformInstaller platformInstaller;
         private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
         private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
@@ -109,6 +110,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IEnvironment environment,
             NodePlatformInstaller nodePlatformInstaller,
             IExternalSdkProvider externalSdkProvider,
+            IExternalAcrSdkProvider externalAcrSdkProvider,
             IAcrSdkProvider acrSdkProvider,
             TelemetryClient telemetryClient)
         {
@@ -120,6 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.environment = environment;
             this.platformInstaller = nodePlatformInstaller;
             this.externalSdkProvider = externalSdkProvider;
+            this.externalAcrSdkProvider = externalAcrSdkProvider;
             this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
@@ -514,16 +517,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 return null;
             }
 
+            // Priority: External-ACR → External-blob → Direct-ACR → CDN
+
+            // 1. Try External-ACR (socket → ACR)
+            if (this.commonOptions.EnableAcrSdkProvider)
+            {
+                var result = this.TryInstallFromExternalAcrSdkProvider(version);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // 2. Try External-blob (socket → blob storage)
             if (this.commonOptions.EnableExternalSdkProvider)
             {
                 return this.TryInstallFromExternalSdkProvider(version);
             }
 
+            // 3. Try Direct-ACR (direct OCI API calls)
             if (this.commonOptions.EnableAcrSdkProvider)
             {
                 return this.TryInstallFromAcrSdkProvider(version);
             }
 
+            // 4. CDN fallback
             this.logger.LogDebug(
                 "Node version {version} is not installed. So generating an installation script snippet for it.",
                 version);
@@ -746,6 +764,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return this.platformInstaller.GetInstallerScriptSnippet(version);
+        }
+
+        private string TryInstallFromExternalAcrSdkProvider(string version)
+        {
+            this.logger.LogDebug(
+                "Node version {version} is not installed. External ACR SDK provider is enabled, so trying to fetch SDK using it.",
+                version);
+
+            try
+            {
+                if (this.externalAcrSdkProvider.RequestSdkAsync(
+                    this.Name, version, this.commonOptions.DebianFlavor).Result)
+                {
+                    this.logger.LogDebug(
+                        "Node version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.",
+                        version);
+                    return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
+                }
+
+                this.logger.LogDebug(
+                    "Node version {version} is not fetched via external ACR SDK provider. Trying next provider.",
+                    version);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Error while fetching Node.js version {version} using external ACR SDK provider. Trying next provider.",
+                    version);
+            }
+
+            return null;
         }
 
         private string GetMaxSatisfyingVersionAndVerify(string version)

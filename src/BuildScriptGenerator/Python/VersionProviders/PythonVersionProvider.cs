@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly PythonOnDiskVersionProvider onDiskVersionProvider;
         private readonly PythonSdkStorageVersionProvider sdkStorageVersionProvider;
         private readonly PythonExternalVersionProvider externalVersionProvider;
+        private readonly PythonExternalAcrVersionProvider externalAcrVersionProvider;
         private readonly PythonAcrVersionProvider acrVersionProvider;
         private readonly ILogger<PythonVersionProvider> logger;
         private PlatformVersionInfo versionInfo;
@@ -24,6 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             PythonOnDiskVersionProvider onDiskVersionProvider,
             PythonSdkStorageVersionProvider sdkStorageVersionProvider,
             PythonExternalVersionProvider externalVersionProvider,
+            PythonExternalAcrVersionProvider externalAcrVersionProvider,
             PythonAcrVersionProvider acrVersionProvider,
             ILogger<PythonVersionProvider> logger)
         {
@@ -31,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
             this.externalVersionProvider = externalVersionProvider;
+            this.externalAcrVersionProvider = externalAcrVersionProvider;
             this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
         }
@@ -51,6 +54,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
+            // Priority: External-ACR → External-blob → Direct-ACR → CDN
+            if (this.options.EnableAcrSdkProvider)
+            {
+                try
+                {
+                    return this.externalAcrVersionProvider.GetVersionInfo();
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get version info from external ACR provider. Falling back. Ex: {ex}");
+                }
+            }
+
             if (this.options.EnableExternalSdkProvider)
             {
                 try
@@ -73,7 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 catch (Exception ex)
                 {
                     this.logger.LogError(
-                        $"Failed to get version info from ACR provider. Falling back to blob storage. Ex: {ex}");
+                        $"Failed to get version info from direct ACR provider. Falling back to CDN. Ex: {ex}");
                 }
             }
 

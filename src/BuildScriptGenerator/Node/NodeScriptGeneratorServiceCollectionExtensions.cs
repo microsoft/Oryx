@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<NodeOnDiskVersionProvider>();
             services.AddSingleton<NodeSdkStorageVersionProvider>();
             services.AddSingleton<NodeExternalVersionProvider>();
+            services.AddSingleton<NodeExternalAcrVersionProvider>();
             services.AddSingleton<NodeAcrVersionProvider>();
             return services;
         }

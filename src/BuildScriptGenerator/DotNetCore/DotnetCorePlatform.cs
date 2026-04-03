@@ -35,6 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCorePlatformInstaller platformInstaller;
         private readonly GlobalJsonSdkResolver globalJsonSdkResolver;
         private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
         private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
@@ -57,6 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCorePlatformInstaller platformInstaller,
             GlobalJsonSdkResolver globalJsonSdkResolver,
             IExternalSdkProvider externalSdkProvider,
+            IExternalAcrSdkProvider externalAcrSdkProvider,
             IAcrSdkProvider acrSdkProvider,
             TelemetryClient telemetryClient)
         {
@@ -68,6 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.platformInstaller = platformInstaller;
             this.globalJsonSdkResolver = globalJsonSdkResolver;
             this.externalSdkProvider = externalSdkProvider;
+            this.externalAcrSdkProvider = externalAcrSdkProvider;
             this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
@@ -254,16 +257,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
+            // Priority: External-ACR → External-blob → Direct-ACR → CDN
+
+            // 1. Try External-ACR (socket → ACR)
+            if (this.commonOptions.EnableAcrSdkProvider)
+            {
+                var result = this.TryInstallFromExternalAcrSdkProvider(sdkVersion);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // 2. Try External-blob (socket → blob storage)
             if (this.commonOptions.EnableExternalSdkProvider)
             {
                 return this.TryInstallFromExternalSdkProvider(sdkVersion);
             }
 
+            // 3. Try Direct-ACR (direct OCI API calls)
             if (this.commonOptions.EnableAcrSdkProvider)
             {
                 return this.TryInstallFromAcrSdkProvider(sdkVersion);
             }
 
+            // 4. CDN fallback
             this.logger.LogDebug(
                 "DotNetCore SDK version {globalJsonSdkVersion} is not installed. So generating an installation script snippet for it.",
                 sdkVersion);
@@ -407,6 +425,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion);
+        }
+
+        private string TryInstallFromExternalAcrSdkProvider(string sdkVersion)
+        {
+            this.logger.LogDebug(
+                "DotNetCore SDK version {version} is not installed. External ACR SDK provider is enabled, so trying to fetch SDK using it.",
+                sdkVersion);
+
+            try
+            {
+                if (this.externalAcrSdkProvider.RequestSdkAsync(
+                    this.Name, sdkVersion, this.commonOptions.DebianFlavor).Result)
+                {
+                    this.logger.LogDebug(
+                        "DotNetCore SDK version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.",
+                        sdkVersion);
+                    return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, skipSdkBinaryDownload: true);
+                }
+
+                this.logger.LogDebug(
+                    "DotNetCore SDK version {version} is not fetched via external ACR SDK provider. Trying next provider.",
+                    sdkVersion);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Error while fetching DotNetCore SDK version {version} using external ACR SDK provider. Trying next provider.",
+                    sdkVersion);
+            }
+
+            return null;
         }
 
         private string GetSdkVersion(

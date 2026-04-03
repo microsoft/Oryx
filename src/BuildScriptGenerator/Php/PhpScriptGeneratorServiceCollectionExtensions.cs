@@ -22,8 +22,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<PhpComposerOnDiskVersionProvider>();
             services.AddSingleton<PhpSdkStorageVersionProvider>();
             services.AddSingleton<PhpExternalVersionProvider>();
+            services.AddSingleton<PhpExternalAcrVersionProvider>();
             services.AddSingleton<PhpComposerSdkStorageVersionProvider>();
             services.AddSingleton<PhpComposerExternalVersionProvider>();
+            services.AddSingleton<PhpComposerExternalAcrVersionProvider>();
             services.AddSingleton<PhpAcrVersionProvider>();
             services.AddSingleton<PhpComposerAcrVersionProvider>();
             return services;

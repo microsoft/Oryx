@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly PhpOnDiskVersionProvider onDiskVersionProvider;
         private readonly PhpSdkStorageVersionProvider sdkStorageVersionProvider;
         private readonly PhpExternalVersionProvider externalVersionProvider;
+        private readonly PhpExternalAcrVersionProvider externalAcrVersionProvider;
         private readonly PhpAcrVersionProvider acrVersionProvider;
         private readonly ILogger<PhpVersionProvider> logger;
         private PlatformVersionInfo versionInfo;
@@ -24,6 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             PhpOnDiskVersionProvider onDiskVersionProvider,
             PhpSdkStorageVersionProvider sdkStorageVersionProvider,
             PhpExternalVersionProvider externalVersionProvider,
+            PhpExternalAcrVersionProvider externalAcrVersionProvider,
             PhpAcrVersionProvider acrVersionProvider,
             ILogger<PhpVersionProvider> logger)
         {
@@ -31,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
             this.externalVersionProvider = externalVersionProvider;
+            this.externalAcrVersionProvider = externalAcrVersionProvider;
             this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
         }
@@ -51,6 +54,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
+            // Priority: External-ACR → External-blob → Direct-ACR → CDN
+            if (this.options.EnableAcrSdkProvider)
+            {
+                try
+                {
+                    return this.externalAcrVersionProvider.GetVersionInfo();
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(
+                        $"Failed to get version info from external ACR provider. Falling back. Ex: {ex}");
+                }
+            }
+
             if (this.options.EnableExternalSdkProvider)
             {
                 try
@@ -73,7 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 catch (Exception ex)
                 {
                     this.logger.LogError(
-                        $"Failed to get version info from ACR provider. Falling back to blob storage. Ex: {ex}");
+                        $"Failed to get version info from direct ACR provider. Falling back to CDN. Ex: {ex}");
                 }
             }
 
