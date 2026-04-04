@@ -114,7 +114,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string platformName,
             string version,
             string directoryToInstall = null,
-            bool skipSdkBinaryDownload = false)
+            bool skipSdkBinaryDownload = false,
+            string localSdkTarballPath = null)
         {
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
             var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
@@ -153,6 +154,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         .AppendLine($"tar -xzf {tarFilePath} -C .")
                         .AppendLine($"rm -f {tarFileName}")
                         .AppendLine($"echo \"Successfully extracted {platformName} version {version} from external sdk provider cache...\"");
+                }
+            else if (!string.IsNullOrEmpty(localSdkTarballPath))
+                {
+                    // ACR direct provider already downloaded the tarball to a writable location.
+                    // Extract from that local path and clean up.
+                    snippet.AppendLine($"echo \"Extracting SDK from locally downloaded tarball: {localSdkTarballPath}...\"")
+                        .AppendLine($"tar -xzf {localSdkTarballPath} -C .")
+                        .AppendLine($"rm -f {localSdkTarballPath}")
+                        .AppendLine($"echo \"Successfully extracted {platformName} version {version} from local tarball.\"");
                 }
             else
                 {

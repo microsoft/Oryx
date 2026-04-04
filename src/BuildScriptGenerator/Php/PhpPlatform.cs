@@ -423,11 +423,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             try
             {
-                if (this.acrSdkProvider.RequestSdkFromAcrAsync(
-                    "php", phpVersion, this.commonOptions.DebianFlavor).Result)
+                var tarballPath = this.acrSdkProvider.RequestSdkFromAcrAsync(
+                    "php", phpVersion, this.commonOptions.DebianFlavor).Result;
+
+                if (!string.IsNullOrEmpty(tarballPath))
                 {
-                    this.logger.LogDebug("PHP version {version} is fetched successfully using ACR SDK provider. Skipping platform binary download.", phpVersion);
-                    scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true));
+                    this.logger.LogDebug("PHP version {version} is fetched successfully using ACR SDK provider. Tarball at {tarballPath}.", phpVersion, tarballPath);
+                    scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion, localSdkTarballPath: tarballPath));
                     return;
                 }
 
@@ -458,11 +460,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             try
             {
-                if (this.acrSdkProvider.RequestSdkFromAcrAsync(
-                    "php-composer", phpComposerVersion, this.commonOptions.DebianFlavor).Result)
+                var tarballPath = this.acrSdkProvider.RequestSdkFromAcrAsync(
+                    "php-composer", phpComposerVersion, this.commonOptions.DebianFlavor).Result;
+
+                if (!string.IsNullOrEmpty(tarballPath))
                 {
-                    this.logger.LogDebug("PHP Composer version {version} is fetched successfully using ACR SDK provider. Skipping platform binary download.", phpComposerVersion);
-                    scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true));
+                    this.logger.LogDebug("PHP Composer version {version} is fetched successfully using ACR SDK provider. Tarball at {tarballPath}.", phpComposerVersion, tarballPath);
+                    scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, localSdkTarballPath: tarballPath));
                     return;
                 }
 

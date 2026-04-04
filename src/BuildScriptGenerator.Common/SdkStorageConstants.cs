@@ -28,6 +28,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string AcrSdkRegistryUrlKeyName = "ORYX_ACR_SDK_REGISTRY_URL";
         public const string DefaultAcrSdkRegistryUrl = "https://oryxacr.azurecr.io";
         public const string AcrSdkRepositoryPrefix = "sdks";
-        public const string AcrDefaultVersionTag = "default";
     }
 }

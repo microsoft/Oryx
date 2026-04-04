@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 onDiskProvider,
                 storageProvider,
                 externalProvider,
-                new PhpExternalAcrVersionProvider(commonOptions, NullLoggerFactory.Instance),
+                new PhpExternalAcrVersionProvider(NullLoggerFactory.Instance),
                 new PhpAcrVersionProvider(commonOptions, new TestHttpClientFactory(), NullLoggerFactory.Instance),
                 NullLogger<PhpVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);

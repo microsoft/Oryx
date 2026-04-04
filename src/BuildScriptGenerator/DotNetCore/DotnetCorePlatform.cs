@@ -371,13 +371,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             try
             {
-                if (this.acrSdkProvider.RequestSdkFromAcrAsync(
-                    this.Name, sdkVersion, this.commonOptions.DebianFlavor).Result)
+                var tarballPath = this.acrSdkProvider.RequestSdkFromAcrAsync(
+                    this.Name, sdkVersion, this.commonOptions.DebianFlavor).Result;
+
+                if (!string.IsNullOrEmpty(tarballPath))
                 {
                     this.logger.LogDebug(
-                        "DotNetCore SDK version {version} is fetched successfully using ACR SDK provider. Skipping platform binary download.",
-                        sdkVersion);
-                    return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, skipSdkBinaryDownload: true);
+                        "DotNetCore SDK version {version} is fetched successfully using ACR SDK provider. Tarball at {tarballPath}.",
+                        sdkVersion,
+                        tarballPath);
+                    return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, localSdkTarballPath: tarballPath);
                 }
 
                 this.logger.LogDebug(

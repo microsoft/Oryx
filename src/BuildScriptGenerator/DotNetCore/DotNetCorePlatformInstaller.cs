@@ -19,9 +19,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
         }
 
-        public virtual string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
+        public virtual string GetInstallerScriptSnippet(
+            string version,
+            bool skipSdkBinaryDownload = false,
+            string localSdkTarballPath = null)
         {
-            return this.GetInstallerScriptSnippet(DotNetCoreConstants.PlatformName, version, skipSdkBinaryDownload: skipSdkBinaryDownload);
+            return this.GetInstallerScriptSnippet(
+                DotNetCoreConstants.PlatformName,
+                version,
+                skipSdkBinaryDownload: skipSdkBinaryDownload,
+                localSdkTarballPath: localSdkTarballPath);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)
