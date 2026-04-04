@@ -45,7 +45,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 "Requesting companion SDK version for {PlatformName} from external provider.",
                 platformName);
 
-            var version = this.SendRequestAsync(platformName).GetAwaiter().GetResult();
+            string version;
+            try
+            {
+                version = this.SendRequestAsync(platformName).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Failed to get companion SDK version for {PlatformName} from external provider.",
+                    platformName);
+                return null;
+            }
 
             if (!string.IsNullOrEmpty(version))
             {

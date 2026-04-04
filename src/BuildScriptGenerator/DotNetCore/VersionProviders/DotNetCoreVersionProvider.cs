@@ -15,7 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCoreOnDiskVersionProvider onDiskVersionProvider;
         private readonly DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider;
         private readonly DotNetCoreExternalVersionProvider externalVersionProvider;
-        private readonly DotNetCoreExternalAcrVersionProvider externalAcrVersionProvider;
         private readonly DotNetCoreAcrVersionProvider acrVersionProvider;
         private readonly ILogger<DotNetCoreVersionProvider> logger;
         private string defaultRuntimeVersion;
@@ -26,7 +25,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCoreOnDiskVersionProvider onDiskVersionProvider,
             DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider,
             DotNetCoreExternalVersionProvider externalVersionProvider,
-            DotNetCoreExternalAcrVersionProvider externalAcrVersionProvider,
             DotNetCoreAcrVersionProvider acrVersionProvider,
             ILogger<DotNetCoreVersionProvider> logger)
         {
@@ -34,7 +32,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
             this.externalVersionProvider = externalVersionProvider;
-            this.externalAcrVersionProvider = externalAcrVersionProvider;
             this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
         }
@@ -72,19 +69,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return this.supportedVersions;
         }
 
-        // Priority: External-ACR → External-SDK → Direct-ACR → CDN
+        // Note: External ACR provider is handled directly by DotNetCorePlatform.ResolveVersions()
+        // which short-circuits before calling this provider.
+        // Priority here: External-blob → Direct-ACR → CDN
         private string ResolveDynamicDefaultRuntimeVersion()
         {
-            // If external ACR provider is enabled.
-            if (this.cliOptions.EnableExternalAcrSdkProvider)
-            {
-                var version = this.TryGetDefaultRuntimeVersionFromExternalAcr();
-                if (!string.IsNullOrEmpty(version))
-                {
-                    return version;
-                }
-            }
-
             if (this.cliOptions.EnableExternalSdkProvider)
             {
                 var version = this.TryGetDefaultRuntimeVersionFromExternalBlob();
@@ -108,16 +97,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private Dictionary<string, string> ResolveDynamicSupportedVersions()
         {
-            // If external ACR provider is enabled.
-            if (this.cliOptions.EnableExternalAcrSdkProvider)
-            {
-                var versions = this.TryGetSupportedVersionsFromExternalAcr();
-                if (versions != null)
-                {
-                    return versions;
-                }
-            }
-
             if (this.cliOptions.EnableExternalSdkProvider)
             {
                 var versions = this.TryGetSupportedVersionsFromExternalBlob();
@@ -137,20 +116,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             return this.sdkStorageVersionProvider.GetSupportedVersions();
-        }
-
-        private string TryGetDefaultRuntimeVersionFromExternalAcr()
-        {
-            try
-            {
-                return this.externalAcrVersionProvider.GetDefaultRuntimeVersion();
-            }
-            catch (System.Exception ex)
-            {
-                this.logger.LogError(
-                    $"Error while getting default runtime version from external ACR provider. Ex: {ex}");
-                return null;
-            }
         }
 
         private string TryGetDefaultRuntimeVersionFromExternalBlob()
@@ -177,20 +142,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 this.logger.LogError(
                     $"Error while getting default runtime version from direct ACR provider. Ex: {ex}");
-                return null;
-            }
-        }
-
-        private Dictionary<string, string> TryGetSupportedVersionsFromExternalAcr()
-        {
-            try
-            {
-                return this.externalAcrVersionProvider.GetSupportedVersions();
-            }
-            catch (System.Exception ex)
-            {
-                this.logger.LogError(
-                    $"Error while getting supported versions from external ACR provider. Ex: {ex}");
                 return null;
             }
         }
