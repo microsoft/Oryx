@@ -72,19 +72,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return this.supportedVersions;
         }
 
-        // Priority: External-ACR → External-blob → Direct-ACR → CDN
+        // Priority: External-ACR → External-SDK → Direct-ACR → CDN
         private string ResolveDynamicDefaultRuntimeVersion()
         {
-            // If external ACR provider is enabled, try it first.
-            // If it fails, fallback to external blob provider.
+            // If external ACR provider is enabled.
             if (this.cliOptions.EnableExternalAcrSdkProvider)
             {
                 var version = this.TryGetDefaultRuntimeVersionFromExternalAcr();
-                if (string.IsNullOrEmpty(version))
-                {
-                    version = this.TryGetDefaultRuntimeVersionFromExternalBlob();
-                }
-
                 if (!string.IsNullOrEmpty(version))
                 {
                     return version;
@@ -114,16 +108,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private Dictionary<string, string> ResolveDynamicSupportedVersions()
         {
-            // If external ACR provider is enabled, try it first.
-            // If it fails, fallback to external blob provider.
+            // If external ACR provider is enabled.
             if (this.cliOptions.EnableExternalAcrSdkProvider)
             {
                 var versions = this.TryGetSupportedVersionsFromExternalAcr();
-                if (versions == null)
-                {
-                    versions = this.TryGetSupportedVersionsFromExternalBlob();
-                }
-
                 if (versions != null)
                 {
                     return versions;
