@@ -312,7 +312,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             // If PHP is not installed yet and external SDK provider is enabled, try it.
             if (!phpInstalled && this.commonOptions.EnableExternalSdkProvider)
             {
-                phpInstalled = this.TryInstallPhpUsingExternalSdk(phpVersion, scriptBuilder);
+                phpInstalled = this.TryInstallPhpExternalSdk(phpVersion, scriptBuilder);
             }
 
             // If PHP is still not installed and ACR SDK provider is enabled, try it.
@@ -357,13 +357,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             // If external ACR provider is enabled.
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
-                composerInstalled = this.TryInstallPhpComposerUsingExternalAcrSdk(phpComposerVersion, scriptBuilder);
+                composerInstalled = this.TryInstallPhpComposerExternalAcr(phpComposerVersion, scriptBuilder);
             }
 
             // If PHP Composer is not installed yet and external SDK provider is enabled, try it.
             if (!composerInstalled && this.commonOptions.EnableExternalSdkProvider)
             {
-                composerInstalled = this.TryInstallPhpComposerUsingExternalSdk(phpComposerVersion, scriptBuilder);
+                composerInstalled = this.TryInstallPhpComposerExternalSdk(phpComposerVersion, scriptBuilder);
             }
 
             // If PHP Composer is still not installed and ACR SDK provider is enabled, try it.
