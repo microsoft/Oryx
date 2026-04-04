@@ -18,12 +18,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// via a Unix socket to the external host.
     /// </summary>
     /// <remarks>
-    /// Flow: Oryx → Unix socket → external host → single SDK version response.
+    /// Flow: Oryx → Unix socket → external host (LWASv2 OryxSdkImageProxy) → single SDK version response.
+    /// Connects to the dedicated ACR SDK socket and sends <c>Action=get-version</c>.
     /// SDK pulling is handled separately by <see cref="ExternalAcrSdkProvider"/>.
     /// </remarks>
     public class ExternalAcrVersionProviderBase
     {
-        private const string SocketPath = "/var/sockets/oryx-pull-sdk.socket";
+        private const string SocketPath = "/var/sdk-image-sockets/oryx-pull-sdk-image.socket";
         private const int MaxTimeoutForSocketOperationInSeconds = 120;
 
         private readonly ILogger logger;
@@ -71,7 +72,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
                 {
                     await socket.ConnectAsync(new UnixDomainSocketEndPoint(SocketPath), cts.Token);
-                    var requestJson = JsonSerializer.Serialize(new { PlatformName = platformName }) + "$";
+                    var requestJson = JsonSerializer.Serialize(
+                        new { Action = "get-version", PlatformName = platformName }) + "$";
                     var requestBytes = Encoding.UTF8.GetBytes(requestJson);
 
                     await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
