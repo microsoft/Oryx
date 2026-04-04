@@ -406,36 +406,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             var version = detectorResult.PlatformVersion;
 
-            // Priority: External-ACR → External-blob → Direct-ACR → CDN
+            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
 
             // 1. Try External-ACR (socket → ACR)
-            // Fallback of this is External SDK provider.
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 var result = this.TryInstallFromExternalAcrSdkProvider(version);
 
-                if (result == null)
+                if (result != null)
                 {
-                    this.logger.LogDebug(
-                        "Python version {version} is not fetched successfully using external ACR SDK provider. "
-                        + "Try getting installation script snippet from external SDK provider.",
-                        version);
-                    result = this.TryInstallFromExternalSdkProvider(version);
+                    return result;
                 }
-
-                return result;
             }
 
-            // 2. Try External-blob (socket → blob storage)
+            // 2. Try External-SDK (socket → SDK)
             if (this.commonOptions.EnableExternalSdkProvider)
             {
-                return this.TryInstallFromExternalSdkProvider(version);
+                var result = this.TryInstallFromExternalSdkProvider(version);
+                if (result != null)
+                {
+                    return result;
+                }
             }
 
             // 3. Try Direct-ACR (direct OCI API calls)
             if (this.commonOptions.EnableAcrSdkProvider)
             {
-                return this.TryInstallFromAcrSdkProvider(version);
+                var result = this.TryInstallFromAcrSdkProvider(version);
+                if (result != null)
+                {
+                    return result;
+                }
             }
 
             // 4. CDN fallback
@@ -604,7 +605,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     version);
             }
 
-            return this.platformInstaller.GetInstallerScriptSnippet(version);
+            return null;
         }
 
         private string TryInstallFromAcrSdkProvider(string version)
@@ -638,7 +639,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     version);
             }
 
-            return this.platformInstaller.GetInstallerScriptSnippet(version);
+            return null;
         }
 
         private string TryInstallFromExternalAcrSdkProvider(string version)
