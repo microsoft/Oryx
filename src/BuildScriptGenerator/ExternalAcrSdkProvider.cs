@@ -12,8 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -22,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// This is the ACR equivalent of <see cref="ExternalSdkProvider"/> (blob storage via socket).
     /// </summary>
     /// <remarks>
-    /// Flow: Oryx → Unix socket → external host (LWASv2 OryxSdkImageProxy) → ACR.
+    /// Flow: Oryx → Unix socket → external host → ACR.
     /// Connects to a dedicated ACR SDK socket and sends <c>Action=pull-sdk</c> so the
     /// external host routes to the ACR image-pull logic.
     /// Version discovery is handled by <see cref="ExternalAcrVersionProviderBase"/>.
@@ -36,12 +34,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         /// <summary>
         /// The directory where ACR-based SDKs are cached.
-        /// Must match the mount path used by the external host (LWASv2 OryxAcrSdks volume).
+        /// Must match the mount path used by the external host.
         /// </summary>
         public const string ExternalAcrSdksStorageDir = "/var/OryxAcrSdks";
 
-        private const string SocketPath = "/var/sdk-image-sockets/oryx-pull-sdk-image.socket";
-        private const int MaxTimeoutForSocketOperationInSeconds = 120;
+        private const string SocketPath = "/var/sockets/oryx-pull-sdk-image.socket";
+        private const int MaxTimeoutForSocketOperationInSeconds = 100;
 
         private readonly ILogger<ExternalAcrSdkProvider> logger;
         private readonly IStandardOutputWriter outputWriter;
@@ -73,7 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (string.IsNullOrEmpty(debianFlavor))
             {
-                debianFlavor = this.options.DebianFlavor ?? "bookworm";
+                throw new ArgumentException("Debian flavor cannot be null or empty.", nameof(debianFlavor));
             }
 
             this.logger.LogInformation(
@@ -91,6 +89,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     Action = "pull-sdk",
                     PlatformName = platformName,
+                    Version = version,
+                    DebianFlavor = debianFlavor,
                 };
 
                 var responseFilename = await this.SendRequestAsync(request);
@@ -138,9 +138,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             try
             {
                 this.logger.LogInformation(
-                    "Sending ACR request via socket: Action={Action}, PlatformName={PlatformName}",
+                    "Sending ACR request via socket: Action={Action}, PlatformName={PlatformName}, Version={Version}, DebianFlavor={DebianFlavor}",
                     request.Action,
-                    request.PlatformName);
+                    request.PlatformName,
+                    request.Version,
+                    request.DebianFlavor);
 
                 using (var cts = new CancellationTokenSource(
                     TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
@@ -197,6 +199,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             public string Action { get; set; }
 
             public string PlatformName { get; set; }
+
+            public string Version { get; set; }
+
+            public string DebianFlavor { get; set; }
         }
     }
 }

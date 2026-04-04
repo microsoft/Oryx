@@ -78,8 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             foreach (var tag in allTags)
             {
-                if (!tag.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
-                    || tag.EndsWith($"-{SdkStorageConstants.AcrDefaultVersionTag}", StringComparison.OrdinalIgnoreCase))
+                if (!tag.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }

@@ -497,7 +497,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 return _isVersionAlreadyInstalled;
             }
 
-            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
+            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false, string localSdkTarballPath = null)
             {
                 if (skipSdkBinaryDownload)
                 {

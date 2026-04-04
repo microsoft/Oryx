@@ -19,9 +19,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
         }
 
-        public virtual string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
+        public virtual string GetInstallerScriptSnippet(
+            string version,
+            bool skipSdkBinaryDownload = false,
+            string localSdkTarballPath = null)
         {
-            return this.GetInstallerScriptSnippet(NodeConstants.PlatformName, version, skipSdkBinaryDownload: skipSdkBinaryDownload);
+            return this.GetInstallerScriptSnippet(
+                NodeConstants.PlatformName,
+                version,
+                skipSdkBinaryDownload: skipSdkBinaryDownload,
+                localSdkTarballPath: localSdkTarballPath);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)

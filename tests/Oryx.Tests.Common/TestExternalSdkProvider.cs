@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class TestExternalSdkProvider : IExternalSdkProvider
     {
-        public const string ExternalSdksStorageDir = "/var/OryxSdksCache";
+        public const string ExternalSdksStorageDir = "/var/OryxSdks";
 
         public Task<XDocument> GetPlatformMetaDataAsync(string platformName)
         {

@@ -22,9 +22,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
         }
 
-        public virtual string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
+        public virtual string GetInstallerScriptSnippet(
+            string version,
+            bool skipSdkBinaryDownload = false,
+            string localSdkTarballPath = null)
         {
-            return this.GetInstallerScriptSnippet(platformName: "php-composer", version, skipSdkBinaryDownload: skipSdkBinaryDownload);
+            return this.GetInstallerScriptSnippet(
+                platformName: "php-composer",
+                version,
+                skipSdkBinaryDownload: skipSdkBinaryDownload,
+                localSdkTarballPath: localSdkTarballPath);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)

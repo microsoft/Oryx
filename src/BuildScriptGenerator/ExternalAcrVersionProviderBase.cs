@@ -16,15 +16,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// Base class for version providers that resolve the companion SDK version for a platform
     /// via a Unix socket to the external host.
+    /// The external host dictates the SDK version to use for each platform.
     /// </summary>
     /// <remarks>
-    /// Flow: Oryx → Unix socket → external host (LWASv2 OryxSdkImageProxy) → single SDK version response.
+    /// Flow: Oryx → Unix socket → external host → single SDK version response.
     /// Connects to the dedicated ACR SDK socket and sends <c>Action=get-version</c>.
     /// SDK pulling is handled separately by <see cref="ExternalAcrSdkProvider"/>.
     /// </remarks>
     public class ExternalAcrVersionProviderBase
     {
-        private const string SocketPath = "/var/sdk-image-sockets/oryx-pull-sdk-image.socket";
+        private const string SocketPath = "/var/sockets/oryx-pull-sdk-image.socket";
         private const int MaxTimeoutForSocketOperationInSeconds = 120;
 
         private readonly ILogger logger;

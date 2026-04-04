@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// The directory where SDKs are cached by the external provider.
     /// </summary>
-    public const string ExternalSdksStorageDir = "/var/OryxSdksCache";
+    public const string ExternalSdksStorageDir = "/var/OryxSdks";
 
     /// <summary>
     /// Gets all metadata for a specific platform from the external SDK provider.

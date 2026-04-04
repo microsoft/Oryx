@@ -718,13 +718,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             try
             {
-                if (this.acrSdkProvider.RequestSdkFromAcrAsync(
-                    this.Name, version, this.commonOptions.DebianFlavor).Result)
+                var tarballPath = this.acrSdkProvider.RequestSdkFromAcrAsync(
+                    this.Name, version, this.commonOptions.DebianFlavor).Result;
+
+                if (!string.IsNullOrEmpty(tarballPath))
                 {
                     this.logger.LogDebug(
-                        "Node version {version} is fetched successfully using ACR SDK provider. Skipping platform binary download.",
-                        version);
-                    return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
+                        "Node version {version} is fetched successfully using ACR SDK provider. Tarball at {tarballPath}.",
+                        version,
+                        tarballPath);
+                    return this.platformInstaller.GetInstallerScriptSnippet(version, localSdkTarballPath: tarballPath);
                 }
 
                 this.logger.LogDebug(

@@ -91,8 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var prefix = $"{this.debianFlavor}-";
             return allTags
-                .Where(t => t.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
-                         && !t.EndsWith($"-{SdkStorageConstants.AcrDefaultVersionTag}", StringComparison.OrdinalIgnoreCase))
+                .Where(t => t.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                 .Select(t => t.Substring(prefix.Length))
                 .ToList();
         }

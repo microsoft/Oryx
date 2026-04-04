@@ -14,21 +14,16 @@ using Microsoft.Oryx.BuildScriptGenerator.Common;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// ACR-based SDK provider that fetches SDK tarballs directly from an OCI-compliant
-    /// container registry using the OCI Distribution API. SDK images are single-layer
-    /// <c>FROM scratch</c> images where the layer IS the SDK tarball.
+    /// Fetches SDK tarballs directly from an OCI container registry.
+    /// SDK images are single-layer <c>FROM scratch</c> images where
+    /// the layer IS the SDK tarball.
     /// </summary>
     /// <remarks>
-    /// This provider makes direct HTTP calls to the registry — no Unix socket, no external
-    /// intermediary. See <see cref="ExternalAcrSdkProvider"/> for the socket-based variant.
+    /// Makes direct HTTP calls to the registry (no Unix socket).
+    /// See <see cref="ExternalAcrSdkProvider"/> for the socket-based variant.
     /// </remarks>
     public class AcrSdkProvider : IAcrSdkProvider
     {
-        /// <summary>
-        /// The directory where SDKs are cached (same as the blob-based provider).
-        /// </summary>
-        public const string SdksCacheDir = "/var/OryxSdks";
-
         private readonly ILogger<AcrSdkProvider> logger;
         private readonly IStandardOutputWriter outputWriter;
         private readonly BuildScriptGeneratorOptions options;
@@ -53,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <inheritdoc/>
-        public async Task<bool> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor)
+        public async Task<string> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor)
         {
             if (string.IsNullOrEmpty(platformName))
             {
@@ -81,16 +76,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.outputWriter.WriteLine(
                 $"Requesting SDK from ACR: {repository}:{tag}");
 
-            // Check if the file is already cached locally
-            var expectedFilePath = Path.Combine(SdksCacheDir, platformName, blobName);
-            if (File.Exists(expectedFilePath))
+            // Download to the writable dynamic install directory, NOT /var/OryxSdks (read-only external mount).
+            var downloadDir = Path.Combine(this.options.DynamicInstallRootDir, platformName);
+            var tarballPath = Path.Combine(downloadDir, blobName);
+
+            if (File.Exists(tarballPath))
             {
                 this.logger.LogInformation(
-                    "SDK already cached at {FilePath}, skipping ACR pull.",
-                    expectedFilePath);
+                    "SDK tarball already downloaded at {FilePath}, skipping ACR pull.",
+                    tarballPath);
                 this.outputWriter.WriteLine(
-                    $"SDK already cached at {expectedFilePath}");
-                return true;
+                    $"SDK tarball already downloaded at {tarballPath}");
+                return tarballPath;
             }
 
             try
@@ -105,17 +102,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         "No layer found in manifest for {Repository}:{Tag}",
                         repository,
                         tag);
-                    return false;
+                    return null;
                 }
 
                 // 2. Download the layer blob (the SDK tarball) and verify its SHA256 digest
-                var platformDir = Path.Combine(SdksCacheDir, platformName);
-                Directory.CreateDirectory(platformDir);
+                Directory.CreateDirectory(downloadDir);
 
                 var success = await this.ociClient.DownloadLayerBlobAsync(
                     repository,
                     layerDigest,
-                    expectedFilePath);
+                    tarballPath);
 
                 if (success)
                 {
@@ -123,10 +119,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         "Successfully pulled SDK from ACR: {Repository}:{Tag} → {FilePath}",
                         repository,
                         tag,
-                        expectedFilePath);
+                        tarballPath);
                     this.outputWriter.WriteLine(
                         $"Successfully pulled SDK from ACR: {platformName} {version}");
-                    return true;
+                    return tarballPath;
                 }
                 else
                 {
@@ -136,7 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         tag);
                     this.outputWriter.WriteLine(
                         $"Failed to pull SDK from ACR (digest mismatch): {platformName} {version}");
-                    return false;
+                    return null;
                 }
             }
             catch (Exception ex)
@@ -148,7 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     tag);
                 this.outputWriter.WriteLine(
                     $"Error pulling SDK from ACR: {platformName} {version}: {ex.Message}");
-                return false;
+                return null;
             }
         }
     }
