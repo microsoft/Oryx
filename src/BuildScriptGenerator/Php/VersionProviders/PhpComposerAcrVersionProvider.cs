@@ -28,7 +28,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         public virtual PlatformVersionInfo GetVersionInfo()
         {
             return this.platformVersionInfo
-                ??= this.GetAvailableVersionsFromAcr(platformName: "php-composer");
+                ??= this.GetAvailableVersionsFromAcr(
+                    platformName: "php-composer",
+                    defaultVersionPerFlavor: PhpConstants.ComposerDefaultVersionPerFlavor);
         }
     }
 }

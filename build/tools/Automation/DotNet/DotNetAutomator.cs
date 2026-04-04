@@ -129,7 +129,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                 // Deserialize release metadata
                 var response = await this.httpService.GetDataAsync(DotNetConstants.ReleasesIndexJsonUrl);
                 var releaseNotes = JsonConvert.DeserializeObject<ReleaseNotes>(response);
-                return releaseNotes?.ReleaseIndexes ?? new List<ReleaseNote>();
+                return releaseNotes.ReleaseIndexes;
             }
             catch (JsonException ex)
             {

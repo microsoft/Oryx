@@ -29,11 +29,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string DefaultAcrSdkRegistryUrl = "https://oryxacr.azurecr.io";
         public const string AcrSdkRepositoryPrefix = "sdks";
         public const string AcrDefaultVersionTag = "default";
-        public const string AcrCatalogTag = "catalog";
-        public const string AcrVersionLabelName = "org.oryx.version";
-        public const string AcrPlatformLabelName = "org.oryx.platform";
-        public const string AcrOsFlavorLabelName = "org.oryx.os-flavor";
-        public const string AcrDotnetRuntimeVersionLabelName = "org.oryx.dotnet-runtime-version";
-        public const string AcrDotnetSdkVersionLabelName = "org.oryx.dotnet-sdk-version";
     }
 }

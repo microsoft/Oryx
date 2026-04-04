@@ -28,7 +28,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         public virtual PlatformVersionInfo GetVersionInfo()
         {
             return this.platformVersionInfo
-                ??= this.GetAvailableVersionsFromAcr(platformName: ToolNameConstants.PhpName);
+                ??= this.GetAvailableVersionsFromAcr(
+                    platformName: ToolNameConstants.PhpName,
+                    defaultVersionPerFlavor: PhpConstants.DefaultVersionPerFlavor);
         }
     }
 }
