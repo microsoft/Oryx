@@ -4,121 +4,67 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Base class for version providers that discover available SDK versions from ACR
+    /// Base class for version providers that resolve the companion SDK version for a platform
     /// via a Unix socket to the external host.
-    /// Each per-platform subclass calls <see cref="GetAvailableVersionsFromExternalAcr"/>
-    /// with its platform name.
     /// </summary>
     /// <remarks>
-    /// Flow: Oryx → Unix socket → external host → ACR tag listing.
-    /// This class owns the socket communication for version discovery.
+    /// Flow: Oryx → Unix socket → external host (LWASv2 OryxSdkImageProxy) → single SDK version response.
+    /// Connects to the dedicated ACR SDK socket and sends <c>Action=get-version</c>.
     /// SDK pulling is handled separately by <see cref="ExternalAcrSdkProvider"/>.
     /// </remarks>
     public class ExternalAcrVersionProviderBase
     {
-        private const string SocketPath = "/var/sockets/oryx-pull-sdk.socket";
-        private const string ExternalSdksStorageDir = "/var/OryxSdks";
+        private const string SocketPath = "/var/sdk-image-sockets/oryx-pull-sdk-image.socket";
         private const int MaxTimeoutForSocketOperationInSeconds = 120;
 
         private readonly ILogger logger;
-        private readonly BuildScriptGeneratorOptions commonOptions;
 
-        public ExternalAcrVersionProviderBase(
-            IOptions<BuildScriptGeneratorOptions> commonOptions,
-            ILoggerFactory loggerFactory)
+        public ExternalAcrVersionProviderBase(ILoggerFactory loggerFactory)
         {
-            this.commonOptions = commonOptions.Value;
             this.logger = loggerFactory.CreateLogger(this.GetType());
         }
 
         /// <summary>
-        /// Gets the list of available versions and default version for <paramref name="platformName"/>
-        /// from ACR via the external host socket.
+        /// Asks the external provider for the single SDK version to use for <paramref name="platformName"/>.
         /// </summary>
-        /// Update this method to read the version list from a file written by the external host after it queries ACR,
-        protected PlatformVersionInfo GetAvailableVersionsFromExternalAcr(string platformName)
+        /// <returns>The SDK version string, or <c>null</c> if the external provider could not resolve one.</returns>
+        protected string GetCompanionSdkVersion(string platformName)
+
         {
-            var debianFlavor = this.commonOptions.DebianFlavor ?? "bookworm";
-
             this.logger.LogInformation(
-                "Getting available versions for platform {PlatformName} from ACR via external socket ({DebianFlavor}).",
-                platformName,
-                debianFlavor);
+                "Requesting companion SDK version for {PlatformName} from external provider.",
+                platformName);
 
-            var request = new ExternalAcrVersionRequest
+            var version = this.SendRequestAsync(platformName).GetAwaiter().GetResult();
+
+            if (!string.IsNullOrEmpty(version))
             {
-                PlatformName = platformName,
-                BlobName = null,
-                UrlParameters = new Dictionary<string, string>
-                {
-                    { "source", "acr" },
-                    { "action", "list-versions" },
-                    { "debianFlavor", debianFlavor },
-                },
-            };
-
-            var response = this.SendRequestAsync(request).GetAwaiter().GetResult();
-
-            // External host writes the version list to this file
-            var versionsFilePath = Path.Combine(
-                ExternalSdksStorageDir, platformName, $"acr-versions-{debianFlavor}.txt");
-
-            var supportedVersions = new List<string>();
-            if (response && File.Exists(versionsFilePath))
-            {
-                var content = File.ReadAllText(versionsFilePath).Trim();
-                supportedVersions = content
-                    .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(v => v.Trim())
-                    .Where(v => !string.IsNullOrEmpty(v))
-                    .ToList();
+                this.logger.LogInformation(
+                    "External provider returned SDK version {Version} for {PlatformName}.",
+                    version,
+                    platformName);
             }
             else
             {
                 this.logger.LogWarning(
-                    "Failed to get ACR version list via external socket for {PlatformName}.",
+                    "External provider returned no SDK version for {PlatformName}.",
                     platformName);
             }
 
-            // Read default version from a separate file if the external host wrote one
-            string defaultVersion = null;
-            var defaultVersionFilePath = Path.Combine(
-                ExternalSdksStorageDir, platformName, $"acr-default-version-{debianFlavor}.txt");
-            if (File.Exists(defaultVersionFilePath))
-            {
-                defaultVersion = File.ReadAllText(defaultVersionFilePath).Trim();
-                if (string.IsNullOrEmpty(defaultVersion))
-                {
-                    defaultVersion = null;
-                }
-            }
-
-            this.logger.LogInformation(
-                "Found {Count} versions for {PlatformName} from ACR via external socket (default: {Default}).",
-                supportedVersions.Count,
-                platformName,
-                defaultVersion ?? "none");
-
-            return PlatformVersionInfo.CreateAvailableOnAcr(supportedVersions, defaultVersion);
+            return version;
         }
 
-        private async Task<bool> SendRequestAsync(ExternalAcrVersionRequest request)
+        private async Task<string> SendRequestAsync(string platformName)
         {
             using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
             try
@@ -127,44 +73,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
                 {
                     await socket.ConnectAsync(new UnixDomainSocketEndPoint(SocketPath), cts.Token);
-                    var requestJson = JsonSerializer.Serialize(request) + "$";
+                    var requestJson = JsonSerializer.Serialize(
+                        new { Action = "get-version", PlatformName = platformName }) + "$";
                     var requestBytes = Encoding.UTF8.GetBytes(requestJson);
 
                     await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
                     var buffer = new byte[4096];
                     var received = await socket.ReceiveAsync(
                         new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
-                    var responseString = Encoding.UTF8.GetString(buffer, 0, received);
+                    var responseString = Encoding.UTF8.GetString(buffer, 0, received).TrimEnd('$');
 
-                    if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
+                    if (!string.IsNullOrWhiteSpace(responseString))
                     {
-                        return true;
+                        return responseString.Trim();
                     }
 
-                    this.logger.LogError(
-                        "ACR version request via socket was unsuccessful. Response: {Response}",
-                        responseString);
+                    this.logger.LogError("External provider returned an empty response.");
                 }
             }
             catch (OperationCanceledException)
             {
-                this.logger.LogError("ACR version request via socket timed out.");
+                this.logger.LogError("Request to external provider timed out.");
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "Error communicating with external ACR provider for version info.");
+                this.logger.LogError(ex, "Error communicating with external provider.");
             }
 
-            return false;
-        }
-
-        private class ExternalAcrVersionRequest
-        {
-            public string PlatformName { get; set; }
-
-            public string BlobName { get; set; }
-
-            public IDictionary<string, string> UrlParameters { get; set; }
+            return null;
         }
     }
 }

@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public static class DotNetCoreConstants
@@ -57,5 +59,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string InstallBlazorWebAssemblyAOTWorkloadCommand = "dotnet workload install wasm-tools";
 
         public static readonly string DefaultDotNetCoreSdkVersionsInstallDir = $"/opt/{PlatformName}";
+
+        /// <summary>
+        /// Default .NET major.minor runtime version per OS flavor, matching platforms/dotnet/versions/*/defaultVersion.txt.
+        /// </summary>
+        public static readonly Dictionary<string, string> DefaultVersionPerFlavor = new Dictionary<string, string>
+        {
+            { "bookworm", "8.0" },
+            { "bullseye", "6.0" },
+            { "buster", "6.0" },
+            { "focal-scm", "6.0" },
+            { "noble", "10.0" },
+            { "stretch", "6.0" },
+        };
     }
 }

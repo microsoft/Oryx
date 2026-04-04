@@ -15,8 +15,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
     /// Base class for ACR-based SDK version providers. Parallel to <see cref="SdkStorageVersionProviderBase"/>
-    /// but discovers versions via OCI Distribution API (tag listing + image config labels) instead of
+    /// but discovers versions via OCI Distribution API (tag listing) instead of
     /// Azure Blob Storage listing with XML metadata.
+    /// Default versions come from local per-flavor constants rather than ACR image labels.
     /// </summary>
     public class AcrVersionProviderBase
     {
@@ -42,11 +43,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         protected OciRegistryClient OciClient { get; }
 
         /// <summary>
-        /// Lists available versions for a platform from ACR tags.
-        /// Tags are in the format "{osFlavor}-{version}" (e.g. "bookworm-20.19.3").
-        /// Tags ending with "-default" or "-catalog" are excluded.
+        /// Lists available versions for a platform from ACR tags and resolves the default
+        /// version from the supplied per-flavor dictionary.
         /// </summary>
-        protected PlatformVersionInfo GetAvailableVersionsFromAcr(string platformName)
+        protected PlatformVersionInfo GetAvailableVersionsFromAcr(
+            string platformName,
+            Dictionary<string, string> defaultVersionPerFlavor)
         {
             var repository = $"{SdkStorageConstants.AcrSdkRepositoryPrefix}/{platformName}";
 
@@ -54,7 +56,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var allTags = this.GetTags(repository);
             var supportedVersions = this.FilterVersionTags(allTags);
-            var defaultVersion = this.GetDefaultVersion(repository);
+
+            string defaultVersion = null;
+            if (defaultVersionPerFlavor != null &&
+                !string.IsNullOrEmpty(this.debianFlavor) &&
+                defaultVersionPerFlavor.TryGetValue(this.debianFlavor, out var version))
+            {
+                defaultVersion = version;
+            }
 
             this.logger.LogDebug(
                 "Found {count} versions for {platformName} on ACR (default: {default}).",
@@ -83,23 +92,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var prefix = $"{this.debianFlavor}-";
             return allTags
                 .Where(t => t.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
-                         && !t.EndsWith($"-{SdkStorageConstants.AcrDefaultVersionTag}", StringComparison.OrdinalIgnoreCase)
-                         && !t.EndsWith($"-{SdkStorageConstants.AcrCatalogTag}", StringComparison.OrdinalIgnoreCase))
+                         && !t.EndsWith($"-{SdkStorageConstants.AcrDefaultVersionTag}", StringComparison.OrdinalIgnoreCase))
                 .Select(t => t.Substring(prefix.Length))
                 .ToList();
-        }
-
-        private string GetDefaultVersion(string repository)
-        {
-            try
-            {
-                return this.OciClient.GetDefaultVersionAsync(repository, this.debianFlavor).GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogWarning(ex, "Failed to get default version from ACR for {repository}.", repository);
-                return null;
-            }
         }
     }
 }

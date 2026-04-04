@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -23,19 +22,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// This is the ACR equivalent of <see cref="ExternalSdkProvider"/> (blob storage via socket).
     /// </summary>
     /// <remarks>
-    /// Flow: Oryx → Unix socket → external host → ACR.
-    /// Uses the same socket path as <see cref="ExternalSdkProvider"/> but sets
-    /// <c>source=acr</c> in UrlParameters so the external host routes to ACR logic.
+    /// Flow: Oryx → Unix socket → external host (LWASv2 OryxSdkImageProxy) → ACR.
+    /// Connects to a dedicated ACR SDK socket and sends <c>Action=pull-sdk</c> so the
+    /// external host routes to the ACR image-pull logic.
     /// Version discovery is handled by <see cref="ExternalAcrVersionProviderBase"/>.
     /// </remarks>
     public class ExternalAcrSdkProvider : IExternalAcrSdkProvider
     {
         /// <summary>
-        /// The directory where SDKs and version files are cached (shared with blob-based provider).
+        /// The directory where blob-based SDKs are cached (used by <see cref="ExternalSdkProvider"/>).
         /// </summary>
         public const string ExternalSdksStorageDir = "/var/OryxSdks";
 
-        private const string SocketPath = "/var/sockets/oryx-pull-sdk.socket";
+        /// <summary>
+        /// The directory where ACR-based SDKs are cached.
+        /// Must match the mount path used by the external host (LWASv2 OryxAcrSdks volume).
+        /// </summary>
+        public const string ExternalAcrSdksStorageDir = "/var/OryxAcrSdks";
+
+        private const string SocketPath = "/var/sdk-image-sockets/oryx-pull-sdk-image.socket";
         private const int MaxTimeoutForSocketOperationInSeconds = 120;
 
         private readonly ILogger<ExternalAcrSdkProvider> logger;
@@ -71,8 +76,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 debianFlavor = this.options.DebianFlavor ?? "bookworm";
             }
 
-            var blobName = $"{platformName}-{debianFlavor}-{version}.tar.gz";
-
             this.logger.LogInformation(
                 "Requesting SDK from ACR via external provider: platform={PlatformName}, version={Version}, " +
                 "debianFlavor={DebianFlavor}",
@@ -82,43 +85,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.outputWriter.WriteLine(
                 $"Requesting SDK from ACR via external provider: {platformName} {version} ({debianFlavor})");
 
-            // Check if the file is already cached locally
-            var expectedFilePath = Path.Combine(ExternalSdksStorageDir, platformName, blobName);
-            if (File.Exists(expectedFilePath))
-            {
-                this.logger.LogInformation(
-                    "SDK already cached at {FilePath}, skipping ACR pull via external provider.",
-                    expectedFilePath);
-                this.outputWriter.WriteLine(
-                    $"SDK already cached at {expectedFilePath}");
-                return true;
-            }
-
             try
             {
                 var request = new ExternalAcrSdkProviderRequest
                 {
+                    Action = "pull-sdk",
                     PlatformName = platformName,
-                    BlobName = blobName,
-                    UrlParameters = new Dictionary<string, string>
-                    {
-                        { "source", "acr" },
-                        { "action", "pull-sdk" },
-                        { "version", version },
-                        { "debianFlavor", debianFlavor },
-                    },
                 };
 
-                var response = await this.SendRequestAsync(request);
+                var responseFilename = await this.SendRequestAsync(request);
 
-                if (response && File.Exists(expectedFilePath))
+                if (!string.IsNullOrEmpty(responseFilename))
                 {
+                    var filePath = Path.Combine(ExternalAcrSdksStorageDir, platformName, responseFilename);
                     this.logger.LogInformation(
                         "Successfully pulled SDK from ACR via external provider: {PlatformName} {Version}, " +
                         "available at {FilePath}",
                         platformName,
                         version,
-                        expectedFilePath);
+                        filePath);
                     this.outputWriter.WriteLine(
                         $"Successfully pulled SDK from ACR via external provider: {platformName} {version}");
                     return true;
@@ -126,12 +111,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 else
                 {
                     this.logger.LogWarning(
-                        "ACR SDK pull via external provider did not produce expected file: {PlatformName} {Version} " +
-                        "at {FilePath}. Response: {Response}",
+                        "ACR SDK pull via external provider was unsuccessful: {PlatformName} {Version}",
                         platformName,
-                        version,
-                        expectedFilePath,
-                        response);
+                        version);
                     this.outputWriter.WriteLine(
                         $"Failed to pull SDK from ACR via external provider: {platformName} {version}");
                     return false;
@@ -150,17 +132,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
         }
 
-        private async Task<bool> SendRequestAsync(ExternalAcrSdkProviderRequest request)
+        private async Task<string> SendRequestAsync(ExternalAcrSdkProviderRequest request)
         {
             using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
             try
             {
                 this.logger.LogInformation(
-                    "Sending ACR request via socket: {PlatformName}, {BlobName}, " +
-                    "UrlParameters: {UrlParamsJson}",
-                    request.PlatformName,
-                    request.BlobName,
-                    JsonSerializer.Serialize(request.UrlParameters));
+                    "Sending ACR request via socket: Action={Action}, PlatformName={PlatformName}",
+                    request.Action,
+                    request.PlatformName);
 
                 using (var cts = new CancellationTokenSource(
                     TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
@@ -180,13 +160,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     var buffer = new byte[4096];
                     var received = await socket.ReceiveAsync(
                         new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
-                    var responseString = Encoding.UTF8.GetString(buffer, 0, received);
+                    var responseString = Encoding.UTF8.GetString(buffer, 0, received).TrimEnd('$');
                     this.logger.LogInformation(
                         "Received response from external ACR provider: {Response}", responseString);
 
-                    if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
+                    if (!string.IsNullOrEmpty(responseString) &&
+                        !responseString.Equals("Error", StringComparison.OrdinalIgnoreCase))
                     {
-                        return true;
+                        return responseString.Trim();
                     }
                     else
                     {
@@ -208,16 +189,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 this.logger.LogError(ex, "Error communicating with external ACR provider.");
             }
 
-            return false;
+            return null;
         }
 
         private class ExternalAcrSdkProviderRequest
         {
+            public string Action { get; set; }
+
             public string PlatformName { get; set; }
-
-            public string BlobName { get; set; }
-
-            public IDictionary<string, string> UrlParameters { get; set; }
         }
     }
 }

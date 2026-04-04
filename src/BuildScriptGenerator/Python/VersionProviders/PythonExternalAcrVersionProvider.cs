@@ -3,8 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -16,15 +16,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     internal class PythonExternalAcrVersionProvider : ExternalAcrVersionProviderBase, IPythonVersionProvider
     {
         public PythonExternalAcrVersionProvider(
-            IOptions<BuildScriptGeneratorOptions> commonOptions,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, loggerFactory)
+            : base(loggerFactory)
         {
         }
 
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            return this.GetAvailableVersionsFromExternalAcr(platformName: ToolNameConstants.PythonName);
+            var version = this.GetCompanionSdkVersion(platformName: ToolNameConstants.PythonName);
+            return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                supportedVersions: version != null ? new[] { version } : Array.Empty<string>(),
+                defaultVersion: version);
         }
     }
 }
