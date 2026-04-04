@@ -94,11 +94,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 Options.Create(DotNetCoreScriptGeneratorOptions),
                 Options.Create(commonOptions),
                 versionProvider,
+                new DotNetCoreExternalAcrVersionProvider(NullLoggerFactory.Instance),
                 NullLogger<TestDotNetCorePlatform>.Instance,
                 detector,
                 DotNetCoreInstaller,
                 globalJsonSdkResolver,
-                externalSdkProvider, 
+                externalSdkProvider,
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
                 TelemetryClientHelper.GetTelemetryClient());
@@ -110,6 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 IOptions<DotNetCoreScriptGeneratorOptions> DotNetCoreScriptGeneratorOptions,
                 IOptions<BuildScriptGeneratorOptions> commonOptions,
                 IDotNetCoreVersionProvider DotNetCoreVersionProvider,
+                DotNetCoreExternalAcrVersionProvider externalAcrVersionProvider,
                 ILogger<DotNetCorePlatform> logger,
                 IDotNetCorePlatformDetector detector,
                 DotNetCorePlatformInstaller DotNetCoreInstaller,
@@ -120,6 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 TelemetryClient telemetryClient)
                 : base(
                       DotNetCoreVersionProvider,
+                      externalAcrVersionProvider,
                       logger,
                       detector,
                       commonOptions,

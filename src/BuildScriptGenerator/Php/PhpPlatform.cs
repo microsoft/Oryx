@@ -242,51 +242,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             var scriptBuilder = new StringBuilder();
 
-            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
-            var phpVersion = phpPlatformDetectorResult.PlatformVersion;
-            var composerVersion = phpPlatformDetectorResult.PhpComposerVersion;
+            this.InstallPhp(phpPlatformDetectorResult.PlatformVersion, scriptBuilder);
 
-            // 1. Try External-ACR (socket → ACR)
-            bool phpInstalled = false;
-            bool composerInstalled = false;
-            if (this.commonOptions.EnableExternalAcrSdkProvider)
-            {
-                phpInstalled = this.TryInstallPhpExternalAcr(phpVersion, scriptBuilder);
-                composerInstalled = this.TryInstallPhpComposerExternalAcr(composerVersion, scriptBuilder);
-            }
-
-            // 2. Try External-SDK, 3. Direct-ACR, 4. CDN for anything not yet installed
-            if (!phpInstalled)
-            {
-                if (this.commonOptions.EnableExternalSdkProvider)
-                {
-                    this.InstallPhp(phpVersion, scriptBuilder);
-                }
-                else if (this.commonOptions.EnableAcrSdkProvider)
-                {
-                    this.InstallPhpAcr(phpVersion, scriptBuilder);
-                }
-                else
-                {
-                    this.InstallPhp(phpVersion, scriptBuilder);
-                }
-            }
-
-            if (!composerInstalled)
-            {
-                if (this.commonOptions.EnableExternalSdkProvider)
-                {
-                    this.InstallPhpComposer(composerVersion, scriptBuilder);
-                }
-                else if (this.commonOptions.EnableAcrSdkProvider)
-                {
-                    this.InstallPhpComposerAcr(composerVersion, scriptBuilder);
-                }
-                else
-                {
-                    this.InstallPhpComposer(composerVersion, scriptBuilder);
-                }
-            }
+            this.InstallPhpComposer(phpPlatformDetectorResult.PhpComposerVersion, scriptBuilder);
 
             return scriptBuilder.Length == 0 ? null : scriptBuilder.ToString();
         }
@@ -332,45 +290,57 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return maxSatisfyingVersion;
         }
 
+        // Method to install PHP
+        // with priority: External-ACR → External-SDK → Direct-ACR → CDN
         private void InstallPhp(string phpVersion, StringBuilder scriptBuilder)
         {
+            string script = null;
             if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
             {
                 this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
                 return;
             }
 
-            if (this.commonOptions.EnableExternalSdkProvider)
+            bool phpInstalled = false;
+
+            // If external ACR provider is enabled.
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
-                this.logger.LogDebug("Php version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", phpVersion);
+                phpInstalled = this.TryInstallPhpUsingExternalAcrSdk(phpVersion, scriptBuilder);
+            }
 
-                try
-                {
-                    var blobName = BlobNameHelper.GetBlobNameForVersion("php", phpVersion, this.commonOptions.DebianFlavor);
-                    if (this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result)
-                    {
-                        this.logger.LogDebug("Php version {version} is fetched successfully using external SDK provider. Skipping platform binary download.", phpVersion);
-                        scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true));
-                        return;
-                    }
+            // If PHP is not installed yet and external SDK provider is enabled, try it.
+            if (!phpInstalled && this.commonOptions.EnableExternalSdkProvider)
+            {
+                phpInstalled = this.TryInstallPhpUsingExternalSdk(phpVersion, scriptBuilder);
+            }
 
-                    this.logger.LogDebug("Php version {version} is not fetched successfully using external SDK provider. Generating installation script snippet.", phpVersion);
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogError(ex, "Error while fetching php version {version} using external SDK provider.", phpVersion);
-                }
+            // If PHP is still not installed and ACR SDK provider is enabled, try it.
+            if (!phpInstalled && this.commonOptions.EnableAcrSdkProvider)
+            {
+                phpInstalled = this.TryInstallPhpUsingAcrSdk(phpVersion, scriptBuilder);
+            }
+
+            if (!phpInstalled)
+            {
+                this.logger.LogDebug("PHP version {version} is not installed. Trying to install it from CDN.", phpVersion);
+                script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
             }
             else
             {
-                this.logger.LogDebug("Php version {version} is not installed. So generating an installation script snippet for it.", phpVersion);
+                this.logger.LogDebug("PHP version {version} is installed successfully using one of the providers. So skipping CDN installation.", phpVersion);
+                script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true);
             }
 
-            scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion));
+            scriptBuilder.AppendLine(script);
         }
 
+        // Method to install PHP Composer
+        // with priority: External-ACR → External-SDK → Direct-ACR → CDN
         private void InstallPhpComposer(string phpComposerVersion, StringBuilder scriptBuilder)
         {
+            // Install PHP Composer
+            string script = null;
             if (string.IsNullOrEmpty(phpComposerVersion))
             {
                 phpComposerVersion = PhpVersions.ComposerDefaultVersion;
@@ -382,41 +352,46 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return;
             }
 
-            if (this.commonOptions.EnableExternalSdkProvider)
+            bool composerInstalled = false;
+
+            // If external ACR provider is enabled.
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
-                this.logger.LogDebug("Php Composer version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", phpComposerVersion);
+                composerInstalled = this.TryInstallPhpComposerUsingExternalAcrSdk(phpComposerVersion, scriptBuilder);
+            }
 
-                try
-                {
-                    var blobName = BlobNameHelper.GetBlobNameForVersion("php-composer", phpComposerVersion, this.commonOptions.DebianFlavor);
-                    if (this.externalSdkProvider.RequestBlobAsync("php-composer", blobName).Result)
-                    {
-                        this.logger.LogDebug("Php composer version {version} is fetched successfully using external SDK provider. Skipping platform binary download.", phpComposerVersion);
-                        scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true));
-                        return;
-                    }
+            // If PHP Composer is not installed yet and external SDK provider is enabled, try it.
+            if (!composerInstalled && this.commonOptions.EnableExternalSdkProvider)
+            {
+                composerInstalled = this.TryInstallPhpComposerUsingExternalSdk(phpComposerVersion, scriptBuilder);
+            }
 
-                    this.logger.LogDebug("Php comose version {version} is not fetched successfully using external SDK provider. Generating installation script snippet.", phpComposerVersion);
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogError(ex, "Error while fetching php composer version {version} using external SDK provider.", phpComposerVersion);
-                }
+            // If PHP Composer is still not installed and ACR SDK provider is enabled, try it.
+            if (!composerInstalled && this.commonOptions.EnableAcrSdkProvider)
+            {
+                composerInstalled = this.TryInstallPhpComposerUsingAcrSdk(phpComposerVersion, scriptBuilder);
+            }
+
+            if (!composerInstalled)
+            {
+                this.logger.LogDebug("PHP Composer version {version} is not installed. Trying to install it from CDN.", phpComposerVersion);
+                script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
             }
             else
             {
-                this.logger.LogDebug("Php composer version {version} is not installed. So generating an installation script snippet for it.", phpComposerVersion);
+                this.logger.LogDebug("PHP Composer version {version} is installed successfully using one of the providers. So skipping CDN installation.", phpComposerVersion);
+                script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true);
             }
 
-            scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion));
+            scriptBuilder.AppendLine(script);
         }
 
-        private void InstallPhpAcr(string phpVersion, StringBuilder scriptBuilder)
+        private bool TryInstallPhpUsingAcrSdk(string phpVersion, StringBuilder scriptBuilder)
         {
             if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
             {
                 this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
-                return;
+                return true;
             }
 
             this.logger.LogDebug("PHP version {version} is not installed. ACR SDK provider is enabled, so trying to fetch SDK using it.", phpVersion);
@@ -430,20 +405,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 {
                     this.logger.LogDebug("PHP version {version} is fetched successfully using ACR SDK provider.", phpVersion);
                     scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true));
-                    return;
+                    return true;
                 }
 
-                this.logger.LogDebug("PHP version {version} is not fetched via ACR SDK provider. Falling back to CDN download.", phpVersion);
+                this.logger.LogDebug("PHP version {version} is not fetched via ACR SDK provider. Trying next provider.", phpVersion);
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "Error while fetching PHP version {version} using ACR SDK provider. Falling back to CDN download.", phpVersion);
+                this.logger.LogError(ex, "Error while fetching PHP version {version} using ACR SDK provider. Trying next provider.", phpVersion);
             }
 
-            scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion));
+            return false;
         }
 
-        private void InstallPhpComposerAcr(string phpComposerVersion, StringBuilder scriptBuilder)
+        private bool TryInstallPhpComposerUsingAcrSdk(string phpComposerVersion, StringBuilder scriptBuilder)
         {
             if (string.IsNullOrEmpty(phpComposerVersion))
             {
@@ -453,7 +428,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
             {
                 this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
-                return;
+                return true;
             }
 
             this.logger.LogDebug("PHP Composer version {version} is not installed. ACR SDK provider is enabled, so trying to fetch SDK using it.", phpComposerVersion);
@@ -467,20 +442,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 {
                     this.logger.LogDebug("PHP Composer version {version} is fetched successfully using ACR SDK provider.", phpComposerVersion);
                     scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true));
-                    return;
+                    return true;
                 }
 
-                this.logger.LogDebug("PHP Composer version {version} is not fetched via ACR SDK provider. Falling back to CDN download.", phpComposerVersion);
+                this.logger.LogDebug("PHP Composer version {version} is not fetched via ACR SDK provider. Trying next provider.", phpComposerVersion);
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "Error while fetching PHP Composer version {version} using ACR SDK provider. Falling back to CDN download.", phpComposerVersion);
+                this.logger.LogError(ex, "Error while fetching PHP Composer version {version} using ACR SDK provider. Trying next provider.", phpComposerVersion);
             }
 
-            scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion));
+            return false;
         }
 
-        private bool TryInstallPhpExternalAcr(string phpVersion, StringBuilder scriptBuilder)
+        private bool TryInstallPhpUsingExternalAcrSdk(string phpVersion, StringBuilder scriptBuilder)
         {
             if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
             {
@@ -545,6 +520,102 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return false;
         }
 
+        private bool TryInstallPhpExternalSdk(string phpVersion, StringBuilder scriptBuilder)
+        {
+            if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
+            {
+                this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
+                return true;
+            }
+
+            this.logger.LogDebug("PHP version {version} is not installed. External SDK provider is enabled, so trying to fetch SDK using it.", phpVersion);
+
+            try
+            {
+                var blobName = BlobNameHelper.GetBlobNameForVersion("php", phpVersion, this.commonOptions.DebianFlavor);
+                if (this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result)
+                {
+                    this.logger.LogDebug("PHP version {version} is fetched successfully using external SDK provider. Skipping platform binary download.", phpVersion);
+                    scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true));
+                    return true;
+                }
+
+                this.logger.LogDebug("PHP version {version} is not fetched successfully using external SDK provider. Trying next provider.", phpVersion);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Error while fetching PHP version {version} using external SDK provider. Trying next provider.", phpVersion);
+            }
+
+            return false;
+        }
+
+        private bool TryInstallPhpComposerExternalSdk(string phpComposerVersion, StringBuilder scriptBuilder)
+        {
+            if (string.IsNullOrEmpty(phpComposerVersion))
+            {
+                phpComposerVersion = PhpVersions.ComposerDefaultVersion;
+            }
+
+            if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
+            {
+                this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
+                return true;
+            }
+
+            this.logger.LogDebug("PHP Composer version {version} is not installed. External SDK provider is enabled, so trying to fetch SDK using it.", phpComposerVersion);
+
+            try
+            {
+                var blobName = BlobNameHelper.GetBlobNameForVersion("php-composer", phpComposerVersion, this.commonOptions.DebianFlavor);
+                if (this.externalSdkProvider.RequestBlobAsync("php-composer", blobName).Result)
+                {
+                    this.logger.LogDebug("PHP Composer version {version} is fetched successfully using external SDK provider. Skipping platform binary download.", phpComposerVersion);
+                    scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true));
+                    return true;
+                }
+
+                this.logger.LogDebug("PHP Composer version {version} is not fetched successfully using external SDK provider. Trying next provider.", phpComposerVersion);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Error while fetching PHP Composer version {version} using external SDK provider. Trying next provider.", phpComposerVersion);
+            }
+
+            return false;
+        }
+
+        private bool TryInstallPhp(string phpVersion, StringBuilder scriptBuilder)
+        {
+            if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
+            {
+                this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
+                return true;
+            }
+
+            this.logger.LogDebug("PHP version {version} is not installed. Trying to install it from CDN.", phpVersion);
+            scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion));
+            return true;
+        }
+
+        private bool TryInstallPhpComposer(string phpComposerVersion, StringBuilder scriptBuilder)
+        {
+            if (string.IsNullOrEmpty(phpComposerVersion))
+            {
+                phpComposerVersion = PhpVersions.ComposerDefaultVersion;
+            }
+
+            if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
+            {
+                this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
+                return true;
+            }
+
+            this.logger.LogDebug("PHP Composer version {version} is not installed. Trying to install it from CDN.", phpComposerVersion);
+            scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion));
+            return true;
+        }
+
         private void ResolveVersionsUsingHierarchicalRules(PhpPlatformDetectorResult detectorResult)
         {
             var phpVersion = ResolvePhpVersion(detectorResult.PlatformVersion);
@@ -558,6 +629,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             string ResolvePhpVersion(string detectedVersion)
             {
+                // If external ACR provider is enabled, try to resolve version from it first.
+                if (this.commonOptions.EnableExternalAcrSdkProvider)
+                {
+                    var acrVersionInfo = this.phpVersionProvider.GetVersionInfo();
+                    if (acrVersionInfo?.DefaultVersion != null)
+                    {
+                        this.logger.LogDebug("External ACR SDK provider is enabled and returned version {version} for PHP.", acrVersionInfo.DefaultVersion);
+                        return acrVersionInfo.DefaultVersion;
+                    }
+                }
+
                 // Explicitly specified version by user wins over detected version
                 if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.PhpVersion))
                 {
@@ -583,6 +665,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             string ResolvePhpComposerVersion(string detectedVersion)
             {
+                // If external ACR provider is enabled, try to resolve version from it first.
+                if (this.commonOptions.EnableExternalAcrSdkProvider)
+                {
+                    var versionInfo = this.phpComposerVersionProvider.GetVersionInfo();
+                    if (versionInfo?.DefaultVersion != null)
+                    {
+                        this.logger.LogDebug("External ACR SDK provider is enabled and returned version {version} for PHP Composer.", versionInfo.DefaultVersion);
+                        return versionInfo.DefaultVersion;
+                    }
+                }
+
                 // Explicitly specified version by user wins over detected version
                 if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.PhpComposerVersion))
                 {
