@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     internal class DotNetCorePlatform : IProgrammingPlatform
     {
         private readonly IDotNetCoreVersionProvider versionProvider;
+        private readonly DotNetCoreExternalAcrVersionProvider externalAcrVersionProvider;
         private readonly ILogger<DotNetCorePlatform> logger;
         private readonly IDotNetCorePlatformDetector detector;
         private readonly DotNetCoreScriptGeneratorOptions dotNetCoreScriptGeneratorOptions;
@@ -51,6 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <param name="globalJsonSdkResolver">The <see cref="GlobalJsonSdkResolver"/>.</param>
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
+            DotNetCoreExternalAcrVersionProvider externalAcrVersionProvider,
             ILogger<DotNetCorePlatform> logger,
             IDotNetCorePlatformDetector detector,
             IOptions<BuildScriptGeneratorOptions> commonOptions,
@@ -63,6 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             TelemetryClient telemetryClient)
         {
             this.versionProvider = versionProvider;
+            this.externalAcrVersionProvider = externalAcrVersionProvider;
             this.logger = logger;
             this.detector = detector;
             this.dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions.Value;
@@ -307,7 +310,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     $"'{typeof(DotNetCorePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            // Get runtime version
+            // The external ACR SDK provider already knows which SDK companion image is pinned for this platform.
+            // This short-circuit is specific to .NET because its normal path requires a runtime→SDK
+            // version mapping (e.g. runtime 8.0.18 → SDK 8.0.301) which doesn't apply when the
+            // external host returns a single SDK version.
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
+            {
+                var dictatedVersion = this.externalAcrVersionProvider.GetSdkVersion();
+                if (!string.IsNullOrEmpty(dictatedVersion))
+                {
+                    this.logger.LogInformation(
+                        "External ACR provider returned .NET SDK version {Version}. Skipping version resolution.",
+                        dictatedVersion);
+                    dotNetCorePlatformDetectorResult.PlatformVersion = dictatedVersion;
+                    dotNetCorePlatformDetectorResult.SdkVersion = dictatedVersion;
+                    return;
+                }
+            }
+
+            // Normal resolution path
             var resolvedRuntimeVersion = this.GetRuntimeVersionUsingHierarchicalRules(
                 dotNetCorePlatformDetectorResult.PlatformVersion);
             resolvedRuntimeVersion = this.GetMaxSatisfyingRuntimeVersionAndVerify(resolvedRuntimeVersion);
