@@ -1146,7 +1146,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 return _sdkIsAlreadyInstalled;
             }
 
-            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false, string localSdkTarballPath = null)
+            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
                 if (skipSdkBinaryDownload)
                 {

@@ -615,16 +615,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             try
             {
-                var tarballPath = this.acrSdkProvider.RequestSdkFromAcrAsync(
+                var result = this.acrSdkProvider.RequestSdkFromAcrAsync(
                     this.Name, version, this.commonOptions.DebianFlavor).Result;
 
-                if (!string.IsNullOrEmpty(tarballPath))
+                if (result)
                 {
                     this.logger.LogDebug(
-                        "Python version {version} is fetched successfully using ACR SDK provider. Tarball at {tarballPath}.",
-                        version,
-                        tarballPath);
-                    return this.platformInstaller.GetInstallerScriptSnippet(version, localSdkTarballPath: tarballPath);
+                        "Python version {version} is fetched successfully using ACR SDK provider.",
+                        version);
+                    return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
                 }
 
                 this.logger.LogDebug(

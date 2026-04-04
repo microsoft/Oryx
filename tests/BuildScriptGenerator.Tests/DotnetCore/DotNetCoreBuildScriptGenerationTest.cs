@@ -154,7 +154,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 return _isVersionAlreadyInstalled;
             }
 
-            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false, string localSdkTarballPath = null)
+            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
                 return _installerScript;
             }
