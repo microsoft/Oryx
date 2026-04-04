@@ -3,28 +3,30 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     /// <summary>
-    /// ACR-based version provider for PHP Composer SDKs via external socket provider.
+    /// ACR-based version provider for PHP Composer SDKsvia external socket provider.
     /// Parallel to <see cref="PhpComposerExternalVersionProvider"/> (blob) and
     /// <see cref="PhpComposerAcrVersionProvider"/> (direct OCI).
     /// </summary>
     internal class PhpComposerExternalAcrVersionProvider : ExternalAcrVersionProviderBase, IPhpVersionProvider
     {
         public PhpComposerExternalAcrVersionProvider(
-            IOptions<BuildScriptGeneratorOptions> commonOptions,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, loggerFactory)
+            : base(loggerFactory)
         {
         }
 
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            return this.GetAvailableVersionsFromExternalAcr(platformName: "php-composer");
+            var version = this.GetCompanionSdkVersion(platformName: "php-composer");
+            return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                supportedVersions: version != null ? new[] { version } : Array.Empty<string>(),
+                defaultVersion: version);
         }
     }
 }

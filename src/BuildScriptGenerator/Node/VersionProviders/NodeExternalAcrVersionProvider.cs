@@ -3,8 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -16,15 +16,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     internal class NodeExternalAcrVersionProvider : ExternalAcrVersionProviderBase, INodeVersionProvider
     {
         public NodeExternalAcrVersionProvider(
-            IOptions<BuildScriptGeneratorOptions> commonOptions,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, loggerFactory)
+            : base(loggerFactory)
         {
         }
 
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            return this.GetAvailableVersionsFromExternalAcr(platformName: "nodejs");
+            var version = this.GetCompanionSdkVersion(platformName: "nodejs");
+            return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                supportedVersions: version != null ? new[] { version } : Array.Empty<string>(),
+                defaultVersion: version);
         }
     }
 }
