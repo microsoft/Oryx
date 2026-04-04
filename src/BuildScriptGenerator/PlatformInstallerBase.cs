@@ -114,8 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string platformName,
             string version,
             string directoryToInstall = null,
-            bool skipSdkBinaryDownload = false,
-            string localSdkTarballPath = null)
+            bool skipSdkBinaryDownload = false)
         {
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
             var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
@@ -147,22 +146,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (skipSdkBinaryDownload)
                 {
+                    // The tarball was pre-downloaded by an external or ACR SDK provider.
+                    // Check the external cache (/var/OryxSdks) first, then the writable
+                    // dynamic install dir (used by AcrSdkProvider).
                     var tarFileName = BlobNameHelper.GetBlobNameForVersion(platformName, version, this.CommonOptions.DebianFlavor);
-                    var tarFilePath = Path.Combine(ExternalSdkProvider.ExternalSdksStorageDir, platformName, tarFileName);
-                    snippet.AppendLine($"echo \"Skipping download of {platformName} version {version} as it is available in external sdk provider cache...\"")
-                        .AppendLine($"echo \"Extracting contents...\"")
-                        .AppendLine($"tar -xzf {tarFilePath} -C .")
-                        .AppendLine($"rm -f {tarFileName}")
-                        .AppendLine($"echo \"Successfully extracted {platformName} version {version} from external sdk provider cache...\"");
-                }
-            else if (!string.IsNullOrEmpty(localSdkTarballPath))
-                {
-                    // ACR direct provider already downloaded the tarball to a writable location.
-                    // Extract from that local path and clean up.
-                    snippet.AppendLine($"echo \"Extracting SDK from locally downloaded tarball: {localSdkTarballPath}...\"")
-                        .AppendLine($"tar -xzf {localSdkTarballPath} -C .")
-                        .AppendLine($"rm -f {localSdkTarballPath}")
-                        .AppendLine($"echo \"Successfully extracted {platformName} version {version} from local tarball.\"");
+                    var externalPath = Path.Combine(ExternalSdkProvider.ExternalSdksStorageDir, platformName, tarFileName);
+                    var dynamicPath = Path.Combine(this.CommonOptions.DynamicInstallRootDir, platformName, tarFileName);
+
+                    snippet.AppendLine($"echo \"SDK binary download was skipped. Looking for cached tarball...\"")
+                        .AppendLine($"if [ -f \"{externalPath}\" ]; then")
+                        .AppendLine($"  echo \"Found tarball at {externalPath}\"")
+                        .AppendLine($"  tar -xzf {externalPath} -C .")
+                        .AppendLine($"elif [ -f \"{dynamicPath}\" ]; then")
+                        .AppendLine($"  echo \"Found tarball at {dynamicPath}\"")
+                        .AppendLine($"  tar -xzf {dynamicPath} -C .")
+                        .AppendLine($"  rm -f {dynamicPath}")
+                        .AppendLine($"else")
+                        .AppendLine($"  echo \"ERROR: Could not find cached tarball for {platformName} {version}\"")
+                        .AppendLine($"  exit 1")
+                        .AppendLine($"fi")
+                        .AppendLine($"echo \"Successfully extracted {platformName} version {version} from cached tarball.\"");
                 }
             else
                 {

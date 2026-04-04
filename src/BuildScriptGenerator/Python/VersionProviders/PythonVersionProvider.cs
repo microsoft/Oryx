@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             if (this.options.EnableExternalAcrSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalAcrVersionProvider();
-                if (platformVersionInfo == null)
+                if (platformVersionInfo == null && this.options.EnableExternalSdkProvider)
                 {
                     platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
                 }

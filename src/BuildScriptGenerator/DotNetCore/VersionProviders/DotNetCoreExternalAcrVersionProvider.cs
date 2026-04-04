@@ -14,7 +14,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
@@ -27,9 +26,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// </summary>
     public class DotNetCoreExternalAcrVersionProvider : IDotNetCoreVersionProvider
     {
-        private const string SocketPath = "/var/sockets/oryx-pull-sdk.socket";
+        private const string SocketPath = "/var/sockets/oryx-pull-sdk-image.socket";
         private const string ExternalSdksStorageDir = "/var/OryxSdks";
-        private const int MaxTimeoutForSocketOperationInSeconds = 120;
+        private const int MaxTimeoutForSocketOperationInSeconds = 100;
 
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly ILogger<DotNetCoreExternalAcrVersionProvider> logger;

@@ -657,7 +657,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 return _isVersionAlreadyInstalled;
             }
 
-            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false, string localSdkTarballPath = null)
+            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
                 if (skipSdkBinaryDownload)
                 {
@@ -686,7 +686,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 return _isVersionAlreadyInstalled;
             }
 
-            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false, string localSdkTarballPath = null)
+            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
                 if (skipSdkBinaryDownload)
                 {

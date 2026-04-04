@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <inheritdoc/>
-        public async Task<string> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor)
+        public async Task<bool> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor)
         {
             if (string.IsNullOrEmpty(platformName))
             {
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     tarballPath);
                 this.outputWriter.WriteLine(
                     $"SDK tarball already downloaded at {tarballPath}");
-                return tarballPath;
+                return true;
             }
 
             try
@@ -102,7 +102,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         "No layer found in manifest for {Repository}:{Tag}",
                         repository,
                         tag);
-                    return null;
+                    return false;
                 }
 
                 // 2. Download the layer blob (the SDK tarball) and verify its SHA256 digest
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         tarballPath);
                     this.outputWriter.WriteLine(
                         $"Successfully pulled SDK from ACR: {platformName} {version}");
-                    return tarballPath;
+                    return true;
                 }
                 else
                 {
@@ -132,7 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         tag);
                     this.outputWriter.WriteLine(
                         $"Failed to pull SDK from ACR (digest mismatch): {platformName} {version}");
-                    return null;
+                    return false;
                 }
             }
             catch (Exception ex)
@@ -144,7 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     tag);
                 this.outputWriter.WriteLine(
                     $"Error pulling SDK from ACR: {platformName} {version}: {ex.Message}");
-                return null;
+                return false;
             }
         }
     }

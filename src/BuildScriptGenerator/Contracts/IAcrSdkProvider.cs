@@ -25,9 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="platformName">The platform name (e.g., "nodejs", "python", "dotnet", "php").</param>
         /// <param name="version">The SDK version (e.g., "20.19.3").</param>
         /// <param name="debianFlavor">The Debian flavor (e.g., "bookworm", "bullseye").</param>
-        /// <returns>
-        /// The absolute path to the downloaded tarball, or <c>null</c> if the pull failed.
-        /// </returns>
-        Task<string> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor);
+        /// <returns>True if the SDK tarball was successfully downloaded.</returns>
+        Task<bool> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor);
     }
 }

@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public class ExternalAcrVersionProviderBase
     {
         private const string SocketPath = "/var/sockets/oryx-pull-sdk-image.socket";
-        private const int MaxTimeoutForSocketOperationInSeconds = 120;
+        private const int MaxTimeoutForSocketOperationInSeconds = 100;
 
         private readonly ILogger logger;
 

@@ -24,8 +24,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public virtual PlatformVersionInfo GetVersionInfo()
         {
             var version = this.GetCompanionSdkVersion(platformName: "nodejs");
+            if (string.IsNullOrEmpty(version))
+            {
+                return null;
+            }
+
             return PlatformVersionInfo.CreateOnDiskVersionInfo(
-                supportedVersions: version != null ? new[] { version } : Array.Empty<string>(),
+                supportedVersions: new[] { version },
                 defaultVersion: version);
         }
     }

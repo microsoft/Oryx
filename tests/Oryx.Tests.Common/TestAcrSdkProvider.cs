@@ -10,9 +10,9 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class TestAcrSdkProvider : IAcrSdkProvider
     {
-        public Task<string> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor)
+        public Task<bool> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor)
         {
-            return Task.FromResult<string>(null);
+            return Task.FromResult(false);
         }
     }
 }

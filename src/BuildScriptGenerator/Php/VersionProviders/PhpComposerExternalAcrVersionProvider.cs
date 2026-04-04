@@ -24,8 +24,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         public virtual PlatformVersionInfo GetVersionInfo()
         {
             var version = this.GetCompanionSdkVersion(platformName: "php-composer");
+            if (string.IsNullOrEmpty(version))
+            {
+                return null;
+            }
+
             return PlatformVersionInfo.CreateOnDiskVersionInfo(
-                supportedVersions: version != null ? new[] { version } : Array.Empty<string>(),
+                supportedVersions: new[] { version },
                 defaultVersion: version);
         }
     }
