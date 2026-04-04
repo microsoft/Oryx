@@ -143,62 +143,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
-        /// Fetches the image config blob (contains Labels) for the given repository and digest.
-        /// </summary>
-        public async Task<OciImageConfig> GetImageConfigAsync(string repository, string configDigest)
-        {
-            var url = $"{this.registryUrl}/v2/{repository}/blobs/{configDigest}";
-            using (var response = await this.httpClient.GetAsync(url))
-            {
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new HttpRequestException(
-                        $"Failed to fetch config for '{repository}' (HTTP {(int)response.StatusCode}).");
-                }
-
-                using (var stream = await response.Content.ReadAsStreamAsync())
-                {
-                    return await JsonSerializer.DeserializeAsync<OciImageConfig>(stream);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the default version for a platform from the "-default" tag's image config labels.
-        /// </summary>
-        public async Task<string> GetDefaultVersionAsync(string repository, string osFlavor)
-        {
-            var tag = $"{osFlavor}-default";
-            this.logger.LogDebug("Fetching default version from {repository}:{tag}", repository, tag);
-
-            try
-            {
-                var manifest = await this.GetManifestAsync(repository, tag);
-                var configDigest = manifest.Config?.Digest;
-                if (string.IsNullOrEmpty(configDigest))
-                {
-                    this.logger.LogWarning("No config digest found in manifest for {repository}:{tag}", repository, tag);
-                    return null;
-                }
-
-                var config = await this.GetImageConfigAsync(repository, configDigest);
-                if (config?.Config?.Labels != null &&
-                    config.Config.Labels.TryGetValue(Common.SdkStorageConstants.AcrVersionLabelName, out var version))
-                {
-                    return version;
-                }
-
-                this.logger.LogWarning("Version label not found in config for {repository}:{tag}", repository, tag);
-                return null;
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "Failed to get default version from {repository}:{tag}", repository, tag);
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Downloads a layer blob (the SDK tarball) to disk and verifies its SHA256 digest.
         /// The digest in the manifest IS the content hash — no separate checksum metadata needed.
         /// Uses single-pass streaming: the SHA256 hash is computed incrementally as bytes are

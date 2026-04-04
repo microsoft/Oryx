@@ -28,7 +28,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public virtual PlatformVersionInfo GetVersionInfo()
         {
             return this.platformVersionInfo
-                ??= this.GetAvailableVersionsFromAcr(platformName: "nodejs");
+                ??= this.GetAvailableVersionsFromAcr(
+                    platformName: "nodejs",
+                    defaultVersionPerFlavor: NodeConstants.DefaultVersionPerFlavor);
         }
     }
 }
