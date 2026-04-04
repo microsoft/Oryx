@@ -22,11 +22,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string LegacyDotnetRuntimeVersionMetadataName = "Runtime_version";
         public const string OsTypeMetadataName = "Os_type";
 
-        // ACR-based SDK distribution constants
+        // OCI image based SDK distribution constants
         public const string EnableExternalAcrSdkProviderKey = "ORYX_ENABLE_EXTERNAL_ACR_SDK_PROVIDER";
         public const string EnableAcrSdkProviderKey = "ORYX_ENABLE_ACR_SDK_PROVIDER";
         public const string AcrSdkRegistryUrlKeyName = "ORYX_ACR_SDK_REGISTRY_URL";
-        public const string DefaultAcrSdkRegistryUrl = "https://oryxacr.azurecr.io";
-        public const string AcrSdkRepositoryPrefix = "sdks";
+        public const string DefaultAcrSdkRegistryUrl = "https://mcr.microsoft.com";
+        public const string AcrSdkRepositoryPrefixKeyName = "ORYX_ACR_SDK_REPOSITORY_PREFIX";
+        public const string DefaultAcrSdkRepositoryPrefix = "oryx";
+
+        /// <summary>
+        /// Maps a platform name to its OCI SDK image repository path.
+        /// e.g. "nodejs" → "oryx/nodejs-sdk", "php" → "oryx/php-sdk".
+        /// Final image ref: mcr.microsoft.com/oryx/nodejs-sdk:bookworm-20.20.2
+        /// </summary>
+        public static string GetSdkImageRepository(string platformName, string prefix = null)
+        {
+            prefix = string.IsNullOrEmpty(prefix) ? DefaultAcrSdkRepositoryPrefix : prefix;
+            return $"{prefix}/{platformName}-sdk";
+        }
     }
 }

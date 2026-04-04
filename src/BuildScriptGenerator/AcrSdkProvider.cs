@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 debianFlavor = this.options.DebianFlavor ?? "bookworm";
             }
 
-            var repository = $"{SdkStorageConstants.AcrSdkRepositoryPrefix}/{platformName}";
+            var repository = SdkStorageConstants.GetSdkImageRepository(platformName, this.options.OryxAcrSdkRepositoryPrefix);
             var tag = $"{debianFlavor}-{version}";
             var blobName = $"{platformName}-{debianFlavor}-{version}.tar.gz";
 
