@@ -112,9 +112,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool EnableAcrSdkProvider { get; set; }
 
         /// <summary>
-        /// Gets or sets the base URL of the ACR registry hosting SDK images.
-        /// e.g. "https://oryxsdks.azurecr.io"
+        /// Gets or sets the base URL of the OCI registry hosting SDK images.
+        /// e.g. "https://mcr.microsoft.com"
         /// </summary>
         public string OryxAcrSdkRegistryUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the repository prefix for SDK images in the OCI registry.
+        /// e.g. "oryx" produces images like {registry}/oryx/node-sdk:{tag}.
+        /// </summary>
+        public string OryxAcrSdkRepositoryPrefix { get; set; }
     }
 }

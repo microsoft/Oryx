@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return;
             }
 
-            var repository = $"{SdkStorageConstants.AcrSdkRepositoryPrefix}/{DotNetCoreConstants.PlatformName}";
+            var repository = SdkStorageConstants.GetSdkImageRepository(DotNetCoreConstants.PlatformName, this.commonOptions.OryxAcrSdkRepositoryPrefix);
             var debianFlavor = this.commonOptions.DebianFlavor;
 
             this.GetVersionInfoFromTags(repository, debianFlavor);

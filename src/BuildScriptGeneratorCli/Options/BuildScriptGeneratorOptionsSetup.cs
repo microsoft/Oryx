@@ -65,6 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.EnableExternalAcrSdkProvider = !options.EnableMultiPlatformBuild && this.GetBooleanValue(SettingsKeys.EnableExternalAcrSdkProvider);
             options.EnableAcrSdkProvider = this.GetBooleanValue(SettingsKeys.EnableAcrSdkProvider);
             options.OryxAcrSdkRegistryUrl = this.GetStringValue(SettingsKeys.OryxAcrSdkRegistryUrl);
+            options.OryxAcrSdkRepositoryPrefix = this.GetStringValue(SettingsKeys.OryxAcrSdkRepositoryPrefix);
 
             var dynamicInstallRootDir = this.GetStringValue(SettingsKeys.DynamicInstallRootDir);
 

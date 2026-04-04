@@ -23,6 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly ILogger logger;
         private readonly string debianFlavor;
+        private readonly string repositoryPrefix;
 
         public AcrVersionProviderBase(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
@@ -32,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var options = commonOptions.Value;
             this.logger = loggerFactory.CreateLogger(this.GetType());
             this.debianFlavor = options.DebianFlavor;
+            this.repositoryPrefix = options.OryxAcrSdkRepositoryPrefix;
 
             var registryUrl = string.IsNullOrEmpty(options.OryxAcrSdkRegistryUrl)
                 ? SdkStorageConstants.DefaultAcrSdkRegistryUrl
@@ -50,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string platformName,
             Dictionary<string, string> defaultVersionPerFlavor)
         {
-            var repository = $"{SdkStorageConstants.AcrSdkRepositoryPrefix}/{platformName}";
+            var repository = SdkStorageConstants.GetSdkImageRepository(platformName, this.repositoryPrefix);
 
             this.logger.LogDebug("Getting available versions for {platformName} from ACR repository {repository}.", platformName, repository);
 
