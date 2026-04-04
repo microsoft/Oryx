@@ -112,8 +112,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             public override PlatformVersionInfo GetVersionInfo()
             {
                 GetVersionInfoCalled = true;
-
-                return null;
+                return PlatformVersionInfo.CreateAvailableViaExternalProvider(
+                    new[] { "1.0.0" }, "1.0.0");
             }
         }
 

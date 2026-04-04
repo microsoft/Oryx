@@ -58,6 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <inheritdoc/>
+        /// Update this Method to pull SDK tarball from ACR via the external provider and place it in the local cache.
         public async Task<bool> RequestSdkAsync(string platformName, string version, string debianFlavor)
         {
             if (string.IsNullOrEmpty(platformName))

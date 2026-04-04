@@ -54,11 +54,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             foreach (var platform in this.platforms)
             {
-                // Check if a platform is enabled or not
-                if (!platform.IsEnabled(context))
+                if (!this.ShouldDetectPlatform(platform, context))
                 {
-                    this.outputWriter.WriteLine(
-                        $"Platform '{platform.Name}' has been disabled, so skipping detection for it.");
                     continue;
                 }
 
@@ -91,6 +88,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return platformInfos;
+        }
+
+        private bool ShouldDetectPlatform(IProgrammingPlatform platform, RepositoryContext context)
+        {
+            // Check if a platform is enabled or not
+            if (!platform.IsEnabled(context))
+            {
+                this.outputWriter.WriteLine(
+                    $"Platform '{platform.Name}' has been disabled, so skipping detection for it.");
+                return false;
+            }
+
+            if (this.commonOptions.EnableExternalAcrSdkProvider && platform.Name == this.commonOptions.PlatformName)
+            {
+                this.outputWriter.WriteLine("External ACR SDK provider is enabled so consider only user provided platform for detection.");
+                return false;
+            }
+
+            return true;
         }
     }
 }

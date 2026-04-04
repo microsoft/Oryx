@@ -520,13 +520,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // Priority: External-ACR → External-blob → Direct-ACR → CDN
 
             // 1. Try External-ACR (socket → ACR)
+            // Fallback of this is External SDK provider.
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 var result = this.TryInstallFromExternalAcrSdkProvider(version);
-                if (result != null)
+
+                if (result == null)
                 {
-                    return result;
+                    this.logger.LogDebug(
+                        "Node version {version} is not fetched successfully using external ACR SDK provider. "
+                        + "Try getting installation script snippet from external SDK provider.",
+                        version);
+                    result = this.TryInstallFromExternalSdkProvider(version);
                 }
+
+                return result;
             }
 
             // 2. Try External-blob (socket → blob storage)
