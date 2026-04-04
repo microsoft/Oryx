@@ -54,18 +54,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
-            // Priority: External-ACR → External-blob → Direct-ACR → CDN
+            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
 
-            // If external ACR provider is enabled, try it first.
-            // If it fails, fallback to external blob provider.
+            // If external ACR provider is enabled.
             if (this.options.EnableExternalAcrSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalAcrVersionProvider();
-                if (platformVersionInfo == null && this.options.EnableExternalSdkProvider)
-                {
-                    platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
-                }
-
                 if (platformVersionInfo != null)
                 {
                     return platformVersionInfo;
