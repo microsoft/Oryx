@@ -257,36 +257,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            // Priority: External-ACR → External-blob → Direct-ACR → CDN
+            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
 
             // 1. Try External-ACR (socket → ACR)
-            // Fallback of this is External SDK provider.
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 var result = this.TryInstallFromExternalAcrSdkProvider(sdkVersion);
-
-                if (result == null)
+                if (result != null)
                 {
-                    this.logger.LogDebug(
-                        "DotNetCore SDK version {version} is not fetched successfully using external ACR SDK provider. "
-                        + "Try getting installation script snippet from external SDK provider.",
-                        sdkVersion);
-                    result = this.TryInstallFromExternalSdkProvider(sdkVersion);
+                    return result;
                 }
-
-                return result;
             }
 
-            // 2. Try External-blob (socket → blob storage)
+            // 2. Try External-SDK (socket → blob storage)
             if (this.commonOptions.EnableExternalSdkProvider)
             {
-                return this.TryInstallFromExternalSdkProvider(sdkVersion);
+                var result = this.TryInstallFromExternalSdkProvider(sdkVersion);
+                if (result != null)
+                {
+                    return result;
+                }
             }
 
             // 3. Try Direct-ACR (direct OCI API calls)
             if (this.commonOptions.EnableAcrSdkProvider)
             {
-                return this.TryInstallFromAcrSdkProvider(sdkVersion);
+                var result = this.TryInstallFromAcrSdkProvider(sdkVersion);
+                if (result != null)
+                {
+                    return result;
+                }
             }
 
             // 4. CDN fallback
