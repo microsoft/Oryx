@@ -409,13 +409,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             // Priority: External-ACR → External-blob → Direct-ACR → CDN
 
             // 1. Try External-ACR (socket → ACR)
+            // Fallback of this is External SDK provider.
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 var result = this.TryInstallFromExternalAcrSdkProvider(version);
-                if (result != null)
+
+                if (result == null)
                 {
-                    return result;
+                    this.logger.LogDebug(
+                        "Python version {version} is not fetched successfully using external ACR SDK provider. "
+                        + "Try getting installation script snippet from external SDK provider.",
+                        version);
+                    result = this.TryInstallFromExternalSdkProvider(version);
                 }
+
+                return result;
             }
 
             // 2. Try External-blob (socket → blob storage)
@@ -811,6 +819,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
+            // If External ACR SDK provider is enabled, then we try to get the version from it first
+            // before applying the hierarchical rules, because it has the highest priority in terms of version selection.
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
+            {
+                var acrVersionInfo = this.versionProvider.GetVersionInfo();
+                if (acrVersionInfo?.DefaultVersion != null)
+                {
+                    return acrVersionInfo.DefaultVersion;
+                }
+            }
+
             // Explicitly specified version by user wins over detected version
             if (!string.IsNullOrEmpty(this.pythonScriptGeneratorOptions.PythonVersion))
             {

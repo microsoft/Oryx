@@ -55,46 +55,84 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
             // Priority: External-ACR → External-blob → Direct-ACR → CDN
+
+            // If external ACR provider is enabled, try it first.
+            // If it fails, fallback to external blob provider.
             if (this.options.EnableExternalAcrSdkProvider)
             {
-                try
+                var platformVersionInfo = this.TryGetVersionInfoFromExternalAcrVersionProvider();
+                if (platformVersionInfo == null)
                 {
-                    return this.externalAcrVersionProvider.GetVersionInfo();
+                    platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
                 }
-                catch (Exception ex)
+
+                if (platformVersionInfo != null)
                 {
-                    this.logger.LogError(
-                        $"Failed to get version info from external ACR provider. Falling back. Ex: {ex}");
+                    return platformVersionInfo;
                 }
             }
 
             if (this.options.EnableExternalSdkProvider)
             {
-                try
+                var platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
+                if (platformVersionInfo != null)
                 {
-                    return this.externalVersionProvider.GetVersionInfo();
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogError(
-                        $"Failed to get version info from external SDK provider. Falling back. Ex: {ex}");
+                    return platformVersionInfo;
                 }
             }
 
             if (this.options.EnableAcrSdkProvider)
             {
-                try
+                var platformVersionInfo = this.TryGetVersionInfoFromAcrVersionProvider();
+                if (platformVersionInfo != null)
                 {
-                    return this.acrVersionProvider.GetVersionInfo();
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogError(
-                        $"Failed to get version info from direct ACR provider. Falling back to CDN. Ex: {ex}");
+                    return platformVersionInfo;
                 }
             }
 
             return this.sdkStorageVersionProvider.GetVersionInfo();
+        }
+
+        private PlatformVersionInfo TryGetVersionInfoFromExternalAcrVersionProvider()
+        {
+            try
+            {
+                return this.externalAcrVersionProvider.GetVersionInfo();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    $"Error while getting version info from external ACR provider. Ex: {ex}");
+                return null;
+            }
+        }
+
+        private PlatformVersionInfo TryGetVersionInfoFromExternalVersionProvider()
+        {
+            try
+            {
+                return this.externalVersionProvider.GetVersionInfo();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    $"Error while getting version info from external blob provider. Ex: {ex}");
+                return null;
+            }
+        }
+
+        private PlatformVersionInfo TryGetVersionInfoFromAcrVersionProvider()
+        {
+            try
+            {
+                return this.acrVersionProvider.GetVersionInfo();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    $"Error while getting version info from direct ACR provider. Ex: {ex}");
+                return null;
+            }
         }
     }
 }

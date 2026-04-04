@@ -260,13 +260,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // Priority: External-ACR → External-blob → Direct-ACR → CDN
 
             // 1. Try External-ACR (socket → ACR)
+            // Fallback of this is External SDK provider.
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 var result = this.TryInstallFromExternalAcrSdkProvider(sdkVersion);
-                if (result != null)
+
+                if (result == null)
                 {
-                    return result;
+                    this.logger.LogDebug(
+                        "DotNetCore SDK version {version} is not fetched successfully using external ACR SDK provider. "
+                        + "Try getting installation script snippet from external SDK provider.",
+                        sdkVersion);
+                    result = this.TryInstallFromExternalSdkProvider(sdkVersion);
                 }
+
+                return result;
             }
 
             // 2. Try External-blob (socket → blob storage)
