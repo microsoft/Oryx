@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return false;
             }
 
-            if (this.commonOptions.EnableExternalAcrSdkProvider && platform.Name == this.commonOptions.PlatformName)
+            if (this.commonOptions.EnableExternalAcrSdkProvider && platform.Name != this.commonOptions.PlatformName)
             {
                 this.outputWriter.WriteLine("External ACR SDK provider is enabled so consider only user provided platform for detection.");
                 return false;

@@ -39,7 +39,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <returns>The SDK version string, or <c>null</c> if the external provider could not resolve one.</returns>
         protected string GetCompanionSdkVersion(string platformName)
-
         {
             this.logger.LogInformation(
                 "Requesting companion SDK version for {PlatformName} from external provider.",
