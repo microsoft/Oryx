@@ -47,7 +47,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 // NOTE: Setting user agent is required to avoid receiving 403 Forbidden response.
                 httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("oryx", "1.0"));
-            }).AddPolicyHandler(GetRetryPolicy());
+            })
+            .RedactLoggedHeaders(header => header.Equals("Authorization", StringComparison.OrdinalIgnoreCase))
+            .AddPolicyHandler(GetRetryPolicy());
 
             // Add all checkers (platform-dependent + platform-independent)
             foreach (Type type in typeof(BuildScriptGeneratorServiceCollectionExtensions).Assembly.GetTypes())
