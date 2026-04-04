@@ -39,6 +39,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             this.outputWriter.WriteLine($"Primary SDK Storage URL: {this.commonOptions.OryxSdkStorageBaseUrl}");
             this.outputWriter.WriteLine($"Backup SDK Storage URL: {this.commonOptions.OryxSdkStorageBackupBaseUrl}");
+            this.outputWriter.WriteLine($"ACR SDK Registry URL: {this.commonOptions.OryxAcrSdkRegistryUrl ?? "(not set)"}");
+
+            // Log SDK provider status and resolution priority
+            this.outputWriter.WriteLine("SDK provider status:");
+            this.outputWriter.WriteLine($"  External ACR SDK provider: {(this.commonOptions.EnableExternalAcrSdkProvider ? "Enabled" : "Disabled")}");
+            this.outputWriter.WriteLine($"  External SDK provider: {(this.commonOptions.EnableExternalSdkProvider ? "Enabled" : "Disabled")}");
+            this.outputWriter.WriteLine($"  Direct ACR SDK provider: {(this.commonOptions.EnableAcrSdkProvider ? "Enabled" : "Disabled")}");
+            this.outputWriter.WriteLine($"  Blob SDK provider: Enabled");
 
             // Try detecting ALL platforms since in some scenarios this is required.
             // For example, in case of a multi-platform app like ASP.NET Core + NodeJs, we might need to dynamically
@@ -46,11 +54,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // of Oryx might explicitly supply the platform of the app as .NET Core, we still need to make sure the
             // build environment is setup with detected platforms' sdks.
             this.outputWriter.WriteLine("Detecting platforms...");
-
-            if (this.commonOptions.EnableExternalSdkProvider)
-            {
-                this.outputWriter.WriteLine("External SDK provider is enabled.");
-            }
 
             foreach (var platform in this.platforms)
             {

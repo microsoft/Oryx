@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,13 +22,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// HTTP client for the OCI Distribution API. Enables Oryx to discover SDK versions
     /// and download SDK tarballs from an OCI-compliant container registry (e.g. Azure Container Registry)
     /// using only HttpClient — no external tools (docker, crane, oras) required.
-    /// All SDK images are public, so no authentication is needed.
+    /// Public registries still require an anonymous bearer token obtained from the registry's
+    /// OAuth2 token endpoint; this client acquires and caches tokens per repository scope.
     /// </summary>
     public class OciRegistryClient
     {
         private readonly HttpClient httpClient;
         private readonly string registryUrl;
+        private readonly string registryHost;
         private readonly ILogger logger;
+        private readonly ConcurrentDictionary<string, string> tokenCache = new ConcurrentDictionary<string, string>();
 
         public OciRegistryClient(string registryUrl, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
         {
@@ -45,6 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             this.registryUrl = trimmed;
+            this.registryHost = new Uri(trimmed).Host;
             this.httpClient = httpClientFactory.CreateClient("general");
             this.logger = loggerFactory.CreateLogger<OciRegistryClient>();
         }
@@ -68,7 +73,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             while (!string.IsNullOrEmpty(url))
             {
                 this.logger.LogDebug("Fetching tags from {url}", url);
-                using (var response = await this.httpClient.GetAsync(url))
+                using (var request = await this.CreateAuthenticatedRequestAsync(HttpMethod.Get, url, repository))
+                using (var response = await this.httpClient.SendAsync(request))
                 {
                     if (!response.IsSuccessStatusCode)
                     {
@@ -115,7 +121,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public async Task<OciManifest> GetManifestAsync(string repository, string tag)
         {
             var url = $"{this.registryUrl}/v2/{repository}/manifests/{tag}";
-            using (var request = new HttpRequestMessage(HttpMethod.Get, url))
+            using (var request = await this.CreateAuthenticatedRequestAsync(HttpMethod.Get, url, repository))
             {
                 // Accept both formats in one request — avoids a second round-trip when
                 // the registry only supports Docker v2 (benchmarked ~50% faster on ACR).
@@ -157,43 +163,111 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 ? layerDigest.Substring("sha256:".Length)
                 : layerDigest;
 
-            using (var response = await this.httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+            using (var request = await this.CreateAuthenticatedRequestAsync(HttpMethod.Get, url, repository))
             {
-                if (!response.IsSuccessStatusCode)
+                using (var response = await this.httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
                 {
-                    throw new HttpRequestException(
-                        $"Failed to download blob from '{repository}' (HTTP {(int)response.StatusCode}).");
-                }
-
-                using (var sha256 = IncrementalHash.CreateHash(HashAlgorithmName.SHA256))
-                using (var networkStream = await response.Content.ReadAsStreamAsync())
-                using (var fileStream = File.Create(outputPath))
-                {
-                    var buffer = new byte[81920];
-                    int bytesRead;
-                    while ((bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    if (!response.IsSuccessStatusCode)
                     {
-                        sha256.AppendData(buffer, 0, bytesRead);
-                        await fileStream.WriteAsync(buffer, 0, bytesRead);
+                        throw new HttpRequestException(
+                            $"Failed to download blob from '{repository}' (HTTP {(int)response.StatusCode}).");
                     }
 
-                    var actualSha = Convert.ToHexString(sha256.GetHashAndReset()).ToLowerInvariant();
-                    if (!string.Equals(actualSha, expectedSha, StringComparison.OrdinalIgnoreCase))
+                    using (var sha256 = IncrementalHash.CreateHash(HashAlgorithmName.SHA256))
+                    using (var networkStream = await response.Content.ReadAsStreamAsync())
+                    using (var fileStream = File.Create(outputPath))
                     {
-                        this.logger.LogError(
-                            "SHA256 digest mismatch for blob {digest}. Expected: {expected}, Actual: {actual}",
-                            layerDigest,
-                            expectedSha,
-                            actualSha);
-                        fileStream.Close();
-                        File.Delete(outputPath);
-                        return false;
+                        var buffer = new byte[81920];
+                        int bytesRead;
+                        while ((bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                        {
+                            sha256.AppendData(buffer, 0, bytesRead);
+                            await fileStream.WriteAsync(buffer, 0, bytesRead);
+                        }
+
+                        var actualSha = Convert.ToHexString(sha256.GetHashAndReset()).ToLowerInvariant();
+                        if (!string.Equals(actualSha, expectedSha, StringComparison.OrdinalIgnoreCase))
+                        {
+                            this.logger.LogError(
+                                "SHA256 digest mismatch for blob {digest}. Expected: {expected}, Actual: {actual}",
+                                layerDigest,
+                                expectedSha,
+                                actualSha);
+                            fileStream.Close();
+                            File.Delete(outputPath);
+                            return false;
+                        }
                     }
                 }
             }
 
             this.logger.LogDebug("Successfully downloaded and verified layer blob {digest}", layerDigest);
             return true;
+        }
+
+        /// <summary>
+        /// Acquires an anonymous bearer token for pulling from a public repository.
+        /// Token endpoint follows the standard pattern: https://{host}/oauth2/token
+        /// </summary>
+        private async Task<string> GetAnonymousTokenAsync(string repository)
+        {
+            var scope = $"repository:{repository}:pull";
+            if (this.tokenCache.TryGetValue(scope, out var cached))
+            {
+                return cached;
+            }
+
+            var tokenUrl = $"{this.registryUrl}/oauth2/token?service={this.registryHost}&scope={scope}";
+            this.logger.LogDebug("Requesting anonymous token for scope '{scope}'", scope);
+
+            using (var response = await this.httpClient.GetAsync(tokenUrl))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    this.logger.LogWarning(
+                        "Failed to obtain anonymous token (HTTP {statusCode}). Proceeding without auth.",
+                        (int)response.StatusCode);
+                    return null;
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                using (var doc = JsonDocument.Parse(json))
+                {
+                    // Token endpoints return either "access_token" or "token"
+                    var root = doc.RootElement;
+                    string token = null;
+                    if (root.TryGetProperty("access_token", out var at))
+                    {
+                        token = at.GetString();
+                    }
+                    else if (root.TryGetProperty("token", out var t))
+                    {
+                        token = t.GetString();
+                    }
+
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        this.tokenCache[scope] = token;
+                    }
+
+                    return token;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates an HttpRequestMessage with the anonymous bearer token if available.
+        /// </summary>
+        private async Task<HttpRequestMessage> CreateAuthenticatedRequestAsync(HttpMethod method, string url, string repository)
+        {
+            var request = new HttpRequestMessage(method, url);
+            var token = await this.GetAnonymousTokenAsync(repository);
+            if (!string.IsNullOrEmpty(token))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            return request;
         }
     }
 }
