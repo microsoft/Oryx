@@ -39,12 +39,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public string GetDefaultRuntimeVersion()
         {
             this.EnsureVersionInfo();
+            if (this.versionMap == null || this.versionMap.Count == 0)
+            {
+                return null;
+            }
+
             return this.defaultRuntimeVersion;
         }
 
         public Dictionary<string, string> GetSupportedVersions()
         {
             this.EnsureVersionInfo();
+            if (this.versionMap == null || this.versionMap.Count == 0)
+            {
+                return null;
+            }
+
             return this.versionMap;
         }
 
