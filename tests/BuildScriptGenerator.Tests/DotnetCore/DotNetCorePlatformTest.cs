@@ -160,6 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var globalJsonSdkResolver = new GlobalJsonSdkResolver(NullLogger<GlobalJsonSdkResolver>.Instance);
             return new TestDotNetCorePlatform(
                 versionProvider,
+                new DotNetCoreExternalAcrVersionProvider(NullLoggerFactory.Instance),
                 detector,
                 Options.Create(commonOptions),
                 Options.Create(dotNetCoreScriptGeneratorOptions),
@@ -175,6 +176,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         {
             public TestDotNetCorePlatform(
                 IDotNetCoreVersionProvider versionProvider,
+                DotNetCoreExternalAcrVersionProvider externalAcrVersionProvider,
                 IDotNetCorePlatformDetector detector,
                 IOptions<BuildScriptGeneratorOptions> cliOptions,
                 IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
@@ -186,6 +188,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 TelemetryClient telemetryClient)
                 : base(
                       versionProvider,
+                      externalAcrVersionProvider,
                       NullLogger<DotNetCorePlatform>.Instance,
                       detector,
                       cliOptions,
