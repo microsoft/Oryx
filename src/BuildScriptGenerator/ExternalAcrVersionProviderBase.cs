@@ -95,12 +95,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
                     var responseString = Encoding.UTF8.GetString(buffer, 0, received).TrimEnd('$');
 
-                    if (!string.IsNullOrWhiteSpace(responseString))
+                    if (!string.IsNullOrWhiteSpace(responseString) &&
+                        !responseString.Equals("Error", StringComparison.OrdinalIgnoreCase))
                     {
                         return responseString.Trim();
                     }
 
-                    this.logger.LogError("External provider returned an empty response.");
+                    this.logger.LogError(
+                        "External provider returned an unsuccessful response: {Response}",
+                        responseString);
                 }
             }
             catch (OperationCanceledException)

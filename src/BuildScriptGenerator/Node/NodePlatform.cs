@@ -730,18 +730,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
 
                 this.logger.LogDebug(
-                    "Node version {version} is not fetched via ACR SDK provider. Falling back to CDN download.",
+                    "Node version {version} is not fetched via ACR SDK provider. Trying next provider.",
                     version);
             }
             catch (Exception ex)
             {
                 this.logger.LogError(
                     ex,
-                    "Error while fetching Node.js version {version} using ACR SDK provider. Falling back to CDN download.",
+                    "Error while fetching Node.js version {version} using ACR SDK provider. Trying next provider.",
                     version);
             }
 
-            return this.platformInstaller.GetInstallerScriptSnippet(version);
+            return null;
         }
 
         private string TryInstallFromExternalSdkProvider(string version)
@@ -773,7 +773,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     version);
             }
 
-            return this.platformInstaller.GetInstallerScriptSnippet(version);
+            return null;
         }
 
         private string TryInstallFromExternalAcrSdkProvider(string version)

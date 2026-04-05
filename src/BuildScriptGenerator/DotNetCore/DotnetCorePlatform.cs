@@ -412,18 +412,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
 
                 this.logger.LogDebug(
-                    "DotNetCore SDK version {version} is not fetched via ACR SDK provider. Falling back to CDN download.",
+                    "DotNetCore SDK version {version} is not fetched via ACR SDK provider. Trying next provider.",
                     sdkVersion);
             }
             catch (Exception ex)
             {
                 this.logger.LogError(
                     ex,
-                    "Error while fetching DotNetCore SDK version {version} using ACR SDK provider. Falling back to CDN download.",
+                    "Error while fetching DotNetCore SDK version {version} using ACR SDK provider. Trying next provider.",
                     sdkVersion);
             }
 
-            return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion);
+            return null;
         }
 
         private string TryInstallFromExternalSdkProvider(string sdkVersion)
@@ -455,7 +455,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     sdkVersion);
             }
 
-            return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion);
+            return null;
         }
 
         private string TryInstallFromExternalAcrSdkProvider(string sdkVersion)

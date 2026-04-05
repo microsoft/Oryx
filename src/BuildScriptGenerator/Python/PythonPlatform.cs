@@ -628,14 +628,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 }
 
                 this.logger.LogDebug(
-                    "Python version {version} is not fetched via ACR SDK provider. Falling back to CDN download.",
+                    "Python version {version} is not fetched via ACR SDK provider. Trying next provider.",
                     version);
             }
             catch (Exception ex)
             {
                 this.logger.LogError(
                     ex,
-                    "Error while fetching python version {version} using ACR SDK provider. Falling back to CDN download.",
+                    "Error while fetching python version {version} using ACR SDK provider. Trying next provider.",
                     version);
             }
 
