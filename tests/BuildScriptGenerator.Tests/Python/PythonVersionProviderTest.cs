@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 onDiskProvider,
                 storageProvider,
                 externalProvider,
-                new PythonExternalAcrVersionProvider(NullLoggerFactory.Instance),
+                new PythonExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance),
                 new PythonAcrVersionProvider(commonOptions, new TestHttpClientFactory(), NullLoggerFactory.Instance),
                 NullLogger<PythonVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);

@@ -618,9 +618,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private void ResolveVersionsUsingHierarchicalRules(PhpPlatformDetectorResult detectorResult)
         {
+            // Resolve PHP version using hierarchical rules
             var phpVersion = ResolvePhpVersion(detectorResult.PlatformVersion);
             phpVersion = this.GetMaxSatisfyingPhpVersionAndVerify(phpVersion);
 
+            // Resolve PHP Composer version using hierarchical rules
             var phpComposerVersion = ResolvePhpComposerVersion(detectorResult.PhpComposerVersion);
             phpComposerVersion = this.GetMaxSatisfyingPhpComposerVersionAndVerify(phpComposerVersion);
 
@@ -665,17 +667,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             string ResolvePhpComposerVersion(string detectedVersion)
             {
-                // If external ACR provider is enabled, try to resolve version from it first.
-                if (this.commonOptions.EnableExternalAcrSdkProvider)
-                {
-                    var versionInfo = this.phpComposerVersionProvider.GetVersionInfo();
-                    if (versionInfo?.DefaultVersion != null)
-                    {
-                        this.logger.LogDebug("External ACR SDK provider is enabled and returned version {version} for PHP Composer.", versionInfo.DefaultVersion);
-                        return versionInfo.DefaultVersion;
-                    }
-                }
-
                 // Explicitly specified version by user wins over detected version
                 if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.PhpComposerVersion))
                 {

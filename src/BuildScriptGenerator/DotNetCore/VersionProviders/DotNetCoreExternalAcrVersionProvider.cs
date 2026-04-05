@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -18,8 +19,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private string resolvedVersion;
         private bool resolved;
 
-        public DotNetCoreExternalAcrVersionProvider(ILoggerFactory loggerFactory)
-            : base(loggerFactory)
+        public DotNetCoreExternalAcrVersionProvider(
+            IOptions<BuildScriptGeneratorOptions> options,
+            ILoggerFactory loggerFactory)
+            : base(options, loggerFactory)
         {
         }
 
@@ -30,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (!this.resolved)
             {
-                this.resolvedVersion = this.GetCompanionSdkVersion(DotNetCoreConstants.PlatformName);
+                this.resolvedVersion = this.GetCompanionSdkVersion(DotNetCoreConstants.PlatformName, debianFlavor: this.DebianFlavor);
                 this.resolved = true;
             }
 

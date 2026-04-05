@@ -4,7 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -16,22 +18,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     internal class PhpComposerExternalAcrVersionProvider : ExternalAcrVersionProviderBase, IPhpVersionProvider
     {
         public PhpComposerExternalAcrVersionProvider(
+            IOptions<BuildScriptGeneratorOptions> options,
             ILoggerFactory loggerFactory)
-            : base(loggerFactory)
+            : base(options, loggerFactory)
         {
         }
 
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            var version = this.GetCompanionSdkVersion(platformName: "php-composer");
-            if (string.IsNullOrEmpty(version))
+            var availableVersions = this.GetAvailableSdkVersions(platformName: "php-composer", debianFlavor: this.DebianFlavor);
+            if (availableVersions == null || availableVersions.Count == 0)
             {
                 return null;
             }
 
             return PlatformVersionInfo.CreateOnDiskVersionInfo(
-                supportedVersions: new[] { version },
-                defaultVersion: version);
+                supportedVersions: availableVersions.ToArray(),
+                defaultVersion: availableVersions[0]);
         }
     }
 }

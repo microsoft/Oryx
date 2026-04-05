@@ -5,6 +5,7 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -16,14 +17,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     internal class PhpExternalAcrVersionProvider : ExternalAcrVersionProviderBase, IPhpVersionProvider
     {
         public PhpExternalAcrVersionProvider(
+            IOptions<BuildScriptGeneratorOptions> options,
             ILoggerFactory loggerFactory)
-            : base(loggerFactory)
+            : base(options, loggerFactory)
         {
         }
 
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            var version = this.GetCompanionSdkVersion(platformName: ToolNameConstants.PhpName);
+            var version = this.GetCompanionSdkVersion(platformName: ToolNameConstants.PhpName, debianFlavor: this.DebianFlavor);
             if (string.IsNullOrEmpty(version))
             {
                 return null;

@@ -5,6 +5,7 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -16,14 +17,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     internal class PythonExternalAcrVersionProvider : ExternalAcrVersionProviderBase, IPythonVersionProvider
     {
         public PythonExternalAcrVersionProvider(
+            IOptions<BuildScriptGeneratorOptions> options,
             ILoggerFactory loggerFactory)
-            : base(loggerFactory)
+            : base(options, loggerFactory)
         {
         }
 
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            var version = this.GetCompanionSdkVersion(platformName: ToolNameConstants.PythonName);
+            var version = this.GetCompanionSdkVersion(platformName: ToolNameConstants.PythonName, debianFlavor: this.DebianFlavor);
             if (string.IsNullOrEmpty(version))
             {
                 return null;

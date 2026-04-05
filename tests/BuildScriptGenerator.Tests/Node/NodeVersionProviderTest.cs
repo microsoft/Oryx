@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 onDiskProvider,
                 storageProvider,
                 externalProvider,
-                new NodeExternalAcrVersionProvider(NullLoggerFactory.Instance),
+                new NodeExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance),
                 new NodeAcrVersionProvider(commonOptions, new TestHttpClientFactory(), NullLoggerFactory.Instance),
                 NullLogger<NodeVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);

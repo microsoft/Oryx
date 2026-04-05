@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 Options.Create(DotNetCoreScriptGeneratorOptions),
                 Options.Create(commonOptions),
                 versionProvider,
-                new DotNetCoreExternalAcrVersionProvider(NullLoggerFactory.Instance),
+                new DotNetCoreExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance),
                 NullLogger<TestDotNetCorePlatform>.Instance,
                 detector,
                 DotNetCoreInstaller,
