@@ -6,6 +6,7 @@
 using System;
 using System.Formats.Tar;
 using System.IO;
+using System.IO.Compression;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -172,11 +173,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         /// <summary>
         /// Extracts the expected SDK .tar.gz file from an OCI layer tar archive.
+        /// OCI layers use media type "application/vnd.docker.image.rootfs.diff.tar.gzip",
+        /// so the blob must be decompressed before reading tar entries.
         /// </summary>
         private void ExtractFileFromTar(string layerPath, string outputPath, string expectedFileName)
         {
             using (var stream = File.OpenRead(layerPath))
-            using (var tarReader = new TarReader(stream))
+            using (var gzipStream = new GZipStream(stream, CompressionMode.Decompress))
+            using (var tarReader = new TarReader(gzipStream))
             {
                 TarEntry entry;
                 while ((entry = tarReader.GetNextEntry()) != null)
