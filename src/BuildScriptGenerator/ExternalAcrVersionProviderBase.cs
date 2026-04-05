@@ -33,13 +33,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly ILogger logger;
+        private readonly IStandardOutputWriter outputWriter;
 
         public ExternalAcrVersionProviderBase(
             IOptions<BuildScriptGeneratorOptions> options,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IStandardOutputWriter outputWriter)
         {
             this.commonOptions = options.Value;
             this.logger = loggerFactory.CreateLogger(this.GetType());
+            this.outputWriter = outputWriter;
         }
 
         /// <summary>
@@ -80,6 +83,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     version,
                     platformName,
                     debianFlavor);
+                this.outputWriter.WriteLine(
+                    $"External ACR provider resolved version '{version}' for {platformName}.");
             }
             else
             {
@@ -87,6 +92,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     "External ACR provider returned no SDK version for {PlatformName} and Debian flavor {DebianFlavor}.",
                     platformName,
                     debianFlavor);
+                this.outputWriter.WriteLine(
+                    $"External ACR version provider returned no version for {platformName}. Trying next provider.");
             }
 
             return version;

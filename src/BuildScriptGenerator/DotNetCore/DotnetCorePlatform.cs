@@ -39,6 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
         private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
+        private readonly IStandardOutputWriter outputWriter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DotNetCorePlatform"/> class.
@@ -62,7 +63,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IExternalSdkProvider externalSdkProvider,
             IExternalAcrSdkProvider externalAcrSdkProvider,
             IAcrSdkProvider acrSdkProvider,
-            TelemetryClient telemetryClient)
+            TelemetryClient telemetryClient,
+            IStandardOutputWriter outputWriter)
         {
             this.versionProvider = versionProvider;
             this.externalAcrVersionProvider = externalAcrVersionProvider;
@@ -76,6 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.externalAcrSdkProvider = externalAcrSdkProvider;
             this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
+            this.outputWriter = outputWriter;
         }
 
         /// <inheritdoc/>
@@ -156,7 +159,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 installBlazorWebAssemblyAOTWorkloadCommand = DotNetCoreConstants.InstallBlazorWebAssemblyAOTWorkloadCommand;
                 manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = "blazor";
                 this.logger.LogInformation("Detected the following frameworks: blazor");
-                Console.WriteLine("Detected the following frameworks: blazor");
+                this.outputWriter.WriteLine("Detected the following frameworks: blazor");
             }
 
             var templateProperties = new DotNetCoreBashBuildSnippetProperties
@@ -293,6 +296,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             // 4. CDN fallback
+            this.outputWriter.WriteLine($"Falling back to CDN for '{this.Name}' version '{sdkVersion}'.");
             this.logger.LogDebug(
                 "DotNetCore SDK version {globalJsonSdkVersion} is not installed. So generating an installation script snippet for it.",
                 sdkVersion);
@@ -408,12 +412,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     this.logger.LogDebug(
                         "DotNetCore SDK version {version} is fetched successfully using ACR SDK provider.",
                         sdkVersion);
+                    this.outputWriter.WriteLine($"SDK for '{this.Name}' version '{sdkVersion}' fetched via direct ACR provider.");
                     return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, skipSdkBinaryDownload: true);
                 }
 
                 this.logger.LogDebug(
                     "DotNetCore SDK version {version} is not fetched via ACR SDK provider. Trying next provider.",
                     sdkVersion);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via direct ACR provider for '{this.Name}' version '{sdkVersion}'. Trying next provider.");
             }
             catch (Exception ex)
             {
@@ -421,6 +427,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     ex,
                     "Error while fetching DotNetCore SDK version {version} using ACR SDK provider. Trying next provider.",
                     sdkVersion);
+                this.outputWriter.WriteLine($"Error fetching SDK via direct ACR provider for '{this.Name}' version '{sdkVersion}'. Trying next provider.");
             }
 
             return null;
@@ -440,12 +447,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     this.logger.LogDebug(
                         "DotNetCore SDK version {version} is fetched successfully using external SDK provider. Skipping platform binary download.",
                         sdkVersion);
+                    this.outputWriter.WriteLine($"SDK for '{this.Name}' version '{sdkVersion}' fetched via external SDK provider.");
                     return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, skipSdkBinaryDownload: true);
                 }
 
                 this.logger.LogDebug(
                     "DotNetCore SDK version {version} is not fetched successfully using external SDK provider. Generating installation script snippet.",
                     sdkVersion);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external SDK provider for '{this.Name}' version '{sdkVersion}'. Trying next provider.");
             }
             catch (Exception ex)
             {
@@ -453,6 +462,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     ex,
                     "Error while fetching DotNetCore SDK version version {version} using external SDK provider.",
                     sdkVersion);
+                this.outputWriter.WriteLine($"Error fetching SDK via external SDK provider for '{this.Name}' version '{sdkVersion}'. Trying next provider.");
             }
 
             return null;
@@ -472,12 +482,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     this.logger.LogDebug(
                         "DotNetCore SDK version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.",
                         sdkVersion);
+                    this.outputWriter.WriteLine($"SDK for '{this.Name}' version '{sdkVersion}' fetched via external ACR provider.");
                     return this.platformInstaller.GetInstallerScriptSnippet(sdkVersion, skipSdkBinaryDownload: true);
                 }
 
                 this.logger.LogDebug(
                     "DotNetCore SDK version {version} is not fetched via external ACR SDK provider. Trying next provider.",
                     sdkVersion);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external ACR provider for '{this.Name}' version '{sdkVersion}'. Trying next provider.");
             }
             catch (Exception ex)
             {
@@ -485,6 +497,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     ex,
                     "Error while fetching DotNetCore SDK version {version} using external ACR SDK provider. Trying next provider.",
                     sdkVersion);
+                this.outputWriter.WriteLine($"Error fetching SDK via external ACR provider for '{this.Name}' version '{sdkVersion}'. Trying next provider.");
             }
 
             return null;

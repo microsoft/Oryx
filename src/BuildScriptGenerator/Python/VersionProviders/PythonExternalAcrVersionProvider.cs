@@ -18,8 +18,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     {
         public PythonExternalAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
-            ILoggerFactory loggerFactory)
-            : base(options, loggerFactory)
+            ILoggerFactory loggerFactory,
+            IStandardOutputWriter outputWriter)
+            : base(options, loggerFactory, outputWriter)
         {
         }
 

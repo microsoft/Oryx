@@ -21,8 +21,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public DotNetCoreExternalAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
-            ILoggerFactory loggerFactory)
-            : base(options, loggerFactory)
+            ILoggerFactory loggerFactory,
+            IStandardOutputWriter outputWriter)
+            : base(options, loggerFactory, outputWriter)
         {
         }
 

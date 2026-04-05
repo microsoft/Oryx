@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -16,15 +17,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> platforms;
         private readonly IStandardOutputWriter outputWriter;
+        private readonly ILogger<DefaultPlatformsInformationProvider> logger;
         private readonly BuildScriptGeneratorOptions commonOptions;
 
         public DefaultPlatformsInformationProvider(
             IEnumerable<IProgrammingPlatform> platforms,
             IStandardOutputWriter outputWriter,
+            ILogger<DefaultPlatformsInformationProvider> logger,
             IOptions<BuildScriptGeneratorOptions> commonOptions)
         {
             this.platforms = platforms;
             this.outputWriter = outputWriter;
+            this.logger = logger;
             this.commonOptions = commonOptions.Value;
         }
 
@@ -47,6 +51,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.outputWriter.WriteLine($"  External SDK provider: {(this.commonOptions.EnableExternalSdkProvider ? "Enabled" : "Disabled")}");
             this.outputWriter.WriteLine($"  Direct ACR SDK provider: {(this.commonOptions.EnableAcrSdkProvider ? "Enabled" : "Disabled")}");
             this.outputWriter.WriteLine($"  Blob SDK provider: Enabled");
+
+            if (this.commonOptions.EnableExternalAcrSdkProvider && !string.IsNullOrEmpty(this.commonOptions.PlatformName))
+            {
+                this.outputWriter.WriteLine($"External ACR SDK provider is enabled. Only using user-specified platform: {this.commonOptions.PlatformName}");
+            }
 
             // Try detecting ALL platforms since in some scenarios this is required.
             // For example, in case of a multi-platform app like ASP.NET Core + NodeJs, we might need to dynamically
@@ -105,7 +114,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (this.commonOptions.EnableExternalAcrSdkProvider && platform.Name != this.commonOptions.PlatformName)
             {
-                this.outputWriter.WriteLine("External ACR SDK provider is enabled so consider only user provided platform for detection.");
+                this.logger.LogDebug(
+                    "Skipping detection for platform '{PlatformName}' because External ACR SDK provider is enabled and only user provided platform '{UserPlatform}' is considered.",
+                    platform.Name,
+                    this.commonOptions.PlatformName);
                 return false;
             }
 

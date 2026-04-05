@@ -1027,7 +1027,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
-                TelemetryClientHelper.GetTelemetryClient());
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1053,7 +1054,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 externalSdkProvider, 
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
-                TelemetryClientHelper.GetTelemetryClient());  
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());  
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1083,7 +1085,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
-                TelemetryClientHelper.GetTelemetryClient());
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
@@ -1109,7 +1112,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 IExternalSdkProvider externalSdkProvider,
                 IExternalAcrSdkProvider externalAcrSdkProvider,
                 IAcrSdkProvider acrSdkProvider,
-                TelemetryClient telemetryClient)
+                TelemetryClient telemetryClient,
+                IStandardOutputWriter outputWriter)
                 : base(
                       cliOptions,
                       nodeScriptGeneratorOptions,
@@ -1121,7 +1125,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                       externalSdkProvider,
                       externalAcrSdkProvider,
                       acrSdkProvider,
-                      telemetryClient)
+                      telemetryClient,
+                      outputWriter)
             {
             }
         }

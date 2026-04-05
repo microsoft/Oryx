@@ -7,6 +7,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -140,7 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 onDiskProvider,
                 storageProvider,
                 externalProvider,
-                new PhpExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance),
+                new PhpExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance, new DefaultStandardOutputWriter()),
                 new PhpAcrVersionProvider(commonOptions, new TestHttpClientFactory(), NullLoggerFactory.Instance),
                 NullLogger<PhpVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);
