@@ -143,7 +143,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 externalProvider,
                 new PhpExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance, new DefaultStandardOutputWriter()),
                 new PhpAcrVersionProvider(commonOptions, new TestHttpClientFactory(), NullLoggerFactory.Instance),
-                NullLogger<PhpVersionProvider>.Instance);
+                NullLogger<PhpVersionProvider>.Instance,
+                new DefaultStandardOutputWriter());
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);
         }
 

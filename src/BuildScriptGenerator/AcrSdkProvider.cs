@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Formats.Tar;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,8 +16,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
     /// Fetches SDK tarballs directly from an OCI container registry.
-    /// SDK images are single-layer <c>FROM scratch</c> images where
-    /// the layer IS the SDK tarball.
+    /// SDK images are single-layer <c>FROM scratch</c> images containing a single
+    /// <c>.tar.gz</c> SDK file. The OCI layer blob is a tar archive of the image
+    /// filesystem, so this provider downloads the layer, extracts the inner SDK
+    /// tarball from it, and caches it locally.
     /// </summary>
     /// <remarks>
     /// Makes direct HTTP calls to the registry (no Unix socket).
@@ -83,10 +86,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (File.Exists(tarballPath))
             {
                 this.logger.LogInformation(
-                    "SDK tarball already downloaded at {FilePath}, skipping ACR pull.",
+                    "SDK tarball already cached at {FilePath}, skipping ACR pull.",
                     tarballPath);
                 this.outputWriter.WriteLine(
-                    $"SDK tarball already downloaded at {tarballPath}");
+                    $"SDK tarball already cached at {tarballPath}");
                 return true;
             }
 
@@ -106,35 +109,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return false;
                 }
 
-                // 2. Download the layer blob (the SDK tarball) and verify its SHA256 digest
                 Directory.CreateDirectory(downloadDir);
 
-                var success = await this.ociClient.DownloadLayerBlobAsync(
-                    repository,
-                    layerDigest,
-                    tarballPath);
+                // 2. Download the OCI layer blob to a temp file.
+                //    The layer is a tar archive of the image filesystem (not the SDK tarball itself).
+                var layerTempPath = Path.Combine(downloadDir, $".layer-{Guid.NewGuid():N}.tmp");
+                try
+                {
+                    var downloadSuccess = await this.ociClient.DownloadLayerBlobAsync(
+                        repository,
+                        layerDigest,
+                        layerTempPath);
 
-                if (success)
-                {
-                    this.logger.LogInformation(
-                        "Successfully pulled SDK from ACR: {Repository}:{Tag} → {FilePath}",
-                        repository,
-                        tag,
-                        tarballPath);
-                    this.outputWriter.WriteLine(
-                        $"Successfully pulled SDK from ACR: {platformName} {version}");
-                    return true;
+                    if (!downloadSuccess)
+                    {
+                        this.logger.LogWarning(
+                            "ACR SDK pull failed digest verification: {Repository}:{Tag}",
+                            repository,
+                            tag);
+                        this.outputWriter.WriteLine(
+                            $"Failed to pull SDK from ACR (digest mismatch): {platformName} {version}");
+                        return false;
+                    }
+
+                    // 3. Extract the inner SDK .tar.gz from the layer tar.
+                    //    The image is FROM scratch with a single COPY of the SDK tarball,
+                    //    so the layer contains the .tar.gz as a top-level entry.
+                    this.ExtractFileFromTar(layerTempPath, tarballPath, blobName);
                 }
-                else
+                finally
                 {
-                    this.logger.LogWarning(
-                        "ACR SDK pull failed digest verification: {Repository}:{Tag}",
-                        repository,
-                        tag);
-                    this.outputWriter.WriteLine(
-                        $"Failed to pull SDK from ACR (digest mismatch): {platformName} {version}");
-                    return false;
+                    // Always clean up the temporary layer file
+                    if (File.Exists(layerTempPath))
+                    {
+                        File.Delete(layerTempPath);
+                    }
                 }
+
+                this.logger.LogInformation(
+                    "Successfully pulled SDK from ACR: {Repository}:{Tag} → {FilePath}",
+                    repository,
+                    tag,
+                    tarballPath);
+                this.outputWriter.WriteLine(
+                    $"Successfully pulled SDK from ACR: {platformName} {version}");
+                return true;
             }
             catch (Exception ex)
             {
@@ -147,6 +166,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     $"Error pulling SDK from ACR: {platformName} {version}: {ex.Message}");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Extracts the expected SDK .tar.gz file from an OCI layer tar archive.
+        /// </summary>
+        private void ExtractFileFromTar(string layerPath, string outputPath, string expectedFileName)
+        {
+            using (var stream = File.OpenRead(layerPath))
+            using (var tarReader = new TarReader(stream))
+            {
+                TarEntry entry;
+                while ((entry = tarReader.GetNextEntry()) != null)
+                {
+                    var name = entry.Name.TrimStart('.', '/');
+                    if (entry.DataStream != null && name.Equals(expectedFileName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.ExtractToFile(outputPath, overwrite: true);
+                        return;
+                    }
+                }
+            }
+
+            throw new InvalidOperationException($"Expected entry '{expectedFileName}' not found in OCI layer: {layerPath}");
         }
     }
 }

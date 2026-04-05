@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly NodeExternalAcrVersionProvider externalAcrVersionProvider;
         private readonly NodeAcrVersionProvider acrVersionProvider;
         private readonly ILogger<NodeVersionProvider> logger;
+        private readonly IStandardOutputWriter outputWriter;
         private PlatformVersionInfo versionInfo;
 
         public NodeVersionProvider(
@@ -27,7 +28,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             NodeExternalVersionProvider externalVersionProvider,
             NodeExternalAcrVersionProvider externalAcrVersionProvider,
             NodeAcrVersionProvider acrVersionProvider,
-            ILogger<NodeVersionProvider> logger)
+            ILogger<NodeVersionProvider> logger,
+            IStandardOutputWriter outputWriter)
         {
             this.options = options.Value;
             this.onDiskVersionProvider = onDiskVersionProvider;
@@ -36,6 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.externalAcrVersionProvider = externalAcrVersionProvider;
             this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
+            this.outputWriter = outputWriter;
         }
 
         public PlatformVersionInfo GetVersionInfo()
@@ -62,6 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalAcrVersionProvider();
                 if (platformVersionInfo != null)
                 {
+                    this.outputWriter.WriteLine("Version resolved using external ACR SDK provider.");
                     return platformVersionInfo;
                 }
             }
@@ -71,6 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
                 if (platformVersionInfo != null)
                 {
+                    this.outputWriter.WriteLine("Version resolved using external SDK provider(blob).");
                     return platformVersionInfo;
                 }
             }
@@ -80,10 +85,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 var platformVersionInfo = this.TryGetVersionInfoFromAcrVersionProvider();
                 if (platformVersionInfo != null)
                 {
+                    this.outputWriter.WriteLine("Version resolved using direct ACR SDK provider.");
                     return platformVersionInfo;
                 }
             }
 
+            this.outputWriter.WriteLine("Version resolved using blob SDK storage provider(CDN).");
             return this.sdkStorageVersionProvider.GetVersionInfo();
         }
 

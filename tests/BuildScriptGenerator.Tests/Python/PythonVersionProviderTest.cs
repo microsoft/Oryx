@@ -141,7 +141,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 externalProvider,
                 new PythonExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance, new DefaultStandardOutputWriter()),
                 new PythonAcrVersionProvider(commonOptions, new TestHttpClientFactory(), NullLoggerFactory.Instance),
-                NullLogger<PythonVersionProvider>.Instance);
+                NullLogger<PythonVersionProvider>.Instance,
+                new DefaultStandardOutputWriter());
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);
         }
 

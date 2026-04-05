@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly PhpComposerExternalAcrVersionProvider phpComposerExternalAcrVersionProvider;
         private readonly PhpComposerAcrVersionProvider phpComposerAcrVersionProvider;
         private readonly ILogger<PhpComposerVersionProvider> logger;
+        private readonly IStandardOutputWriter outputWriter;
         private PlatformVersionInfo versionInfo;
 
         public PhpComposerVersionProvider(
@@ -27,7 +28,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             PhpComposerExternalVersionProvider phpComposerExternalVersionProvider,
             PhpComposerExternalAcrVersionProvider phpComposerExternalAcrVersionProvider,
             PhpComposerAcrVersionProvider phpComposerAcrVersionProvider,
-            ILogger<PhpComposerVersionProvider> logger)
+            ILogger<PhpComposerVersionProvider> logger,
+            IStandardOutputWriter outputWriter)
         {
             this.options = options.Value;
             this.phpComposerOnDiskVersionProvider = phpComposerOnDiskVersionProvider;
@@ -36,6 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             this.phpComposerExternalAcrVersionProvider = phpComposerExternalAcrVersionProvider;
             this.phpComposerAcrVersionProvider = phpComposerAcrVersionProvider;
             this.logger = logger;
+            this.outputWriter = outputWriter;
         }
 
         public PlatformVersionInfo GetVersionInfo()
@@ -62,6 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalAcrVersionProvider();
                 if (platformVersionInfo != null)
                 {
+                    this.outputWriter.WriteLine("Version resolved using external ACR SDK provider.");
                     return platformVersionInfo;
                 }
             }
@@ -71,6 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
                 if (platformVersionInfo != null)
                 {
+                    this.outputWriter.WriteLine("Version resolved using external SDK provider(blob).");
                     return platformVersionInfo;
                 }
             }
@@ -80,10 +85,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 var platformVersionInfo = this.TryGetVersionInfoFromAcrVersionProvider();
                 if (platformVersionInfo != null)
                 {
+                    this.outputWriter.WriteLine("Version resolved using direct ACR SDK provider.");
                     return platformVersionInfo;
                 }
             }
 
+            this.outputWriter.WriteLine("Version resolved using blob SDK storage provider(CDN).");
             return this.phpComposerSdkStorageVersionProvider.GetVersionInfo();
         }
 

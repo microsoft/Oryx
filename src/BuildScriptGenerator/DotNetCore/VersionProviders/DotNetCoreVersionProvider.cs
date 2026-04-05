@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCoreExternalVersionProvider externalVersionProvider;
         private readonly DotNetCoreAcrVersionProvider acrVersionProvider;
         private readonly ILogger<DotNetCoreVersionProvider> logger;
+        private readonly IStandardOutputWriter outputWriter;
         private string defaultRuntimeVersion;
         private Dictionary<string, string> supportedVersions;
 
@@ -26,7 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider,
             DotNetCoreExternalVersionProvider externalVersionProvider,
             DotNetCoreAcrVersionProvider acrVersionProvider,
-            ILogger<DotNetCoreVersionProvider> logger)
+            ILogger<DotNetCoreVersionProvider> logger,
+            IStandardOutputWriter outputWriter)
         {
             this.cliOptions = cliOptions.Value;
             this.onDiskVersionProvider = onDiskVersionProvider;
@@ -34,6 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.externalVersionProvider = externalVersionProvider;
             this.acrVersionProvider = acrVersionProvider;
             this.logger = logger;
+            this.outputWriter = outputWriter;
         }
 
         public string GetDefaultRuntimeVersion()
@@ -79,6 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 var version = this.TryGetDefaultRuntimeVersionFromExternalBlob();
                 if (!string.IsNullOrEmpty(version))
                 {
+                    this.outputWriter.WriteLine("DotNet version resolved using external SDK provider(blob).");
                     return version;
                 }
             }
@@ -88,10 +92,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 var version = this.TryGetDefaultRuntimeVersionFromAcr();
                 if (!string.IsNullOrEmpty(version))
                 {
+                    this.outputWriter.WriteLine("DotNet version resolved using direct ACR SDK provider.");
                     return version;
                 }
             }
 
+            this.outputWriter.WriteLine("DotNet version resolved using blob SDK storage provider(CDN).");
             return this.sdkStorageVersionProvider.GetDefaultRuntimeVersion();
         }
 
