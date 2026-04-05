@@ -297,7 +297,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         // with priority: External-ACR → External-SDK → Direct-ACR → CDN
         private void InstallPhp(string phpVersion, StringBuilder scriptBuilder)
         {
-            string script = null;
             if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
             {
                 this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
@@ -328,15 +327,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             {
                 this.outputWriter.WriteLine($"Falling back to CDN for 'php' version '{phpVersion}'.");
                 this.logger.LogDebug("PHP version {version} is not installed. Trying to install it from CDN.", phpVersion);
-                script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
+                var script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
+                scriptBuilder.AppendLine(script);
             }
             else
             {
                 this.logger.LogDebug("PHP version {version} is installed successfully using one of the providers. So skipping CDN installation.", phpVersion);
-                script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true);
             }
-
-            scriptBuilder.AppendLine(script);
         }
 
         // Method to install PHP Composer
@@ -344,7 +341,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private void InstallPhpComposer(string phpComposerVersion, StringBuilder scriptBuilder)
         {
             // Install PHP Composer
-            string script = null;
             if (string.IsNullOrEmpty(phpComposerVersion))
             {
                 phpComposerVersion = PhpVersions.ComposerDefaultVersion;
@@ -380,15 +376,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             {
                 this.outputWriter.WriteLine($"Falling back to CDN for 'php-composer' version '{phpComposerVersion}'.");
                 this.logger.LogDebug("PHP Composer version {version} is not installed. Trying to install it from CDN.", phpComposerVersion);
-                script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
+                var script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
+                scriptBuilder.AppendLine(script);
             }
             else
             {
                 this.logger.LogDebug("PHP Composer version {version} is installed successfully using one of the providers. So skipping CDN installation.", phpComposerVersion);
-                script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true);
             }
-
-            scriptBuilder.AppendLine(script);
         }
 
         private bool TryInstallPhpUsingAcrSdk(string phpVersion, StringBuilder scriptBuilder)
