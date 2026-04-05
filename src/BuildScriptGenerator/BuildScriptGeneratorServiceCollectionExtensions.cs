@@ -47,6 +47,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 // NOTE: Setting user agent is required to avoid receiving 403 Forbidden response.
                 httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("oryx", "1.0"));
+
+                // SDK tarballs (especially dotnet ~200 MB) can take longer than the default 100s to download.
+                httpClient.Timeout = TimeSpan.FromSeconds(300);
             })
             .RedactLoggedHeaders(header => header.Equals("Authorization", StringComparison.OrdinalIgnoreCase))
             .AddPolicyHandler(GetRetryPolicy());

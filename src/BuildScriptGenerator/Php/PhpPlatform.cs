@@ -329,14 +329,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 this.outputWriter.WriteLine($"Falling back to CDN for 'php' version '{phpVersion}'.");
                 this.logger.LogDebug("PHP version {version} is not installed. Trying to install it from CDN.", phpVersion);
                 script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
+                scriptBuilder.AppendLine(script);
             }
             else
             {
+                // The TryInstallPhp* methods already appended the installer script to
+                // scriptBuilder with skipSdkBinaryDownload:true, so nothing more to do.
                 this.logger.LogDebug("PHP version {version} is installed successfully using one of the providers. So skipping CDN installation.", phpVersion);
-                script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true);
             }
-
-            scriptBuilder.AppendLine(script);
         }
 
         // Method to install PHP Composer
@@ -381,14 +381,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 this.outputWriter.WriteLine($"Falling back to CDN for 'php-composer' version '{phpComposerVersion}'.");
                 this.logger.LogDebug("PHP Composer version {version} is not installed. Trying to install it from CDN.", phpComposerVersion);
                 script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
+                scriptBuilder.AppendLine(script);
             }
             else
             {
+                // The TryInstallPhpComposer* methods already appended the installer script to
+                // scriptBuilder with skipSdkBinaryDownload:true, so nothing more to do.
                 this.logger.LogDebug("PHP Composer version {version} is installed successfully using one of the providers. So skipping CDN installation.", phpComposerVersion);
-                script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true);
             }
-
-            scriptBuilder.AppendLine(script);
         }
 
         private bool TryInstallPhpUsingAcrSdk(string phpVersion, StringBuilder scriptBuilder)
