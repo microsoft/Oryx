@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var globalJsonSdkResolver = new GlobalJsonSdkResolver(NullLogger<GlobalJsonSdkResolver>.Instance);
             return new TestDotNetCorePlatform(
                 versionProvider,
-                new DotNetCoreExternalAcrVersionProvider(NullLoggerFactory.Instance),
+                new DotNetCoreExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance),
                 detector,
                 Options.Create(commonOptions),
                 Options.Create(dotNetCoreScriptGeneratorOptions),
