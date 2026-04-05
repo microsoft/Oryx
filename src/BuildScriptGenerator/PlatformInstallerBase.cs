@@ -147,14 +147,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (skipSdkBinaryDownload)
                 {
                     // The tarball was pre-downloaded by an external or ACR SDK provider.
-                    // Check the external cache (/var/OryxSdks) first, then the writable
-                    // dynamic install dir (used by AcrSdkProvider).
+                    // Check all three possible cache locations in priority order:
+                    //   1. /var/OryxAcrSdks  — External ACR SDK provider (socket → ACR via external host)
+                    //   2. /var/OryxSdks     — External SDK provider (socket → blob storage via external host)
+                    //   3. DynamicInstallRootDir — Direct ACR SDK provider (OCI API, writable temp dir)
                     var tarFileName = BlobNameHelper.GetBlobNameForVersion(platformName, version, this.CommonOptions.DebianFlavor);
+                    var externalAcrPath = Path.Combine(ExternalAcrSdkProvider.ExternalAcrSdksStorageDir, platformName, tarFileName);
                     var externalPath = Path.Combine(ExternalSdkProvider.ExternalSdksStorageDir, platformName, tarFileName);
                     var dynamicPath = Path.Combine(this.CommonOptions.DynamicInstallRootDir, platformName, tarFileName);
 
                     snippet.AppendLine($"echo \"SDK binary download was skipped. Looking for cached tarball...\"")
-                        .AppendLine($"if [ -f \"{externalPath}\" ]; then")
+                        .AppendLine($"if [ -f \"{externalAcrPath}\" ]; then")
+                        .AppendLine($"  echo \"Found tarball at {externalAcrPath}\"")
+                        .AppendLine($"  tar -xzf {externalAcrPath} -C .")
+                        .AppendLine($"elif [ -f \"{externalPath}\" ]; then")
                         .AppendLine($"  echo \"Found tarball at {externalPath}\"")
                         .AppendLine($"  tar -xzf {externalPath} -C .")
                         .AppendLine($"elif [ -f \"{dynamicPath}\" ]; then")
