@@ -171,6 +171,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     .AppendLine($"  echo \"ERROR: Could not find cached tarball for {platformName} {version}\"")
                     .AppendLine($"  exit 1")
                     .AppendLine($"fi")
+
+                    // OCI image layers from a "FROM scratch; COPY sdk.tar.gz /" image are
+                    // gzipped tars of the filesystem diff — i.e. gzip(tar(sdk.tar.gz)).
+                    // The first extraction above unpacks the layer, producing the SDK tarball
+                    // as a *file* in the version directory instead of the actual SDK contents
+                    // (bin/, lib/, etc.). Detect this and perform a second extraction.
+                    .AppendLine("innerTarball=$(find . -maxdepth 1 -name '*.tar.gz' -print -quit)")
+                    .AppendLine("if [ -n \"$innerTarball\" ]; then")
+                    .AppendLine("  echo \"Detected OCI image layer wrapping. Extracting inner tarball: $innerTarball\"")
+                    .AppendLine("  tar -xzf \"$innerTarball\" -C .")
+                    .AppendLine("  rm -f \"$innerTarball\"")
+                    .AppendLine("fi")
                     .AppendLine($"echo \"Successfully extracted {platformName} version {version} from cached tarball.\"");
             }
             else
