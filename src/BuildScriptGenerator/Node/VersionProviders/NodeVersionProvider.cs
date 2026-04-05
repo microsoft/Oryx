@@ -91,7 +91,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             try
             {
-                return this.externalAcrVersionProvider.GetVersionInfo();
+                var result = this.externalAcrVersionProvider.GetVersionInfo();
+                if (result == null)
+                {
+                    this.logger.LogWarning(
+                        "External ACR version provider returned no version info for nodejs. Trying next provider.");
+                }
+
+                return result;
             }
             catch (Exception ex)
             {

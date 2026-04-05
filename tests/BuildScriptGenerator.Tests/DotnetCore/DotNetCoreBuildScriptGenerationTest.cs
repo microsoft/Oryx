@@ -6,6 +6,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Xunit;
@@ -94,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 Options.Create(DotNetCoreScriptGeneratorOptions),
                 Options.Create(commonOptions),
                 versionProvider,
-                new DotNetCoreExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance),
+                new DotNetCoreExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance, new DefaultStandardOutputWriter()),
                 NullLogger<TestDotNetCorePlatform>.Instance,
                 detector,
                 DotNetCoreInstaller,
@@ -102,7 +103,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
-                TelemetryClientHelper.GetTelemetryClient());
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private class TestDotNetCorePlatform : DotNetCorePlatform
@@ -119,7 +121,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 IExternalSdkProvider externalSdkProvider,
                 IExternalAcrSdkProvider externalAcrSdkProvider,
                 IAcrSdkProvider acrSdkProvider,
-                TelemetryClient telemetryClient)
+                TelemetryClient telemetryClient,
+                IStandardOutputWriter outputWriter)
                 : base(
                       DotNetCoreVersionProvider,
                       externalAcrVersionProvider,
@@ -132,7 +135,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                       externalSdkProvider,
                       externalAcrSdkProvider,
                       acrSdkProvider,
-                      telemetryClient)
+                      telemetryClient,
+                      outputWriter)
             {
             }
         }

@@ -37,6 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
         private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
+        private readonly IStandardOutputWriter outputWriter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhpPlatform"/> class.
@@ -61,7 +62,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             IExternalSdkProvider externalSdkProvider,
             IExternalAcrSdkProvider externalAcrSdkProvider,
             IAcrSdkProvider acrSdkProvider,
-            TelemetryClient telemetryClient)
+            TelemetryClient telemetryClient,
+            IStandardOutputWriter outputWriter)
         {
             this.phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
             this.commonOptions = commonOptions.Value;
@@ -75,6 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             this.externalAcrSdkProvider = externalAcrSdkProvider;
             this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
+            this.outputWriter = outputWriter;
         }
 
         /// <summary>
@@ -323,6 +326,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             if (!phpInstalled)
             {
+                this.outputWriter.WriteLine($"Falling back to CDN for 'php' version '{phpVersion}'.");
                 this.logger.LogDebug("PHP version {version} is not installed. Trying to install it from CDN.", phpVersion);
                 script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
             }
@@ -374,6 +378,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             if (!composerInstalled)
             {
+                this.outputWriter.WriteLine($"Falling back to CDN for 'php-composer' version '{phpComposerVersion}'.");
                 this.logger.LogDebug("PHP Composer version {version} is not installed. Trying to install it from CDN.", phpComposerVersion);
                 script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
             }
@@ -404,15 +409,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 if (result)
                 {
                     this.logger.LogDebug("PHP version {version} is fetched successfully using ACR SDK provider.", phpVersion);
+                    this.outputWriter.WriteLine($"SDK for 'php' version '{phpVersion}' fetched via direct ACR provider.");
                     scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true));
                     return true;
                 }
 
                 this.logger.LogDebug("PHP version {version} is not fetched via ACR SDK provider. Trying next provider.", phpVersion);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via direct ACR provider for 'php' version '{phpVersion}'. Trying next provider.");
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error while fetching PHP version {version} using ACR SDK provider. Trying next provider.", phpVersion);
+                this.outputWriter.WriteLine($"Error fetching SDK via direct ACR provider for 'php' version '{phpVersion}'. Trying next provider.");
             }
 
             return false;
@@ -441,15 +449,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 if (result)
                 {
                     this.logger.LogDebug("PHP Composer version {version} is fetched successfully using ACR SDK provider.", phpComposerVersion);
+                    this.outputWriter.WriteLine($"SDK for 'php-composer' version '{phpComposerVersion}' fetched via direct ACR provider.");
                     scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true));
                     return true;
                 }
 
                 this.logger.LogDebug("PHP Composer version {version} is not fetched via ACR SDK provider. Trying next provider.", phpComposerVersion);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via direct ACR provider for 'php-composer' version '{phpComposerVersion}'. Trying next provider.");
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error while fetching PHP Composer version {version} using ACR SDK provider. Trying next provider.", phpComposerVersion);
+                this.outputWriter.WriteLine($"Error fetching SDK via direct ACR provider for 'php-composer' version '{phpComposerVersion}'. Trying next provider.");
             }
 
             return false;
@@ -471,15 +482,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     "php", phpVersion, this.commonOptions.DebianFlavor).Result)
                 {
                     this.logger.LogDebug("PHP version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.", phpVersion);
+                    this.outputWriter.WriteLine($"SDK for 'php' version '{phpVersion}' fetched via external ACR provider.");
                     scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true));
                     return true;
                 }
 
                 this.logger.LogDebug("PHP version {version} is not fetched via external ACR SDK provider. Trying next provider.", phpVersion);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external ACR provider for 'php' version '{phpVersion}'. Trying next provider.");
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error while fetching PHP version {version} using external ACR SDK provider. Trying next provider.", phpVersion);
+                this.outputWriter.WriteLine($"Error fetching SDK via external ACR provider for 'php' version '{phpVersion}'. Trying next provider.");
             }
 
             return false;
@@ -506,15 +520,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     "php-composer", phpComposerVersion, this.commonOptions.DebianFlavor).Result)
                 {
                     this.logger.LogDebug("PHP Composer version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.", phpComposerVersion);
+                    this.outputWriter.WriteLine($"SDK for 'php-composer' version '{phpComposerVersion}' fetched via external ACR provider.");
                     scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true));
                     return true;
                 }
 
                 this.logger.LogDebug("PHP Composer version {version} is not fetched via external ACR SDK provider. Trying next provider.", phpComposerVersion);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external ACR provider for 'php-composer' version '{phpComposerVersion}'. Trying next provider.");
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error while fetching PHP Composer version {version} using external ACR SDK provider. Trying next provider.", phpComposerVersion);
+                this.outputWriter.WriteLine($"Error fetching SDK via external ACR provider for 'php-composer' version '{phpComposerVersion}'. Trying next provider.");
             }
 
             return false;
@@ -536,15 +553,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 if (this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result)
                 {
                     this.logger.LogDebug("PHP version {version} is fetched successfully using external SDK provider. Skipping platform binary download.", phpVersion);
+                    this.outputWriter.WriteLine($"SDK for 'php' version '{phpVersion}' fetched via external SDK provider.");
                     scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true));
                     return true;
                 }
 
                 this.logger.LogDebug("PHP version {version} is not fetched successfully using external SDK provider. Trying next provider.", phpVersion);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external SDK provider for 'php' version '{phpVersion}'. Trying next provider.");
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error while fetching PHP version {version} using external SDK provider. Trying next provider.", phpVersion);
+                this.outputWriter.WriteLine($"Error fetching SDK via external SDK provider for 'php' version '{phpVersion}'. Trying next provider.");
             }
 
             return false;
@@ -571,15 +591,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 if (this.externalSdkProvider.RequestBlobAsync("php-composer", blobName).Result)
                 {
                     this.logger.LogDebug("PHP Composer version {version} is fetched successfully using external SDK provider. Skipping platform binary download.", phpComposerVersion);
+                    this.outputWriter.WriteLine($"SDK for 'php-composer' version '{phpComposerVersion}' fetched via external SDK provider.");
                     scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true));
                     return true;
                 }
 
                 this.logger.LogDebug("PHP Composer version {version} is not fetched successfully using external SDK provider. Trying next provider.", phpComposerVersion);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external SDK provider for 'php-composer' version '{phpComposerVersion}'. Trying next provider.");
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error while fetching PHP Composer version {version} using external SDK provider. Trying next provider.", phpComposerVersion);
+                this.outputWriter.WriteLine($"Error fetching SDK via external SDK provider for 'php-composer' version '{phpComposerVersion}'. Trying next provider.");
             }
 
             return false;

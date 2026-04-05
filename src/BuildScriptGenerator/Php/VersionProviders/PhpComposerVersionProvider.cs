@@ -91,7 +91,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             try
             {
-                return this.phpComposerExternalAcrVersionProvider.GetVersionInfo();
+                var result = this.phpComposerExternalAcrVersionProvider.GetVersionInfo();
+                if (result == null)
+                {
+                    this.logger.LogWarning(
+                        "External ACR version provider returned no version info for php-composer. Trying next provider.");
+                }
+
+                return result;
             }
             catch (Exception ex)
             {

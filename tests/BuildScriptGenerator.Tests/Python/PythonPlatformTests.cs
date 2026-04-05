@@ -435,7 +435,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
-                TelemetryClientHelper.GetTelemetryClient());
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private PythonPlatform CreatePlatform(
@@ -464,7 +465,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
-                TelemetryClientHelper.GetTelemetryClient());
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

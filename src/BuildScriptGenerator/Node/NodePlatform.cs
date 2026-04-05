@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -89,6 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
         private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
+        private readonly IStandardOutputWriter outputWriter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NodePlatform"/> class.
@@ -112,7 +113,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IExternalSdkProvider externalSdkProvider,
             IExternalAcrSdkProvider externalAcrSdkProvider,
             IAcrSdkProvider acrSdkProvider,
-            TelemetryClient telemetryClient)
+            TelemetryClient telemetryClient,
+            IStandardOutputWriter outputWriter)
         {
             this.commonOptions = commonOptions.Value;
             this.nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
@@ -125,6 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.externalAcrSdkProvider = externalAcrSdkProvider;
             this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
+            this.outputWriter = outputWriter;
         }
 
         /// <inheritdoc/>
@@ -344,7 +347,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 string frameworks = string.Join(",", frameworksObj.Select(p => p.Framework).ToArray());
                 manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = frameworks;
                 this.logger.LogInformation($"Detected the following frameworks: {frameworks}");
-                Console.WriteLine($"Detected the following frameworks: {frameworks}");
+                this.outputWriter.WriteLine($"Detected the following frameworks: {frameworks}");
             }
 
             string compressNodeModulesCommand = null;
@@ -550,6 +553,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             // 4. CDN fallback
+            this.outputWriter.WriteLine($"Falling back to CDN for '{this.Name}' version '{version}'.");
             this.logger.LogDebug(
                 "Node version {version} is not installed. So generating an installation script snippet for it.",
                 version);
@@ -726,12 +730,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     this.logger.LogDebug(
                         "Node version {version} is fetched successfully using ACR SDK provider.",
                         version);
+                    this.outputWriter.WriteLine($"SDK for '{this.Name}' version '{version}' fetched via direct ACR provider.");
                     return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
                 }
 
                 this.logger.LogDebug(
                     "Node version {version} is not fetched via ACR SDK provider. Trying next provider.",
                     version);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via direct ACR provider for '{this.Name}' version '{version}'. Trying next provider.");
             }
             catch (Exception ex)
             {
@@ -739,6 +745,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     ex,
                     "Error while fetching Node.js version {version} using ACR SDK provider. Trying next provider.",
                     version);
+                this.outputWriter.WriteLine($"Error fetching SDK via direct ACR provider for '{this.Name}' version '{version}'. Trying next provider.");
             }
 
             return null;
@@ -758,12 +765,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     this.logger.LogDebug(
                         "Node version {version} is fetched successfully using external SDK provider. Skipping platform binary download.",
                         version);
+                    this.outputWriter.WriteLine($"SDK for '{this.Name}' version '{version}' fetched via external SDK provider.");
                     return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
                 }
 
                 this.logger.LogDebug(
                     "Node version {version} is not fetched successfully using external SDK provider. Generating installation script snippet.",
                     version);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external SDK provider for '{this.Name}' version '{version}'. Trying next provider.");
             }
             catch (Exception ex)
             {
@@ -771,6 +780,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     ex,
                     "Error while fetching Node.js version {version} using external SDK provider.",
                     version);
+                this.outputWriter.WriteLine($"Error fetching SDK via external SDK provider for '{this.Name}' version '{version}'. Trying next provider.");
             }
 
             return null;
@@ -790,12 +800,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     this.logger.LogDebug(
                         "Node version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.",
                         version);
+                    this.outputWriter.WriteLine($"SDK for '{this.Name}' version '{version}' fetched via external ACR provider.");
                     return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
                 }
 
                 this.logger.LogDebug(
                     "Node version {version} is not fetched via external ACR SDK provider. Trying next provider.",
                     version);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external ACR provider for '{this.Name}' version '{version}'. Trying next provider.");
             }
             catch (Exception ex)
             {
@@ -803,6 +815,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     ex,
                     "Error while fetching Node.js version {version} using external ACR SDK provider. Trying next provider.",
                     version);
+                this.outputWriter.WriteLine($"Error fetching SDK via external ACR provider for '{this.Name}' version '{version}'. Trying next provider.");
             }
 
             return null;

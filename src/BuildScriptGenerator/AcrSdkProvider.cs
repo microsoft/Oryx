@@ -102,6 +102,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         "No layer found in manifest for {Repository}:{Tag}",
                         repository,
                         tag);
+                    this.outputWriter.WriteLine($"No layer found in ACR manifest for {platformName} {version}.");
                     return false;
                 }
 

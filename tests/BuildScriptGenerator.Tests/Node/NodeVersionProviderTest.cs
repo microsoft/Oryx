@@ -7,6 +7,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -138,7 +139,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 onDiskProvider,
                 storageProvider,
                 externalProvider,
-                new NodeExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance),
+                new NodeExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance, new DefaultStandardOutputWriter()),
                 new NodeAcrVersionProvider(commonOptions, new TestHttpClientFactory(), NullLoggerFactory.Instance),
                 NullLogger<NodeVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);

@@ -593,7 +593,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
-                TelemetryClientHelper.GetTelemetryClient());
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
@@ -620,7 +621,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 IExternalSdkProvider externalSdkProvider,
                 IExternalAcrSdkProvider externalAcrSdkProvider,
                 IAcrSdkProvider acrSdkProvider,
-                TelemetryClient telemetryClient)
+                TelemetryClient telemetryClient,
+                IStandardOutputWriter outputWriter)
                 : base(
                       phpScriptGeneratorOptions,
                       commonOptions,
@@ -633,7 +635,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                       externalSdkProvider,
                       externalAcrSdkProvider,
                       acrSdkProvider,
-                      telemetryClient)
+                      telemetryClient,
+                      outputWriter)
             {
             }
         }

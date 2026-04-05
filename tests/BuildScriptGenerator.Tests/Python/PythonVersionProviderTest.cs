@@ -7,6 +7,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -138,7 +139,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 onDiskProvider,
                 storageProvider,
                 externalProvider,
-                new PythonExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance),
+                new PythonExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance, new DefaultStandardOutputWriter()),
                 new PythonAcrVersionProvider(commonOptions, new TestHttpClientFactory(), NullLoggerFactory.Instance),
                 NullLogger<PythonVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);

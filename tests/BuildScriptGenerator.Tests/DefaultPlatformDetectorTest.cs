@@ -5,6 +5,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Detector;
 using Moq;
@@ -116,6 +118,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             return new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter(),
+                NullLogger<DefaultPlatformsInformationProvider>.Instance,
                 Options.Create(new BuildScriptGeneratorOptions()));
         }
 

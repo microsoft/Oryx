@@ -148,7 +148,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
-                TelemetryClientHelper.GetTelemetryClient());
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private static BuildScriptGeneratorContext CreateBuildScriptGeneratorContext(ISourceRepo sourceRepo)
