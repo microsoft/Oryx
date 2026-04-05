@@ -5,6 +5,7 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -16,14 +17,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     internal class NodeExternalAcrVersionProvider : ExternalAcrVersionProviderBase, INodeVersionProvider
     {
         public NodeExternalAcrVersionProvider(
+            IOptions<BuildScriptGeneratorOptions> options,
             ILoggerFactory loggerFactory)
-            : base(loggerFactory)
+            : base(options, loggerFactory)
         {
         }
 
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            var version = this.GetCompanionSdkVersion(platformName: "nodejs");
+            var version = this.GetCompanionSdkVersion(platformName: "nodejs", debianFlavor: this.DebianFlavor);
             if (string.IsNullOrEmpty(version))
             {
                 return null;

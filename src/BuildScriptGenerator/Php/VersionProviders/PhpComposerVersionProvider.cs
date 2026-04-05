@@ -12,29 +12,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     internal class PhpComposerVersionProvider : IPhpComposerVersionProvider
     {
         private readonly BuildScriptGeneratorOptions options;
-        private readonly PhpComposerOnDiskVersionProvider onDiskVersionProvider;
-        private readonly PhpComposerSdkStorageVersionProvider sdkStorageVersionProvider;
-        private readonly PhpComposerExternalVersionProvider externalVersionProvider;
-        private readonly PhpComposerExternalAcrVersionProvider externalAcrVersionProvider;
-        private readonly PhpComposerAcrVersionProvider acrVersionProvider;
+        private readonly PhpComposerOnDiskVersionProvider phpComposerOnDiskVersionProvider;
+        private readonly PhpComposerSdkStorageVersionProvider phpComposerSdkStorageVersionProvider;
+        private readonly PhpComposerExternalVersionProvider phpComposerExternalVersionProvider;
+        private readonly PhpComposerExternalAcrVersionProvider phpComposerExternalAcrVersionProvider;
+        private readonly PhpComposerAcrVersionProvider phpComposerAcrVersionProvider;
         private readonly ILogger<PhpComposerVersionProvider> logger;
         private PlatformVersionInfo versionInfo;
 
         public PhpComposerVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
-            PhpComposerOnDiskVersionProvider onDiskVersionProvider,
-            PhpComposerSdkStorageVersionProvider sdkStorageVersionProvider,
-            PhpComposerExternalVersionProvider externalVersionProvider,
-            PhpComposerExternalAcrVersionProvider externalAcrVersionProvider,
-            PhpComposerAcrVersionProvider acrVersionProvider,
+            PhpComposerOnDiskVersionProvider phpComposerOnDiskVersionProvider,
+            PhpComposerSdkStorageVersionProvider phpComposerSdkStorageVersionProvider,
+            PhpComposerExternalVersionProvider phpComposerExternalVersionProvider,
+            PhpComposerExternalAcrVersionProvider phpComposerExternalAcrVersionProvider,
+            PhpComposerAcrVersionProvider phpComposerAcrVersionProvider,
             ILogger<PhpComposerVersionProvider> logger)
         {
             this.options = options.Value;
-            this.onDiskVersionProvider = onDiskVersionProvider;
-            this.sdkStorageVersionProvider = sdkStorageVersionProvider;
-            this.externalVersionProvider = externalVersionProvider;
-            this.externalAcrVersionProvider = externalAcrVersionProvider;
-            this.acrVersionProvider = acrVersionProvider;
+            this.phpComposerOnDiskVersionProvider = phpComposerOnDiskVersionProvider;
+            this.phpComposerSdkStorageVersionProvider = phpComposerSdkStorageVersionProvider;
+            this.phpComposerExternalVersionProvider = phpComposerExternalVersionProvider;
+            this.phpComposerExternalAcrVersionProvider = phpComposerExternalAcrVersionProvider;
+            this.phpComposerAcrVersionProvider = phpComposerAcrVersionProvider;
             this.logger = logger;
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             this.versionInfo = this.options.EnableDynamicInstall
                 ? this.ResolveDynamicVersionInfo()
-                : this.onDiskVersionProvider.GetVersionInfo();
+                : this.phpComposerOnDiskVersionProvider.GetVersionInfo();
 
             return this.versionInfo;
         }
@@ -84,14 +84,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
             }
 
-            return this.sdkStorageVersionProvider.GetVersionInfo();
+            return this.phpComposerSdkStorageVersionProvider.GetVersionInfo();
         }
 
         private PlatformVersionInfo TryGetVersionInfoFromExternalAcrVersionProvider()
         {
             try
             {
-                return this.externalAcrVersionProvider.GetVersionInfo();
+                return this.phpComposerExternalAcrVersionProvider.GetVersionInfo();
             }
             catch (Exception ex)
             {
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             try
             {
-                return this.externalVersionProvider.GetVersionInfo();
+                return this.phpComposerExternalVersionProvider.GetVersionInfo();
             }
             catch (Exception ex)
             {
@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             try
             {
-                return this.acrVersionProvider.GetVersionInfo();
+                return this.phpComposerAcrVersionProvider.GetVersionInfo();
             }
             catch (Exception ex)
             {
