@@ -404,8 +404,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             try
             {
+                // .NET ACR images use compound tags: {os}-{sdkVersion}_{runtimeVersion}.
+                // Resolve the runtime version via a reverse lookup in the version map
+                // (runtime → SDK) rather than relying on PlatformVersion, which may have
+                // been overwritten by the ExternalACR short-circuit in ResolveVersions.
+                string runtimeVersion = null;
+                try
+                {
+                    var versionMap = this.versionProvider.GetSupportedVersions();
+                    if (versionMap != null)
+                    {
+                        foreach (var kvp in versionMap)
+                        {
+                            if (string.Equals(kvp.Value, sdkVersion, StringComparison.OrdinalIgnoreCase))
+                            {
+                                runtimeVersion = kvp.Key;
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogWarning(
+                        ex,
+                        "Could not resolve runtime version for SDK {version} from version map. " +
+                        "ACR tag will use SDK version only.",
+                        sdkVersion);
+                }
+
                 var result = this.acrSdkProvider.RequestSdkFromAcrAsync(
-                    this.Name, sdkVersion, this.commonOptions.DebianFlavor).Result;
+                    this.Name, sdkVersion, this.commonOptions.DebianFlavor, runtimeVersion).Result;
 
                 if (result)
                 {

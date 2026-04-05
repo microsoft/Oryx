@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <inheritdoc/>
-        public async Task<bool> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor)
+        public async Task<bool> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor, string runtimeVersion = null)
         {
             if (string.IsNullOrEmpty(platformName))
             {
@@ -69,7 +69,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             var repository = SdkStorageConstants.GetSdkImageRepository(platformName, this.options.OryxAcrSdkRepositoryPrefix);
-            var tag = $"{debianFlavor}-{version}";
+            var tag = string.IsNullOrEmpty(runtimeVersion)
+                ? $"{debianFlavor}-{version}"
+                : $"{debianFlavor}-{version}_{runtimeVersion}";
             var blobName = $"{platformName}-{debianFlavor}-{version}.tar.gz";
 
             this.logger.LogInformation(
