@@ -82,7 +82,10 @@ buildPythonfromSource()
         uuid-dev \
         zlib1g-dev
 
-    tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C .
+    rm -rf /usr/src/python
+    mkdir -p /usr/src/python
+    tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C /usr/src/python
+    cd /usr/src/python
 
     INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
@@ -151,9 +154,7 @@ buildPythonfromSource()
         ln -s $pythonBinDir/python$majorAndMinorParts $pythonBinDir/python
     fi
 
-    rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
-    rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
-    rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
+    rm -rf /usr/src/python /tmpFiles
 
     # Clean up build dependencies to reduce image size
     # Only purge -dev packages and build tools (headers, static libs, compilers).
@@ -205,7 +206,7 @@ getPythonGpgAndShaByVersion() {
 }
 
 echo
-echo "Building python 3.14 or newer from source code..."
+echo "Building python from source code..."
 
 getPythonGpgAndShaByVersion "/tmp/versionsToBuild.txt" $version
 IFS='.' read -ra SPLIT_VERSION <<< "$version"
