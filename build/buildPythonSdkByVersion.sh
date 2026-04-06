@@ -70,17 +70,14 @@ buildPythonfromSource()
         libffi-dev \
         libgdbm-dev \
         libgdm-dev \
-        libgeos-dev \
         liblzma-dev \
         libncurses5-dev \
         libreadline-dev \
-        libreadline6-dev \
         libsqlite3-dev \
         libssl-dev \
         lzma \
         lzma-dev \
         pkg-config \
-        python3-dev \
         tk-dev \
         uuid-dev \
         zlib1g-dev
@@ -95,7 +92,8 @@ buildPythonfromSource()
         --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
         --enable-loadable-sqlite-extensions \
         --enable-shared \
-        --with-system-expat \
+        --enable-optimizations \
+        --with-lto \
         --with-system-ffi \
         --without-ensurepip
 
@@ -112,6 +110,7 @@ buildPythonfromSource()
             -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
         \) -exec rm -rf '{}' + \
 
+    [ -d "/opt/python/$PYTHON_VERSION" ] && echo /opt/python/$PYTHON_VERSION/lib >> /etc/ld.so.conf.d/python.conf
     ldconfig
 
     # make some useful symlinks that are expected to exist in the installation prefix
@@ -132,6 +131,12 @@ buildPythonfromSource()
         --no-cache-dir \
         --no-warn-script-location
 
+    # Replace log level in pip's code as a workaround for https://github.com/pypa/pip/issues/6189
+    pipReqSetPath=`find $INSTALLATION_PREFIX/lib -path "*site-packages/pip/_internal/req/req_set.py"`
+    if [ -n "$pipReqSetPath" ]; then
+        sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\.\.\.'\'')|' "$pipReqSetPath"
+    fi
+
     # Currently only for version '2' of Python, the alias 'python' exists in the 'bin'
     # directory. So to make sure other versions also have this alias, we create the link
     # explicitly here. This is for the scenarios where a user does 'benv python=3.7' and
@@ -149,6 +154,31 @@ buildPythonfromSource()
     rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
     rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
     rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
+
+    # Clean up build dependencies to reduce image size
+    # Only purge -dev packages and build tools (headers, static libs, compilers).
+    # Do NOT use apt-get autoremove as it may remove runtime .so libraries
+    # (e.g., libgdbm6, libtk8.6) that Python modules depend on.
+    apt-get purge -y \
+        build-essential \
+        gdb \
+        lcov \
+        libbluetooth-dev \
+        libbz2-dev \
+        libffi-dev \
+        libgdbm-dev \
+        libgdm-dev \
+        liblzma-dev \
+        libncurses5-dev \
+        libreadline-dev \
+        libsqlite3-dev \
+        libssl-dev \
+        lzma-dev \
+        pkg-config \
+        tk-dev \
+        uuid-dev \
+        zlib1g-dev
+    rm -rf /var/lib/apt/lists/*
 }
 
 getPythonGpgAndShaByVersion() {
