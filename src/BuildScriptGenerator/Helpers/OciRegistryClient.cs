@@ -248,6 +248,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         private async Task<string> GetAnonymousTokenAsync(string repository)
         {
+            // MCR registries (mcr.microsoft.com, mcr.microsoft.us, mcr.microsoft.cn, etc.)
+            // are fully public and do not expose an OAuth2 token endpoint.
+            // Skip the token flow to avoid unnecessary latency and failed requests.
+            if (this.registryHost.StartsWith("mcr.microsoft", StringComparison.OrdinalIgnoreCase))
+            {
+                this.logger.LogDebug("Skipping auth token for MCR registry {host}.", this.registryHost);
+                return null;
+            }
+
             var scope = $"repository:{repository}:pull";
             if (this.tokenCache.TryGetValue(scope, out var cached))
             {
