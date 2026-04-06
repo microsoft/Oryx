@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -63,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             if (this.options.EnableExternalAcrSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalAcrVersionProvider();
-                if (platformVersionInfo != null)
+                if (this.HasSupportedVersions(platformVersionInfo))
                 {
                     this.outputWriter.WriteLine("Version resolved using external ACR SDK provider.");
                     return platformVersionInfo;
@@ -73,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             if (this.options.EnableExternalSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
-                if (platformVersionInfo != null)
+                if (this.HasSupportedVersions(platformVersionInfo))
                 {
                     this.outputWriter.WriteLine("Version resolved using external SDK provider(blob).");
                     return platformVersionInfo;
@@ -83,7 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             if (this.options.EnableAcrSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromAcrVersionProvider();
-                if (platformVersionInfo != null)
+                if (this.HasSupportedVersions(platformVersionInfo))
                 {
                     this.outputWriter.WriteLine("Version resolved using direct ACR SDK provider.");
                     return platformVersionInfo;
@@ -92,6 +93,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             this.outputWriter.WriteLine("Version resolved using blob SDK storage provider(CDN).");
             return this.phpComposerSdkStorageVersionProvider.GetVersionInfo();
+        }
+
+        private bool HasSupportedVersions(PlatformVersionInfo versionInfo)
+        {
+            if (versionInfo?.SupportedVersions == null)
+            {
+                return false;
+            }
+
+            return versionInfo.SupportedVersions.Any();
         }
 
         private PlatformVersionInfo TryGetVersionInfoFromExternalAcrVersionProvider()
