@@ -85,20 +85,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // Download to the writable dynamic install directory, NOT /var/OryxSdks (read-only external mount).
             var downloadDir = Path.Combine(this.options.DynamicInstallRootDir, platformName);
             var tarballPath = Path.Combine(downloadDir, blobName);
-
-            if (File.Exists(tarballPath))
-            {
-                this.logger.LogInformation(
-                    "SDK tarball already cached at {FilePath}, skipping ACR pull.",
-                    tarballPath);
-                this.outputWriter.WriteLine(
-                    $"SDK tarball already cached at {tarballPath}");
-                return true;
-            }
+            var digestPath = Path.Combine(downloadDir, $".{blobName}.digest");
 
             try
             {
-                // 1. Get manifest → extract single layer digest
+                // Get image manifest
+                var remoteDigest = await this.ociClient.GetManifestDigestAsync(repository, tag);
+
+                // Check if cached tarball is still fresh
+                if (File.Exists(tarballPath) && File.Exists(digestPath) && remoteDigest != null)
+                {
+                    var localDigest = File.ReadAllText(digestPath).Trim();
+                    if (string.Equals(localDigest, remoteDigest, StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.logger.LogInformation(
+                            "SDK cache is fresh (digest match): {FilePath}",
+                            tarballPath);
+                        this.outputWriter.WriteLine(
+                            $"SDK tarball already cached and fresh at {tarballPath}");
+                        return true;
+                    }
+
+                    this.logger.LogInformation(
+                        "SDK cache is stale (digest mismatch). Re-downloading.");
+                }
+
+                // Get manifest → extract single layer digest
                 var manifest = await this.ociClient.GetManifestAsync(repository, tag);
                 var layerDigest = OciRegistryClient.GetFirstLayerDigest(manifest);
 
@@ -156,6 +168,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     tarballPath);
                 this.outputWriter.WriteLine(
                     $"Successfully pulled SDK from ACR: {platformName} {version}");
+
+                // Write manifest digest sidecar for future freshness checks
+                if (!string.IsNullOrEmpty(remoteDigest))
+                {
+                    File.WriteAllText(digestPath, remoteDigest);
+                }
+
                 return true;
             }
             catch (Exception ex)

@@ -149,6 +149,43 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
+        /// Gets the manifest digest for a tag via a HEAD request.
+        /// Returns the <c>Docker-Content-Digest</c> header value (e.g. <c>sha256:abc...</c>),
+        /// or null if unavailable.
+        /// </summary>
+        public async Task<string> GetManifestDigestAsync(string repository, string tag)
+        {
+            var url = $"{this.registryUrl}/v2/{repository}/manifests/{tag}";
+            using (var request = await this.CreateAuthenticatedRequestAsync(HttpMethod.Head, url, repository))
+            {
+                request.Headers.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/vnd.oci.image.manifest.v1+json", 1.0));
+                request.Headers.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/vnd.docker.distribution.manifest.v2+json", 0.9));
+
+                using (var response = await this.httpClient.SendAsync(request))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        this.logger.LogWarning(
+                            "HEAD manifest failed for '{repository}:{tag}' (HTTP {statusCode}).",
+                            repository,
+                            tag,
+                            (int)response.StatusCode);
+                        return null;
+                    }
+
+                    if (response.Headers.TryGetValues("Docker-Content-Digest", out var values))
+                    {
+                        return values.FirstOrDefault();
+                    }
+
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
         /// Downloads a layer blob (the SDK tarball) to disk and verifies its SHA256 digest.
         /// The digest in the manifest IS the content hash — no separate checksum metadata needed.
         /// Uses single-pass streaming: the SHA256 hash is computed incrementally as bytes are
