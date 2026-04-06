@@ -24,20 +24,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public PhpComposerVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
-            PhpComposerOnDiskVersionProvider phpComposerOnDiskVersionProvider,
-            PhpComposerSdkStorageVersionProvider phpComposerSdkStorageVersionProvider,
-            PhpComposerExternalVersionProvider phpComposerExternalVersionProvider,
-            PhpComposerExternalAcrVersionProvider phpComposerExternalAcrVersionProvider,
-            PhpComposerAcrVersionProvider phpComposerAcrVersionProvider,
+            PhpComposerOnDiskVersionProvider onDiskVersionProvider,
+            PhpComposerSdkStorageVersionProvider sdkStorageVersionProvider,
+            PhpComposerExternalVersionProvider externalVersionProvider,
+            PhpComposerExternalAcrVersionProvider externalAcrVersionProvider,
+            PhpComposerAcrVersionProvider acrVersionProvider,
             ILogger<PhpComposerVersionProvider> logger,
             IStandardOutputWriter outputWriter)
         {
             this.options = options.Value;
-            this.phpComposerOnDiskVersionProvider = phpComposerOnDiskVersionProvider;
-            this.phpComposerSdkStorageVersionProvider = phpComposerSdkStorageVersionProvider;
-            this.phpComposerExternalVersionProvider = phpComposerExternalVersionProvider;
-            this.phpComposerExternalAcrVersionProvider = phpComposerExternalAcrVersionProvider;
-            this.phpComposerAcrVersionProvider = phpComposerAcrVersionProvider;
+            this.phpComposerOnDiskVersionProvider = onDiskVersionProvider;
+            this.phpComposerSdkStorageVersionProvider = sdkStorageVersionProvider;
+            this.phpComposerExternalVersionProvider = externalVersionProvider;
+            this.phpComposerExternalAcrVersionProvider = externalAcrVersionProvider;
+            this.phpComposerAcrVersionProvider = acrVersionProvider;
             this.logger = logger;
             this.outputWriter = outputWriter;
         }
@@ -56,10 +56,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return this.versionInfo;
         }
 
+        // This method resolves the PHP Composer version info based on the enabled providers and their priority
+        // It tries each provider in order and returns the first successful result.
+        // Priority: External-ACR → External-SDK → Direct-ACR → CDN
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
-            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
-
             // If external ACR provider is enabled.
             if (this.options.EnableExternalAcrSdkProvider)
             {
@@ -71,6 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
             }
 
+            // If external SDK provider is enabled.
             if (this.options.EnableExternalSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
@@ -81,6 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
             }
 
+            // If direct ACR provider is enabled.
             if (this.options.EnableAcrSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromAcrVersionProvider();

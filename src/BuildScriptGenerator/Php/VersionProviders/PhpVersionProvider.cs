@@ -56,10 +56,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return this.versionInfo;
         }
 
+        // This method resolves the PHP version info based on the enabled providers and their priority
+        // It tries each provider in order and returns the first successful result.
+        // Priority: External-ACR → External-SDK → Direct-ACR → CDN
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
-            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
-
             // If external ACR provider is enabled.
             if (this.options.EnableExternalAcrSdkProvider)
             {

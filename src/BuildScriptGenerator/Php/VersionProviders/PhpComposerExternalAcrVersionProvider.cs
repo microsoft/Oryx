@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     /// Parallel to <see cref="PhpComposerExternalVersionProvider"/> (blob) and
     /// <see cref="PhpComposerAcrVersionProvider"/> (direct OCI).
     /// </summary>
-    internal class PhpComposerExternalAcrVersionProvider : ExternalAcrVersionProviderBase, IPhpVersionProvider
+    internal class PhpComposerExternalAcrVersionProvider : ExternalAcrVersionProviderBase, IPhpComposerVersionProvider
     {
         public PhpComposerExternalAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             return PlatformVersionInfo.CreateOnDiskVersionInfo(
                 supportedVersions: availableVersions.ToArray(),
-                defaultVersion: availableVersions[0]);
+                defaultVersion: PhpVersions.DefaultComposerVersion);
         }
     }
 }

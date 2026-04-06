@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     /// <summary>
     /// ACR-based version provider for .NET SDKs via external socket provider.
-    /// Unlike simple platforms that implement I{X}VersionProvider, this exposes
+    /// Unlike other platforms that implement I{X}VersionProvider, this exposes
     /// a raw SDK version string. <see cref="DotNetCoreVersionProvider"/> handles
     /// the adaptation to the runtime→SDK map.
     /// </summary>

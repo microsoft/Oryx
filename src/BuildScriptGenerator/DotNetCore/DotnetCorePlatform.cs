@@ -263,9 +263,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
-
-            // 1. Try External-ACR (socket → ACR)
+            // Priority: External SDK ACR → External-SDK → Direct-ACR → CDN
+            // 1. Try External SDK ACR (socket → ACR)
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 var result = this.TryInstallFromExternalAcrSdkProvider(sdkVersion);
