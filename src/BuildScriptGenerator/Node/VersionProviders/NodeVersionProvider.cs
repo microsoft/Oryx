@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -66,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (this.options.EnableExternalAcrSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalAcrVersionProvider();
-                if (platformVersionInfo != null)
+                if (this.HasSupportedVersions(platformVersionInfo))
                 {
                     this.outputWriter.WriteLine("Version resolved using external ACR SDK provider.");
                     return platformVersionInfo;
@@ -77,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (this.options.EnableExternalSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
-                if (platformVersionInfo != null)
+                if (this.HasSupportedVersions(platformVersionInfo))
                 {
                     this.outputWriter.WriteLine("Version resolved using external SDK provider.");
                     return platformVersionInfo;
@@ -88,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (this.options.EnableAcrSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromAcrVersionProvider();
-                if (platformVersionInfo != null)
+                if (this.HasSupportedVersions(platformVersionInfo))
                 {
                     this.outputWriter.WriteLine("Version resolved using direct ACR SDK provider.");
                     return platformVersionInfo;
@@ -99,8 +100,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return this.sdkStorageVersionProvider.GetVersionInfo();
         }
 
+<<<<<<< HEAD
         // This method tries to get version info from the external ACR provider and logs any exceptions that occur, returning null if it fails.
         // Oryx -> socket -> external ACR SDK provider -> ACR registry (OCI API)
+=======
+        private bool HasSupportedVersions(PlatformVersionInfo versionInfo)
+        {
+            if (versionInfo?.SupportedVersions == null)
+            {
+                return false;
+            }
+
+            return versionInfo.SupportedVersions.Any();
+        }
+
+>>>>>>> feature/oryx-sdk-acr-distribution
         private PlatformVersionInfo TryGetVersionInfoFromExternalAcrVersionProvider()
         {
             try

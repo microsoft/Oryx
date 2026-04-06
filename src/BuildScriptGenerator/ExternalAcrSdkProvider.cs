@@ -71,6 +71,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 throw new ArgumentException("Debian flavor cannot be null or empty.", nameof(debianFlavor));
             }
 
+            // No local cache check here — external provider handles digest-based freshness internally.
+            // On each call, the external provider does a lightweight HEAD request to compare the remote manifest for sdk image
+            // digest against a local digest file, and only re-pulls the image if the digest changed.
             this.logger.LogInformation(
                 "Requesting SDK from ACR via external provider: platform={PlatformName}, version={Version}, " +
                 "debianFlavor={DebianFlavor}",
