@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             return PlatformVersionInfo.CreateOnDiskVersionInfo(
                 supportedVersions: availableVersions.ToArray(),
-                defaultVersion: availableVersions[0]);
+                defaultVersion: PhpVersions.DefaultComposerVersion);
         }
     }
 }
