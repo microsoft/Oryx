@@ -210,10 +210,5 @@ echo "Building python 3.14 or newer from source code..."
 getPythonGpgAndShaByVersion "/tmp/versionsToBuild.txt" $version
 IFS='.' read -ra SPLIT_VERSION <<< "$version"
 
-if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "14" ]
-then
-    echo "version=$version, gpg='$pythonVersionGPG', sha='$python_sha'"
-    buildPythonfromSource version=$version gpg="$pythonVersionGPG" python_sha="$python_sha"
-else
-    source /tmp/oryx/images/installPlatform.sh python $version --dir /opt/python/$version --links false
-fi
+echo "version=$version, gpg='$pythonVersionGPG', sha='$python_sha'"
+buildPythonfromSource version=$version gpg="$pythonVersionGPG" python_sha="$python_sha"
