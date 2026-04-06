@@ -55,10 +55,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return this.versionInfo;
         }
 
+        // This method resolves the Python version info based on the enabled providers and their priority
+        // It tries each provider in order and returns the first successful result.
+        // Priority: External-ACR → External-SDK → Direct-ACR → CDN
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
-            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
-
             // If external ACR provider is enabled.
             if (this.options.EnableExternalAcrSdkProvider)
             {
@@ -70,6 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 }
             }
 
+            // If external SDK provider is enabled.
             if (this.options.EnableExternalSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
@@ -80,6 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 }
             }
 
+            // If direct ACR provider is enabled.
             if (this.options.EnableAcrSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromAcrVersionProvider();

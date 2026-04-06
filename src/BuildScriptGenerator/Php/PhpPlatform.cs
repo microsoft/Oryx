@@ -332,7 +332,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
             else
             {
-                this.logger.LogDebug("PHP version {version} is installed successfully using one of the providers. So skipping CDN installation.", phpVersion);
+                this.logger.LogDebug("PHP version {version} is installed successfully using one of the providers.", phpVersion);
             }
         }
 

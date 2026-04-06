@@ -23,11 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string OsTypeMetadataName = "Os_type";
 
         // OCI image based SDK distribution constants
-        public const string EnableExternalAcrSdkProviderKey = "ORYX_ENABLE_EXTERNAL_ACR_SDK_PROVIDER";
-        public const string EnableAcrSdkProviderKey = "ORYX_ENABLE_ACR_SDK_PROVIDER";
-        public const string AcrSdkRegistryUrlKeyName = "ORYX_ACR_SDK_REGISTRY_URL";
         public const string DefaultAcrSdkRegistryUrl = "https://mcr.microsoft.com";
-        public const string AcrSdkRepositoryPrefixKeyName = "ORYX_ACR_SDK_REPOSITORY_PREFIX";
         public const string DefaultAcrSdkRepositoryPrefix = "oryx";
 
         /// <summary>

@@ -522,7 +522,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             // Priority: External-ACR → External-SDK → Direct-ACR → CDN
 
-            // 1. Try External-ACR (socket → ACR)
+            // 1. Try External-ACR (Oryx -> socket → ACR)
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 var result = this.TryInstallFromExternalAcrSdkProvider(version);
@@ -532,7 +532,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
             }
 
-            // 2. Try External-SDK (socket → blob storage)
+            // 2. Try External-SDK (Oryx -> socket → blob storage)
             if (this.commonOptions.EnableExternalSdkProvider)
             {
                 var result = this.TryInstallFromExternalSdkProvider(version);
@@ -542,7 +542,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
             }
 
-            // 3. Try Direct-ACR (direct OCI API calls)
+            // 3. Try Direct-ACR (Oryx -> direct OCI API calls)
             if (this.commonOptions.EnableAcrSdkProvider)
             {
                 var result = this.TryInstallFromAcrSdkProvider(version);

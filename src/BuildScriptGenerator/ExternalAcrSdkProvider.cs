@@ -43,16 +43,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private readonly ILogger<ExternalAcrSdkProvider> logger;
         private readonly IStandardOutputWriter outputWriter;
-        private readonly BuildScriptGeneratorOptions options;
 
         public ExternalAcrSdkProvider(
             IStandardOutputWriter outputWriter,
-            ILogger<ExternalAcrSdkProvider> logger,
-            IOptions<BuildScriptGeneratorOptions> options)
+            ILogger<ExternalAcrSdkProvider> logger)
         {
             this.logger = logger;
             this.outputWriter = outputWriter;
-            this.options = options.Value;
         }
 
         /// <inheritdoc/>

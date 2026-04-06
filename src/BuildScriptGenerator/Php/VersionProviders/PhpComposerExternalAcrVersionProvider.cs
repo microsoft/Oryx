@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     /// Parallel to <see cref="PhpComposerExternalVersionProvider"/> (blob) and
     /// <see cref="PhpComposerAcrVersionProvider"/> (direct OCI).
     /// </summary>
-    internal class PhpComposerExternalAcrVersionProvider : ExternalAcrVersionProviderBase, IPhpVersionProvider
+    internal class PhpComposerExternalAcrVersionProvider : ExternalAcrVersionProviderBase, IPhpComposerVersionProvider
     {
         public PhpComposerExternalAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,

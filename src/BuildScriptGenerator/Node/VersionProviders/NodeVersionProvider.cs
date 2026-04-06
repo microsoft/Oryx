@@ -55,9 +55,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return this.versionInfo;
         }
 
+        // This method resolves the Node.js version info based on the enabled providers and their priority
+        // It tries each provider in order and returns the first successful result.
+        // Priority: External-ACR → External-SDK → Direct-ACR → CDN
         private PlatformVersionInfo ResolveDynamicVersionInfo()
         {
-            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
+            this.outputWriter.WriteLine("Resolving Node.js version info using dynamic install providers...");
 
             // If external ACR provider is enabled.
             if (this.options.EnableExternalAcrSdkProvider)
@@ -70,16 +73,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
             }
 
+            // If external SDK provider is enabled.
             if (this.options.EnableExternalSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromExternalVersionProvider();
                 if (platformVersionInfo != null)
                 {
-                    this.outputWriter.WriteLine("Version resolved using external SDK provider(blob).");
+                    this.outputWriter.WriteLine("Version resolved using external SDK provider.");
                     return platformVersionInfo;
                 }
             }
 
+            // If direct ACR provider is enabled.
             if (this.options.EnableAcrSdkProvider)
             {
                 var platformVersionInfo = this.TryGetVersionInfoFromAcrVersionProvider();
@@ -94,6 +99,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return this.sdkStorageVersionProvider.GetVersionInfo();
         }
 
+        // This method tries to get version info from the external ACR provider and logs any exceptions that occur, returning null if it fails.
+        // Oryx -> socket -> external ACR SDK provider -> ACR registry (OCI API)
         private PlatformVersionInfo TryGetVersionInfoFromExternalAcrVersionProvider()
         {
             try
@@ -115,6 +122,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
         }
 
+        // This method tries to get version info from the external SDK provider and logs any exceptions that occur, returning null if it fails.
+        // Oryx -> socket -> external SDK provider -> blob storage (e.g., Azure Blob Storage API)
         private PlatformVersionInfo TryGetVersionInfoFromExternalVersionProvider()
         {
             try
@@ -124,11 +133,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             catch (Exception ex)
             {
                 this.logger.LogError(
-                    $"Error while getting version info from external blob provider. Ex: {ex}");
+                    $"Error while getting version info from external SDK provider. Ex: {ex}");
                 return null;
             }
         }
 
+        // This method tries to get version info from the direct ACR provider and logs any exceptions that occur, returning null if it fails.
+        // Oryx -> direct ACR SDK provider -> ACR registry (OCI API).
         private PlatformVersionInfo TryGetVersionInfoFromAcrVersionProvider()
         {
             try
