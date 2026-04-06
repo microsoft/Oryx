@@ -37,11 +37,17 @@ ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 
-COPY nodejs-bullseye-${NODE22_VERSION}.tar.gz .
 RUN set -e \
-    && mkdir -p /opt/nodejs/${NODE22_VERSION} \
-    && tar -xzf nodejs-bullseye-${NODE22_VERSION}.tar.gz -C /usr/local \
-    && rm nodejs-bullseye-${NODE22_VERSION}.tar.gz \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends git make \
+    && curl -sL https://git.io/n-install | bash -s -- -ny - \
+    && ~/n/bin/n -d ${NODE22_VERSION} \
+    && cp -r /usr/local/n/versions/node/${NODE22_VERSION}/* /usr/local/ \
+    && rm -rf /usr/local/n \
+    && rm -rf ~/n \
+    && apt-get purge -y git make \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 ARG NPM_VERSION
