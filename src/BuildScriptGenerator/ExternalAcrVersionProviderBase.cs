@@ -167,10 +167,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     var requestBytes = Encoding.UTF8.GetBytes(requestJson);
 
                     await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
+
+                    // Read until the '$' end-of-message delimiter arrives.
+                    // Stream sockets may deliver data across multiple reads,
+                    // especially for large list-versions responses.
+                    var responseBuilder = new StringBuilder();
                     var buffer = new byte[4096];
-                    var received = await socket.ReceiveAsync(
-                        new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
-                    var responseString = Encoding.UTF8.GetString(buffer, 0, received).TrimEnd('$');
+                    while (true)
+                    {
+                        var received = await socket.ReceiveAsync(
+                            new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
+                        if (received == 0)
+                        {
+                            break;
+                        }
+
+                        responseBuilder.Append(Encoding.UTF8.GetString(buffer, 0, received));
+                        if (responseBuilder.Length > 0 && responseBuilder[responseBuilder.Length - 1] == '$')
+                        {
+                            break;
+                        }
+                    }
+
+                    var responseString = responseBuilder.ToString().TrimEnd('$');
 
                     if (!string.IsNullOrWhiteSpace(responseString) &&
                         !responseString.Equals("Error", StringComparison.OrdinalIgnoreCase))

@@ -94,15 +94,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 // Strip the osFlavor prefix to get "{sdkVersion}_{runtimeVersion}"
                 var versionPart = tag.Substring(prefix.Length);
-                var separatorIndex = versionPart.IndexOf('_');
-                if (separatorIndex <= 0 || separatorIndex >= versionPart.Length - 1)
+                var parts = versionPart.Split('_', 2);
+                var sdkVersion = parts[0];
+                var runtimeVersion = parts.Length > 1 ? parts[1] : null;
+                if (parts.Length != 2 || string.IsNullOrEmpty(sdkVersion) || string.IsNullOrEmpty(runtimeVersion))
                 {
                     this.logger.LogDebug("Skipping tag '{tag}' — does not match expected format.", tag);
                     continue;
                 }
-
-                var sdkVersion = versionPart.Substring(0, separatorIndex);
-                var runtimeVersion = versionPart.Substring(separatorIndex + 1);
 
                 supportedVersions[runtimeVersion] = sdkVersion;
             }
