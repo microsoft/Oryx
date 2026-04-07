@@ -28,8 +28,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            var availableVersions = this.GetAvailableSdkVersions(platformName: "php-composer", debianFlavor: this.DebianFlavor);
-            if (availableVersions == null || availableVersions.Count == 0)
+            var availableVersions = PhpVersions.ComposerVersionsPerDebianFlavor.TryGetValue(this.DebianFlavor, out var versions)
+                ? versions
+                : null;
+
+            if (availableVersions == null || availableVersions.Length == 0)
             {
                 return null;
             }

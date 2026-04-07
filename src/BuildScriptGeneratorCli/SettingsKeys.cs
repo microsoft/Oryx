@@ -17,7 +17,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string CreatePackage = "CREATE_PACKAGE";
         public const string CompressDestinationDir = "COMPRESS_DESTINATION_DIR";
         public const string EnableDynamicInstall = "ENABLE_DYNAMIC_INSTALL";
-        public const string EnableExternalSdkProvider = "ORYX_ENABLE_EXTERNAL_SDK_PROVIDER";
         public const string DisableCheckers = "DISABLE_CHECKERS";
         public const string DisableDotNetCoreBuild = "DISABLE_DOTNETCORE_BUILD";
         public const string DisableGolangBuild = "DISABLE_GOLANG_BUILD";
@@ -74,7 +73,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string OsFlavor = "OS_FLAVOR";
         public const string DebianFlavor = "DEBIAN_FLAVOR";
         public const string CallerId = "CALLER_ID";
+
+        // SDK provider settings
         public const string OryxDisablePipUpgrade = "ORYX_DISABLE_PIP_UPGRADE";
+        public const string EnableExternalSdkProvider = "ORYX_ENABLE_EXTERNAL_SDK_PROVIDER";
         public const string EnableExternalAcrSdkProvider = "ORYX_ENABLE_EXTERNAL_ACR_SDK_PROVIDER";
         public const string EnableAcrSdkProvider = "ORYX_ENABLE_ACR_SDK_PROVIDER";
         public const string OryxAcrSdkRegistryUrl = "ORYX_ACR_SDK_REGISTRY_URL";
