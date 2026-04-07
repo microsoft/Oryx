@@ -73,7 +73,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         }
 
         // Note: External ACR provider is handled by DotNetCorePlatform.ResolveVersions(),
-        // which overrides only the SDK version — runtime resolution still goes through this chain.
+        // which overrides the SDK version(the runtime version is expected to be
+        // supplied by the caller (user-specified, detected from .csproj, or user-specified default)
         // Priority here: External-blob → Direct-ACR → CDN
         private string ResolveDynamicDefaultRuntimeVersion()
         {
