@@ -19,9 +19,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Composer25Version = "2.5.8";
         public const string Composer26Version = "2.6.2";
         public const string Composer27Version = "2.7.7";
-        public const string Composer282Version = "2.8.2";
-        public const string Composer284Version = "2.8.4";
-        public const string Composer286Version = "2.8.6";
         public const string Composer28Version = "2.8.8";
         public const string Php85Version = "8.5.1";
         public const string Php85Keys = "1198C0117593497A5EC5C199286AF1F9897469DC 49D9AF6BC72A80D6691719C8AA23F5BE9C7097D4";
