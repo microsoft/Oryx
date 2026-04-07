@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -35,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             return PlatformVersionInfo.CreateOnDiskVersionInfo(
                 supportedVersions: availableVersions.ToArray(),
-                defaultVersion: PhpVersions.DefaultComposerVersion);
+                defaultVersion: PhpVersions.ComposerDefaultVersion);
         }
     }
 }

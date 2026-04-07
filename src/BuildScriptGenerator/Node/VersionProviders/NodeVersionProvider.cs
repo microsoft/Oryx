@@ -100,10 +100,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return this.sdkStorageVersionProvider.GetVersionInfo();
         }
 
-<<<<<<< HEAD
-        // This method tries to get version info from the external ACR provider and logs any exceptions that occur, returning null if it fails.
-        // Oryx -> socket -> external ACR SDK provider -> ACR registry (OCI API)
-=======
         private bool HasSupportedVersions(PlatformVersionInfo versionInfo)
         {
             if (versionInfo?.SupportedVersions == null)
@@ -114,7 +110,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return versionInfo.SupportedVersions.Any();
         }
 
->>>>>>> feature/oryx-sdk-acr-distribution
         private PlatformVersionInfo TryGetVersionInfoFromExternalAcrVersionProvider()
         {
             try
