@@ -1180,6 +1180,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
+        [Fact]
+        public void Detect_ReturnsVersionProviderDefault_WhenExternalAcrEnabled_OverridingDetectedVersion()
+        {
+            // Arrange
+            var detectedVersion = "14.0.0";
+            var versionProviderDefault = "18.0.0";
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var platform = CreateNodePlatform(
+                supportedNodeVersions: new[] { detectedVersion, versionProviderDefault },
+                defaultVersion: versionProviderDefault,
+                detectedVersion: detectedVersion,
+                commonOptions: commonOptions);
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - ExternalACR short-circuit uses version provider's DefaultVersion,
+            // overriding the detected version
+            Assert.NotNull(result);
+            Assert.Equal(NodeConstants.PlatformName, result.Platform);
+            Assert.Equal(versionProviderDefault, result.PlatformVersion);
+        }
+
         private TestNodePlatform CreateNodePlatform(
             string[] supportedNodeVersions = null,
             string defaultVersion = null,
