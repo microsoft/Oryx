@@ -70,7 +70,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 {
                     this.logger.LogWarning(ex, "Failed to get list of blobs from primary storage. Trying backup storage.");
                     var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
-                    xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBackupBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
+                    if (sdkStorageBackupBaseUrl != null)
+                    {
+                        xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBackupBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException(
+                            $"Failed to get SDK versions for platform '{DotNetCoreConstants.PlatformName}' from primary storage URL '{sdkStorageBaseUrl}', " +
+                            $"and backup storage URL is not configured. {Constants.NetworkConfigurationHelpText}",
+                            ex);
+                    }
                 }
 
                 // keys represent runtime version, values represent sdk version

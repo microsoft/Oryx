@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -845,6 +845,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
+            // If External ACR SDK provider is enabled, then we try to get the version from it first
+            // before applying the hierarchical rules, because it has the highest priority in terms of version selection.
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
+            {
+                var acrVersionInfo = this.nodeVersionProvider.GetVersionInfo();
+                if (acrVersionInfo?.DefaultVersion != null)
+                {
+                    return acrVersionInfo.DefaultVersion;
+                }
+            }
+
             // Explicitly specified version by user wins over detected version
             if (!string.IsNullOrEmpty(this.nodeScriptGeneratorOptions.NodeVersion))
             {
