@@ -223,9 +223,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator
           var requestBytes = Encoding.UTF8.GetBytes(requestJson);
 
           await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
+
+          // Read until '$' terminator is received, which indicates end of response
+          var responseBuilder = new StringBuilder();
           var buffer = new byte[4096];
-          var received = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
-          var responseString = Encoding.UTF8.GetString(buffer, 0, received);
+          while (true)
+          {
+            var received = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
+            if (received == 0)
+            {
+              break;
+            }
+
+            responseBuilder.Append(Encoding.UTF8.GetString(buffer, 0, received));
+            if (responseBuilder.Length > 0 && responseBuilder[responseBuilder.Length - 1] == '$')
+            {
+              break;
+            }
+          }
+
+          var responseString = responseBuilder.ToString();
           this.logger.LogInformation("Received response from external SDK provider: {response}", responseString);
           if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
           {

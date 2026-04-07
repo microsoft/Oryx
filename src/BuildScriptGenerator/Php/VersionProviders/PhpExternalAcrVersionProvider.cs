@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return null;
             }
 
-            return PlatformVersionInfo.CreateOnDiskVersionInfo(
+            return PlatformVersionInfo.CreateAvailableOnAcr(
                 supportedVersions: new[] { version },
                 defaultVersion: version);
         }

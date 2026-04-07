@@ -51,6 +51,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             .RedactLoggedHeaders(header => header.Equals("Authorization", StringComparison.OrdinalIgnoreCase))
             .AddPolicyHandler(GetRetryPolicy());
 
+            services.AddHttpClient("acr", httpClient =>
+            {
+                httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("oryx", "1.0"));
+            })
+            .RedactLoggedHeaders(header => header.Equals("Authorization", StringComparison.OrdinalIgnoreCase))
+            .AddPolicyHandler(GetAcrRetryPolicy());
+
             // Add all checkers (platform-dependent + platform-independent)
             foreach (Type type in typeof(BuildScriptGeneratorServiceCollectionExtensions).Assembly.GetTypes())
             {
@@ -70,6 +77,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
                 .WaitAndRetryAsync(
                     retryCount: 6,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetAcrRetryPolicy()
+        {
+            // ACR-specific: only retry transient errors, NOT 404s.
+            // Missing OCI tags are deterministic
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(
+                    retryCount: 3,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
     }
