@@ -105,6 +105,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                                 {
                                     url = $"{this.registryUrl}{url}";
                                 }
+                                else if (!new Uri(url).Host.Equals(this.registryHost, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    this.logger.LogWarning(
+                                        "Ignoring Link header — URL host does not match registry host {RegistryHost}: {Url}",
+                                        this.registryHost,
+                                        url);
+                                    url = null;
+                                }
                             }
                         }
                     }
