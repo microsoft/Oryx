@@ -19,9 +19,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public NodeAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IHttpClientFactory httpClientFactory,
+            OciRegistryClient ociClient,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, httpClientFactory, loggerFactory)
+            : base(commonOptions, ociClient, loggerFactory)
         {
         }
 

@@ -28,9 +28,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public DotNetCoreAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IHttpClientFactory httpClientFactory,
+            OciRegistryClient ociClient,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, httpClientFactory, loggerFactory)
+            : base(commonOptions, ociClient, loggerFactory)
         {
             this.commonOptions = commonOptions.Value;
             this.logger = loggerFactory.CreateLogger<DotNetCoreAcrVersionProvider>();
@@ -74,7 +74,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <summary>
         /// Parses the runtime→SDK version mapping from ACR tags.
         /// Tags follow the format "{osFlavor}-{sdkVersion}_{runtimeVersion}".
-        /// Tags ending with "-default" are excluded from the version list.
         /// </summary>
         private void GetVersionInfoFromTags(string repository, string debianFlavor)
         {

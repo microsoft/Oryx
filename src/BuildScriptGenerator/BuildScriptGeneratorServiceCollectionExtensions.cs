@@ -9,6 +9,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Detector;
 using Polly;
 using Polly.Extensions.Http;
@@ -43,6 +46,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IExternalSdkProvider, ExternalSdkProvider>();
             services.AddSingleton<IAcrSdkProvider, AcrSdkProvider>();
             services.AddSingleton<IExternalAcrSdkProvider, ExternalAcrSdkProvider>();
+            services.AddSingleton<OciRegistryClient>(sp =>
+            {
+                var opts = sp.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+                var registryUrl = string.IsNullOrEmpty(opts.OryxAcrSdkRegistryUrl)
+                    ? SdkStorageConstants.DefaultAcrSdkRegistryUrl
+                    : opts.OryxAcrSdkRegistryUrl;
+                return new OciRegistryClient(
+                    registryUrl,
+                    sp.GetRequiredService<IHttpClientFactory>(),
+                    sp.GetRequiredService<ILoggerFactory>());
+            });
             services.AddHttpClient("general", httpClient =>
             {
                 // NOTE: Setting user agent is required to avoid receiving 403 Forbidden response.

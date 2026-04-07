@@ -25,11 +25,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public class ExternalAcrSdkProvider : IExternalAcrSdkProvider
     {
         /// <summary>
-        /// The directory where blob-based SDKs are cached (used by <see cref="ExternalSdkProvider"/>).
-        /// </summary>
-        public const string ExternalSdksStorageDir = "/var/OryxSdks";
-
-        /// <summary>
         /// The directory where ACR-based SDKs are cached.
         /// Must match the mount path used by the external host.
         /// </summary>
