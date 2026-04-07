@@ -34,7 +34,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (!this.resolved)
             {
-                this.resolvedVersion = this.GetCompanionSdkVersion(DotNetCoreConstants.PlatformName, debianFlavor: this.DebianFlavor);
+                var flavor = this.DebianFlavor;
+                if (string.IsNullOrEmpty(flavor))
+                {
+                    return null;
+                }
+
+                this.resolvedVersion = this.GetCompanionSdkVersion(DotNetCoreConstants.PlatformName, debianFlavor: flavor);
                 this.resolved = true;
             }
 
