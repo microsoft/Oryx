@@ -349,7 +349,7 @@ RUN pecl install redis && docker-php-ext-enable redis
 RUN set -eux; \	
     pecl install mongodb && docker-php-ext-enable mongodb
 
-# Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.1.0)
+# Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.3.0)
 RUN set -eux; \
     pecl install sqlsrv pdo_sqlsrv \
     && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
