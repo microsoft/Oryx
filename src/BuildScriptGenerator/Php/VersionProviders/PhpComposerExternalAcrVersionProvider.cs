@@ -12,7 +12,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Common;
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     /// <summary>
-    /// ACR-based version provider for PHP Composer SDKsvia external socket provider.
+    /// ACR-based version provider for PHP Composer SDKs via external socket provider.
     /// Parallel to <see cref="PhpComposerExternalVersionProvider"/> (blob) and
     /// <see cref="PhpComposerAcrVersionProvider"/> (direct OCI).
     /// </summary>
@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return null;
             }
 
-            return PlatformVersionInfo.CreateOnDiskVersionInfo(
+            return PlatformVersionInfo.CreateAvailableOnAcr(
                 supportedVersions: availableVersions.ToArray(),
                 defaultVersion: PhpVersions.ComposerDefaultVersion);
         }

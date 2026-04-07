@@ -7,7 +7,6 @@ using System;
 using System.Formats.Tar;
 using System.IO;
 using System.IO.Compression;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -37,18 +36,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IStandardOutputWriter outputWriter,
             ILogger<AcrSdkProvider> logger,
             IOptions<BuildScriptGeneratorOptions> options,
-            IHttpClientFactory httpClientFactory,
-            ILoggerFactory loggerFactory)
+            OciRegistryClient ociClient)
         {
             this.logger = logger;
             this.outputWriter = outputWriter;
             this.options = options.Value;
-
-            var registryUrl = string.IsNullOrEmpty(this.options.OryxAcrSdkRegistryUrl)
-                ? SdkStorageConstants.DefaultAcrSdkRegistryUrl
-                : this.options.OryxAcrSdkRegistryUrl;
-
-            this.ociClient = new OciRegistryClient(registryUrl, httpClientFactory, loggerFactory);
+            this.ociClient = ociClient;
         }
 
         /// <inheritdoc/>

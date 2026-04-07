@@ -142,6 +142,231 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
+        public void UsesExternalAcrProvider_IfEnabled_AndSdkIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions();
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: true);
+            var platformInstaller = new TestPythonPlatformInstaller(
+                isVersionAlreadyInstalled: false,
+                Options.Create(commonOptions),
+                NullLoggerFactory.Instance);
+            var platform = CreatePlatformWithProviders(
+                versionProvider,
+                platformInstaller,
+                commonOptions,
+                pythonScriptGeneratorOptions,
+                externalAcrSdkProvider: externalAcrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.7.5",
+            };
+
+            // Act
+            var snippet = platform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Equal(TestPythonPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, snippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+        }
+
+        [Fact]
+        public void UsesDirectAcrProvider_IfEnabled_AndSdkIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions();
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: true);
+            var platformInstaller = new TestPythonPlatformInstaller(
+                isVersionAlreadyInstalled: false,
+                Options.Create(commonOptions),
+                NullLoggerFactory.Instance);
+            var platform = CreatePlatformWithProviders(
+                versionProvider,
+                platformInstaller,
+                commonOptions,
+                pythonScriptGeneratorOptions,
+                acrSdkProvider: acrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.7.5",
+            };
+
+            // Act
+            var snippet = platform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Equal(TestPythonPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, snippet);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
+        public void FallsBackFromExternalAcrToExternalSdk_WhenExternalAcrFails()
+        {
+            // Arrange
+            var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions();
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var platformInstaller = new TestPythonPlatformInstaller(
+                isVersionAlreadyInstalled: false,
+                Options.Create(commonOptions),
+                NullLoggerFactory.Instance);
+            var platform = CreatePlatformWithProviders(
+                versionProvider,
+                platformInstaller,
+                commonOptions,
+                pythonScriptGeneratorOptions,
+                externalAcrSdkProvider: externalAcrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.7.5",
+            };
+
+            // Act
+            var snippet = platform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Equal(TestPythonPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, snippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+        }
+
+        [Fact]
+        public void FallsBackFromExternalAcrToDirectAcr_WhenBothExternalProvidersFail()
+        {
+            // Arrange
+            var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions();
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: true);
+            var externalSdkProvider = new TestExternalSdkProvider(requestBlobResult: false);
+            var platformInstaller = new TestPythonPlatformInstaller(
+                isVersionAlreadyInstalled: false,
+                Options.Create(commonOptions),
+                NullLoggerFactory.Instance);
+            var platform = CreatePlatformWithProviders(
+                versionProvider,
+                platformInstaller,
+                commonOptions,
+                pythonScriptGeneratorOptions,
+                externalSdkProvider: externalSdkProvider,
+                externalAcrSdkProvider: externalAcrSdkProvider,
+                acrSdkProvider: acrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.7.5",
+            };
+
+            // Act
+            var snippet = platform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Equal(TestPythonPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, snippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
+        public void FallsBackToCdn_WhenAllProvidersFail()
+        {
+            // Arrange
+            var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions();
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: false);
+            var externalSdkProvider = new TestExternalSdkProvider(requestBlobResult: false);
+            var platformInstaller = new TestPythonPlatformInstaller(
+                isVersionAlreadyInstalled: false,
+                Options.Create(commonOptions),
+                NullLoggerFactory.Instance);
+            var platform = CreatePlatformWithProviders(
+                versionProvider,
+                platformInstaller,
+                commonOptions,
+                pythonScriptGeneratorOptions,
+                externalSdkProvider: externalSdkProvider,
+                externalAcrSdkProvider: externalAcrSdkProvider,
+                acrSdkProvider: acrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.7.5",
+            };
+
+            // Act
+            var snippet = platform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Equal(TestPythonPlatformInstaller.InstallerScript, snippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
         public void GeneratedSnippet_DoesNotHaveInstallScript_IfVersionIsAlreadyPresentOnDisk()
         {
             // Arrange
@@ -435,6 +660,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),
                 new TestAcrSdkProvider(),
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
+        }
+
+        private PythonPlatform CreatePlatformWithProviders(
+            IPythonVersionProvider pythonVersionProvider,
+            PythonPlatformInstaller platformInstaller,
+            BuildScriptGeneratorOptions commonOptions = null,
+            PythonScriptGeneratorOptions pythonScriptGeneratorOptions = null,
+            IExternalSdkProvider externalSdkProvider = null,
+            IExternalAcrSdkProvider externalAcrSdkProvider = null,
+            IAcrSdkProvider acrSdkProvider = null)
+        {
+            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
+            pythonScriptGeneratorOptions = pythonScriptGeneratorOptions ?? new PythonScriptGeneratorOptions();
+            externalSdkProvider = externalSdkProvider ?? new TestExternalSdkProvider();
+            externalAcrSdkProvider = externalAcrSdkProvider ?? new TestExternalAcrSdkProvider();
+            acrSdkProvider = acrSdkProvider ?? new TestAcrSdkProvider();
+            return new PythonPlatform(
+                Options.Create(commonOptions),
+                Options.Create(pythonScriptGeneratorOptions),
+                pythonVersionProvider,
+                NullLogger<PythonPlatform>.Instance,
+                detector: null,
+                platformInstaller,
+                externalSdkProvider,
+                externalAcrSdkProvider,
+                acrSdkProvider,
                 TelemetryClientHelper.GetTelemetryClient(),
                 new DefaultStandardOutputWriter());
         }

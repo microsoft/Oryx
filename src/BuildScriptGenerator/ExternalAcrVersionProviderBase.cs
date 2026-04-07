@@ -6,10 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -155,33 +152,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private async Task<string> SendRequestAsync(string platformName, string debianFlavor, string action = "get-version")
         {
-            using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
             try
             {
-                using (var cts = new CancellationTokenSource(
-                    TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
+                var request = new { Action = action, PlatformName = platformName, DebianFlavor = debianFlavor };
+                var responseString = await SocketRequestHelper.SendRequestAsync(SocketPath, request, MaxTimeoutForSocketOperationInSeconds);
+                responseString = responseString?.TrimEnd('$');
+
+                if (!string.IsNullOrWhiteSpace(responseString) &&
+                    !responseString.Equals("Error", StringComparison.OrdinalIgnoreCase))
                 {
-                    await socket.ConnectAsync(new UnixDomainSocketEndPoint(SocketPath), cts.Token);
-                    var requestJson = JsonSerializer.Serialize(
-                        new { Action = action, PlatformName = platformName, DebianFlavor = debianFlavor }) + "$";
-                    var requestBytes = Encoding.UTF8.GetBytes(requestJson);
-
-                    await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
-                    var buffer = new byte[4096];
-                    var received = await socket.ReceiveAsync(
-                        new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
-                    var responseString = Encoding.UTF8.GetString(buffer, 0, received).TrimEnd('$');
-
-                    if (!string.IsNullOrWhiteSpace(responseString) &&
-                        !responseString.Equals("Error", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return responseString.Trim();
-                    }
-
-                    this.logger.LogError(
-                        "External provider returned an unsuccessful response: {Response}",
-                        responseString);
+                    return responseString.Trim();
                 }
+
+                this.logger.LogError(
+                    "External provider returned an unsuccessful response: {Response}",
+                    responseString);
             }
             catch (OperationCanceledException)
             {

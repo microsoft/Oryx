@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         /// <summary>
         /// Gets or sets the repository prefix for SDK images in the OCI registry.
-        /// e.g. "oryx" produces images like {registry}/oryx/node-sdk:{tag}.
+        /// e.g. "oryx" produces images like {registry}/oryx/nodejs-sdk:{tag}.
         /// </summary>
         public string OryxAcrSdkRepositoryPrefix { get; set; }
     }

@@ -9,6 +9,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Detector;
 using Polly;
 using Polly.Extensions.Http;
@@ -43,6 +46,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IExternalSdkProvider, ExternalSdkProvider>();
             services.AddSingleton<IAcrSdkProvider, AcrSdkProvider>();
             services.AddSingleton<IExternalAcrSdkProvider, ExternalAcrSdkProvider>();
+            services.AddSingleton<OciRegistryClient>(sp =>
+            {
+                var opts = sp.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+                var registryUrl = string.IsNullOrEmpty(opts.OryxAcrSdkRegistryUrl)
+                    ? SdkStorageConstants.DefaultAcrSdkRegistryUrl
+                    : opts.OryxAcrSdkRegistryUrl;
+                return new OciRegistryClient(
+                    registryUrl,
+                    sp.GetRequiredService<IHttpClientFactory>(),
+                    sp.GetRequiredService<ILoggerFactory>());
+            });
             services.AddHttpClient("general", httpClient =>
             {
                 // NOTE: Setting user agent is required to avoid receiving 403 Forbidden response.
@@ -50,6 +64,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             })
             .RedactLoggedHeaders(header => header.Equals("Authorization", StringComparison.OrdinalIgnoreCase))
             .AddPolicyHandler(GetRetryPolicy());
+
+            services.AddHttpClient("acr", httpClient =>
+            {
+                httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("oryx", "1.0"));
+            })
+            .RedactLoggedHeaders(header => header.Equals("Authorization", StringComparison.OrdinalIgnoreCase))
+            .AddPolicyHandler(GetAcrRetryPolicy());
 
             // Add all checkers (platform-dependent + platform-independent)
             foreach (Type type in typeof(BuildScriptGeneratorServiceCollectionExtensions).Assembly.GetTypes())
@@ -70,6 +91,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
                 .WaitAndRetryAsync(
                     retryCount: 6,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetAcrRetryPolicy()
+        {
+            // ACR-specific: only retry transient errors, NOT 404s.
+            // Missing OCI tags are deterministic
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(
+                    retryCount: 3,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
     }

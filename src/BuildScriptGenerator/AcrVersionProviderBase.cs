@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -27,19 +26,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public AcrVersionProviderBase(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IHttpClientFactory httpClientFactory,
+            OciRegistryClient ociClient,
             ILoggerFactory loggerFactory)
         {
             var options = commonOptions.Value;
             this.logger = loggerFactory.CreateLogger(this.GetType());
             this.debianFlavor = options.DebianFlavor;
             this.repositoryPrefix = options.OryxAcrSdkRepositoryPrefix;
-
-            var registryUrl = string.IsNullOrEmpty(options.OryxAcrSdkRegistryUrl)
-                ? SdkStorageConstants.DefaultAcrSdkRegistryUrl
-                : options.OryxAcrSdkRegistryUrl;
-
-            this.OciClient = new OciRegistryClient(registryUrl, httpClientFactory, loggerFactory);
+            this.OciClient = ociClient;
         }
 
         protected OciRegistryClient OciClient { get; }

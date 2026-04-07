@@ -287,7 +287,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // 3. Try Direct-ACR (direct OCI API calls)
             if (this.commonOptions.EnableAcrSdkProvider)
             {
-                var result = this.TryInstallFromAcrSdkProvider(sdkVersion);
+                var runtimeVersion = dotNetCorePlatformDetectorResult.PlatformVersion;
+                var result = this.TryInstallFromAcrSdkProvider(sdkVersion, runtimeVersion);
                 if (result != null)
                 {
                     return result;
@@ -313,30 +314,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     $"'{typeof(DotNetCorePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            // The external ACR SDK provider already knows which SDK companion image is pinned for this platform.
-            // This short-circuit is specific to .NET because its normal path requires a runtime→SDK
-            // version mapping (e.g. runtime 8.0.18 → SDK 8.0.301) which doesn't apply when the
-            // external host returns a single SDK version.
-            if (this.commonOptions.EnableExternalAcrSdkProvider)
-            {
-                var dictatedVersion = this.externalAcrVersionProvider.GetSdkVersion();
-                if (!string.IsNullOrEmpty(dictatedVersion))
-                {
-                    this.logger.LogInformation(
-                        "External ACR provider returned .NET SDK version {Version}. Skipping version resolution.",
-                        dictatedVersion);
-                    dotNetCorePlatformDetectorResult.PlatformVersion = dictatedVersion;
-                    dotNetCorePlatformDetectorResult.SdkVersion = dictatedVersion;
-                    return;
-                }
-            }
-
-            // Normal resolution path
+            // Resolve runtime version (same for all flows — ExternalAcrSdkProvider does not affect this).
             var resolvedRuntimeVersion = this.GetRuntimeVersionUsingHierarchicalRules(
                 dotNetCorePlatformDetectorResult.PlatformVersion);
             resolvedRuntimeVersion = this.GetMaxSatisfyingRuntimeVersionAndVerify(resolvedRuntimeVersion);
             dotNetCorePlatformDetectorResult.PlatformVersion = resolvedRuntimeVersion;
 
+            // Resolve SDK version.
+            // External ACR provider dictates the SDK version directly — no runtime→SDK lookup needed.
+            // This is .NET-specific: other platforms have a single version,
+            // but .NET has separate runtime and SDK versions. The external host already knows
+            // which SDK companion image to use, so we trust its SDK version.
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
+            {
+                var dictatedSdk = this.externalAcrVersionProvider.GetSdkVersion();
+                if (!string.IsNullOrEmpty(dictatedSdk))
+                {
+                    this.logger.LogInformation(
+                        "External ACR provider returned .NET SDK version {Version}. Using it directly.",
+                        dictatedSdk);
+                    dotNetCorePlatformDetectorResult.SdkVersion = dictatedSdk;
+                    return;
+                }
+            }
+
+            // Normal SDK resolution: look up from runtime→SDK version map.
             var versionMap = this.versionProvider.GetSupportedVersions();
             var sdkVersion = this.GetSdkVersion(context, dotNetCorePlatformDetectorResult.PlatformVersion, versionMap);
             dotNetCorePlatformDetectorResult.SdkVersion = sdkVersion;
@@ -395,7 +397,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
         }
 
-        private string TryInstallFromAcrSdkProvider(string sdkVersion)
+        private string TryInstallFromAcrSdkProvider(string sdkVersion, string runtimeVersion)
         {
             this.logger.LogDebug(
                 "DotNetCore SDK version {version} is not installed. ACR SDK provider is enabled, so trying to fetch SDK using it.",
@@ -403,35 +405,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             try
             {
-                // .NET ACR images use compound tags: {os}-{sdkVersion}_{runtimeVersion}.
-                // Resolve the runtime version via a reverse lookup in the version map
-                // (runtime → SDK) rather than relying on PlatformVersion, which may have
-                // been overwritten by the ExternalACR short-circuit in ResolveVersions.
-                string runtimeVersion = null;
-                try
-                {
-                    var versionMap = this.versionProvider.GetSupportedVersions();
-                    if (versionMap != null)
-                    {
-                        foreach (var kvp in versionMap)
-                        {
-                            if (string.Equals(kvp.Value, sdkVersion, StringComparison.OrdinalIgnoreCase))
-                            {
-                                runtimeVersion = kvp.Key;
-                                break;
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogWarning(
-                        ex,
-                        "Could not resolve runtime version for SDK {version} from version map. " +
-                        "ACR tag will use SDK version only.",
-                        sdkVersion);
-                }
-
                 var result = this.acrSdkProvider.RequestSdkFromAcrAsync(
                     this.Name, sdkVersion, this.commonOptions.DebianFlavor, runtimeVersion).Result;
 

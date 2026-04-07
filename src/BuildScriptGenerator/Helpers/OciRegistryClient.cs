@@ -31,7 +31,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly string registryUrl;
         private readonly string registryHost;
         private readonly ILogger logger;
-        private readonly ConcurrentDictionary<string, string> tokenCache = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, (string Token, DateTimeOffset ExpiresAt)> tokenCache
+            = new ConcurrentDictionary<string, (string, DateTimeOffset)>();
 
         public OciRegistryClient(string registryUrl, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
         {
@@ -50,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             this.registryUrl = trimmed;
             this.registryHost = new Uri(trimmed).Host;
-            this.httpClient = httpClientFactory.CreateClient("general");
+            this.httpClient = httpClientFactory.CreateClient("acr");
             this.logger = loggerFactory.CreateLogger<OciRegistryClient>();
         }
 
@@ -257,10 +258,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return null;
             }
 
+            const int TokenRefreshBufferSeconds = 60;
+            const int DefaultTokenLifetimeSeconds = 300;
+
             var scope = $"repository:{repository}:pull";
-            if (this.tokenCache.TryGetValue(scope, out var cached))
+            if (this.tokenCache.TryGetValue(scope, out var cached)
+                && cached.ExpiresAt > DateTimeOffset.UtcNow.AddSeconds(TokenRefreshBufferSeconds))
             {
-                return cached;
+                return cached.Token;
             }
 
             var tokenUrl = $"{this.registryUrl}/oauth2/token?service={this.registryHost}&scope={scope}";
@@ -293,7 +298,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                     if (!string.IsNullOrEmpty(token))
                     {
-                        this.tokenCache[scope] = token;
+                        int expiresIn = DefaultTokenLifetimeSeconds;
+                        if (root.TryGetProperty("expires_in", out var expiresInProp)
+                            && expiresInProp.TryGetInt32(out var parsed))
+                        {
+                            expiresIn = parsed;
+                        }
+
+                        var expiresAt = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
+                        this.tokenCache[scope] = (token, expiresAt);
                     }
 
                     return token;

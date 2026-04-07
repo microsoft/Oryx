@@ -19,9 +19,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public PhpAcrVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IHttpClientFactory httpClientFactory,
+            OciRegistryClient ociClient,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, httpClientFactory, loggerFactory)
+            : base(commonOptions, ociClient, loggerFactory)
         {
         }
 

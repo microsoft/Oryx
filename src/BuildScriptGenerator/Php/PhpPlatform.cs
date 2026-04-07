@@ -387,12 +387,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private bool TryInstallPhpUsingAcrSdk(string phpVersion, StringBuilder scriptBuilder)
         {
-            if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
-            {
-                this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
-                return true;
-            }
-
             this.logger.LogDebug("PHP version {version} is not installed. ACR SDK provider is enabled, so trying to fetch SDK using it.", phpVersion);
 
             try
@@ -427,12 +421,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 phpComposerVersion = PhpVersions.ComposerDefaultVersion;
             }
 
-            if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
-            {
-                this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
-                return true;
-            }
-
             this.logger.LogDebug("PHP Composer version {version} is not installed. ACR SDK provider is enabled, so trying to fetch SDK using it.", phpComposerVersion);
 
             try
@@ -462,12 +450,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private bool TryInstallPhpUsingExternalAcrSdk(string phpVersion, StringBuilder scriptBuilder)
         {
-            if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
-            {
-                this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
-                return true;
-            }
-
             this.logger.LogDebug("PHP version {version} is not installed. External ACR SDK provider is enabled, so trying to fetch SDK using it.", phpVersion);
 
             try
@@ -500,12 +482,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 phpComposerVersion = PhpVersions.ComposerDefaultVersion;
             }
 
-            if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
-            {
-                this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
-                return true;
-            }
-
             this.logger.LogDebug("PHP Composer version {version} is not installed. External ACR SDK provider is enabled, so trying to fetch SDK using it.", phpComposerVersion);
 
             try
@@ -533,12 +509,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private bool TryInstallPhpExternalSdk(string phpVersion, StringBuilder scriptBuilder)
         {
-            if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
-            {
-                this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
-                return true;
-            }
-
             this.logger.LogDebug("PHP version {version} is not installed. External SDK provider is enabled, so trying to fetch SDK using it.", phpVersion);
 
             try
@@ -571,12 +541,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 phpComposerVersion = PhpVersions.ComposerDefaultVersion;
             }
 
-            if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
-            {
-                this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
-                return true;
-            }
-
             this.logger.LogDebug("PHP Composer version {version} is not installed. External SDK provider is enabled, so trying to fetch SDK using it.", phpComposerVersion);
 
             try
@@ -600,37 +564,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
 
             return false;
-        }
-
-        private bool TryInstallPhp(string phpVersion, StringBuilder scriptBuilder)
-        {
-            if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
-            {
-                this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
-                return true;
-            }
-
-            this.logger.LogDebug("PHP version {version} is not installed. Trying to install it from CDN.", phpVersion);
-            scriptBuilder.AppendLine(this.phpInstaller.GetInstallerScriptSnippet(phpVersion));
-            return true;
-        }
-
-        private bool TryInstallPhpComposer(string phpComposerVersion, StringBuilder scriptBuilder)
-        {
-            if (string.IsNullOrEmpty(phpComposerVersion))
-            {
-                phpComposerVersion = PhpVersions.ComposerDefaultVersion;
-            }
-
-            if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
-            {
-                this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
-                return true;
-            }
-
-            this.logger.LogDebug("PHP Composer version {version} is not installed. Trying to install it from CDN.", phpComposerVersion);
-            scriptBuilder.AppendLine(this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion));
-            return true;
         }
 
         private void ResolveVersionsUsingHierarchicalRules(PhpPlatformDetectorResult detectorResult)

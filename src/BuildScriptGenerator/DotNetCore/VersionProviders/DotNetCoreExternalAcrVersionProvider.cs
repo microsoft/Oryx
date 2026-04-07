@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <summary>
         /// Gets the single SDK version dictated by the external host, or null if unavailable.
         /// </summary>
-        public string GetSdkVersion()
+        public virtual string GetSdkVersion()
         {
             if (!this.resolved)
             {

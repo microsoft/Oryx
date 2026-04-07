@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
           while ((line = stringReader.ReadLine()) != null)
           {
             // Ignore any comments in the file
-            if (!line.StartsWith("#") || !line.StartsWith("//"))
+            if (!line.StartsWith("#") && !line.StartsWith("//"))
             {
               defaultVersion = line.Trim();
               break;
