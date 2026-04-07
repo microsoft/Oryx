@@ -7,11 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -207,51 +204,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
     private async Task<bool> SendRequestAsync(SdkProviderRequest request)
     {
-      using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
       try
       {
         this.logger.LogInformation("Sending request to external SDK provider: {PlatformName} , {BlobName}, UrlParameters: {UrlParamsJson}", request.PlatformName, request.BlobName, JsonSerializer.Serialize(request.UrlParameters));
 
-        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
+        var responseString = await SocketRequestHelper.SendRequestAsync(SocketPath, request, MaxTimeoutForSocketOperationInSeconds);
+
+        this.logger.LogInformation("Received response from external SDK provider: {response}", responseString);
+        if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
         {
-          await socket.ConnectAsync(new UnixDomainSocketEndPoint(SocketPath), cts.Token);
-          var requestJson = JsonSerializer.Serialize(request);
-          this.logger.LogInformation("Connected to socket {socketPath} and sending request: {requestJson}", SocketPath, requestJson);
-
-          // append $ at the end of the string to indicate end of request
-          requestJson += "$";
-          var requestBytes = Encoding.UTF8.GetBytes(requestJson);
-
-          await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
-
-          // Read until '$' terminator is received, which indicates end of response
-          var responseBuilder = new StringBuilder();
-          var buffer = new byte[4096];
-          while (true)
-          {
-            var received = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
-            if (received == 0)
-            {
-              break;
-            }
-
-            responseBuilder.Append(Encoding.UTF8.GetString(buffer, 0, received));
-            if (responseBuilder.Length > 0 && responseBuilder[responseBuilder.Length - 1] == '$')
-            {
-              break;
-            }
-          }
-
-          var responseString = responseBuilder.ToString();
-          this.logger.LogInformation("Received response from external SDK provider: {response}", responseString);
-          if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
-          {
-            return true;
-          }
-          else
-          {
-            this.logger.LogError("Request to external SDK provider was unsuccessful. Response: {response}", responseString);
-          }
+          return true;
+        }
+        else
+        {
+          this.logger.LogError("Request to external SDK provider was unsuccessful. Response: {response}", responseString);
         }
       }
       catch (OperationCanceledException)

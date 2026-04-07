@@ -5,10 +5,7 @@
 
 using System;
 using System.IO;
-using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -134,7 +131,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private async Task<string> SendRequestAsync(ExternalAcrSdkProviderRequest request)
         {
-            using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
             try
             {
                 this.logger.LogInformation(
@@ -144,56 +140,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     request.Version,
                     request.DebianFlavor);
 
-                using (var cts = new CancellationTokenSource(
-                    TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
+                var responseString = await SocketRequestHelper.SendRequestAsync(SocketPath, request, MaxTimeoutForSocketOperationInSeconds);
+                responseString = responseString?.TrimEnd('$');
+
+                this.logger.LogInformation(
+                    "Received response from external ACR provider: {Response}", responseString);
+
+                if (!string.IsNullOrEmpty(responseString) &&
+                    !responseString.Equals("Error", StringComparison.OrdinalIgnoreCase))
                 {
-                    await socket.ConnectAsync(new UnixDomainSocketEndPoint(SocketPath), cts.Token);
-                    var requestJson = JsonSerializer.Serialize(request);
-                    this.logger.LogInformation(
-                        "Connected to socket {SocketPath} and sending ACR request: {RequestJson}",
-                        SocketPath,
-                        requestJson);
-
-                    // Append $ to indicate end of request (same protocol as ExternalSdkProvider)
-                    requestJson += "$";
-                    var requestBytes = Encoding.UTF8.GetBytes(requestJson);
-
-                    await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
-
-                    // Read until '$' terminator is received, which indicates end of response
-                    var responseBuilder = new StringBuilder();
-                    var buffer = new byte[4096];
-                    while (true)
-                    {
-                        var received = await socket.ReceiveAsync(
-                            new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
-                        if (received == 0)
-                        {
-                            break;
-                        }
-
-                        responseBuilder.Append(Encoding.UTF8.GetString(buffer, 0, received));
-                        if (responseBuilder.Length > 0 && responseBuilder[responseBuilder.Length - 1] == '$')
-                        {
-                            break;
-                        }
-                    }
-
-                    var responseString = responseBuilder.ToString().TrimEnd('$');
-                    this.logger.LogInformation(
-                        "Received response from external ACR provider: {Response}", responseString);
-
-                    if (!string.IsNullOrEmpty(responseString) &&
-                        !responseString.Equals("Error", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return responseString.Trim();
-                    }
-                    else
-                    {
-                        this.logger.LogError(
-                            "ACR request via socket was unsuccessful. Response: {Response}",
-                            responseString);
-                    }
+                    return responseString.Trim();
+                }
+                else
+                {
+                    this.logger.LogError(
+                        "ACR request via socket was unsuccessful. Response: {Response}",
+                        responseString);
                 }
             }
             catch (OperationCanceledException)
