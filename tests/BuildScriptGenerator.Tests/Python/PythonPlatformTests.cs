@@ -641,6 +641,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Equal(PythonConstants.PlatformName, result.Platform);
             Assert.Equal(expectedSdkVersion, result.PlatformVersion);
         }
+
+        [Fact]
+        public void Detect_ReturnsVersionProviderDefault_WhenExternalAcrEnabled_OverridingDetectedVersion()
+        {
+            // Arrange
+            var detectedVersion = "3.8.0";
+            var versionProviderDefault = "3.10.0";
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var platform = CreatePlatform(
+                supportedVersions: new[] { detectedVersion, versionProviderDefault },
+                defaultVersion: versionProviderDefault,
+                detectedVersion: detectedVersion,
+                commonOptions: commonOptions);
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - ExternalACR short-circuit uses version provider's DefaultVersion,
+            // overriding the detected version
+            Assert.NotNull(result);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Equal(versionProviderDefault, result.PlatformVersion);
+        }
         private PythonPlatform CreatePlatform(
             IPythonVersionProvider pythonVersionProvider,
             IExternalSdkProvider externalSdkProvider,
