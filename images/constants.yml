@@ -72,10 +72,6 @@ variables:
   php84Version_SHA: f66f8f48db34e9e29f7bfd6901178e9cf4a1b163e6e497716dfcb8f88bcfae30
   php85Version: 8.5.1
   php85Version_SHA: 3f5bf99ce81201f526d25e288eddb2cfa111d068950d1e9a869530054ff98815
-  DOTNET_SDK_80: 8.0.419
-  DOTNET_SDK_90: 9.0.312
-  DOTNET_SDK_100: "10.0.200"
-  composerVersion: 2.8.8
   python39Version: 3.9.24
   python310Version: 3.10.20
   python311Version: 3.11.15
