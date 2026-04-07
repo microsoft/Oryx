@@ -10,9 +10,31 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class TestAcrSdkProvider : IAcrSdkProvider
     {
+        private readonly bool _returnValue;
+
+        public TestAcrSdkProvider(bool returnValue = false)
+        {
+            _returnValue = returnValue;
+        }
+
+        public bool RequestSdkFromAcrAsyncCalled { get; private set; }
+
+        public string LastRequestedPlatformName { get; private set; }
+
+        public string LastRequestedVersion { get; private set; }
+
+        public string LastRequestedDebianFlavor { get; private set; }
+
+        public string LastRequestedRuntimeVersion { get; private set; }
+
         public Task<bool> RequestSdkFromAcrAsync(string platformName, string version, string debianFlavor, string runtimeVersion = null)
         {
-            return Task.FromResult(false);
+            RequestSdkFromAcrAsyncCalled = true;
+            LastRequestedPlatformName = platformName;
+            LastRequestedVersion = version;
+            LastRequestedDebianFlavor = debianFlavor;
+            LastRequestedRuntimeVersion = runtimeVersion;
+            return Task.FromResult(_returnValue);
         }
     }
 }
