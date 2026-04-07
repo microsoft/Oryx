@@ -105,6 +105,62 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.False(result);
         }
 
+        [Fact]
+        public async Task RequestSdkFromAcrAsync_ReturnsFalse_WhenManifestHasNoLayers()
+        {
+            // Arrange — HEAD returns digest OK, GET manifest returns manifest with no layers
+            var handler = new ManifestHandler(layerDigest: null);
+            var provider = CreateProvider(handler);
+
+            // Act
+            var result = await provider.RequestSdkFromAcrAsync("nodejs", "20.0.0", "bookworm");
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task RequestSdkFromAcrAsync_ReturnsFalse_WhenHttpThrows()
+        {
+            // Arrange — handler that throws on all requests
+            var handler = new ThrowingHandler();
+            var provider = CreateProvider(handler);
+
+            // Act
+            var result = await provider.RequestSdkFromAcrAsync("nodejs", "20.0.0", "bookworm");
+
+            // Assert — exceptions are caught and return false
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task RequestSdkFromAcrAsync_ReturnsFalse_WhenServerError()
+        {
+            // Arrange — 500 Internal Server Error
+            var handler = new StatusCodeHandler(HttpStatusCode.InternalServerError);
+            var provider = CreateProvider(handler);
+
+            // Act
+            var result = await provider.RequestSdkFromAcrAsync("nodejs", "20.0.0", "bookworm");
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task RequestSdkFromAcrAsync_UsesDefaultRepositoryPrefix()
+        {
+            // Arrange — verify the repository path includes the default "oryx" prefix
+            var handler = new TagCapturingHandler();
+            var provider = CreateProvider(handler);
+
+            // Act
+            await provider.RequestSdkFromAcrAsync("python", "3.11.0", "bookworm");
+
+            // Assert — URL should contain "oryx/python-sdk"
+            Assert.Contains("oryx/python-sdk", handler.LastManifestUrl);
+        }
+
         // --- ExternalAcrSdkProvider arg validation ---
 
         [Fact]
@@ -208,6 +264,77 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 }
 
                 // Return 404 to short-circuit — we only need to verify the URL was constructed correctly
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
+            }
+        }
+
+        /// <summary>
+        /// Handler that throws on all requests, simulating network failures.
+        /// </summary>
+        private class ThrowingHandler : HttpMessageHandler
+        {
+            protected override Task<HttpResponseMessage> SendAsync(
+                HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                throw new HttpRequestException("Simulated network failure");
+            }
+        }
+
+        /// <summary>
+        /// Handler that returns a specific status code for all requests.
+        /// </summary>
+        private class StatusCodeHandler : HttpMessageHandler
+        {
+            private readonly HttpStatusCode _statusCode;
+
+            public StatusCodeHandler(HttpStatusCode statusCode)
+            {
+                _statusCode = statusCode;
+            }
+
+            protected override Task<HttpResponseMessage> SendAsync(
+                HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(new HttpResponseMessage(_statusCode));
+            }
+        }
+
+        /// <summary>
+        /// Handler that simulates a manifest with optional layer digest.
+        /// Returns digest on HEAD, manifest on GET, 404 on blob download.
+        /// </summary>
+        private class ManifestHandler : HttpMessageHandler
+        {
+            private readonly string _layerDigest;
+
+            public ManifestHandler(string layerDigest)
+            {
+                _layerDigest = layerDigest;
+            }
+
+            protected override Task<HttpResponseMessage> SendAsync(
+                HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                var url = request.RequestUri.ToString();
+
+                if (url.Contains("/manifests/") && request.Method == HttpMethod.Head)
+                {
+                    var resp = new HttpResponseMessage(HttpStatusCode.OK);
+                    resp.Headers.Add("Docker-Content-Digest", "sha256:testdigest");
+                    return Task.FromResult(resp);
+                }
+
+                if (url.Contains("/manifests/") && request.Method == HttpMethod.Get)
+                {
+                    var manifest = _layerDigest != null
+                        ? $"{{\"schemaVersion\":2,\"layers\":[{{\"digest\":\"{_layerDigest}\",\"size\":100}}]}}"
+                        : "{\"schemaVersion\":2,\"layers\":[]}";
+                    return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(manifest),
+                    });
+                }
+
                 return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
             }
         }

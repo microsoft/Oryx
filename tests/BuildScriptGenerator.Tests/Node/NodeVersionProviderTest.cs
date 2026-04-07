@@ -231,6 +231,64 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.True(result.StorageVersionProvider.GetVersionInfoCalled);
         }
 
+        [Fact]
+        public void GetsVersions_FallsBackToExternalSdk_WhenExternalAcrThrows()
+        {
+            // Arrange — ExternalACR throws, should fall to ExternalSDK
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true,
+                enableExternalSdkProvider: true,
+                externalAcrThrowsException: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.ExternalVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_FallsBackToDirectAcr_WhenExternalAcrAndExternalSdkThrow()
+        {
+            // Arrange — both external providers throw, should fall to direct ACR
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true,
+                enableExternalSdkProvider: true,
+                enableAcrSdkProvider: true,
+                externalAcrThrowsException: true,
+                externalSdkThrowsException: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.ExternalVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_CachesResult_OnSecondCall()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableAcrSdkProvider: true);
+
+            // Act — call twice
+            var versionInfo1 = result.VersionProvider.GetVersionInfo();
+            var versionInfo2 = result.VersionProvider.GetVersionInfo();
+
+            // Assert — same instance returned (cached)
+            Assert.Same(versionInfo1, versionInfo2);
+        }
+
         private class TestNodeSdkStorageVersionProvider : NodeSdkStorageVersionProvider
         {
             public TestNodeSdkStorageVersionProvider(
@@ -252,13 +310,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         private class TestNodeExternalVersionProvider : NodeExternalVersionProvider
         {
             private readonly bool _returnsNull;
+            private readonly bool _throwsException;
 
             public TestNodeExternalVersionProvider(
                 IOptions<BuildScriptGeneratorOptions> commonOptions, IExternalSdkProvider externalProvider, ILoggerFactory loggerFactory,
-                bool returnsNull = false)
+                bool returnsNull = false, bool throwsException = false)
                 : base(commonOptions, externalProvider, loggerFactory)
             {
                 _returnsNull = returnsNull;
+                _throwsException = throwsException;
             }
 
             public bool GetVersionInfoCalled { get; private set; }
@@ -266,6 +326,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             public override PlatformVersionInfo GetVersionInfo()
             {
                 GetVersionInfoCalled = true;
+                if (_throwsException)
+                {
+                    throw new System.Exception("External SDK provider simulated failure");
+                }
+
                 if (_returnsNull)
                 {
                     return null;
@@ -326,15 +391,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         private class TestNodeExternalAcrVersionProvider : NodeExternalAcrVersionProvider
         {
             private readonly bool _returnsNull;
+            private readonly bool _throwsException;
 
             public TestNodeExternalAcrVersionProvider(
                 IOptions<BuildScriptGeneratorOptions> options,
                 ILoggerFactory loggerFactory,
                 IStandardOutputWriter outputWriter,
-                bool returnsNull = false)
+                bool returnsNull = false,
+                bool throwsException = false)
                 : base(options, loggerFactory, outputWriter)
             {
                 _returnsNull = returnsNull;
+                _throwsException = throwsException;
             }
 
             public bool GetVersionInfoCalled { get; private set; }
@@ -342,6 +410,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             public override PlatformVersionInfo GetVersionInfo()
             {
                 GetVersionInfoCalled = true;
+                if (_throwsException)
+                {
+                    throw new System.Exception("External ACR provider simulated failure");
+                }
+
                 if (_returnsNull)
                 {
                     return null;
@@ -403,7 +476,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             bool enableAcrSdkProvider = false,
             bool externalAcrReturnsNull = false,
             bool externalSdkReturnsNull = false,
-            bool acrThrowsException = false)
+            bool acrThrowsException = false,
+            bool externalAcrThrowsException = false,
+            bool externalSdkThrowsException = false)
         {
             var commonOptions = Options.Create(new BuildScriptGeneratorOptions()
             {
@@ -422,12 +497,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 commonOptions,
                 new TestExternalSdkProvider(),
                 NullLoggerFactory.Instance,
-                returnsNull: externalSdkReturnsNull);
+                returnsNull: externalSdkReturnsNull,
+                throwsException: externalSdkThrowsException);
             var externalAcrProvider = new TestNodeExternalAcrVersionProvider(
                 commonOptions,
                 NullLoggerFactory.Instance,
                 new DefaultStandardOutputWriter(),
-                returnsNull: externalAcrReturnsNull);
+                returnsNull: externalAcrReturnsNull,
+                throwsException: externalAcrThrowsException);
             var acrProvider = new TestNodeAcrVersionProvider(
                 commonOptions,
                 new OciRegistryClient("https://test.azurecr.io", new TestHttpClientFactory(), NullLoggerFactory.Instance),

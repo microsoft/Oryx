@@ -242,6 +242,76 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Null(digest);
         }
 
+        // --- Link header host validation ---
+
+        [Fact]
+        public async Task GetAllTagsAsync_IgnoresLinkHeader_WhenHostDoesNotMatchRegistry()
+        {
+            var tagList = new OciTagList { Name = "test/repo", Tags = new List<string> { "v1" } };
+            var handler = new MockHttpMessageHandler();
+            var resp = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(tagList)),
+            };
+            // Link header points to a different host
+            resp.Headers.Add("Link", "<https://evil.example.com/v2/test/repo/tags/list?last=v1>; rel=\"next\"");
+            handler.AddResponse("https://myregistry.azurecr.io/v2/test/repo/tags/list", resp);
+
+            var client = CreateClient(handler);
+            var tags = await client.GetAllTagsAsync("test/repo");
+
+            // Should only return page 1 tags — the malicious Link was ignored
+            Assert.Equal(new List<string> { "v1" }, tags);
+        }
+
+        [Fact]
+        public async Task GetAllTagsAsync_FollowsRelativeLink()
+        {
+            var page1 = new OciTagList { Name = "test/repo", Tags = new List<string> { "v1" } };
+            var page2 = new OciTagList { Name = "test/repo", Tags = new List<string> { "v2" } };
+
+            var handler = new MockHttpMessageHandler();
+            var resp1 = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(page1)),
+            };
+            // Relative link (no host) — should be prefixed with registry URL
+            resp1.Headers.Add("Link", "</v2/test/repo/tags/list?last=v1>; rel=\"next\"");
+            handler.AddResponse("https://myregistry.azurecr.io/v2/test/repo/tags/list", resp1);
+            handler.AddResponse(
+                "https://myregistry.azurecr.io/v2/test/repo/tags/list?last=v1",
+                new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(page2)),
+                });
+
+            var client = CreateClient(handler);
+            var tags = await client.GetAllTagsAsync("test/repo");
+            Assert.Equal(new List<string> { "v1", "v2" }, tags);
+        }
+
+        // --- MCR skip-auth ---
+
+        [Fact]
+        public async Task GetAllTagsAsync_SkipsAuth_ForMcrRegistry()
+        {
+            var tagList = new OciTagList { Name = "oryx/nodejs-sdk", Tags = new List<string> { "bookworm-20.19.3" } };
+            var handler = new MockHttpMessageHandler();
+            handler.AddResponse(
+                "https://mcr.microsoft.com/v2/oryx/nodejs-sdk/tags/list",
+                new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(tagList)),
+                });
+
+            var client = CreateClient(handler, registryHost: "mcr.microsoft.com");
+            var tags = await client.GetAllTagsAsync("oryx/nodejs-sdk");
+
+            // Should succeed without calling token endpoint
+            Assert.Equal(new List<string> { "bookworm-20.19.3" }, tags);
+            Assert.Equal(0, handler.GetCallCount("https://mcr.microsoft.com/oauth2/token"));
+        }
+
         // --- Helpers ---
 
         private static OciRegistryClient CreateClient(
