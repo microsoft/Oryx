@@ -351,9 +351,8 @@ RUN set -eux; \
 # Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.3.0)
 RUN set -eux; \
     pecl install sqlsrv pdo_sqlsrv \
-    && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
-    && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini
-
+    && echo extension=pdo_sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||" -e "s/\"//g")/30-pdo_sqlsrv.ini \
+    && echo extension=sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||" -e "s/\"//g")/20-sqlsrv.ini
 
 RUN { \
                 echo 'opcache.memory_consumption=128'; \
