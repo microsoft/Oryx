@@ -2,19 +2,8 @@ ARG DEBIAN_FLAVOR
 ARG BASE_IMAGE
 
 # Startup script generator
-# Using 1.20 golang image because golang latest image is not supported for buster, so using 1.20 golang image and then updating it.
-# TODO: Once buster gets deprecated, update the golang base image
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26.1-${DEBIAN_FLAVOR} as startupCmdGen
 
-# Download and install the latest version of Go
-RUN curl -OL https://go.dev/dl/go1.25.7.linux-amd64.tar.gz && \
-    rm -rf /usr/local/go && \
-    tar -C /usr/local -xzf go1.25.7.linux-amd64.tar.gz && \
-    rm go1.25.7.linux-amd64.tar.gz
-ENV PATH=$PATH:/usr/local/go/bin
-# Verify the installation
-RUN go version
-# GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
