@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 debianFlavor = this.options.DebianFlavor ?? "bookworm";
             }
 
-            var repository = SdkStorageConstants.GetSdkImageRepository(platformName, this.options.OryxAcrSdkRepositoryPrefix);
+            var repository = SdkImageRepositoryHelper.GetSdkImageRepository(platformName, this.options.OryxAcrSdkRepositoryPrefix);
             var tag = string.IsNullOrEmpty(runtimeVersion)
                 ? $"{debianFlavor}-{version}"
                 : $"{debianFlavor}-{version}_{runtimeVersion}";

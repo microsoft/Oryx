@@ -25,16 +25,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         // OCI image based SDK distribution constants
         public const string DefaultAcrSdkRegistryUrl = "https://mcr.microsoft.com";
         public const string DefaultAcrSdkRepositoryPrefix = "oryx";
-
-        /// <summary>
-        /// Maps a platform name to its OCI SDK image repository path.
-        /// e.g. "nodejs" → "oryx/nodejs-sdk", "php" → "oryx/php-sdk".
-        /// Final image ref: mcr.microsoft.com/oryx/nodejs-sdk:bookworm-20.20.2
-        /// </summary>
-        public static string GetSdkImageRepository(string platformName, string prefix = null)
-        {
-            prefix = string.IsNullOrEmpty(prefix) ? DefaultAcrSdkRepositoryPrefix : prefix;
-            return $"{prefix}/{platformName}-sdk";
-        }
     }
 }

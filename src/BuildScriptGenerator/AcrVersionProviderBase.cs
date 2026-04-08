@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string platformName,
             Dictionary<string, string> defaultVersionPerFlavor)
         {
-            var repository = SdkStorageConstants.GetSdkImageRepository(platformName, this.repositoryPrefix);
+            var repository = SdkImageRepositoryHelper.GetSdkImageRepository(platformName, this.repositoryPrefix);
 
             this.logger.LogDebug("Getting available versions for {platformName} from ACR repository {repository}.", platformName, repository);
 
