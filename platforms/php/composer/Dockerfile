@@ -2,6 +2,8 @@ ARG OS_FLAVOR
 FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${OS_FLAVOR} AS php-buildpack-prereqs
 ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
+ARG VERSIONS_TO_BUILD_OVERRIDE=""
+ENV VERSIONS_TO_BUILD_OVERRIDE=$VERSIONS_TO_BUILD_OVERRIDE
 COPY platforms/php/prereqs /php
 # COPY build/__phpVersions.sh /php/
 COPY platforms/php/prereqs/build.sh /tmp/

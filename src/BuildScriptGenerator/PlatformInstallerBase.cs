@@ -146,13 +146,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (skipSdkBinaryDownload)
                 {
+                    // The tarball was pre-downloaded by an external or ACR SDK provider.
+                    // Check the external blob cache (/var/OryxSdks) first, then the external
+                    // ACR cache (/var/OryxAcrSdks), then the writable dynamic install dir.
                     var tarFileName = BlobNameHelper.GetBlobNameForVersion(platformName, version, this.CommonOptions.DebianFlavor);
-                    var tarFilePath = Path.Combine(ExternalSdkProvider.ExternalSdksStorageDir, platformName, tarFileName);
-                    snippet.AppendLine($"echo \"Skipping download of {platformName} version {version} as it is available in external sdk provider cache...\"")
-                        .AppendLine($"echo \"Extracting contents...\"")
-                        .AppendLine($"tar -xzf {tarFilePath} -C .")
-                        .AppendLine($"rm -f {tarFileName}")
-                        .AppendLine($"echo \"Successfully extracted {platformName} version {version} from external sdk provider cache...\"");
+                    var externalPath = Path.Combine(ExternalSdkProvider.ExternalSdksStorageDir, platformName, tarFileName);
+                    var externalAcrPath = Path.Combine(ExternalAcrSdkProvider.ExternalAcrSdksStorageDir, platformName, tarFileName);
+                    var dynamicPath = Path.Combine(this.CommonOptions.DynamicInstallRootDir, platformName, tarFileName);
+
+                    snippet.AppendLine($"echo \"SDK binary download was skipped. Looking for cached tarball...\"")
+                        .AppendLine($"if [ -f \"{externalPath}\" ]; then")
+                        .AppendLine($"  echo \"Found tarball at {externalPath}\"")
+                        .AppendLine($"  tar -xzf {externalPath} -C .")
+                        .AppendLine($"elif [ -f \"{externalAcrPath}\" ]; then")
+                        .AppendLine($"  echo \"Found tarball at {externalAcrPath}\"")
+                        .AppendLine($"  tar -xzf {externalAcrPath} -C .")
+                        .AppendLine($"elif [ -f \"{dynamicPath}\" ]; then")
+                        .AppendLine($"  echo \"Found tarball at {dynamicPath}\"")
+                        .AppendLine($"  tar -xzf {dynamicPath} -C .")
+                        .AppendLine($"  rm -f {dynamicPath}")
+                        .AppendLine($"else")
+                        .AppendLine($"  echo \"ERROR: Could not find cached tarball for {platformName} {version}\"")
+                        .AppendLine($"  exit 1")
+                        .AppendLine($"fi")
+                        .AppendLine($"echo \"Successfully extracted {platformName} version {version} from cached tarball.\"");
                 }
             else
                 {
