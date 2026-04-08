@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return false;
             }
 
-            if (this.commonOptions.EnableExternalAcrSdkProvider && platform.Name != this.commonOptions.PlatformName)
+            if (this.commonOptions.EnableExternalAcrSdkProvider && !string.IsNullOrEmpty(this.commonOptions.PlatformName) && platform.Name != this.commonOptions.PlatformName)
             {
                 this.logger.LogDebug(
                     "Skipping detection for platform '{PlatformName}' because External ACR SDK provider is enabled and only user provided platform '{UserPlatform}' is considered.",
