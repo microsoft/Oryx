@@ -39,6 +39,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public string GetDefaultRuntimeVersion()
         {
             this.EnsureVersionInfo();
+
+            // Return null when no ACR tags matched the current OS flavor so the
+            // caller's fallback chain (External-blob → ACR → CDN) continues to the
+            // next provider. Without this, the hardcoded DefaultVersionPerFlavor
+            // value would be returned even though ACR has no matching SDKs.
             if (this.versionMap == null || this.versionMap.Count == 0)
             {
                 return null;
