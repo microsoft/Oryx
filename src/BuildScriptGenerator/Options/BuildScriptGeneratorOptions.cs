@@ -43,6 +43,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool EnableExternalSdkProvider { get; set; }
 
+        public bool EnableMcrSdkProvider { get; set; }
+
+        public string McrSdkImageBaseUrl { get; set; }
+
         public string DynamicInstallRootDir { get; set; }
 
         public bool EnableCheckers { get; set; }

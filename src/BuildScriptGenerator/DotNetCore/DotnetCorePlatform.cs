@@ -35,6 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCorePlatformInstaller platformInstaller;
         private readonly GlobalJsonSdkResolver globalJsonSdkResolver;
         private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly IMcrSdkProvider mcrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -47,6 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <param name="dotNetCoreScriptGeneratorOptions">The options if .NET platform.</param>
         /// <param name="platformInstaller">The <see cref="DotNetCorePlatformInstaller"/>.</param>
         /// <param name="globalJsonSdkResolver">The <see cref="GlobalJsonSdkResolver"/>.</param>
+        /// <param name="mcrSdkProvider">The <see cref="IMcrSdkProvider"/>.</param>
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
             ILogger<DotNetCorePlatform> logger,
@@ -56,6 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCorePlatformInstaller platformInstaller,
             GlobalJsonSdkResolver globalJsonSdkResolver,
             IExternalSdkProvider externalSdkProvider,
+            IMcrSdkProvider mcrSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.versionProvider = versionProvider;
@@ -66,6 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.platformInstaller = platformInstaller;
             this.globalJsonSdkResolver = globalJsonSdkResolver;
             this.externalSdkProvider = externalSdkProvider;
+            this.mcrSdkProvider = mcrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -244,30 +248,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
                 else
                 {
-                    if (this.commonOptions.EnableExternalSdkProvider)
-                    {
-                        this.logger.LogDebug("DotNetCore SDK version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", dotNetCorePlatformDetectorResult.SdkVersion);
+                    // Try external SDK provider first (blob storage via socket)
+                    bool sdkFetched = this.TryFetchSdkFromExternalProvider(this.Name, dotNetCorePlatformDetectorResult.SdkVersion);
 
-                        try
-                        {
-                            var blobName = BlobNameHelper.GetBlobNameForVersion(this.Name, dotNetCorePlatformDetectorResult.SdkVersion, this.commonOptions.DebianFlavor);
-                            var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
-                            if (isExternalFetchSuccess)
-                            {
-                                this.logger.LogDebug("DotNetCore SDK version {version} is fetched successfully using external SDK provider. So generating an installation script snippet which skips platform binary download.", dotNetCorePlatformDetectorResult.SdkVersion);
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion, skipSdkBinaryDownload: true);
-                            }
-                            else
-                            {
-                                this.logger.LogDebug("DotNetCore SDK version {version} is not fetched successfully using external SDK provider. So generating an installation script snippet for it.", dotNetCorePlatformDetectorResult.SdkVersion);
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError(ex, "Error while fetching DotNetCore SDK version version {version} using external SDK provider.", dotNetCorePlatformDetectorResult.SdkVersion);
-                            installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion);
-                        }
+                    // Try MCR SDK provider (container image pull)
+                    if (!sdkFetched)
+                    {
+                        sdkFetched = this.TryPullSdkFromMcr(this.Name, dotNetCorePlatformDetectorResult.SdkVersion);
+                    }
+
+                    if (sdkFetched)
+                    {
+                        installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(dotNetCorePlatformDetectorResult.SdkVersion, skipSdkBinaryDownload: true);
                     }
                     else
                     {
@@ -473,6 +465,91 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 explicitVersion = this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion;
                 return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to fetch the SDK from the external SDK provider (blob storage via Unix socket) if enabled.
+        /// </summary>
+        /// <returns>True if the SDK was successfully fetched from the external provider.</returns>
+        private bool TryFetchSdkFromExternalProvider(string platformName, string version)
+        {
+            if (!this.commonOptions.EnableExternalSdkProvider)
+            {
+                return false;
+            }
+
+            this.logger.LogDebug(
+                "{platform} version {version} is not installed. " +
+                "External SDK provider is enabled so trying to fetch SDK using it.",
+                platformName,
+                version);
+
+            try
+            {
+                var blobName = BlobNameHelper.GetBlobNameForVersion(platformName, version, this.commonOptions.DebianFlavor);
+                var success = this.externalSdkProvider.RequestBlobAsync(platformName, blobName).Result;
+                if (success)
+                {
+                    this.logger.LogDebug(
+                        "{platform} version {version} fetched successfully using external SDK provider.",
+                        platformName,
+                        version);
+                    return true;
+                }
+
+                this.logger.LogDebug(
+                    "{platform} version {version} could not be fetched using external SDK provider. Falling through to next provider.",
+                    platformName,
+                    version);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Error while fetching {platform} version {version} using external SDK provider.", platformName, version);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to pull the SDK from MCR container image if enabled.
+        /// </summary>
+        /// <returns>True if the SDK was successfully fetched from MCR.</returns>
+        private bool TryPullSdkFromMcr(string platformName, string version)
+        {
+            if (!this.commonOptions.EnableMcrSdkProvider)
+            {
+                return false;
+            }
+
+            this.logger.LogDebug(
+                "{platform} version {version} is not installed. " +
+                "MCR SDK provider is enabled so trying to fetch SDK from container image.",
+                platformName,
+                version);
+
+            try
+            {
+                var success = this.mcrSdkProvider.PullSdkAsync(platformName, version, this.commonOptions.DebianFlavor).Result;
+                if (success)
+                {
+                    this.logger.LogDebug(
+                        "{platform} version {version} fetched successfully using MCR SDK provider.",
+                        platformName,
+                        version);
+                    return true;
+                }
+
+                this.logger.LogDebug(
+                    "{platform} version {version} could not be fetched using MCR SDK provider. Falling through to next provider.",
+                    platformName,
+                    version);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Error while fetching {platform} version {version} using MCR SDK provider.", platformName, version);
             }
 
             return false;

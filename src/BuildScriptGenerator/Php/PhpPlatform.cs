@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly PhpPlatformInstaller phpInstaller;
         private readonly PhpComposerInstaller phpComposerInstaller;
         private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly IMcrSdkProvider mcrSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -47,6 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <param name="phpComposerInstaller">The <see cref="PhpComposerInstaller"/>.</param>
         /// <param name="phpInstaller">The <see cref="PhpPlatformInstaller"/>.</param>
         /// <param name="phpComposerVersionProvider">The <see cref="IPhpComposerVersionProvider"/>.</param>
+        /// <param name="mcrSdkProvider">The <see cref="IMcrSdkProvider"/>.</param>
         public PhpPlatform(
             IOptions<PhpScriptGeneratorOptions> phpScriptGeneratorOptions,
             IOptions<BuildScriptGeneratorOptions> commonOptions,
@@ -57,6 +59,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             PhpPlatformInstaller phpInstaller,
             PhpComposerInstaller phpComposerInstaller,
             IExternalSdkProvider externalSdkProvider,
+            IMcrSdkProvider mcrSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
@@ -68,6 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             this.phpInstaller = phpInstaller;
             this.phpComposerInstaller = phpComposerInstaller;
             this.externalSdkProvider = externalSdkProvider;
+            this.mcrSdkProvider = mcrSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -301,31 +305,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
             else
             {
-                if (this.commonOptions.EnableExternalSdkProvider)
+                // Try external SDK provider first (blob storage via socket)
+                bool sdkFetched = this.TryFetchSdkFromExternalProvider("php", phpVersion);
+
+                // Try MCR SDK provider (container image pull)
+                if (!sdkFetched)
                 {
-                    this.logger.LogDebug("Php version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", phpVersion);
+                    sdkFetched = this.TryPullSdkFromMcr("php", phpVersion);
+                }
 
-                    try
-                    {
-                        var blobName = BlobNameHelper.GetBlobNameForVersion("php", phpVersion, this.commonOptions.DebianFlavor);
-                        var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
-                        if (isExternalFetchSuccess)
-                        {
-                            this.logger.LogDebug("Php version {version} is fetched successfully using external SDK provider. So generating an installation script snippet which skips platform binary download.", phpVersion);
-
-                            script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true);
-                        }
-                        else
-                        {
-                            this.logger.LogDebug("Php version {version} is not fetched successfully using external SDK provider. So generating an installation script snippet for it.", phpVersion);
-                            script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.logger.LogError(ex, "Error while fetching php version {version} using external SDK provider.", phpVersion);
-                        script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
-                    }
+                if (sdkFetched)
+                {
+                    script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true);
                 }
                 else
                 {
@@ -353,31 +344,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
             else
             {
-                if (this.commonOptions.EnableExternalSdkProvider)
+                // Try external SDK provider first (blob storage via socket)
+                bool sdkFetched = this.TryFetchSdkFromExternalProvider("php-composer", phpComposerVersion);
+
+                // Try MCR SDK provider (container image pull)
+                if (!sdkFetched)
                 {
-                    this.logger.LogDebug("Php Composer version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", phpComposerVersion);
+                    sdkFetched = this.TryPullSdkFromMcr("php-composer", phpComposerVersion);
+                }
 
-                    try
-                    {
-                        var blobName = BlobNameHelper.GetBlobNameForVersion("php-composer", phpComposerVersion, this.commonOptions.DebianFlavor);
-                        var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync("php-composer", blobName).Result;
-                        if (isExternalFetchSuccess)
-                        {
-                            this.logger.LogDebug("Php composer version {version} is fetched successfully using external SDK provider. So generating an installation script snippet which skips platform binary download.", phpComposerVersion);
-
-                            script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true);
-                        }
-                        else
-                        {
-                            this.logger.LogDebug("Php comose version {version} is not fetched successfully using external SDK provider. So generating an installation script snippet for it.", phpComposerVersion);
-                            script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.logger.LogError(ex, "Error while fetching php composer version {version} using external SDK provider.", phpComposerVersion);
-                        script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
-                    }
+                if (sdkFetched)
+                {
+                    script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true);
                 }
                 else
                 {
@@ -485,6 +463,91 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
 
             return maxSatisfyingVersion;
+        }
+
+        /// <summary>
+        /// Tries to fetch the SDK from the external SDK provider (blob storage via Unix socket) if enabled.
+        /// </summary>
+        /// <returns>True if the SDK was successfully fetched from the external provider.</returns>
+        private bool TryFetchSdkFromExternalProvider(string platformName, string version)
+        {
+            if (!this.commonOptions.EnableExternalSdkProvider)
+            {
+                return false;
+            }
+
+            this.logger.LogDebug(
+                "{platform} version {version} is not installed. " +
+                "External SDK provider is enabled so trying to fetch SDK using it.",
+                platformName,
+                version);
+
+            try
+            {
+                var blobName = BlobNameHelper.GetBlobNameForVersion(platformName, version, this.commonOptions.DebianFlavor);
+                var success = this.externalSdkProvider.RequestBlobAsync(platformName, blobName).Result;
+                if (success)
+                {
+                    this.logger.LogDebug(
+                        "{platform} version {version} fetched successfully using external SDK provider.",
+                        platformName,
+                        version);
+                    return true;
+                }
+
+                this.logger.LogDebug(
+                    "{platform} version {version} could not be fetched using external SDK provider. Falling through to next provider.",
+                    platformName,
+                    version);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Error while fetching {platform} version {version} using external SDK provider.", platformName, version);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to pull the SDK from MCR container image if enabled.
+        /// </summary>
+        /// <returns>True if the SDK was successfully fetched from MCR.</returns>
+        private bool TryPullSdkFromMcr(string platformName, string version)
+        {
+            if (!this.commonOptions.EnableMcrSdkProvider)
+            {
+                return false;
+            }
+
+            this.logger.LogDebug(
+                "{platform} version {version} is not installed. " +
+                "MCR SDK provider is enabled so trying to fetch SDK from container image.",
+                platformName,
+                version);
+
+            try
+            {
+                var success = this.mcrSdkProvider.PullSdkAsync(platformName, version, this.commonOptions.DebianFlavor).Result;
+                if (success)
+                {
+                    this.logger.LogDebug(
+                        "{platform} version {version} fetched successfully using MCR SDK provider.",
+                        platformName,
+                        version);
+                    return true;
+                }
+
+                this.logger.LogDebug(
+                    "{platform} version {version} could not be fetched using MCR SDK provider. Falling through to next provider.",
+                    platformName,
+                    version);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Error while fetching {platform} version {version} using MCR SDK provider.", platformName, version);
+            }
+
+            return false;
         }
     }
 }
