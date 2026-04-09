@@ -287,11 +287,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // 3. Try Direct-ACR (direct OCI API calls)
             if (this.commonOptions.EnableAcrSdkProvider)
             {
-                var runtimeVersion = dotNetCorePlatformDetectorResult.PlatformVersion;
-                var result = this.TryInstallFromAcrSdkProvider(sdkVersion, runtimeVersion);
-                if (result != null)
+                // DirectACR needs the exact runtime version for the tag (e.g. "10.0.4", not "10.0").
+                // If ExternalACR handled version resolution, PlatformVersion may still be raw.
+                // Try to resolve it — the version map is lazily loaded and cached.
+                // If resolution fails, skip DirectACR entirely and let next provider handle it.
+                try
                 {
-                    return result;
+                    var runtimeVersion = this.GetMaxSatisfyingRuntimeVersionAndVerify(
+                        dotNetCorePlatformDetectorResult.PlatformVersion);
+                    dotNetCorePlatformDetectorResult.PlatformVersion = runtimeVersion;
+
+                    var result = this.TryInstallFromAcrSdkProvider(sdkVersion, runtimeVersion);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogWarning(
+                        ex,
+                        "Could not resolve runtime version for DirectACR. Skipping to next provider.");
                 }
             }
 
@@ -314,17 +330,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     $"'{typeof(DotNetCorePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            // Resolve runtime version (same for all flows — ExternalAcrSdkProvider does not affect this).
-            var resolvedRuntimeVersion = this.GetRuntimeVersionUsingHierarchicalRules(
-                dotNetCorePlatformDetectorResult.PlatformVersion);
-            resolvedRuntimeVersion = this.GetMaxSatisfyingRuntimeVersionAndVerify(resolvedRuntimeVersion);
-            dotNetCorePlatformDetectorResult.PlatformVersion = resolvedRuntimeVersion;
-
-            // Resolve SDK version.
-            // External ACR provider dictates the SDK version directly — no runtime→SDK lookup needed.
-            // This is .NET-specific: other platforms have a single version,
-            // but .NET has separate runtime and SDK versions. The external host already knows
-            // which SDK companion image to use, so we trust its SDK version.
+            // When External ACR is enabled, try it first — it dictates the SDK version
+            // directly, without needing the runtime→SDK version map from blob/CDN.
+            // The runtime version is expected to come from the user (--platform-version / DOTNET_VERSION)
+            // or from .csproj detection (<TargetFramework>). We use it as-is without
+            // validation against a version map — the external host already ensures
+            // compatibility between the runtime and the SDK it provides.
+            // If the SDK fetch later falls back to DirectACR, the runtime version is
+            // resolved on demand at that point
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 try
@@ -335,6 +348,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         this.logger.LogInformation(
                             "External ACR provider returned .NET SDK version {Version}. Using it directly.",
                             dictatedSdk);
+
+                        var resolvedRuntime = this.GetRuntimeVersionUsingHierarchicalRules(
+                            dotNetCorePlatformDetectorResult.PlatformVersion);
+                        dotNetCorePlatformDetectorResult.PlatformVersion = resolvedRuntime;
                         dotNetCorePlatformDetectorResult.SdkVersion = dictatedSdk;
                         return;
                     }
@@ -347,7 +364,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
             }
 
-            // Normal SDK resolution: look up from runtime→SDK version map.
+            // Normal path: resolve runtime version using the version map, then look up SDK.
+            var resolvedRuntimeVersion = this.GetRuntimeVersionUsingHierarchicalRules(
+                dotNetCorePlatformDetectorResult.PlatformVersion);
+            resolvedRuntimeVersion = this.GetMaxSatisfyingRuntimeVersionAndVerify(resolvedRuntimeVersion);
+            dotNetCorePlatformDetectorResult.PlatformVersion = resolvedRuntimeVersion;
+
             var versionMap = this.versionProvider.GetSupportedVersions();
             var sdkVersion = this.GetSdkVersion(context, dotNetCorePlatformDetectorResult.PlatformVersion, versionMap);
             dotNetCorePlatformDetectorResult.SdkVersion = sdkVersion;
