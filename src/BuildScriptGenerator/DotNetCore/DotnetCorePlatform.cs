@@ -327,14 +327,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // which SDK companion image to use, so we trust its SDK version.
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
-                var dictatedSdk = this.externalAcrVersionProvider.GetSdkVersion();
-                if (!string.IsNullOrEmpty(dictatedSdk))
+                try
                 {
-                    this.logger.LogInformation(
-                        "External ACR provider returned .NET SDK version {Version}. Using it directly.",
-                        dictatedSdk);
-                    dotNetCorePlatformDetectorResult.SdkVersion = dictatedSdk;
-                    return;
+                    var dictatedSdk = this.externalAcrVersionProvider.GetSdkVersion();
+                    if (!string.IsNullOrEmpty(dictatedSdk))
+                    {
+                        this.logger.LogInformation(
+                            "External ACR provider returned .NET SDK version {Version}. Using it directly.",
+                            dictatedSdk);
+                        dotNetCorePlatformDetectorResult.SdkVersion = dictatedSdk;
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(
+                        ex,
+                        "Error getting SDK version from external ACR provider. Falling back to next provider for SDK resolution.");
                 }
             }
 
