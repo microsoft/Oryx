@@ -172,13 +172,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 detector,
                 commonOptions: commonOptions,
                 sdkAlreadyInstalled: false,
-                acrSdkProvider: acrSdkProvider);
+                acrSdkProvider: acrSdkProvider,
+                supportedVersions: new Dictionary<string, string>
+                {
+                    { "3.1.32", "3.1.426" },
+                });
             var context = CreateContext();
             var detectorResult = new DotNetCorePlatformDetectorResult
             {
                 Platform = DotNetCoreConstants.PlatformName,
-                PlatformVersion = "3.1.2",
-                SdkVersion = "3.1.2",
+                PlatformVersion = "3.1.32",
+                SdkVersion = "3.1.426",
             };
 
             // Act
@@ -247,13 +251,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 sdkAlreadyInstalled: false,
                 externalAcrSdkProvider: externalAcrSdkProvider,
                 acrSdkProvider: acrSdkProvider,
-                externalSdkProvider: externalSdkProvider);
+                externalSdkProvider: externalSdkProvider,
+                supportedVersions: new Dictionary<string, string>
+                {
+                    { "3.1.32", "3.1.426" },
+                });
             var context = CreateContext();
             var detectorResult = new DotNetCorePlatformDetectorResult
             {
                 Platform = DotNetCoreConstants.PlatformName,
-                PlatformVersion = "3.1.2",
-                SdkVersion = "3.1.2",
+                PlatformVersion = "3.1.32",
+                SdkVersion = "3.1.426",
             };
 
             // Act
@@ -285,14 +293,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 acrSdkProvider: acrSdkProvider,
                 supportedVersions: new Dictionary<string, string>
                 {
-                    { "3.1.2", "3.1.2" },
+                    { "3.1.32", "3.1.426" },
                 });
             var context = CreateContext();
             var detectorResult = new DotNetCorePlatformDetectorResult
             {
                 Platform = DotNetCoreConstants.PlatformName,
-                PlatformVersion = "3.1.2",
-                SdkVersion = "3.1.2",
+                PlatformVersion = "3.1.32",
+                SdkVersion = "3.1.426",
             };
 
             // Act
@@ -302,9 +310,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.NotNull(snippet);
             Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
             Assert.Equal(DotNetCoreConstants.PlatformName, acrSdkProvider.LastRequestedPlatformName);
-            Assert.Equal("3.1.2", acrSdkProvider.LastRequestedVersion);
+            Assert.Equal("3.1.426", acrSdkProvider.LastRequestedVersion);
             Assert.Equal(OsTypes.DebianBookworm, acrSdkProvider.LastRequestedDebianFlavor);
-            Assert.Equal("3.1.2", acrSdkProvider.LastRequestedRuntimeVersion);
+            Assert.Equal("3.1.32", acrSdkProvider.LastRequestedRuntimeVersion);
         }
 
         [Fact]
@@ -329,13 +337,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 sdkAlreadyInstalled: false,
                 externalAcrSdkProvider: externalAcrSdkProvider,
                 acrSdkProvider: acrSdkProvider,
-                externalSdkProvider: externalSdkProvider);
+                externalSdkProvider: externalSdkProvider,
+                supportedVersions: new Dictionary<string, string>
+                {
+                    { "3.1.32", "3.1.426" },
+                });
             var context = CreateContext();
             var detectorResult = new DotNetCorePlatformDetectorResult
             {
                 Platform = DotNetCoreConstants.PlatformName,
-                PlatformVersion = "3.1.2",
-                SdkVersion = "3.1.2",
+                PlatformVersion = "3.1.32",
+                SdkVersion = "3.1.426",
             };
 
             // Act
@@ -380,8 +392,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Act
             platform.ResolveVersions(context, detectorResult);
 
-            // Assert - ExternalACR dictates SDK version, overriding normal map lookup
+            // Assert - ExternalACR dictates SDK version, overriding normal map lookup.
+            // PlatformVersion is only processed by hierarchical rules (not fully resolved
+            // against the version map), so it stays as the detected value.
             Assert.Equal("3.1.415", detectorResult.SdkVersion);
+            Assert.Equal("3.1", detectorResult.PlatformVersion);
         }
 
         [Fact]
@@ -416,8 +431,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Act
             platform.ResolveVersions(context, detectorResult);
 
-            // Assert - Falls back to normal version map
+            // Assert - Falls back to normal version map.
+            // PlatformVersion is fully resolved (hierarchical rules + version map).
             Assert.Equal("3.1.302", detectorResult.SdkVersion);
+            Assert.Equal("3.1.2", detectorResult.PlatformVersion);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
