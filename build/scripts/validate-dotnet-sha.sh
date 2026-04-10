@@ -13,11 +13,10 @@ failed=0
 
 # Check both runtime types
 for prefix in NET_CORE_APP ASPNET_CORE_APP; do
-    # Find all versions (e.g., NET_CORE_APP_80: 8.0.18)
-    grep -E "^[[:space:]]*${prefix}_[0-9]+:" "$CONSTANTS_FILE" | while IFS=: read -r key version; do
+    while IFS=: read -r key version; do
         key=$(echo "$key" | tr -d ' ')
         version=$(echo "$version" | tr -d ' "')
-        major_raw="${key##*_}"  # Extract 80, 90, 100
+        major_raw="${key##*_}"
         
         # Convert 80 -> 8.0, 100 -> 10.0
         if [[ ${#major_raw} -eq 2 ]]; then
@@ -26,8 +25,8 @@ for prefix in NET_CORE_APP ASPNET_CORE_APP; do
             major="${major_raw:0:2}.${major_raw:2}"
         fi
         
-        # Get local SHA
-        local_sha=$(grep -F "${key}_SHA:" "$CONSTANTS_FILE" | awk '{print $2}' || true)
+        # Get local SHA - use exact match with leading space to avoid ASPNET matching NET
+        local_sha=$(grep -E "^[[:space:]]+${key}_SHA:" "$CONSTANTS_FILE" | awk '{print $2}' || true)
         [[ -n "$local_sha" ]] || { echo "  $key: SKIP (no SHA defined)"; continue; }
         
         # Fetch official SHA
@@ -43,11 +42,13 @@ for prefix in NET_CORE_APP ASPNET_CORE_APP; do
             echo "  $label $version: WARN (could not fetch)"
         elif [[ "${official,,}" != "${local_sha,,}" ]]; then
             echo "  $label $version: FAILED"
+            echo "    expected: $official"
+            echo "    got:      $local_sha"
             failed=1
         else
             echo "  $label $version: OK"
         fi
-    done
+    done < <(grep -E "^[[:space:]]+${prefix}_[0-9]+:" "$CONSTANTS_FILE")
 done
 
 [[ $failed -eq 0 ]] && echo "PASSED" || { echo "FAILED"; exit 1; }
