@@ -58,14 +58,17 @@ jobs:
       - name: Post summary
         if: always() && (steps.changes.outputs.php == 'true' || steps.changes.outputs.dotnet == 'true')
         uses: actions/github-script@v7
+        env:
+          PHP_OUTPUT: ${{ steps.php.outputs.output }}
+          DOTNET_OUTPUT: ${{ steps.dotnet.outputs.output }}
         with:
           script: |
             const php = '${{ steps.changes.outputs.php }}' === 'true';
             const dotnet = '${{ steps.changes.outputs.dotnet }}' === 'true';
             const phpStatus = '${{ steps.php.outcome }}';
             const dotnetStatus = '${{ steps.dotnet.outcome }}';
-            const phpOutput = `${{ steps.php.outputs.output }}`;
-            const dotnetOutput = `${{ steps.dotnet.outputs.output }}`;
+            const phpOutput = process.env.PHP_OUTPUT || '';
+            const dotnetOutput = process.env.DOTNET_OUTPUT || '';
             const icon = s => s === 'success' ? '✅' : s === 'skipped' ? '⏭️' : '❌';
             
             let body = '## SHA Validation Summary\n| Stack | Status |\n|-------|--------|\n';
