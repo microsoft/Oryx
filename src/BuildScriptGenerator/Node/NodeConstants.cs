@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     public static class NodeConstants
@@ -51,5 +53,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string InstalledNodeVersionsDir = "/opt/nodejs/";
         public const string NodeVersion = "NODE_VERSION";
         public const string LegacyZipNodeModules = "ENABLE_NODE_MODULES_ZIP";
+
+        /// <summary>
+        /// Default Node major version per OS flavor, matching platforms/nodejs/versions/*/defaultVersion.txt.
+        /// </summary>
+        public static readonly Dictionary<string, string> DefaultVersionPerFlavor = new Dictionary<string, string>
+        {
+            { "bookworm", "20" },
+            { "bullseye", "16" },
+            { "buster", "16" },
+            { "focal-scm", "16" },
+            { "noble", "24" },
+            { "stretch", "16" },
+        };
     }
 }

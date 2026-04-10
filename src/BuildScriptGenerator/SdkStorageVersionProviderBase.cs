@@ -66,6 +66,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBackupBaseUrl, platformName, httpClient);
                 }
+                else
+                {
+                    throw new InvalidOperationException(
+                        $"Failed to get SDK versions for platform '{platformName}' from primary storage URL '{sdkStorageBaseUrl}', " +
+                        $"and backup storage URL is not configured. {Constants.NetworkConfigurationHelpText}",
+                        ex);
+                }
             }
 
             var supportedVersions = new List<string>();
@@ -154,7 +161,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 while ((line = stringReader.ReadLine()) != null)
                 {
                     // Ignore any comments in the file
-                    if (!line.StartsWith("#") || !line.StartsWith("//"))
+                    if (!line.StartsWith("#") && !line.StartsWith("//"))
                     {
                         defaultVersion = line.Trim();
                         break;

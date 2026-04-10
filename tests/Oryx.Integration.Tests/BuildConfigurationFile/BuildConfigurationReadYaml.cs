@@ -131,6 +131,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
             var defaultPlatformDetector = new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter(),
+                NullLogger<DefaultPlatformsInformationProvider>.Instance,
                 Options.Create(commonOptions));
             var envScriptProvider = new PlatformsInstallationScriptProvider(
                 platforms,

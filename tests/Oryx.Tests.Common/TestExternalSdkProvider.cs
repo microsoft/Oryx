@@ -12,7 +12,14 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class TestExternalSdkProvider : IExternalSdkProvider
     {
-        public const string ExternalSdksStorageDir = "/var/OryxSdksCache";
+        private readonly bool _requestBlobResult;
+
+        public const string ExternalSdksStorageDir = "/var/OryxSdks";
+
+        public TestExternalSdkProvider(bool requestBlobResult = true)
+        {
+            _requestBlobResult = requestBlobResult;
+        }
 
         public Task<XDocument> GetPlatformMetaDataAsync(string platformName)
         {
@@ -26,7 +33,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public Task<bool> RequestBlobAsync(string platformName, string blobName)
         {
-            return Task.FromResult(true);
+            return Task.FromResult(_requestBlobResult);
         }
         
     }

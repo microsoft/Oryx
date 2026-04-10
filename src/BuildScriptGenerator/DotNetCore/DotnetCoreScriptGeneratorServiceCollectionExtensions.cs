@@ -19,8 +19,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<DotNetCoreOnDiskVersionProvider>();
             services.AddSingleton<DotNetCoreSdkStorageVersionProvider>();
             services.AddSingleton<DotNetCoreExternalVersionProvider>();
+            services.AddSingleton<DotNetCoreExternalAcrVersionProvider>();
             services.AddSingleton<DotNetCorePlatformInstaller>();
             services.AddSingleton<GlobalJsonSdkResolver>();
+            services.AddSingleton<DotNetCoreAcrVersionProvider>();
             return services;
         }
     }

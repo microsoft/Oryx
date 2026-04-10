@@ -58,6 +58,9 @@ variables:
   NET_CORE_APP_90: 9.0.14
   NET_CORE_APP_90_SHA: db0db0b9e709ffe463dead94fb4e77b9b0c7086bbaa78a78aa6b5366bef77ba3c33899a81c3c1aef3c11027a1e6cdebf4a7ad30532bdc193f0decc71972e5dda
   NET_CORE_APP_100: "10.0.4"
+  DOTNET_SDK_80: 8.0.419
+  DOTNET_SDK_90: 9.0.312
+  DOTNET_SDK_100: 10.0.200
   node18Version: 18.20.8
   node20Version: 20.20.0
   node22Version: 22.22.0
@@ -72,6 +75,7 @@ variables:
   php84Version_SHA: 11f7164ab26d356c31f94d3d69cc0e0707d5d2d6494a221aaeae307c08eaaa1c
   php85Version: 8.5.4
   php85Version_SHA: c1569f1f543f6b025c583cdc0e730e5c5833c603618613f1aa8e75d1524b8c91
+  phpComposerVersion: 2.6.2
   python39Version: 3.9.24
   python310Version: 3.10.20
   python311Version: 3.11.15

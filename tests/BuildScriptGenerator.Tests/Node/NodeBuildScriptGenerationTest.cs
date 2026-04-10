@@ -984,7 +984,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new TestEnvironment(),
                 new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
                 externalSdkProvider,
-                TelemetryClientHelper.GetTelemetryClient());
+                new TestExternalAcrSdkProvider(),
+                new TestAcrSdkProvider(),
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(ISourceRepo sourceRepo)

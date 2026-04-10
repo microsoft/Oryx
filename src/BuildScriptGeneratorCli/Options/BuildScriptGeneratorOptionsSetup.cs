@@ -62,6 +62,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             // Dynamic install
             options.EnableDynamicInstall = this.GetBooleanValue(SettingsKeys.EnableDynamicInstall);
             options.EnableExternalSdkProvider = this.GetBooleanValue(SettingsKeys.EnableExternalSdkProvider);
+            options.EnableExternalAcrSdkProvider = this.GetBooleanValue(SettingsKeys.EnableExternalAcrSdkProvider);
+
+            // If multi-platform build is enabled, we disable the external ACR provider.
+            options.EnableExternalAcrSdkProvider = options.EnableExternalAcrSdkProvider && !options.EnableMultiPlatformBuild;
+
+            options.EnableAcrSdkProvider = this.GetBooleanValue(SettingsKeys.EnableAcrSdkProvider);
+            options.OryxAcrSdkRegistryUrl = this.GetStringValue(SettingsKeys.OryxAcrSdkRegistryUrl);
+            options.OryxAcrSdkRepositoryPrefix = this.GetStringValue(SettingsKeys.OryxAcrSdkRepositoryPrefix);
 
             var dynamicInstallRootDir = this.GetStringValue(SettingsKeys.DynamicInstallRootDir);
 

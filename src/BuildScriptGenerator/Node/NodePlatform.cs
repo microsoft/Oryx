@@ -86,7 +86,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly IEnvironment environment;
         private readonly NodePlatformInstaller platformInstaller;
         private readonly IExternalSdkProvider externalSdkProvider;
+        private readonly IExternalAcrSdkProvider externalAcrSdkProvider;
+        private readonly IAcrSdkProvider acrSdkProvider;
         private readonly TelemetryClient telemetryClient;
+        private readonly IStandardOutputWriter outputWriter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NodePlatform"/> class.
@@ -108,7 +111,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IEnvironment environment,
             NodePlatformInstaller nodePlatformInstaller,
             IExternalSdkProvider externalSdkProvider,
-            TelemetryClient telemetryClient)
+            IExternalAcrSdkProvider externalAcrSdkProvider,
+            IAcrSdkProvider acrSdkProvider,
+            TelemetryClient telemetryClient,
+            IStandardOutputWriter outputWriter)
         {
             this.commonOptions = commonOptions.Value;
             this.nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
@@ -118,7 +124,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.environment = environment;
             this.platformInstaller = nodePlatformInstaller;
             this.externalSdkProvider = externalSdkProvider;
+            this.externalAcrSdkProvider = externalAcrSdkProvider;
+            this.acrSdkProvider = acrSdkProvider;
             this.telemetryClient = telemetryClient;
+            this.outputWriter = outputWriter;
         }
 
         /// <inheritdoc/>
@@ -338,7 +347,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 string frameworks = string.Join(",", frameworksObj.Select(p => p.Framework).ToArray());
                 manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = frameworks;
                 this.logger.LogInformation($"Detected the following frameworks: {frameworks}");
-                Console.WriteLine($"Detected the following frameworks: {frameworks}");
+                this.outputWriter.WriteLine($"Detected the following frameworks: {frameworks}");
             }
 
             string compressNodeModulesCommand = null;
@@ -493,74 +502,62 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             BuildScriptGeneratorContext context,
             PlatformDetectorResult detectorResult)
         {
-            string installationScriptSnippet = null;
-            if (this.commonOptions.EnableDynamicInstall)
-            {
-                this.logger.LogDebug("Dynamic install is enabled.");
-
-                if (this.platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
-                {
-                    this.logger.LogDebug(
-                        "Node version {version} is already installed. So skipping installing it again.",
-                        detectorResult.PlatformVersion);
-                }
-                else
-                {
-                    if (this.commonOptions.EnableExternalSdkProvider)
-                    {
-                        this.logger.LogDebug(
-                            "Node version {version} is not installed. " +
-                            "External SDK provider is enabled so trying to fetch SDK using it.",
-                            detectorResult.PlatformVersion);
-
-                        try
-                        {
-                            var blobName = BlobNameHelper.GetBlobNameForVersion(this.Name, detectorResult.PlatformVersion, this.commonOptions.DebianFlavor);
-                            var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
-                            if (isExternalFetchSuccess)
-                            {
-                                this.logger.LogDebug(
-                                    "Node version {version} is fetched successfully using external SDK provider. " +
-                                    "So generating an installation script snippet which skips platform binary download.",
-                                    detectorResult.PlatformVersion);
-
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion, skipSdkBinaryDownload: true);
-                            }
-                            else
-                            {
-                                this.logger.LogDebug(
-                                    "Node version {version} is not fetched successfully using external SDK provider. " +
-                                    "So generating an installation script snippet for it.",
-                                    detectorResult.PlatformVersion);
-
-                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
-                                    detectorResult.PlatformVersion);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError(ex, "Error while fetching Node.js version {version} using external SDK provider.", detectorResult.PlatformVersion);
-                            installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion);
-                        }
-                    }
-                    else
-                    {
-                        this.logger.LogDebug(
-                            "Node version {version} is not installed. " +
-                            "So generating an installation script snippet for it.",
-                            detectorResult.PlatformVersion);
-
-                        installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
-                            detectorResult.PlatformVersion);
-                    }
-                }
-            }
-            else
+            if (!this.commonOptions.EnableDynamicInstall)
             {
                 this.logger.LogDebug("Dynamic install not enabled.");
+                return null;
             }
 
-            return installationScriptSnippet;
+            this.logger.LogDebug("Dynamic install is enabled.");
+
+            var version = detectorResult.PlatformVersion;
+
+            if (this.platformInstaller.IsVersionAlreadyInstalled(version))
+            {
+                this.logger.LogDebug(
+                    "Node version {version} is already installed. So skipping installing it again.",
+                    version);
+                return null;
+            }
+
+            // Priority: External-ACR → External-SDK → Direct-ACR → CDN
+
+            // 1. Try External-ACR (Oryx -> socket → ACR)
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
+            {
+                var result = this.TryInstallFromExternalAcrSdkProvider(version);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // 2. Try External-SDK (Oryx -> socket → blob storage)
+            if (this.commonOptions.EnableExternalSdkProvider)
+            {
+                var result = this.TryInstallFromExternalSdkProvider(version);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // 3. Try Direct-ACR (Oryx -> direct OCI API calls)
+            if (this.commonOptions.EnableAcrSdkProvider)
+            {
+                var result = this.TryInstallFromAcrSdkProvider(version);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // 4. CDN fallback
+            this.outputWriter.WriteLine($"Falling back to CDN for '{this.Name}' version '{version}'.");
+            this.logger.LogDebug(
+                "Node version {version} is not installed. So generating an installation script snippet for it.",
+                version);
+            return this.platformInstaller.GetInstallerScriptSnippet(version);
         }
 
         /// <inheritdoc/>
@@ -717,6 +714,113 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
         }
 
+        private string TryInstallFromAcrSdkProvider(string version)
+        {
+            this.logger.LogDebug(
+                "Node version {version} is not installed. ACR SDK provider is enabled, so trying to fetch SDK using it.",
+                version);
+
+            try
+            {
+                var result = this.acrSdkProvider.RequestSdkFromAcrAsync(
+                    this.Name, version, this.commonOptions.DebianFlavor).Result;
+
+                if (result)
+                {
+                    this.logger.LogDebug(
+                        "Node version {version} is fetched successfully using ACR SDK provider.",
+                        version);
+                    this.outputWriter.WriteLine($"SDK for '{this.Name}' version '{version}' fetched via direct ACR provider.");
+                    return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
+                }
+
+                this.logger.LogDebug(
+                    "Node version {version} is not fetched via ACR SDK provider. Trying next provider.",
+                    version);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via direct ACR provider for '{this.Name}' version '{version}'. Trying next provider.");
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Error while fetching Node.js version {version} using ACR SDK provider. Trying next provider.",
+                    version);
+                this.outputWriter.WriteLine($"Error fetching SDK via direct ACR provider for '{this.Name}' version '{version}'. Trying next provider.");
+            }
+
+            return null;
+        }
+
+        private string TryInstallFromExternalSdkProvider(string version)
+        {
+            this.logger.LogDebug(
+                "Node version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.",
+                version);
+
+            try
+            {
+                var blobName = BlobNameHelper.GetBlobNameForVersion(this.Name, version, this.commonOptions.DebianFlavor);
+                if (this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result)
+                {
+                    this.logger.LogDebug(
+                        "Node version {version} is fetched successfully using external SDK provider. Skipping platform binary download.",
+                        version);
+                    this.outputWriter.WriteLine($"SDK for '{this.Name}' version '{version}' fetched via external SDK provider.");
+                    return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
+                }
+
+                this.logger.LogDebug(
+                    "Node version {version} is not fetched successfully using external SDK provider. Generating installation script snippet.",
+                    version);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external SDK provider for '{this.Name}' version '{version}'. Trying next provider.");
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Error while fetching Node.js version {version} using external SDK provider.",
+                    version);
+                this.outputWriter.WriteLine($"Error fetching SDK via external SDK provider for '{this.Name}' version '{version}'. Trying next provider.");
+            }
+
+            return null;
+        }
+
+        private string TryInstallFromExternalAcrSdkProvider(string version)
+        {
+            this.logger.LogDebug(
+                "Node version {version} is not installed. External ACR SDK provider is enabled, so trying to fetch SDK using it.",
+                version);
+
+            try
+            {
+                if (this.externalAcrSdkProvider.RequestSdkAsync(
+                    this.Name, version, this.commonOptions.DebianFlavor).Result)
+                {
+                    this.logger.LogDebug(
+                        "Node version {version} is fetched successfully using external ACR SDK provider. Skipping platform binary download.",
+                        version);
+                    this.outputWriter.WriteLine($"SDK for '{this.Name}' version '{version}' fetched via external ACR provider.");
+                    return this.platformInstaller.GetInstallerScriptSnippet(version, skipSdkBinaryDownload: true);
+                }
+
+                this.logger.LogDebug(
+                    "Node version {version} is not fetched via external ACR SDK provider. Trying next provider.",
+                    version);
+                this.outputWriter.WriteLine($"Failed to fetch SDK via external ACR provider for '{this.Name}' version '{version}'. Trying next provider.");
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(
+                    ex,
+                    "Error while fetching Node.js version {version} using external ACR SDK provider. Trying next provider.",
+                    version);
+                this.outputWriter.WriteLine($"Error fetching SDK via external ACR provider for '{this.Name}' version '{version}'. Trying next provider.");
+            }
+
+            return null;
+        }
+
         private string GetMaxSatisfyingVersionAndVerify(string version)
         {
             var versionInfo = this.nodeVersionProvider.GetVersionInfo();
@@ -741,6 +845,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
+            // If External ACR SDK provider is enabled, then we try to get the version from it first
+            // before applying the hierarchical rules, because it has the highest priority in terms of version selection.
+            if (this.commonOptions.EnableExternalAcrSdkProvider)
+            {
+                var acrVersionInfo = this.nodeVersionProvider.GetVersionInfo();
+                if (acrVersionInfo?.DefaultVersion != null)
+                {
+                    return acrVersionInfo.DefaultVersion;
+                }
+            }
+
             // Explicitly specified version by user wins over detected version
             if (!string.IsNullOrEmpty(this.nodeScriptGeneratorOptions.NodeVersion))
             {

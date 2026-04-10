@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -7,6 +7,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -79,6 +80,215 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.False(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
+        [Fact]
+        public void GetsVersions_UsesExternalAcrProvider_WhenExternalAcrProviderAndDynamicInstallEnabled()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.StorageVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.OnDiskVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_UsesAcrProvider_WhenAcrProviderAndDynamicInstallEnabled()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableAcrSdkProvider: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.StorageVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.OnDiskVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_ExternalAcrTakesPriority_OverExternalSdk()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true,
+                enableExternalSdkProvider: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.ExternalVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_ExternalAcrTakesPriority_OverDirectAcr()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true,
+                enableAcrSdkProvider: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_FallsBackToStorage_WhenExternalAcrReturnsNull()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true,
+                externalAcrReturnsNull: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_FallsBackToStorage_WhenAcrProviderThrows()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableAcrSdkProvider: true,
+                acrThrowsException: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_FallsBackToDirectAcr_WhenExternalAcrAndExternalSdkReturnNull()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true,
+                enableExternalSdkProvider: true,
+                enableAcrSdkProvider: true,
+                externalAcrReturnsNull: true,
+                externalSdkReturnsNull: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.ExternalVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_FallsBackToCdn_WhenAllProvidersReturnNull()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true,
+                enableExternalSdkProvider: true,
+                enableAcrSdkProvider: true,
+                externalAcrReturnsNull: true,
+                externalSdkReturnsNull: true,
+                acrThrowsException: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.ExternalVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_FallsBackToExternalSdk_WhenExternalAcrThrows()
+        {
+            // Arrange — ExternalACR throws, should fall to ExternalSDK
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true,
+                enableExternalSdkProvider: true,
+                externalAcrThrowsException: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.ExternalVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_FallsBackToDirectAcr_WhenExternalAcrAndExternalSdkThrow()
+        {
+            // Arrange — both external providers throw, should fall to direct ACR
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableExternalAcrSdkProvider: true,
+                enableExternalSdkProvider: true,
+                enableAcrSdkProvider: true,
+                externalAcrThrowsException: true,
+                externalSdkThrowsException: true);
+
+            // Act
+            var versionInfo = result.VersionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(result.ExternalAcrVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.ExternalVersionProvider.GetVersionInfoCalled);
+            Assert.True(result.AcrVersionProvider.GetVersionInfoCalled);
+            Assert.False(result.StorageVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_CachesResult_OnSecondCall()
+        {
+            // Arrange
+            var result = CreateVersionProviderWithAcr(
+                enableDynamicInstall: true,
+                enableAcrSdkProvider: true);
+
+            // Act — call twice
+            var versionInfo1 = result.VersionProvider.GetVersionInfo();
+            var versionInfo2 = result.VersionProvider.GetVersionInfo();
+
+            // Assert — same instance returned (cached)
+            Assert.Same(versionInfo1, versionInfo2);
+        }
+
         private class TestNodeSdkStorageVersionProvider : NodeSdkStorageVersionProvider
         {
             public TestNodeSdkStorageVersionProvider(
@@ -99,10 +309,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
         private class TestNodeExternalVersionProvider : NodeExternalVersionProvider
         {
+            private readonly bool _returnsNull;
+            private readonly bool _throwsException;
+
             public TestNodeExternalVersionProvider(
-                IOptions<BuildScriptGeneratorOptions> commonOptions, IExternalSdkProvider externalProvider, ILoggerFactory loggerFactory)
+                IOptions<BuildScriptGeneratorOptions> commonOptions, IExternalSdkProvider externalProvider, ILoggerFactory loggerFactory,
+                bool returnsNull = false, bool throwsException = false)
                 : base(commonOptions, externalProvider, loggerFactory)
             {
+                _returnsNull = returnsNull;
+                _throwsException = throwsException;
             }
 
             public bool GetVersionInfoCalled { get; private set; }
@@ -110,7 +326,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             public override PlatformVersionInfo GetVersionInfo()
             {
                 GetVersionInfoCalled = true;
-                return null;
+                if (_throwsException)
+                {
+                    throw new System.Exception("External SDK provider simulated failure");
+                }
+
+                if (_returnsNull)
+                {
+                    return null;
+                }
+
+                return PlatformVersionInfo.CreateAvailableViaExternalProvider(
+                    new[] { "1.0.0" }, "1.0.0");
             }
         }
 
@@ -137,7 +364,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 onDiskProvider,
                 storageProvider,
                 externalProvider,
-                NullLogger<NodeVersionProvider>.Instance);
+                new NodeExternalAcrVersionProvider(Options.Create(new BuildScriptGeneratorOptions()), NullLoggerFactory.Instance, new DefaultStandardOutputWriter()),
+                new NodeAcrVersionProvider(commonOptions, new OciRegistryClient("https://test.azurecr.io", new TestHttpClientFactory(), NullLoggerFactory.Instance), NullLoggerFactory.Instance),
+                NullLogger<NodeVersionProvider>.Instance,
+                new DefaultStandardOutputWriter());
             return (versionProvider, onDiskProvider, storageProvider, externalProvider);
         }
 
@@ -156,6 +386,149 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
                 return null;
             }
+        }
+
+        private class TestNodeExternalAcrVersionProvider : NodeExternalAcrVersionProvider
+        {
+            private readonly bool _returnsNull;
+            private readonly bool _throwsException;
+
+            public TestNodeExternalAcrVersionProvider(
+                IOptions<BuildScriptGeneratorOptions> options,
+                ILoggerFactory loggerFactory,
+                IStandardOutputWriter outputWriter,
+                bool returnsNull = false,
+                bool throwsException = false)
+                : base(options, loggerFactory, outputWriter)
+            {
+                _returnsNull = returnsNull;
+                _throwsException = throwsException;
+            }
+
+            public bool GetVersionInfoCalled { get; private set; }
+
+            public override PlatformVersionInfo GetVersionInfo()
+            {
+                GetVersionInfoCalled = true;
+                if (_throwsException)
+                {
+                    throw new System.Exception("External ACR provider simulated failure");
+                }
+
+                if (_returnsNull)
+                {
+                    return null;
+                }
+
+                return PlatformVersionInfo.CreateAvailableOnAcr(
+                    new[] { "18.0.0" }, "18.0.0");
+            }
+        }
+
+        private class TestNodeAcrVersionProvider : NodeAcrVersionProvider
+        {
+            private readonly bool _throwsException;
+
+            public TestNodeAcrVersionProvider(
+                IOptions<BuildScriptGeneratorOptions> commonOptions,
+                OciRegistryClient ociClient,
+                ILoggerFactory loggerFactory,
+                bool throwsException = false)
+                : base(commonOptions, ociClient, loggerFactory)
+            {
+                _throwsException = throwsException;
+            }
+
+            public bool GetVersionInfoCalled { get; private set; }
+
+            public override PlatformVersionInfo GetVersionInfo()
+            {
+                GetVersionInfoCalled = true;
+                if (_throwsException)
+                {
+                    throw new System.Exception("ACR provider simulated failure");
+                }
+
+                return PlatformVersionInfo.CreateAvailableOnAcr(
+                    new[] { "18.0.0" }, "18.0.0");
+            }
+        }
+
+        private class VersionProviderResult
+        {
+            public INodeVersionProvider VersionProvider { get; set; }
+
+            public TestNodeOnDiskVersionProvider OnDiskVersionProvider { get; set; }
+
+            public TestNodeSdkStorageVersionProvider StorageVersionProvider { get; set; }
+
+            public TestNodeExternalVersionProvider ExternalVersionProvider { get; set; }
+
+            public TestNodeExternalAcrVersionProvider ExternalAcrVersionProvider { get; set; }
+
+            public TestNodeAcrVersionProvider AcrVersionProvider { get; set; }
+        }
+
+        private VersionProviderResult CreateVersionProviderWithAcr(
+            bool enableDynamicInstall,
+            bool enableExternalSdkProvider = false,
+            bool enableExternalAcrSdkProvider = false,
+            bool enableAcrSdkProvider = false,
+            bool externalAcrReturnsNull = false,
+            bool externalSdkReturnsNull = false,
+            bool acrThrowsException = false,
+            bool externalAcrThrowsException = false,
+            bool externalSdkThrowsException = false)
+        {
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = enableDynamicInstall,
+                EnableExternalSdkProvider = enableExternalSdkProvider,
+                EnableExternalAcrSdkProvider = enableExternalAcrSdkProvider,
+                EnableAcrSdkProvider = enableAcrSdkProvider,
+            });
+
+            var onDiskProvider = new TestNodeOnDiskVersionProvider(commonOptions);
+            var storageProvider = new TestNodeSdkStorageVersionProvider(
+                commonOptions,
+                new TestHttpClientFactory(),
+                NullLoggerFactory.Instance);
+            var externalProvider = new TestNodeExternalVersionProvider(
+                commonOptions,
+                new TestExternalSdkProvider(),
+                NullLoggerFactory.Instance,
+                returnsNull: externalSdkReturnsNull,
+                throwsException: externalSdkThrowsException);
+            var externalAcrProvider = new TestNodeExternalAcrVersionProvider(
+                commonOptions,
+                NullLoggerFactory.Instance,
+                new DefaultStandardOutputWriter(),
+                returnsNull: externalAcrReturnsNull,
+                throwsException: externalAcrThrowsException);
+            var acrProvider = new TestNodeAcrVersionProvider(
+                commonOptions,
+                new OciRegistryClient("https://test.azurecr.io", new TestHttpClientFactory(), NullLoggerFactory.Instance),
+                NullLoggerFactory.Instance,
+                throwsException: acrThrowsException);
+            var versionProvider = new NodeVersionProvider(
+                commonOptions,
+                onDiskProvider,
+                storageProvider,
+                externalProvider,
+                externalAcrProvider,
+                acrProvider,
+                NullLogger<NodeVersionProvider>.Instance,
+                new DefaultStandardOutputWriter());
+
+            return new VersionProviderResult
+            {
+                VersionProvider = versionProvider,
+                OnDiskVersionProvider = onDiskProvider,
+                StorageVersionProvider = storageProvider,
+                ExternalVersionProvider = externalProvider,
+                ExternalAcrVersionProvider = externalAcrProvider,
+                AcrVersionProvider = acrProvider,
+            };
         }
     }
 }
