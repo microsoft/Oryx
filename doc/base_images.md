@@ -3,8 +3,7 @@
 The Oryx [build image][] layers on Docker's
 [`buildpack-deps`][library/buildpack-deps:stable] image, itself layered on
 Docker's basic [debian][library/debian:stable] image.
-The build image copies some required platforms from separate intermediate images,
-which can be built locally using the [`buildBuildImageBases.sh`](../build/buildBuildImageBases.sh) script.
+The build image copies some required platforms from separate intermediate images.
 
 [build image]: https://hub.docker.com/_/microsoft-oryx-images
 [library/buildpack-deps:stable]: https://hub.docker.com/_/buildpack-deps
@@ -15,11 +14,8 @@ packages required at build-time. The following system packages are also added
 to the Oryx image. If you require additional packages please [open an
 issue][].
 
-Support different version of debian (stretch, buster and bullseye) and ubuntu (focal) `buildpack-deps` based images:
-[Buster](../images/build/Dockerfiles/githubRunner.BuildPackDepsBuster.Dockerfile),
-[Ubuntu(focal)](../images/build/Dockerfiles/githubRunner.BuildPackDepsFocal.Dockerfile),
-[Stretch](../images/build/Dockerfiles/githubRunner.BuildPackDepsStretch.Dockerfile),
-[Bullseye](../images/build/Dockerfiles/githubRunner.BuildPackDepsBullseye.Dockerfile)
+Support different version of debian (stretch, buster and bullseye) and ubuntu (focal) `buildpack-deps` based images.
+These build images are defined in [/images/build/Dockerfiles](../images/build/Dockerfiles/).
 
 [open an issue]: https://github.com/Microsoft/Oryx/issues/new/choose
 
@@ -48,7 +44,7 @@ or in AppService's language selection.
 Oryx's run images build on Docker's runtime-specific images for [Node.js][]
 , [Python][], [Php][] and [Dotnet][]. A start script generator is included. Packages included for
 specific runtimes are described in their documentation.
-The runtime image can be built locally using the [`buildRunTimeImage.sh`](../build/buildRunTimeImage.sh) script.
+The runtime image Dockerfiles are located in [/images/runtime](../images/runtime/).
 
 Runtimes and versions supported by Oryx are listed in [the main
 README](../README.md#supported-platforms).

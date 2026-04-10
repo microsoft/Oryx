@@ -10,4 +10,4 @@ For example configuration, read `build/build-constants.yaml`.
 
 ## Running the tool
 
-The easiest way to run this tool and regenerate the output files it by running the script `/build/generate-constants.sh`.
+The easiest way to run this tool and regenerate the output files it by running the script `/build/generateConstants.sh`.

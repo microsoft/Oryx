@@ -5,7 +5,6 @@ ENV OS_FLAVOR=$OS_FLAVOR
 ARG VERSIONS_TO_BUILD_OVERRIDE=""
 ENV VERSIONS_TO_BUILD_OVERRIDE=$VERSIONS_TO_BUILD_OVERRIDE
 COPY platforms/php/prereqs /php
-# COPY build/__phpVersions.sh /php/
 COPY platforms/php/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 

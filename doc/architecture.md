@@ -27,11 +27,10 @@ It analyzes the codebase, detecting which programming platforms are being used a
 We have a single build image which supports all of the SDKs and their versions. This allows developers to use
 multiple languages in their build, for instance run a Python setup script when building their .NET Core app,
 or have a TypeScript frontend for their Python app. You can take a look at its
-[Dockerfile](../images/build/Dockerfiles/Dockerfile) to better understand its contents.
+[Dockerfile](../images/build/Dockerfiles/full.Dockerfile) to better understand its contents.
 
 Note that some layers of this build image come from yet another set of images, which we build independently for
-modularization and for faster build times. You can see what are those images and how they are built in their
-[build script](../build/buildBuildImageBases.sh).
+modularization and for faster build times.
 
 To help the user select which version they want for each platform, they can use the `benv` script pre-installed
 in the build image. For example, `source benv python=3.6 node=8` will make Python 3.6 and the latest supported
@@ -40,7 +39,7 @@ version of Node 8 the default ones.
 The build image also contains the build script generator, which can be accessed by its alias, `oryx`.
 
 The build image manifest is at
-[/images/build/Dockerfiles/Dockerfile](../images/build/Dockerfiles/Dockerfile). It is built and
+[/images/build/Dockerfiles/full.Dockerfile](../images/build/Dockerfiles/full.Dockerfile). It is built and
 published via the Microsoft Container Registry (MCR) ([info][]) as
 `mcr.microsoft.com/oryx/build` and syndicated to Docker Hub as
 [`https://hub.docker.com/_/microsoft-oryx-images`](https://hub.docker.com/_/microsoft-oryx-images). Pull with `docker pull
@@ -55,64 +54,9 @@ mcr.microsoft.com/oryx/build:latest`.
 <details>
 <summary>For a list of packages installed as a part of this build image, click here.</summary>
 
-#### [Lts Versions Build Image](../images/build/Dockerfiles/ltsVersions.Dockerfile)
-
-**Docker**
-
-- [`buildpack-deps:stretch`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L5)
-- [`mcr.microsoft.com/oryx/python-build-base:3.7-{BUILD}`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L160)
-
-**`apt-get`**
-
-- Basic build tools
-    - [`build-essential`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L25)
-    - [`default-libmysqlclient-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L31)
-    - [`git`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L21)
-    - [`libpq-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L29)
-    - [`make`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L22)
-    - [`moreutils`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L33)
-    - [`rsync`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L34)
-    - [`unixodbc-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L27)
-    - [`unzip`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L23)
-    - [`zip`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L35)
-- .NET Core
-    - [`libc6`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L50)
-    - [`libgcc1`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L51)
-    - [`libgssapi-krb5-2`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L52)
-    - [`libicu57`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L53)
-    - [`liblttng-ust0`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L54)
-    - [`libssl1.0.2`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L55)
-    - [`libstdc++6`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L56)
-    - [`zlib1g`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L57)
-- Node
-    - [`jq`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L108)
-- Python
-    - [`tk-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L169)
-    - [`uuid-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L170)
-
-#### [Full build image](../images/build/Dockerfiles/Dockerfile)
-
-**Docker**
-
-- Python
-    - [`mcr.microsoft.com/oryx/python-build-base:2.7-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L179)
-    - [`mcr.microsoft.com/oryx/python-build-base:3.6-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L180)
-    - [`mcr.microsoft.com/oryx/python-build-base:3.8-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L181)
-- PHP
-    - [`mcr.microsoft.com/oryx/php-build-base:5.6-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L217)
-    - [`mcr.microsoft.com/oryx/php-build-base:7.0-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L218)
-    - [`mcr.microsoft.com/oryx/php-build-base:7.2-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L219)
-    - [`mcr.microsoft.com/oryx/php-build-base:7.3-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L220)
-- [`golang:1.11-stretch`](../images/build/Dockerfiles/Dockerfile#L228)
-
-**`apt-get`**
-
-- .NET Core
-    - [`libunwind8`](../images/build/Dockerfiles/Dockerfile#L16)
-    - [`libcurl3`](../images/build/Dockerfiles/Dockerfile#L26)
-    - [`libuuid1`](../images/build/Dockerfiles/Dockerfile#L27)
-- Node
-    - [`jq`](../images/build/Dockerfiles/Dockerfile#L100)
+See the Dockerfiles in [/images/build/Dockerfiles](../images/build/Dockerfiles/) for the full
+list of base images and packages installed. The main build image is
+[full.Dockerfile](../images/build/Dockerfiles/full.Dockerfile).
 
 </details>
 
@@ -156,46 +100,11 @@ The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 <details>
 <summary>For a list of packages installed as a part of the runtime images, click here.</summary>
 
-#### [Common base image](../images/runtime/commonbase/Dockerfile)
-
-**Docker**
-
-- [`buildpack-deps:stretch-curl`](../images/runtime/commonbase/Dockerfile#L1)
-
-**`apt-get`**
-
-- [`xz-utils`](../images/runtime/commonbase/Dockerfile#L4)
-
-#### [.NET Core template](../images/runtime/dotnetcore/template.Dockerfile)
-
-**Docker**
-
-- [`golang:1.11-stretch`](../images/runtime/dotnetcore/template.Dockerfile#L2)
-- [`mcr.microsoft.com/dotnet/core/runtime:{VERSION}](../images/runtime/dotnetcore/template.Dockerfile#L12)
-
-**`apt-get`**
-
-- [`file`](../images/runtime/dotnetcore/template.Dockerfile#L16)
-
-#### [Node template](../images/runtime/node/template.Dockerfile)
-
-**Docker**
-
-- [`golang:1.11-stretch`](../images/runtime/node/template.Dockerfile#L2)
-- [`mcr.microsoft.com/oryx/node-base:{VERSION}`](../images/runtime/node/template.Dockerfile#L12)
-
-#### [PHP template](../images/runtime/php/template.Dockerfile)
-
-**Docker**
-
-- [`golang:1.11-stretch`](../images/runtime/php/template.Dockerfile#L2)
-- [`mcr.microsoft.com/oryx/php-base:{VERSION}`](../images/runtime/php/template.Dockerfile#L12)
-
-#### [Python template](../images/runtime/python/template.Dockerfile)
-
-**Docker**
-
-- [`golang:1.11-stretch`](../images/runtime/python/template.Dockerfile#L2)
+See the Dockerfiles in [/images/runtime](../images/runtime/) for the full list of runtime
+images and packages installed. The common base image is at
+[commonbase/Dockerfile](../images/runtime/commonbase/Dockerfile). Each platform has
+version-specific Dockerfiles (e.g. `dotnetcore/8.0/bookworm.Dockerfile`,
+`python/template.Dockerfile`).
 
 </details>
 
@@ -203,10 +112,9 @@ The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 
 * `build`: scripts for building the script generator and build and runtime images
 * `images`: Dockerfiles for the build and runtime images
-* `platforms`:platform SDK versions to be built
+* `platforms`: platform SDK versions to be built
 * `src`: source code for the build and startup script generators
 * `tests`: tests.
-* `vsts`: CI/CD configuration.
 
 ## Prerequisites
 
