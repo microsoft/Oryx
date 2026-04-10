@@ -3,6 +3,8 @@ ARG OS_FLAVOR
 FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${OS_FLAVOR}
 ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
+ARG VERSIONS_TO_BUILD_OVERRIDE=""
+ENV VERSIONS_TO_BUILD_OVERRIDE=$VERSIONS_TO_BUILD_OVERRIDE
 
 # COPY build/__pythonVersions.sh /tmp/
 

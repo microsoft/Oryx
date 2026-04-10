@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -16,15 +17,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> platforms;
         private readonly IStandardOutputWriter outputWriter;
+        private readonly ILogger<DefaultPlatformsInformationProvider> logger;
         private readonly BuildScriptGeneratorOptions commonOptions;
 
         public DefaultPlatformsInformationProvider(
             IEnumerable<IProgrammingPlatform> platforms,
             IStandardOutputWriter outputWriter,
+            ILogger<DefaultPlatformsInformationProvider> logger,
             IOptions<BuildScriptGeneratorOptions> commonOptions)
         {
             this.platforms = platforms;
             this.outputWriter = outputWriter;
+            this.logger = logger;
             this.commonOptions = commonOptions.Value;
         }
 
@@ -39,6 +43,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             this.outputWriter.WriteLine($"Primary SDK Storage URL: {this.commonOptions.OryxSdkStorageBaseUrl}");
             this.outputWriter.WriteLine($"Backup SDK Storage URL: {this.commonOptions.OryxSdkStorageBackupBaseUrl}");
+            this.outputWriter.WriteLine($"ACR SDK Registry URL: {this.commonOptions.OryxAcrSdkRegistryUrl ?? "(not set)"}");
+
+            // Log SDK provider status and resolution priority
+            this.outputWriter.WriteLine("SDK provider status:");
+            this.outputWriter.WriteLine($"  External ACR SDK provider: {(this.commonOptions.EnableExternalAcrSdkProvider ? "Enabled" : "Disabled")}");
+            this.outputWriter.WriteLine($"  External SDK provider: {(this.commonOptions.EnableExternalSdkProvider ? "Enabled" : "Disabled")}");
+            this.outputWriter.WriteLine($"  Direct ACR SDK provider: {(this.commonOptions.EnableAcrSdkProvider ? "Enabled" : "Disabled")}");
+            this.outputWriter.WriteLine($"  Blob SDK provider: Enabled");
+
+            if (this.commonOptions.EnableExternalAcrSdkProvider && !string.IsNullOrEmpty(this.commonOptions.PlatformName))
+            {
+                this.outputWriter.WriteLine($"External ACR SDK provider is enabled. Only using user-specified platform: {this.commonOptions.PlatformName}");
+            }
 
             // Try detecting ALL platforms since in some scenarios this is required.
             // For example, in case of a multi-platform app like ASP.NET Core + NodeJs, we might need to dynamically
@@ -47,18 +64,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // build environment is setup with detected platforms' sdks.
             this.outputWriter.WriteLine("Detecting platforms...");
 
-            if (this.commonOptions.EnableExternalSdkProvider)
-            {
-                this.outputWriter.WriteLine("External SDK provider is enabled.");
-            }
-
             foreach (var platform in this.platforms)
             {
-                // Check if a platform is enabled or not
-                if (!platform.IsEnabled(context))
+                if (!this.ShouldDetectPlatform(platform, context))
                 {
-                    this.outputWriter.WriteLine(
-                        $"Platform '{platform.Name}' has been disabled, so skipping detection for it.");
                     continue;
                 }
 
@@ -91,6 +100,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return platformInfos;
+        }
+
+        private bool ShouldDetectPlatform(IProgrammingPlatform platform, RepositoryContext context)
+        {
+            // Check if a platform is enabled or not
+            if (!platform.IsEnabled(context))
+            {
+                this.outputWriter.WriteLine(
+                    $"Platform '{platform.Name}' has been disabled, so skipping detection for it.");
+                return false;
+            }
+
+            if (this.commonOptions.EnableExternalAcrSdkProvider && !string.IsNullOrEmpty(this.commonOptions.PlatformName) && platform.Name != this.commonOptions.PlatformName)
+            {
+                this.logger.LogDebug(
+                    "Skipping detection for platform '{PlatformName}' because External ACR SDK provider is enabled and only user provided platform '{UserPlatform}' is considered.",
+                    platform.Name,
+                    this.commonOptions.PlatformName);
+                return false;
+            }
+
+            return true;
         }
     }
 }

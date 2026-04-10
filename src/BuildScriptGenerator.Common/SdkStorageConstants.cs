@@ -21,5 +21,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string DotnetRuntimeVersionMetadataName = "Dotnet_runtime_version";
         public const string LegacyDotnetRuntimeVersionMetadataName = "Runtime_version";
         public const string OsTypeMetadataName = "Os_type";
+
+        // OCI image based SDK distribution constants
+        public const string DefaultAcrSdkRegistryUrl = "https://mcr.microsoft.com";
+        public const string DefaultAcrSdkRepositoryPrefix = "oryx";
     }
 }

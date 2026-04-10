@@ -148,6 +148,50 @@ getSdkFromImage() {
 buildPlatform() {
 	local versionFile="$1"
 	local funcToCall="$2"
+
+	# When VERSIONS_TO_BUILD_OVERRIDE is set (comma-separated list of versions),
+	# only build those specific versions and skip blob existence checks entirely.
+	# This allows force-building specific SDK versions without rebuilding everything.
+	if [ -n "$VERSIONS_TO_BUILD_OVERRIDE" ]; then
+		echo "VERSIONS_TO_BUILD_OVERRIDE is set: $VERSIONS_TO_BUILD_OVERRIDE"
+		echo "Building only specified versions, skipping storage account checks."
+		export OVERWRITE_EXISTING_SDKS="true"
+
+		# Build a lookup set of requested versions
+		IFS=',' read -ra _requested_versions <<< "$VERSIONS_TO_BUILD_OVERRIDE"
+		declare -A _force_set
+		for _v in "${_requested_versions[@]}"; do
+			_v="$(echo "$_v" | xargs)"
+			[ -n "$_v" ] && _force_set["$_v"]=1
+		done
+
+		# Read the version file but only invoke the build function for matching versions.
+		# This preserves extra args (e.g. GPG keys, SHAs) that some platforms need.
+		while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]; do
+			VERSION_INFO="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//')"
+			if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]]; then
+				continue
+			fi
+
+			IFS=',' read -ra VERSION_INFO_PARTS <<< "$VERSION_INFO"
+			lineVersion="$(echo -e "${VERSION_INFO_PARTS[0]}" | sed -e 's/^[[:space:]]*//')"
+
+			if [ -z "${_force_set[$lineVersion]:-}" ]; then
+				continue
+			fi
+
+			echo "Force-building version: $lineVersion"
+			versionArgs=()
+			for arg in "${VERSION_INFO_PARTS[@]}"; do
+				arg="$(echo -e "${arg}" | sed -e 's/^[[:space:]]*//')"
+				versionArgs+=("$arg")
+			done
+
+			$funcToCall "${versionArgs[@]}"
+		done < "$versionFile"
+		return
+	fi
+
 	while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]
 	do
 		# remove all whitespace before first character

@@ -55,5 +55,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Php56TarSha256 = "1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c";
         public static readonly List<string> RuntimeVersions = new List<string> { "7.4-debian-bullseye", "7.4-debian-buster", "8.0-debian-bullseye", "8.0-debian-buster", "8.1-debian-bullseye", "8.1-debian-buster", "8.2-debian-bullseye", "8.2-debian-buster", "8.3-debian-bullseye", "8.3-debian-buster", "8.3-debian-bookworm" };
         public static readonly List<string> FpmRuntimeVersions = new List<string> { "7.4-fpm-debian-bullseye", "8.0-fpm-debian-bullseye", "8.1-fpm-debian-bullseye", "8.2-fpm-debian-bullseye", "8.3-fpm-debian-bullseye", "8.3-fpm-debian-bookworm", "8.4-fpm-debian-bullseye", "8.4-fpm-debian-bookworm", "8.5-fpm-ubuntu-noble" };
+
+        public static readonly Dictionary<string, string[]> ComposerVersionsPerDebianFlavor = new Dictionary<string, string[]>
+        {
+            { "bullseye", new[] { "1.9.2", "1.9.3", "1.10.0", "1.10.1", "1.10.2", "1.10.4", "1.10.5", "1.10.6", "1.10.7", "1.10.8", "1.10.9", "1.10.10", "1.10.11", "1.10.12", "1.10.13", "1.10.14", "1.10.15", "1.10.16", "1.10.17", "1.10.18", "1.10.19", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.2.9", "2.2.21", "2.3.4", "2.3.10", "2.4.4", "2.5.8", "2.6.2", "2.7.7", "2.8.2", "2.8.4", "2.8.6", "2.8.8" } },
+            { "buster", new[] { "1.9.2", "1.9.3", "1.10.0", "1.10.1", "1.10.2", "1.10.4", "1.10.5", "1.10.6", "1.10.7", "1.10.8", "1.10.9", "1.10.10", "1.10.11", "1.10.12", "1.10.13", "1.10.14", "1.10.15", "1.10.16", "1.10.17", "1.10.18", "1.10.19", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.2.9", "2.2.21", "2.3.4", "2.3.10", "2.4.4", "2.5.8", "2.6.2" } },
+            { "bookworm", new[] { "2.0.8", "2.6.2", "2.7.7", "2.8.2", "2.8.4", "2.8.6", "2.8.8" } },
+            { "noble", new[] { "2.6.2", "2.7.7", "2.8.2", "2.8.4", "2.8.6", "2.8.8" } },
+        };
     }
 }

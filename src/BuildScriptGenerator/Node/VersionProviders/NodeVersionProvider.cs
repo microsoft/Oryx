@@ -3,60 +3,47 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    internal class NodeVersionProvider : INodeVersionProvider
+    internal class NodeVersionProvider : PlatformVersionProviderBase, INodeVersionProvider
     {
-        private readonly BuildScriptGeneratorOptions options;
         private readonly NodeOnDiskVersionProvider onDiskVersionProvider;
         private readonly NodeSdkStorageVersionProvider sdkStorageVersionProvider;
         private readonly NodeExternalVersionProvider externalVersionProvider;
-        private readonly ILogger<NodeVersionProvider> logger;
-        private PlatformVersionInfo versionInfo;
+        private readonly NodeExternalAcrVersionProvider externalAcrVersionProvider;
+        private readonly NodeAcrVersionProvider acrVersionProvider;
 
         public NodeVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
             NodeOnDiskVersionProvider onDiskVersionProvider,
             NodeSdkStorageVersionProvider sdkStorageVersionProvider,
             NodeExternalVersionProvider externalVersionProvider,
-            ILogger<NodeVersionProvider> logger)
+            NodeExternalAcrVersionProvider externalAcrVersionProvider,
+            NodeAcrVersionProvider acrVersionProvider,
+            ILogger<NodeVersionProvider> logger,
+            IStandardOutputWriter outputWriter)
+            : base(options.Value, logger, outputWriter)
         {
-            this.options = options.Value;
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
             this.externalVersionProvider = externalVersionProvider;
-            this.logger = logger;
+            this.externalAcrVersionProvider = externalAcrVersionProvider;
+            this.acrVersionProvider = acrVersionProvider;
         }
 
-        public PlatformVersionInfo GetVersionInfo()
-        {
-            if (this.versionInfo == null)
-            {
-                if (this.options.EnableDynamicInstall)
-                {
-                    if (this.options.EnableExternalSdkProvider)
-                    {
-                        try
-                        {
-                            return this.externalVersionProvider.GetVersionInfo();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.LogError($"Failed to get version info from external SDK provider. Falling back to http based sdkStorageVersionProvider. Ex: {ex}");
-                        }
-                    }
+        protected override string PlatformName => "nodejs";
 
-                    return this.sdkStorageVersionProvider.GetVersionInfo();
-                }
+        protected override PlatformVersionInfo GetOnDiskVersionInfo() => this.onDiskVersionProvider.GetVersionInfo();
 
-                this.versionInfo = this.onDiskVersionProvider.GetVersionInfo();
-            }
+        protected override PlatformVersionInfo GetSdkStorageVersionInfo() => this.sdkStorageVersionProvider.GetVersionInfo();
 
-            return this.versionInfo;
-        }
+        protected override PlatformVersionInfo GetExternalVersionInfo() => this.externalVersionProvider.GetVersionInfo();
+
+        protected override PlatformVersionInfo GetExternalAcrVersionInfo() => this.externalAcrVersionProvider.GetVersionInfo();
+
+        protected override PlatformVersionInfo GetAcrVersionInfo() => this.acrVersionProvider.GetVersionInfo();
     }
 }
