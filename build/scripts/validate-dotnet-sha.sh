@@ -51,4 +51,4 @@ for prefix in NET_CORE_APP ASPNET_CORE_APP; do
     done < <(grep -E "^[[:space:]]+${prefix}_[0-9]+:" "$CONSTANTS_FILE")
 done
 
-[[ $failed -eq 0 ]] && echo "PASSED" || { echo "FAILED"; exit 1; }
+[[ $failed -eq 0 ]] && echo "VALIDATION PASSED" || { echo "VALIDATION FAILED"; exit 1; }

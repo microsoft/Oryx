@@ -41,7 +41,7 @@ jobs:
           echo 'output<<EOF' >> $GITHUB_OUTPUT
           echo "$output" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
-          echo "$output" | grep -q "^PASSED$" && exit 0 || exit 1
+          echo "$output" | grep -q "VALIDATION PASSED" && exit 0 || exit 1
 
       - name: Validate .NET SHA512
         id: dotnet
@@ -53,7 +53,7 @@ jobs:
           echo 'output<<EOF' >> $GITHUB_OUTPUT
           echo "$output" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
-          echo "$output" | grep -q "^PASSED$" && exit 0 || exit 1
+          echo "$output" | grep -q "VALIDATION PASSED" && exit 0 || exit 1
 
       - name: Post summary
         if: always() && (steps.changes.outputs.php == 'true' || steps.changes.outputs.dotnet == 'true')
