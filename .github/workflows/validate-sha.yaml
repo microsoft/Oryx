@@ -34,27 +34,53 @@ jobs:
       - name: Validate PHP SHA256
         id: php
         if: steps.changes.outputs.php == 'true'
-        run: ./build/scripts/validate-php-sha.sh images/constants.yml
+        continue-on-error: true
+        run: |
+          output=$(./build/scripts/validate-php-sha.sh images/constants.yml 2>&1) || true
+          echo "$output"
+          echo 'output<<EOF' >> $GITHUB_OUTPUT
+          echo "$output" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+          echo "$output" | grep -q "^PASSED$" && exit 0 || exit 1
 
       - name: Validate .NET SHA512
         id: dotnet
         if: steps.changes.outputs.dotnet == 'true'
-        run: ./build/scripts/validate-dotnet-sha.sh images/constants.yml
+        continue-on-error: true
+        run: |
+          output=$(./build/scripts/validate-dotnet-sha.sh images/constants.yml 2>&1) || true
+          echo "$output"
+          echo 'output<<EOF' >> $GITHUB_OUTPUT
+          echo "$output" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+          echo "$output" | grep -q "^PASSED$" && exit 0 || exit 1
 
       - name: Post summary
         if: always() && (steps.changes.outputs.php == 'true' || steps.changes.outputs.dotnet == 'true')
         uses: actions/github-script@v7
+        env:
+          PHP_OUTPUT: ${{ steps.php.outputs.output }}
+          DOTNET_OUTPUT: ${{ steps.dotnet.outputs.output }}
         with:
           script: |
             const php = '${{ steps.changes.outputs.php }}' === 'true';
             const dotnet = '${{ steps.changes.outputs.dotnet }}' === 'true';
             const phpStatus = '${{ steps.php.outcome }}';
             const dotnetStatus = '${{ steps.dotnet.outcome }}';
+            const phpOutput = process.env.PHP_OUTPUT || '';
+            const dotnetOutput = process.env.DOTNET_OUTPUT || '';
             const icon = s => s === 'success' ? '✅' : s === 'skipped' ? '⏭️' : '❌';
             
             let body = '## SHA Validation Summary\n| Stack | Status |\n|-------|--------|\n';
             if (php) body += `| PHP | ${icon(phpStatus)} ${phpStatus} |\n`;
             if (dotnet) body += `| .NET | ${icon(dotnetStatus)} ${dotnetStatus} |\n`;
+            
+            if (php && phpOutput) {
+              body += `\n<details><summary>PHP Validation Output</summary>\n\n\`\`\`\n${phpOutput}\n\`\`\`\n</details>\n`;
+            }
+            if (dotnet && dotnetOutput) {
+              body += `\n<details><summary>.NET Validation Output</summary>\n\n\`\`\`\n${dotnetOutput}\n\`\`\`\n</details>\n`;
+            }
             
             github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -62,3 +88,8 @@ jobs:
               issue_number: context.issue.number,
               body
             });
+            
+            // Fail the job if any validation failed
+            if (phpStatus === 'failure' || dotnetStatus === 'failure') {
+              core.setFailed('SHA validation failed');
+            }
