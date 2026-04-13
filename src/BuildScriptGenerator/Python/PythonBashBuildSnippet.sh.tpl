@@ -186,6 +186,9 @@ install_python_packages_impl() {
     fi
 
     if [ "$CreateVenvWithPythonVenv" = "true" ]; then
+        if [[ "$CreateVenvCommand" == *"uv venv"* ]]; then
+            echo "Using Python's built-in venv for virtual environment creation"
+        fi
         CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
     fi
     
