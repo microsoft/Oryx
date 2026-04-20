@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "java", sampleAppName));
 
-        [Fact, Trait("category", "githubactions")]
+        [Fact(Skip = "Java detection disabled during Oryx build"), Trait("category", "githubactions")]
         public void JavaSampleAppsTestsGithubActions()
         {
             var imageTag = ImageTestHelperConstants.GitHubActionsBullseye;
