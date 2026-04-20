@@ -52,16 +52,18 @@ jobs:
           go-version: '1.25.7'
 
       - name: Run Startup Script Generator Tests
+        env:
+          GOTOOLCHAIN: local
         run: |
           cd src/startupscriptgenerator/src
           COMMON_DIR=$(pwd)/common
+          GOROOT_DIR=$(go env GOROOT)
+          cp -r "$COMMON_DIR" "$GOROOT_DIR/src/common"
           for dir in */; do
             if [ -f "$dir/go.mod" ]; then
               echo "Building and testing $dir..."
               cd "$dir"
               go mod tidy
-              EFFECTIVE_GOROOT=$(go env GOROOT)
-              cp -r "$COMMON_DIR" "$EFFECTIVE_GOROOT/src/common"
               go test -v ./...
               cd ..
             fi
