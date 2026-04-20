@@ -176,8 +176,7 @@ func (detector *fastAPIDetector) detect() bool {
 
 		contentStr := string(content)
 		if strings.Contains(contentStr, "from fastapi import") ||
-			strings.Contains(contentStr, "from fastapi\nimport") ||
-			strings.Contains(contentStr, "FastAPI()") {
+			strings.Contains(contentStr, "FastAPI(") {
 			logger.LogInformation("Detected FastAPI app in '%s'.", file)
 			detector.mainFile = file
 			return true

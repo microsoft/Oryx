@@ -45,3 +45,23 @@ jobs:
 
       - name: Run BuildServer.Tests
         run: dotnet test tests/BuildServer.Tests/BuildServer.Tests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Run Startup Script Generator Tests
+        run: |
+          cd src/startupscriptgenerator/src
+          GOROOT=$(go env GOROOT)
+          cp -r common "$GOROOT/src/common"
+          for dir in */; do
+            if [ -f "$dir/go.mod" ]; then
+              echo "Building and testing $dir..."
+              cd "$dir"
+              go mod tidy
+              go test -v ./...
+              cd ..
+            fi
+          done
