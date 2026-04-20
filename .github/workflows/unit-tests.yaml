@@ -49,18 +49,19 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25'
+          go-version: '1.25.7'
 
       - name: Run Startup Script Generator Tests
         run: |
           cd src/startupscriptgenerator/src
-          GOROOT=$(go env GOROOT)
-          cp -r common "$GOROOT/src/common"
+          COMMON_DIR=$(pwd)/common
           for dir in */; do
             if [ -f "$dir/go.mod" ]; then
               echo "Building and testing $dir..."
               cd "$dir"
               go mod tidy
+              EFFECTIVE_GOROOT=$(go env GOROOT)
+              cp -r "$COMMON_DIR" "$EFFECTIVE_GOROOT/src/common"
               go test -v ./...
               cd ..
             fi
