@@ -617,20 +617,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             string ResolvePhpComposerVersion(string detectedVersion)
             {
-                // If external ACR provider is enabled, resolve version from the composer version provider.
-                // Note: Unlike PHP, Composer versions are hardcoded locally in PhpVersions.ComposerVersionsPerDebianFlavor
-                // rather than fetched from the external host. The provider still uses the same pattern for consistency.
-                if (this.commonOptions.EnableExternalAcrSdkProvider)
-                {
-                    var acrVersionInfo = this.phpComposerVersionProvider.GetVersionInfo();
-                    if (acrVersionInfo?.DefaultVersion != null)
-                    {
-                        this.logger.LogDebug("External ACR SDK provider is enabled and returned version {version} for PHP Composer.", acrVersionInfo.DefaultVersion);
-                        return acrVersionInfo.DefaultVersion;
-                    }
-                }
-
-                // Explicitly specified version by user wins over detected version
+                // Explicitly specified version by user wins over detected version and any provider default.
+                // This is an exception only for php-composer to allow users to override the composer version
+                // even when external acr provider is enabled
                 if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.PhpComposerVersion))
                 {
                     return this.phpScriptGeneratorOptions.PhpComposerVersion;
@@ -646,6 +635,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.PhpComposerDefaultVersion))
                 {
                     return this.phpScriptGeneratorOptions.PhpComposerDefaultVersion;
+                }
+
+                // If external ACR provider is enabled, fall back to the default from the composer version provider.
+                // Note: Unlike PHP, Composer versions are hardcoded locally in PhpVersions.ComposerVersionsPerDebianFlavor
+                // rather than fetched from the external host. The provider still uses the same pattern for consistency.
+                if (this.commonOptions.EnableExternalAcrSdkProvider)
+                {
+                    var acrVersionInfo = this.phpComposerVersionProvider.GetVersionInfo();
+                    if (acrVersionInfo?.DefaultVersion != null)
+                    {
+                        this.logger.LogDebug("External ACR SDK provider is enabled and returned version {version} for PHP Composer.", acrVersionInfo.DefaultVersion);
+                        return acrVersionInfo.DefaultVersion;
+                    }
                 }
 
                 // Fallback to default version detection

@@ -915,6 +915,41 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.Equal(versionProviderDefault, result.PlatformVersion);
         }
 
+        [Fact]
+        public void Detect_UserSpecifiedComposerVersion_WinsOverExternalAcrProviderDefault()
+        {
+            // Arrange
+            var userSpecifiedComposerVersion = "2.5.8";
+            var acrProviderDefaultComposerVersion = "2.0.0";
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            repo.AddFile("<?php echo true; ?>", "foo.php");
+            var context = CreateContext(repo);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions
+            {
+                PhpComposerVersion = userSpecifiedComposerVersion,
+            };
+            var platform = CreatePhpPlatform(
+                supportedPhpVersions: new[] { "7.3.5" },
+                defaultVersion: "7.3.5",
+                detectedVersion: "7.3.5",
+                supportedPhpComposerVersions: new[] { userSpecifiedComposerVersion, acrProviderDefaultComposerVersion },
+                defaultComposerVersion: acrProviderDefaultComposerVersion,
+                commonOptions: commonOptions,
+                phpScriptGeneratorOptions: phpScriptGeneratorOptions);
+
+            // Act
+            var result = platform.Detect(context) as PhpPlatformDetectorResult;
+
+            // Assert - user-specified PHP_COMPOSER_VERSION must win over the ACR provider default
+            Assert.NotNull(result);
+            Assert.Equal(userSpecifiedComposerVersion, result.PhpComposerVersion);
+        }
+
         [Theory]
         [InlineData(null, "7.4.30", null, "7.4.30")]
         [InlineData(null, "7.4.30", "7.3.1", "7.4.30")]
