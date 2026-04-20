@@ -83,7 +83,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     ExtVarNames.PythonEnableGunicornMultiWorkersEnvVarName,
                     "true")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python312Version}")
+                $"--platform {PythonConstants.PlatformName} --platform-version {version}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
