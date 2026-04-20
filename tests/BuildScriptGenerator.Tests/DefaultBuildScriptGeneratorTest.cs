@@ -620,6 +620,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var defaultPlatformDetector = new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter(),
+                NullLogger<DefaultPlatformsInformationProvider>.Instance,
                 Options.Create(commonOptions));
             var envScriptProvider = new BuildScriptGenerator.PlatformsInstallationScriptProvider(
                 platforms,

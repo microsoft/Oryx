@@ -520,6 +520,436 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.Contains(TestPhpComposerInstaller.InstallerScript, actualScriptSnippet);
         }
 
+        [Fact]
+        public void PhpInstallViaExternalAcrProvider_IfEnabled_AndPhpVersionIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: true);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+        }
+
+        [Fact]
+        public void PhpInstallViaDirectAcrProvider_IfEnabled_AndPhpVersionIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: true);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                acrSdkProvider: acrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
+        public void PhpFallsBackFromExternalAcrToExternalSdk_WhenExternalAcrFails()
+        {
+            // Arrange
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+        }
+
+        [Fact]
+        public void PhpFallsBackToCdn_WhenAllProvidersFail()
+        {
+            // Arrange
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: false);
+            var externalSdkProvider = new TestExternalSdkProvider(requestBlobResult: false);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider,
+                acrSdkProvider: acrSdkProvider,
+                externalSdkProvider: externalSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScript, actualScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
+        public void PhpFallsBackFromExternalAcrToDirectAcr_WhenBothExternalProvidersFail()
+        {
+            // Arrange
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: true);
+            var externalSdkProvider = new TestExternalSdkProvider(requestBlobResult: false);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider,
+                acrSdkProvider: acrSdkProvider,
+                externalSdkProvider: externalSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
+        public void ComposerInstallViaExternalAcrProvider_IfEnabled_AndComposerVersionIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: true);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                isPhpComposerAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.Contains(TestPhpComposerInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+        }
+
+        [Fact]
+        public void ComposerInstallViaDirectAcrProvider_IfEnabled_AndComposerVersionIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: true);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                isPhpComposerAlreadyInstalled: false,
+                acrSdkProvider: acrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.Contains(TestPhpComposerInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+        }
+
+        [Fact]
+        public void ComposerFallsBackToCdn_WhenAllProvidersFail()
+        {
+            // Arrange
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: false);
+            var externalSdkProvider = new TestExternalSdkProvider(requestBlobResult: false);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                isPhpComposerAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider,
+                acrSdkProvider: acrSdkProvider,
+                externalSdkProvider: externalSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScript, actualScriptSnippet);
+            Assert.Contains(TestPhpComposerInstaller.InstallerScript, actualScriptSnippet);
+        }
+
+        [Fact]
+        public void ComposerFallsBackFromExternalAcrToExternalSdk_WhenExternalAcrFails()
+        {
+            // Arrange
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                isPhpComposerAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert - Both PHP and Composer should fall from ExternalACR to ExternalSDK
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.Contains(TestPhpComposerInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+        }
+
+        [Fact]
+        public void ComposerFallsBackFromExternalAcrToDirectAcr_WhenBothExternalProvidersFail()
+        {
+            // Arrange
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: true);
+            var externalSdkProvider = new TestExternalSdkProvider(requestBlobResult: false);
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var phpPlatform = CreatePhpPlatformWithProviders(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                isPhpComposerAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider,
+                acrSdkProvider: acrSdkProvider,
+                externalSdkProvider: externalSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert - Both PHP and Composer should fall from ExternalACR+ExternalSDK to DirectACR
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.Contains(TestPhpComposerInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
+        public void Detect_ReturnsVersionProviderDefault_WhenExternalAcrEnabled_OverridingDetectedVersion()
+        {
+            // Arrange
+            var detectedVersion = "7.3.5";
+            var versionProviderDefault = "8.1.0";
+            var repo = new MemorySourceRepo();
+            repo.AddFile("<?php echo true; ?>", "foo.php");
+            var context = CreateContext(repo);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var platform = CreatePhpPlatform(
+                supportedPhpVersions: new[] { detectedVersion, versionProviderDefault },
+                defaultVersion: versionProviderDefault,
+                detectedVersion: detectedVersion,
+                commonOptions: commonOptions);
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - ExternalACR short-circuit uses version provider's DefaultVersion,
+            // overriding the detected version
+            Assert.NotNull(result);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(versionProviderDefault, result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_UserSpecifiedComposerVersion_WinsOverExternalAcrProviderDefault()
+        {
+            // Arrange
+            var userSpecifiedComposerVersion = "2.5.8";
+            var acrProviderDefaultComposerVersion = "2.0.0";
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            repo.AddFile("<?php echo true; ?>", "foo.php");
+            var context = CreateContext(repo);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions
+            {
+                PhpComposerVersion = userSpecifiedComposerVersion,
+            };
+            var platform = CreatePhpPlatform(
+                supportedPhpVersions: new[] { "7.3.5" },
+                defaultVersion: "7.3.5",
+                detectedVersion: "7.3.5",
+                supportedPhpComposerVersions: new[] { userSpecifiedComposerVersion, acrProviderDefaultComposerVersion },
+                defaultComposerVersion: acrProviderDefaultComposerVersion,
+                commonOptions: commonOptions,
+                phpScriptGeneratorOptions: phpScriptGeneratorOptions);
+
+            // Act
+            var result = platform.Detect(context) as PhpPlatformDetectorResult;
+
+            // Assert - user-specified PHP_COMPOSER_VERSION must win over the ACR provider default
+            Assert.NotNull(result);
+            Assert.Equal(userSpecifiedComposerVersion, result.PhpComposerVersion);
+        }
+
         [Theory]
         [InlineData(null, "7.4.30", null, "7.4.30")]
         [InlineData(null, "7.4.30", "7.3.1", "7.4.30")]
@@ -591,7 +1021,52 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 phpInstaller,
                 phpComposerInstaller,
                 externalSdkProvider,
-                TelemetryClientHelper.GetTelemetryClient());
+                new TestExternalAcrSdkProvider(),
+                new TestAcrSdkProvider(),
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
+        }
+
+        private PhpPlatform CreatePhpPlatformWithProviders(
+            BuildScriptGeneratorOptions commonOptions = null,
+            bool? isPhpVersionAlreadyInstalled = null,
+            bool? isPhpComposerAlreadyInstalled = null,
+            IExternalAcrSdkProvider externalAcrSdkProvider = null,
+            IAcrSdkProvider acrSdkProvider = null,
+            IExternalSdkProvider externalSdkProvider = null)
+        {
+            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
+            var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions();
+            isPhpVersionAlreadyInstalled = isPhpVersionAlreadyInstalled ?? true;
+            isPhpComposerAlreadyInstalled = isPhpComposerAlreadyInstalled ?? true;
+            var versionProvider = new TestPhpVersionProvider(null, null);
+            externalSdkProvider = externalSdkProvider ?? new TestExternalSdkProvider();
+            externalAcrSdkProvider = externalAcrSdkProvider ?? new TestExternalAcrSdkProvider();
+            acrSdkProvider = acrSdkProvider ?? new TestAcrSdkProvider();
+            var composerVersionProvider = new TestPhpComposerVersionProvider(
+                new[] { PhpVersions.ComposerDefaultVersion },
+                PhpVersions.ComposerDefaultVersion);
+            var detector = new TestPhpPlatformDetector(detectedVersion: null);
+            var phpInstaller = new TestPhpPlatformInstaller(
+                Options.Create(commonOptions),
+                isPhpVersionAlreadyInstalled.Value);
+            var phpComposerInstaller = new TestPhpComposerInstaller(
+                Options.Create(commonOptions),
+                isPhpComposerAlreadyInstalled.Value);
+            return new TestPhpPlatform(
+                Options.Create(phpScriptGeneratorOptions),
+                Options.Create(commonOptions),
+                versionProvider,
+                composerVersionProvider,
+                NullLogger<TestPhpPlatform>.Instance,
+                detector,
+                phpInstaller,
+                phpComposerInstaller,
+                externalSdkProvider,
+                externalAcrSdkProvider,
+                acrSdkProvider,
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
@@ -616,7 +1091,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 PhpPlatformInstaller phpInstaller,
                 PhpComposerInstaller phpComposerInstaller,
                 IExternalSdkProvider externalSdkProvider,
-                TelemetryClient telemetryClient)
+                IExternalAcrSdkProvider externalAcrSdkProvider,
+                IAcrSdkProvider acrSdkProvider,
+                TelemetryClient telemetryClient,
+                IStandardOutputWriter outputWriter)
                 : base(
                       phpScriptGeneratorOptions,
                       commonOptions,
@@ -627,7 +1105,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                       phpInstaller,
                       phpComposerInstaller,
                       externalSdkProvider,
-                      telemetryClient)
+                      externalAcrSdkProvider,
+                      acrSdkProvider,
+                      telemetryClient,
+                      outputWriter)
             {
             }
         }

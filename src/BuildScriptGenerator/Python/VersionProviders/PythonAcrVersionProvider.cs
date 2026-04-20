@@ -1,0 +1,36 @@
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using System.Net.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace Microsoft.Oryx.BuildScriptGenerator.Python
+{
+    /// <summary>
+    /// ACR-based version provider for Python SDKs.
+    /// Parallel to <see cref="PythonSdkStorageVersionProvider"/> but uses OCI Distribution API.
+    /// </summary>
+    internal class PythonAcrVersionProvider : AcrVersionProviderBase, IPythonVersionProvider
+    {
+        private PlatformVersionInfo platformVersionInfo;
+
+        public PythonAcrVersionProvider(
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
+            OciRegistryClient ociClient,
+            ILoggerFactory loggerFactory)
+            : base(commonOptions, ociClient, loggerFactory)
+        {
+        }
+
+        public virtual PlatformVersionInfo GetVersionInfo()
+        {
+            return this.platformVersionInfo
+                ??= this.GetAvailableVersionsFromAcr(
+                    platformName: ToolNameConstants.PythonName,
+                    defaultVersionPerFlavor: Python.PythonConstants.DefaultVersionPerFlavor);
+        }
+    }
+}
