@@ -14,6 +14,14 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 
+# Download Node.js via n in a disposable stage
+FROM ${BASE_IMAGE} AS nodeDownloader
+ARG NODE20_VERSION
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl git make ca-certificates \
+    && curl -sL https://git.io/n-install | bash -s -- -ny - \
+    && ~/n/bin/n -d ${NODE20_VERSION}
+
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bookworm:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
 
@@ -37,18 +45,8 @@ ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 
-RUN set -e \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends git make \
-    && curl -sL https://git.io/n-install | bash -s -- -ny - \
-    && ~/n/bin/n -d ${NODE20_VERSION} \
-    && cp -r /usr/local/n/versions/node/${NODE20_VERSION}/* /usr/local/ \
-    && rm -rf /usr/local/n \
-    && rm -rf ~/n \
-    && apt-get purge -y git make \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+COPY --from=nodeDownloader /usr/local/n/versions/node/${NODE20_VERSION}/ /usr/local/
+RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 ARG NPM_VERSION
 ARG PM2_VERSION
