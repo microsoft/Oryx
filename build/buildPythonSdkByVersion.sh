@@ -70,22 +70,22 @@ buildPythonfromSource()
         libffi-dev \
         libgdbm-dev \
         libgdm-dev \
+        libgeos-dev \
         liblzma-dev \
         libncurses5-dev \
         libreadline-dev \
+        libreadline6-dev \
         libsqlite3-dev \
         libssl-dev \
         lzma \
         lzma-dev \
         pkg-config \
+        python3-dev \
         tk-dev \
         uuid-dev \
         zlib1g-dev
 
-    rm -rf /usr/src/python
-    mkdir -p /usr/src/python
-    tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C /usr/src/python
-    cd /usr/src/python
+    tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C .
 
     INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
@@ -95,8 +95,7 @@ buildPythonfromSource()
         --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
         --enable-loadable-sqlite-extensions \
         --enable-shared \
-        --enable-optimizations \
-        --with-lto \
+        --with-system-expat \
         --with-system-ffi \
         --without-ensurepip
 
@@ -113,7 +112,6 @@ buildPythonfromSource()
             -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
         \) -exec rm -rf '{}' + \
 
-    [ -d "/opt/python/$PYTHON_VERSION" ] && echo /opt/python/$PYTHON_VERSION/lib >> /etc/ld.so.conf.d/python.conf
     ldconfig
 
     # make some useful symlinks that are expected to exist in the installation prefix
@@ -134,12 +132,6 @@ buildPythonfromSource()
         --no-cache-dir \
         --no-warn-script-location
 
-    # Replace log level in pip's code as a workaround for https://github.com/pypa/pip/issues/6189
-    pipReqSetPath=`find $INSTALLATION_PREFIX/lib -path "*site-packages/pip/_internal/req/req_set.py"`
-    if [ -n "$pipReqSetPath" ]; then
-        sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\.\.\.'\'')|' "$pipReqSetPath"
-    fi
-
     # Currently only for version '2' of Python, the alias 'python' exists in the 'bin'
     # directory. So to make sure other versions also have this alias, we create the link
     # explicitly here. This is for the scenarios where a user does 'benv python=3.7' and
@@ -154,6 +146,9 @@ buildPythonfromSource()
         ln -s $pythonBinDir/python$majorAndMinorParts $pythonBinDir/python
     fi
 
+    rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
+    rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
+    rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
 }
 
 getPythonGpgAndShaByVersion() {
@@ -180,10 +175,15 @@ getPythonGpgAndShaByVersion() {
 }
 
 echo
-echo "Building python from source code..."
+echo "Building python 3.14 or newer from source code..."
 
 getPythonGpgAndShaByVersion "/tmp/versionsToBuild.txt" $version
 IFS='.' read -ra SPLIT_VERSION <<< "$version"
 
-echo "version=$version, gpg='$pythonVersionGPG', sha='$python_sha'"
-buildPythonfromSource version=$version gpg="$pythonVersionGPG" python_sha="$python_sha"
+if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "14" ]
+then
+    echo "version=$version, gpg='$pythonVersionGPG', sha='$python_sha'"
+    buildPythonfromSource version=$version gpg="$pythonVersionGPG" python_sha="$python_sha"
+else
+    source /tmp/oryx/images/installPlatform.sh python $version --dir /opt/python/$version --links false
+fi
