@@ -154,32 +154,6 @@ buildPythonfromSource()
         ln -s $pythonBinDir/python$majorAndMinorParts $pythonBinDir/python
     fi
 
-    rm -rf /usr/src/python /tmpFiles
-
-    # Clean up build dependencies to reduce image size
-    # Only purge -dev packages and build tools (headers, static libs, compilers).
-    # Do NOT use apt-get autoremove as it may remove runtime .so libraries
-    # (e.g., libgdbm6, libtk8.6) that Python modules depend on.
-    apt-get purge -y \
-        build-essential \
-        gdb \
-        lcov \
-        libbluetooth-dev \
-        libbz2-dev \
-        libffi-dev \
-        libgdbm-dev \
-        libgdm-dev \
-        liblzma-dev \
-        libncurses5-dev \
-        libreadline-dev \
-        libsqlite3-dev \
-        libssl-dev \
-        lzma-dev \
-        pkg-config \
-        tk-dev \
-        uuid-dev \
-        zlib1g-dev
-    rm -rf /var/lib/apt/lists/*
 }
 
 getPythonGpgAndShaByVersion() {

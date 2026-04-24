@@ -27,15 +27,30 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN chmod +x build.sh && ./build.sh python /opt/startupcmdgen/startupcmdgen
 
+# Build Python SDK from source in a disposable stage
+FROM ${BASE_IMAGE} AS pythonSdkBuilder
+ARG DEBIAN_FLAVOR
+ARG PYTHON_FULL_VERSION
+ARG PYTHON_VERSION
+ENV PYTHON_VERSION=${PYTHON_FULL_VERSION}
+COPY platforms/python/prereqs/build.sh /tmp/build.sh
+COPY platforms/python/versions/${DEBIAN_FLAVOR}/versionsToBuild.txt /tmp/versionsToBuild.txt
+COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
+RUN chmod +x /tmp/build.sh /tmp/receiveGpgKeys.sh
+RUN set -e \
+    && mkdir -p /usr/src/python && cd /usr/src/python \
+    && VERSION_LINE=$(grep "^${PYTHON_VERSION}," /tmp/versionsToBuild.txt) \
+    && export GPG_KEY=$(echo "$VERSION_LINE" | cut -d',' -f2 | tr -d ' ') \
+    && export PYTHON_SHA256=$(echo "$VERSION_LINE" | cut -d',' -f3 | tr -d ' ') \
+    && export OS_FLAVOR=${DEBIAN_FLAVOR} \
+    && /tmp/build.sh
+
 FROM ${BASE_IMAGE} as main
 
 ARG IMAGES_DIR=/tmp/oryx/images
-ARG BUILD_DIR=/tmp/oryx/build
-ARG SDK_STORAGE_BASE_URL_VALUE
 
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
-ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -46,34 +61,15 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 ADD images ${IMAGES_DIR}
-ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
-RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 ARG PYTHON_FULL_VERSION
 ARG PYTHON_VERSION
 ARG PYTHON_MAJOR_VERSION
 
 ENV PYTHON_VERSION ${PYTHON_FULL_VERSION}
-RUN true
-# COPY build/__pythonVersions.sh ${BUILD_DIR}
-# RUN true
-COPY platforms/__common.sh /tmp/
-RUN true
-COPY platforms/python/prereqs/build.sh /tmp/
-RUN true
-COPY platforms/python/versions/${DEBIAN_FLAVOR}/versionsToBuild.txt /tmp/
-RUN true
-COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
-RUN true
 
-RUN chmod +x /tmp/receiveGpgKeys.sh
-RUN chmod +x /tmp/build.sh
-
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
-    && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
+COPY --from=pythonSdkBuilder /opt/python/${PYTHON_FULL_VERSION} /opt/python/${PYTHON_FULL_VERSION}
 
 RUN set -ex \
  && cd /opt/python/ \
