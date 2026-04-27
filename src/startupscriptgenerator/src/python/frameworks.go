@@ -189,7 +189,7 @@ func (detector *fastAPIDetector) detect() bool {
 // Returns the gunicorn module argument with uvicorn worker class for ASGI support.
 func (detector *fastAPIDetector) GetGunicornModuleArg() string {
 	module := detector.mainFile[0 : len(detector.mainFile) - 3] // Remove the '.py' from the end
-	return "-k uvicorn.workers.UvicornWorker " + module + ":app"
+	return "-k uvicorn_worker.UvicornWorker " + module + ":app"
 }
 
 func (detector *fastAPIDetector) GetDebuggableModule() string {

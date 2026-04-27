@@ -47,14 +47,14 @@ func Test_buildGunicornCommandForModule_FastAPI_withUvicornWorker(t *testing.T) 
 	// Arrange
 	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-'" +
 		" --bind=0.0.0.0:80 --chdir=/home/site/wwwroot\" gunicorn " +
-		"-k uvicorn.workers.UvicornWorker main:app"
+		"-k uvicorn_worker.UvicornWorker main:app"
 	gen := PythonStartupScriptGenerator{
 		BindPort: "80",
 	}
 
 	// Act
 	actual := gen.buildGunicornCommandForModule(
-		"-k uvicorn.workers.UvicornWorker main:app", "/home/site/wwwroot")
+		"-k uvicorn_worker.UvicornWorker main:app", "/home/site/wwwroot")
 
 	// Assert
 	assert.Equal(t, expected, actual)
@@ -90,7 +90,7 @@ func Test_fastAPIDetector_detect_mainPy(t *testing.T) {
 	// Act & Assert
 	assert.True(t, detector.detect())
 	assert.Equal(t, "main.py", detector.mainFile)
-	assert.Equal(t, "-k uvicorn.workers.UvicornWorker main:app", detector.GetGunicornModuleArg())
+	assert.Equal(t, "-k uvicorn_worker.UvicornWorker main:app", detector.GetGunicornModuleArg())
 	assert.Equal(t, "uvicorn main:app --host $HOST --port $PORT", detector.GetDebuggableModule())
 }
 
