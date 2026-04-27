@@ -63,8 +63,7 @@ func Test_buildGunicornCommandForModule_FastAPI_withUvicornWorker(t *testing.T) 
 // FastAPI: debug command with uvicorn
 func Test_buildDebugPyCommandForModule_FastAPI(t *testing.T) {
 	// Arrange
-	// Note: cdcmd is prepended twice (once in Sprintf, once in return cdcmd + pycmd)
-	expected := "cd /app && cd /app && python -m debugpy --listen 0.0.0.0:5678  -m " +
+	expected := "cd /app && python -m debugpy --listen 0.0.0.0:5678  -m " +
 		"uvicorn main:app --host $HOST --port $PORT"
 	gen := PythonStartupScriptGenerator{
 		DebugPort: "5678",

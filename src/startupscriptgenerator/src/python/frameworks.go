@@ -160,7 +160,7 @@ func (detector *fastAPIDetector) detect() bool {
 	logger := common.GetLogger("python.frameworks.fastAPIDetector.detect")
 	defer logger.Shutdown()
 
-	filesToSearch := []string{"main.py", "app.py", "application.py", "server.py"}
+	filesToSearch := []string{"main.py", "app.py", "application.py", "server.py", "asgi.py", "api.py", "index.py", "run.py"}
 
 	for _, file := range filesToSearch {
 		fullPath := filepath.Join(detector.appPath, file)
