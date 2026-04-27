@@ -16,7 +16,7 @@ tarFileName=nodejs-$osFlavor-$version.tar.gz
 upgradeNpm() {
     local node_ver="$1"
 
-    local nodeDir="/usr/local/n/versions/node/$node_ver"
+    local nodeDir="$NVM_DIR/versions/node/v$node_ver"
     local nodeModulesDir="$nodeDir/lib/node_modules"
     local npm_ver=`jq -r .version $nodeModulesDir/npm/package.json`
     IFS='.' read -ra versionParts <<< "$npm_ver"
@@ -32,8 +32,10 @@ upgradeNpm() {
     fi
 }
 
-~/n/bin/n -d $version
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+. "$NVM_DIR/nvm.sh"
+nvm install $version
 upgradeNpm $version
-cd /usr/local/n/versions/node/$version
+cd $NVM_DIR/versions/node/v$version
 mkdir -p /tmp/compressedSdk/nodejs
 tar -zcf /tmp/compressedSdk/nodejs/$tarFileName .
