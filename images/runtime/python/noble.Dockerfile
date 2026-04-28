@@ -17,10 +17,27 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN chmod +x build.sh && ./build.sh python /opt/startupcmdgen/startupcmdgen
 
+# Build Python SDK from source in a disposable stage
+FROM ${BASE_IMAGE} AS pythonSdkBuilder
+ARG OS_FLAVOR
+ARG PYTHON_FULL_VERSION
+ARG PYTHON_VERSION
+ENV PYTHON_VERSION=${PYTHON_FULL_VERSION}
+COPY platforms/python/prereqs/build.sh /tmp/build.sh
+COPY platforms/python/versions/${OS_FLAVOR}/versionsToBuild.txt /tmp/versionsToBuild.txt
+COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
+RUN chmod +x /tmp/build.sh /tmp/receiveGpgKeys.sh
+RUN set -e \
+    && mkdir -p /usr/src/python && cd /usr/src/python \
+    && VERSION_LINE=$(grep "^${PYTHON_VERSION}," /tmp/versionsToBuild.txt) \
+    && export GPG_KEY=$(echo "$VERSION_LINE" | cut -d',' -f2 | tr -d ' ') \
+    && export PYTHON_SHA256=$(echo "$VERSION_LINE" | cut -d',' -f3 | tr -d ' ') \
+    && export OS_FLAVOR=${OS_FLAVOR} \
+    && /tmp/build.sh
+
 FROM ${BASE_IMAGE} as main
 
 ARG IMAGES_DIR=/tmp/oryx/images
-ARG BUILD_DIR=/tmp/oryx/build
 
 ARG OS_FLAVOR
 ENV OS_FLAVOR=${OS_FLAVOR}
@@ -34,22 +51,15 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 ADD images ${IMAGES_DIR}
-ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
-RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 ARG PYTHON_FULL_VERSION
 ARG PYTHON_VERSION
 ARG PYTHON_MAJOR_VERSION
 
 ENV PYTHON_VERSION ${PYTHON_FULL_VERSION}
-COPY platforms/__common.sh /tmp/
-COPY platforms/python/prereqs/build.sh /tmp/
-COPY platforms/python/versions/${OS_FLAVOR}/versionsToBuild.txt /tmp/
-COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 
-RUN chmod +x /tmp/build.sh
-RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $OS_FLAVOR
+COPY --from=pythonSdkBuilder /opt/python/${PYTHON_FULL_VERSION} /opt/python/${PYTHON_FULL_VERSION}
 
 RUN set -ex \
  && cd /opt/python/ \
