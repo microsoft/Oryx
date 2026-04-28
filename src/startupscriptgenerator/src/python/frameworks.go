@@ -176,14 +176,11 @@ func (detector *fastAPIDetector) detect() bool {
 
 		contentStr := string(content)
 
-		// Condition A: file imports the fastapi package
 		hasImport := strings.Contains(contentStr, "from fastapi") ||
 			strings.Contains(contentStr, "import fastapi")
+		hasFlask := strings.Contains(contentStr, "flask")
 
-		// Condition B: file creates a FastAPI app instance
-		hasAppCreation := strings.Contains(contentStr, "FastAPI(")
-
-		if hasImport && hasAppCreation {
+		if hasImport && !hasFlask {
 			logger.LogInformation("Detected FastAPI app in '%s'.", file)
 			detector.mainFile = file
 			return true
