@@ -154,8 +154,8 @@ func (detector *fastAPIDetector) Name() string {
 }
 
 // Checks if the app is based on FastAPI:
-// Returns true if there's a Python file in the app's root that imports FastAPI.
-// Looks for 'from fastapi import' or 'FastAPI()' in common entry point files.
+// Returns true if a common entrypoint file both imports the fastapi package
+// AND creates a FastAPI application instance.
 func (detector *fastAPIDetector) detect() bool {
 	logger := common.GetLogger("python.frameworks.fastAPIDetector.detect")
 	defer logger.Shutdown()
@@ -175,8 +175,15 @@ func (detector *fastAPIDetector) detect() bool {
 		}
 
 		contentStr := string(content)
-		if strings.Contains(contentStr, "from fastapi import") ||
-			strings.Contains(contentStr, "FastAPI(") {
+
+		// Condition A: file imports the fastapi package
+		hasImport := strings.Contains(contentStr, "from fastapi") ||
+			strings.Contains(contentStr, "import fastapi")
+
+		// Condition B: file creates a FastAPI app instance
+		hasAppCreation := strings.Contains(contentStr, "FastAPI(")
+
+		if hasImport && hasAppCreation {
 			logger.LogInformation("Detected FastAPI app in '%s'.", file)
 			detector.mainFile = file
 			return true
