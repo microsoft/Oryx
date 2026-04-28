@@ -379,8 +379,8 @@ func (gen *PythonStartupScriptGenerator) buildDebugPyCommandForModule(moduleAndA
 		cdcmd = fmt.Sprintf("cd %s && ", appDir)
 	}
 
-	pycmd := fmt.Sprintf("%spython -m debugpy --listen %s:%s %s -m %s",
-		cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
+	pycmd := fmt.Sprintf("python -m debugpy --listen %s:%s %s -m %s",
+		DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
 
 	return cdcmd + pycmd
 }
