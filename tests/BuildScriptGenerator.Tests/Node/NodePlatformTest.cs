@@ -453,6 +453,186 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void BuildScript_UsesExternalAcrProvider_IfEnabled_AndSdkIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: true);
+            var nodePlatform = CreateNodePlatformWithProviders(
+                commonOptions: commonOptions,
+                sdkAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "20.14.0",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Equal(TestNodePlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, buildScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+        }
+
+        [Fact]
+        public void BuildScript_UsesDirectAcrProvider_IfEnabled_AndSdkIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: true);
+            var nodePlatform = CreateNodePlatformWithProviders(
+                commonOptions: commonOptions,
+                sdkAlreadyInstalled: false,
+                acrSdkProvider: acrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "20.14.0",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Equal(TestNodePlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, buildScriptSnippet);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
+        public void BuildScript_FallsBackFromExternalAcrToExternalSdk_WhenExternalAcrFails()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var nodePlatform = CreateNodePlatformWithProviders(
+                commonOptions: commonOptions,
+                sdkAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "20.14.0",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Equal(TestNodePlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, buildScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+        }
+
+        [Fact]
+        public void BuildScript_FallsBackFromExternalAcrToDirectAcr_WhenBothExternalProvidersFail()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: true);
+            var externalSdkProvider = new TestExternalSdkProvider(requestBlobResult: false);
+            var nodePlatform = CreateNodePlatformWithProviders(
+                commonOptions: commonOptions,
+                sdkAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider,
+                acrSdkProvider: acrSdkProvider,
+                externalSdkProvider: externalSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "20.14.0",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Equal(TestNodePlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, buildScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
+        public void BuildScript_FallsBackToCdn_WhenAllProvidersFail()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = true,
+                EnableExternalAcrSdkProvider = true,
+                EnableExternalSdkProvider = true,
+                EnableAcrSdkProvider = true,
+                DebianFlavor = OsTypes.DebianBookworm,
+            };
+            var externalAcrSdkProvider = new TestExternalAcrSdkProvider(returnValue: false);
+            var acrSdkProvider = new TestAcrSdkProvider(returnValue: false);
+            var externalSdkProvider = new TestExternalSdkProvider(requestBlobResult: false);
+            var nodePlatform = CreateNodePlatformWithProviders(
+                commonOptions: commonOptions,
+                sdkAlreadyInstalled: false,
+                externalAcrSdkProvider: externalAcrSdkProvider,
+                acrSdkProvider: acrSdkProvider,
+                externalSdkProvider: externalSdkProvider);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "20.14.0",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Equal(TestNodePlatformInstaller.InstallerScript, buildScriptSnippet);
+            Assert.True(externalAcrSdkProvider.RequestSdkAsyncCalled);
+            Assert.True(acrSdkProvider.RequestSdkFromAcrAsyncCalled);
+        }
+
+        [Fact]
         public void BuildScript_HasNoSdkInstallScript_IfDynamicInstallIsEnabled_AndSdkIsAlreadyInstalled()
         {
             // Arrange
@@ -1000,6 +1180,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
+        [Fact]
+        public void Detect_ReturnsVersionProviderDefault_WhenExternalAcrEnabled_OverridingDetectedVersion()
+        {
+            // Arrange
+            var detectedVersion = "14.0.0";
+            var versionProviderDefault = "18.0.0";
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var platform = CreateNodePlatform(
+                supportedNodeVersions: new[] { detectedVersion, versionProviderDefault },
+                defaultVersion: versionProviderDefault,
+                detectedVersion: detectedVersion,
+                commonOptions: commonOptions);
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - ExternalACR short-circuit uses version provider's DefaultVersion,
+            // overriding the detected version
+            Assert.NotNull(result);
+            Assert.Equal(NodeConstants.PlatformName, result.Platform);
+            Assert.Equal(versionProviderDefault, result.PlatformVersion);
+        }
+
         private TestNodePlatform CreateNodePlatform(
             string[] supportedNodeVersions = null,
             string defaultVersion = null,
@@ -1025,7 +1232,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 environment,
                 platformInstaller,
                 externalSdkProvider,
-                TelemetryClientHelper.GetTelemetryClient());
+                new TestExternalAcrSdkProvider(),
+                new TestAcrSdkProvider(),
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1049,7 +1259,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 environment,
                 platformInstaller,
                 externalSdkProvider, 
-                TelemetryClientHelper.GetTelemetryClient());  
+                new TestExternalAcrSdkProvider(),
+                new TestAcrSdkProvider(),
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());  
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1077,7 +1290,44 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 environment,
                 installer,
                 externalSdkProvider,
-                TelemetryClientHelper.GetTelemetryClient());
+                new TestExternalAcrSdkProvider(),
+                new TestAcrSdkProvider(),
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
+        }
+
+        private TestNodePlatform CreateNodePlatformWithProviders(
+            BuildScriptGeneratorOptions commonOptions,
+            bool sdkAlreadyInstalled,
+            IExternalAcrSdkProvider externalAcrSdkProvider = null,
+            IAcrSdkProvider acrSdkProvider = null,
+            IExternalSdkProvider externalSdkProvider = null)
+        {
+            commonOptions.EnableDynamicInstall = true;
+            var environment = new TestEnvironment();
+            var installer = new TestNodePlatformInstaller(
+                Options.Create(commonOptions),
+                sdkAlreadyInstalled,
+                NullLoggerFactory.Instance);
+            var versionProvider = new TestNodeVersionProvider();
+            externalSdkProvider = externalSdkProvider ?? new TestExternalSdkProvider();
+            externalAcrSdkProvider = externalAcrSdkProvider ?? new TestExternalAcrSdkProvider();
+            acrSdkProvider = acrSdkProvider ?? new TestAcrSdkProvider();
+            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
+            var detector = new TestNodePlatformDetector();
+            return new TestNodePlatform(
+                Options.Create(commonOptions),
+                Options.Create(nodeScriptGeneratorOptions),
+                versionProvider,
+                NullLogger<NodePlatform>.Instance,
+                detector,
+                environment,
+                installer,
+                externalSdkProvider,
+                externalAcrSdkProvider,
+                acrSdkProvider,
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
@@ -1101,7 +1351,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 IEnvironment environment,
                 NodePlatformInstaller nodePlatformInstaller,
                 IExternalSdkProvider externalSdkProvider,
-                TelemetryClient telemetryClient)
+                IExternalAcrSdkProvider externalAcrSdkProvider,
+                IAcrSdkProvider acrSdkProvider,
+                TelemetryClient telemetryClient,
+                IStandardOutputWriter outputWriter)
                 : base(
                       cliOptions,
                       nodeScriptGeneratorOptions,
@@ -1111,7 +1364,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                       environment,
                       nodePlatformInstaller,
                       externalSdkProvider,
-                      telemetryClient)
+                      externalAcrSdkProvider,
+                      acrSdkProvider,
+                      telemetryClient,
+                      outputWriter)
             {
             }
         }

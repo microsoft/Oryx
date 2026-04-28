@@ -1,6 +1,6 @@
 ARG BASE_IMAGE
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.7-bookworm as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26.1-bookworm as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -348,16 +348,11 @@ RUN pecl install redis && docker-php-ext-enable redis
 RUN set -eux; \	
     pecl install mongodb && docker-php-ext-enable mongodb
 
-# NOTE: sqlsrv and pdo_sqlsrv are commented out because they don't support PHP 8.5 yet.
-# Microsoft's drivers (5.12.0) target PHP 8.0-8.4 and fail to compile against PHP 8.5 internal APIs.
-# For SQL Server connectivity, use pdo_odbc instead (already installed above):
-#   $pdo = new PDO("odbc:Driver={ODBC Driver 18 for SQL Server};Server=myserver;Database=mydb", $user, $pass);
-#
-# RUN set -eux; \
-#     pecl install sqlsrv pdo_sqlsrv \
-#     && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
-#     && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini
-
+# Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.3.0)
+RUN set -eux; \
+    pecl install sqlsrv pdo_sqlsrv \
+    && echo extension=pdo_sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||" -e "s/\"//g")/30-pdo_sqlsrv.ini \
+    && echo extension=sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||" -e "s/\"//g")/20-sqlsrv.ini
 
 RUN { \
                 echo 'opcache.memory_consumption=128'; \

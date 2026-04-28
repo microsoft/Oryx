@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Tests.Common;
@@ -146,6 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var platformDetector = new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter(),
+                NullLogger<DefaultPlatformsInformationProvider>.Instance,
                 Options.Create(new BuildScriptGeneratorOptions()));
             return new PlatformsInstallationScriptProvider(
                 platforms,

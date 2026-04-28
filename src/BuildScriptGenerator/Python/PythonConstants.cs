@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     public static class PythonConstants
@@ -20,5 +22,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public const string DefaultTargetPackageDirectory = "__oryx_packages__";
         public const string SetupDotPyFileName = "setup.py";
         public const string CondaExecutablePath = "/opt/conda/condabin/conda";
+
+        /// <summary>
+        /// Default Python major.minor version per OS flavor, matching platforms/python/versions/*/defaultVersion.txt.
+        /// </summary>
+        public static readonly Dictionary<string, string> DefaultVersionPerFlavor = new Dictionary<string, string>
+        {
+            { "bookworm", "3.8" },
+            { "bullseye", "3.8" },
+            { "buster", "3.8" },
+            { "focal-scm", "3.8" },
+            { "noble", "3.14" },
+            { "stretch", "3.8" },
+        };
     }
 }
