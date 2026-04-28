@@ -14,6 +14,17 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 
+# Download Node.js via nvm in a disposable stage
+FROM ${BASE_IMAGE} AS nodeDownloader
+ARG NODE22_VERSION
+ENV NVM_DIR /usr/local/nvm
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl ca-certificates \
+    && mkdir -p $NVM_DIR \
+    && curl -sL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install ${NODE22_VERSION}
+
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
 
@@ -37,12 +48,8 @@ ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 
-COPY nodejs-bullseye-${NODE22_VERSION}.tar.gz .
-RUN set -e \
-    && mkdir -p /opt/nodejs/${NODE22_VERSION} \
-    && tar -xzf nodejs-bullseye-${NODE22_VERSION}.tar.gz -C /usr/local \
-    && rm nodejs-bullseye-${NODE22_VERSION}.tar.gz \
-    && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+COPY --from=nodeDownloader /usr/local/nvm/versions/node/v${NODE22_VERSION}/ /usr/local/
+RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 ARG NPM_VERSION
 ARG PM2_VERSION

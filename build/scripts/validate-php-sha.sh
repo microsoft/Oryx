@@ -144,9 +144,9 @@ echo "=================================================="
 echo "Validated: $validated PHP version(s)"
 
 if [[ $failed -eq 1 ]]; then
-    echo -e "${RED}VALIDATION FAILED - SHA256 mismatches detected!${NC}"
+    echo -e "${RED}SHA VALIDATION FAILED - SHA256 mismatches detected!${NC}"
     exit 1
 else
-    echo -e "${GREEN}VALIDATION PASSED${NC}"
+    echo -e "${GREEN}SHA VALIDATION PASSED${NC}"
     exit 0
 fi
