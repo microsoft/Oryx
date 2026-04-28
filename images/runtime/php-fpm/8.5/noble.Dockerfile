@@ -272,13 +272,13 @@ ENV PHP_ORIGIN=php-fpm
 ENV NGINX_RUN_USER=www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT=/home/site/wwwroot
-# Install NGINX latest stable version using Ondřej Surý's PPA for Ubuntu
-# - https://launchpad.net/~ondrej/+archive/ubuntu/nginx
-RUN apt-get update
-RUN apt-get install -y software-properties-common curl nano
-RUN add-apt-repository -y ppa:ondrej/nginx
-RUN apt-get update
-RUN apt-get install -y nginx-core nginx-common nginx nginx-full
+# Install NGINX stable from official nginx.org repository
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl gnupg2 ca-certificates nano \
+    && curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu noble nginx" > /etc/apt/sources.list.d/nginx.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends nginx
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default

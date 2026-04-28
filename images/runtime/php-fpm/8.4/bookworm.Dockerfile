@@ -271,13 +271,13 @@ ENV PHP_ORIGIN php-fpm
 ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
-# Install NGINX latest stable version using APT Method with Nginx Repository instead of distribution-provided one:
-# - https://www.linuxcapable.com/how-to-install-latest-nginx-mainline-or-stable-on-debian-11/
-RUN apt-get update
-RUN apt install curl nano -y
-RUN curl -sSL https://packages.sury.org/nginx/README.txt | bash -x
-RUN apt-get update
-RUN yes '' | apt-get install nginx-core nginx-common nginx nginx-full -y
+# Install NGINX stable from official nginx.org repository
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl gnupg2 ca-certificates nano \
+    && curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/debian bookworm nginx" > /etc/apt/sources.list.d/nginx.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends nginx
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
