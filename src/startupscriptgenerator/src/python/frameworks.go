@@ -199,7 +199,7 @@ func (detector *fastAPIDetector) detect() bool {
 
 		hasImport := strings.Contains(contentStr, "from fastapi") ||
 			strings.Contains(contentStr, "import fastapi")
-		hasFlask := strings.Contains(contentStr, "flask")
+		hasFlask := strings.Contains(contentStr, "from flask")
 
 		if hasImport && !hasFlask {
 			logger.LogInformation("Detected FastAPI app in '%s'.", file)
