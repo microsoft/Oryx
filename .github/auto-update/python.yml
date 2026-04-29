@@ -1,0 +1,9 @@
+tracked:
+  "3.9":  { version: "3.9.24",  gpg: "E3FF2839C048B25C084DEBE9B26995E310250568", osFlavors: [bullseye] }
+  "3.10": { version: "3.10.20", gpg: "A035C8C19219BA821ECEA86B64E628F8D684696D", osFlavors: [bullseye] }
+  "3.11": { version: "3.11.15", gpg: "A035C8C19219BA821ECEA86B64E628F8D684696D", osFlavors: [bullseye, bookworm] }
+  "3.12": { version: "3.12.13", gpg: "7169605F62C751356D054A26A821E680E5FA6305", osFlavors: [bullseye, bookworm] }
+  "3.13": { version: "3.13.11", gpg: "7169605F62C751356D054A26A821E680E5FA6305", osFlavors: [bullseye, bookworm] }
+  "3.14": { version: "3.14.2",  gpg: "",                                          osFlavors: [noble] }
+
+upstream_url: "https://www.python.org/api/v2/downloads/release/"

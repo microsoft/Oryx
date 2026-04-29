@@ -23,11 +23,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
 
+        public static IEnumerable<object[]> TwigExampleDynamicInstallationTestData => new[]
+        {
+            new object[] { PhpVersions.Php81Version },
+            new object[] { PhpVersions.Php82Version },
+            new object[] { PhpVersions.Php83Version },
+            new object[] { PhpVersions.Php84Version },
+        };
+
         [Theory, Trait("category", "githubactions")]
-        [InlineData(PhpVersions.Php81Version)]
-        [InlineData(PhpVersions.Php82Version)]
-        [InlineData(PhpVersions.Php83Version)]
-        [InlineData(PhpVersions.Php84Version)]
+        [MemberData(nameof(TwigExampleDynamicInstallationTestData))]
         public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(string phpVersion)
         {
             // Arrange
@@ -59,10 +64,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> WithoutComposerFileTestData => new[]
+        {
+            new object[] { PhpVersions.Php74Version },
+            new object[] { PhpVersions.Php80Version },
+            new object[] { PhpVersions.Php82Version },
+        };
+
         [Theory, Trait("category", "githubactions")]
-        [InlineData(PhpVersions.Php74Version)]
-        [InlineData(PhpVersions.Php80Version)]
-        [InlineData(PhpVersions.Php82Version)]
+        [MemberData(nameof(WithoutComposerFileTestData))]
         public void GeneratesScript_AndBuilds_WithoutComposerFile(string phpVersion)
         {
             // Arrange

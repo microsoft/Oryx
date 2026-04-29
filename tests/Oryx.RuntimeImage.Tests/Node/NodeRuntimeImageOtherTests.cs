@@ -21,10 +21,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
         }
 
+        public static IEnumerable<object[]> BullseyeNodeVersionTestData => new[]
+        {
+            new object[] { "20", NodeVersions.Node20Version },
+            new object[] { "22", NodeVersions.Node22Version },
+        };
+
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("20", NodeVersions.Node20Version)]
-        [InlineData("22", NodeVersions.Node22Version)]
+        [MemberData(nameof(BullseyeNodeVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesBullseyeImageName(string version, string nodeVersion)
         {
@@ -48,10 +53,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> BookwormNodeVersionTestData => new[]
+        {
+            new object[] { "20", NodeVersions.Node20Version },
+            new object[] { "22", NodeVersions.Node22Version },
+        };
+
         [Theory]
         [Trait("category", "runtime-bookworm")]
-        [InlineData("20", NodeVersions.Node20Version)]
-        [InlineData("22", NodeVersions.Node22Version)]
+        [MemberData(nameof(BookwormNodeVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesBookwormImageName(string version, string nodeVersion)
         {

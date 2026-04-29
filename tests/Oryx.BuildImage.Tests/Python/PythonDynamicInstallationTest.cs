@@ -183,11 +183,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> GeneratesScriptAndBuildsPythonTestData => new[]
+        {
+            new object[] { PythonVersions.Python310Version },
+            new object[] { PythonVersions.Python311Version },
+            new object[] { PythonVersions.Python312Version },
+            new object[] { PythonVersions.Python313Version },
+        };
+
         [Theory, Trait("category", "githubactions")]
-        [InlineData(PythonVersions.Python310Version)]
-        [InlineData(PythonVersions.Python311Version)]
-        [InlineData(PythonVersions.Python312Version)]
-        [InlineData(PythonVersions.Python313Version)]
+        [MemberData(nameof(GeneratesScriptAndBuildsPythonTestData))]
         public void GeneratesScript_AndBuildsPython(string version)
         {
             // Arrange
