@@ -56,7 +56,7 @@ def update_constant(content, key, value):
 def get_os_flavors(content, stack, major):
     key = f"{stack}{major.replace('.', '')}osFlavors"
     val = get_current_version(content, key)
-    return val.split(',') if val else []
+    return [flavor.strip() for flavor in val.split(',')] if val else []
 
 
 def append_to_versions_to_build(stack, flavor, line):
@@ -69,7 +69,12 @@ def append_to_versions_to_build(stack, flavor, line):
         existing = f.read()
 
     version = line.split(',')[0].strip()
-    if version in existing:
+    existing_versions = {
+        existing_line.split(',', 1)[0].strip()
+        for existing_line in existing.splitlines()
+        if existing_line.strip() and not existing_line.strip().startswith('#')
+    }
+    if version in existing_versions:
         print(f"  {flavor}: {version} already in versionsToBuild.txt")
         return
 
