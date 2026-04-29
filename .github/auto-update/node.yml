@@ -1,7 +1,0 @@
-tracked:
-  "18": { version: "18.20.8", osFlavors: [bullseye] }
-  "20": { version: "20.20.0", osFlavors: [bullseye, bookworm] }
-  "22": { version: "22.22.0", osFlavors: [bullseye, bookworm] }
-  "24": { version: "24.13.0", osFlavors: [noble] }
-
-upstream_url: "https://nodejs.org/dist/index.json"
