@@ -6,84 +6,49 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public static class ConstantsYamlReader
     {
-        private static readonly object LockObj = new object();
-        private static Dictionary<string, string> constants;
+        private static Dictionary<string, string> cache;
 
-        public static string Get(string key)
+        public static string Get(string key) =>
+            GetAll().TryGetValue(key, out var v) ? v
+            : throw new KeyNotFoundException($"Key '{key}' not found in constants.yml.");
+
+        public static string TryGet(string key) =>
+            GetAll().TryGetValue(key, out var v) ? v : null;
+
+        private static Dictionary<string, string> GetAll()
         {
-            EnsureLoaded();
-            if (constants.TryGetValue(key, out var value))
+            if (cache != null)
             {
-                return value;
+                return cache;
             }
 
-            throw new KeyNotFoundException(
-                $"Key '{key}' not found in constants.yml.");
+            var path = new[] { Environment.GetEnvironmentVariable("ORYX_CONSTANTS_YAML_PATH"), "/opt/tmp/images/constants.yml" }
+                .FirstOrDefault(p => !string.IsNullOrEmpty(p) && File.Exists(p))
+                ?? FindInRepo();
+
+            var root = new DeserializerBuilder()
+                .WithNamingConvention(NullNamingConvention.Instance)
+                .Build()
+                .Deserialize<Dictionary<string, Dictionary<string, object>>>(File.ReadAllText(path));
+
+            cache = root?["variables"]?
+                .ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+
+            return cache;
         }
 
-        public static string TryGet(string key)
+        private static string FindInRepo()
         {
-            EnsureLoaded();
-            return constants.TryGetValue(key, out var value) ? value : null;
-        }
-
-        public static void Reload()
-        {
-            lock (LockObj)
-            {
-                constants = null;
-            }
-        }
-
-        public static void Override(string key, string value)
-        {
-            EnsureLoaded();
-            lock (LockObj)
-            {
-                constants[key] = value;
-            }
-        }
-
-        private static void EnsureLoaded()
-        {
-            if (constants != null)
-            {
-                return;
-            }
-
-            lock (LockObj)
-            {
-                if (constants != null)
-                {
-                    return;
-                }
-
-                var filePath = ResolveFilePath();
-                constants = ParseYaml(File.ReadAllText(filePath));
-            }
-        }
-
-        private static string ResolveFilePath()
-        {
-            var envPath = Environment.GetEnvironmentVariable("ORYX_CONSTANTS_YAML_PATH");
-            if (!string.IsNullOrEmpty(envPath) && File.Exists(envPath))
-            {
-                return envPath;
-            }
-
-            var containerPath = "/opt/tmp/images/constants.yml";
-            if (File.Exists(containerPath))
-            {
-                return containerPath;
-            }
-
             var dir = AppContext.BaseDirectory;
-            for (int i = 0; i < 10; i++)
+            while (dir != null)
             {
                 var candidate = Path.Combine(dir, "images", "constants.yml");
                 if (File.Exists(candidate))
@@ -91,71 +56,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return candidate;
                 }
 
-                var parent = Directory.GetParent(dir);
-                if (parent == null)
-                {
-                    break;
-                }
-
-                dir = parent.FullName;
+                dir = Directory.GetParent(dir)?.FullName;
             }
 
-            throw new FileNotFoundException(
-                "Could not find images/constants.yml. " +
-                "Set ORYX_CONSTANTS_YAML_PATH or ensure the file exists in the repo root.");
-        }
-
-        private static Dictionary<string, string> ParseYaml(string content)
-        {
-            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            bool inVariables = false;
-
-            foreach (var rawLine in content.Split('\n'))
-            {
-                var line = rawLine.TrimEnd('\r');
-
-                if (line.TrimStart().StartsWith("variables:"))
-                {
-                    inVariables = true;
-                    continue;
-                }
-
-                if (!inVariables)
-                {
-                    continue;
-                }
-
-                if (line.Length > 0 && line[0] != ' ' && line[0] != '#')
-                {
-                    break;
-                }
-
-                var trimmed = line.Trim();
-                if (string.IsNullOrEmpty(trimmed) || trimmed.StartsWith("#"))
-                {
-                    continue;
-                }
-
-                var colonIndex = trimmed.IndexOf(':');
-                if (colonIndex <= 0)
-                {
-                    continue;
-                }
-
-                var key = trimmed.Substring(0, colonIndex).Trim();
-                var value = trimmed.Substring(colonIndex + 1).Trim();
-
-                if (value.Length >= 2 &&
-                    ((value[0] == '"' && value[value.Length - 1] == '"') ||
-                     (value[0] == '\'' && value[value.Length - 1] == '\'')))
-                {
-                    value = value.Substring(1, value.Length - 2);
-                }
-
-                result[key] = value;
-            }
-
-            return result;
+            throw new FileNotFoundException("Could not find images/constants.yml.");
         }
     }
 }
