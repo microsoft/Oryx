@@ -273,7 +273,7 @@ ENV NGINX_RUN_USER www-data
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 # Install NGINX stable from official nginx.org repository
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl gnupg2 ca-certificates nano \
+    && apt-get install -y --no-install-recommends curl gnupg2 nano \
     && curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/debian bookworm nginx" > /etc/apt/sources.list.d/nginx.list \
     && apt-get update \
