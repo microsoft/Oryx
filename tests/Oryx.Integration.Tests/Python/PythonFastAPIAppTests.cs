@@ -21,8 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("category", "python")]
-        [InlineData("3.12", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye)]
-        [InlineData("3.13", ImageTestHelperConstants.OsTypeDebianBookworm, ImageTestHelperConstants.GitHubActionsBookworm)]
+        [InlineData("3.14", ImageTestHelperConstants.OsTypeUbuntuNoble, ImageTestHelperConstants.GitHubActionsNoble)]
         public async Task CanBuildAndRun_FastAPIAppAsync(string version, string osType, string buildImageTag)
         {
             // Arrange
@@ -71,8 +70,8 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_FastAPIApp_WithGunicornMultiWorkersAsync()
         {
             // Arrange
-            var version = "3.12";
-            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
+            var version = "3.14";
+            var osType = ImageTestHelperConstants.OsTypeUbuntuNoble;
             var appName = "fastapi-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -97,7 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsNoble),
                 "/bin/bash",
                 new[]
                 {
