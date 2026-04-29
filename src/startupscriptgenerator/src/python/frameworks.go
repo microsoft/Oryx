@@ -7,6 +7,7 @@ package main
 
 import (
 	"common"
+	"common/consts"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -36,7 +37,7 @@ type fastAPIDetector struct {
 	mainFile	string
 }
 
-func DetectFramework(appPath string, venvName string) PyAppFramework {
+func DetectFramework(appPath string, venvName string, pythonVersion string) PyAppFramework {
 	var detector PyAppFramework
 
 	detector = &djangoDetector{ appPath: appPath, venvName: venvName }
@@ -44,9 +45,12 @@ func DetectFramework(appPath string, venvName string) PyAppFramework {
 		return detector
 	}
 
-	detector = &fastAPIDetector{ appPath: appPath }
-	if detector.detect() {
-		return detector
+	if isPythonVersionAtLeast(pythonVersion, 3, 14) &&
+		!common.GetBooleanEnvironmentVariable(consts.PythonDisableFastAPIDetectionEnvVarName) {
+		detector = &fastAPIDetector{ appPath: appPath }
+		if detector.detect() {
+			return detector
+		}
 	}
 
 	detector = &flaskDetector{ appPath: appPath }
@@ -55,6 +59,23 @@ func DetectFramework(appPath string, venvName string) PyAppFramework {
 	}
 
 	return nil
+}
+
+// isPythonVersionAtLeast checks whether the given version string (e.g. "3.14.1")
+// is at least major.minor.
+func isPythonVersionAtLeast(version string, major int, minor int) bool {
+	parts := strings.SplitN(version, ".", 3)
+	if len(parts) < 2 {
+		return false
+	}
+	var maj, min int
+	if _, err := fmt.Sscan(parts[0], &maj); err != nil {
+		return false
+	}
+	if _, err := fmt.Sscan(parts[1], &min); err != nil {
+		return false
+	}
+	return maj > major || (maj == major && min >= minor)
 }
 
 func (detector *djangoDetector) Name() string {

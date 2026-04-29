@@ -114,7 +114,7 @@ func Test_DetectFramework_FastAPI_beforeFlask(t *testing.T) {
 		[]byte("from fastapi import FastAPI\napp = FastAPI()\n"), 0644)
 
 	// Act
-	fw := DetectFramework(dir, "")
+	fw := DetectFramework(dir, "", "3.14.0")
 
 	// Assert
 	assert.NotNil(t, fw)
@@ -132,7 +132,7 @@ func Test_DetectFramework_Django_overFastAPI(t *testing.T) {
 		[]byte("from fastapi import FastAPI\napp = FastAPI()\n"), 0644)
 
 	// Act
-	fw := DetectFramework(dir, "")
+	fw := DetectFramework(dir, "", "3.14.0")
 
 	// Assert
 	assert.NotNil(t, fw)

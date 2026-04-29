@@ -27,4 +27,5 @@ const PythonEnableGunicornMultiWorkersEnvVarName string = "PYTHON_ENABLE_GUNICOR
 const PythonGunicornConfigPathEnvVarName string = "PYTHON_USE_GUNICORN_CONFIG_FROM_PATH"
 const PythonGunicornCustomWorkerNum string = "PYTHON_GUNICORN_CUSTOM_WORKER_NUM"
 const PythonGunicornCustomThreadNum string = "PYTHON_GUNICORN_CUSTOM_THREAD_NUM"
+const PythonDisableFastAPIDetectionEnvVarName string = "DISABLE_FASTAPI_DETECTION"
 const NginxConfFile string = "NGINX_CONF_FILE"
