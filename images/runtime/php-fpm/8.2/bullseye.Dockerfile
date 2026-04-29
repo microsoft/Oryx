@@ -277,7 +277,7 @@ ENV PHP_ORIGIN php-fpm
 ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
-# Install NGINX latest stable version from official nginx.org repository
+# Install NGINX version from official nginx.org repository
 RUN apt-get update
 RUN apt install curl gnupg2 nano -y
 RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg \
