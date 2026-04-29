@@ -117,7 +117,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		logger.LogInformation("Permission added: %t", isPermissionAdded)
 		command = common.ExtendPathForCommand(command, gen.getAppPath())
 	} else {
-		var appFw PyAppFramework = DetectFramework(gen.getAppPath(), gen.VirtualEnvName)
+		var appFw PyAppFramework = DetectFramework(gen.getAppPath(), gen.VirtualEnvName, pythonVersion)
 
 		if appFw != nil {
 			println("Detected an app based on " + appFw.Name())
@@ -379,8 +379,8 @@ func (gen *PythonStartupScriptGenerator) buildDebugPyCommandForModule(moduleAndA
 		cdcmd = fmt.Sprintf("cd %s && ", appDir)
 	}
 
-	pycmd := fmt.Sprintf("%spython -m debugpy --listen %s:%s %s -m %s",
-		cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
+	pycmd := fmt.Sprintf("python -m debugpy --listen %s:%s %s -m %s",
+		DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
 
 	return cdcmd + pycmd
 }

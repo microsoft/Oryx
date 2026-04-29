@@ -132,7 +132,7 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simpleNodeCom
 	// node a/b/c.js
 }
 
-func ExampleNodeStartupScriptGenerator_getConfigJsCommand_returnsEmptyString_WhenUsePm2IsFalse(t *testing.T) {
+func TestNodeStartupScriptGenerator_getConfigJsCommand_returnsEmptyString_WhenUsePm2IsFalse(t *testing.T) {
 	gen := &NodeStartupScriptGenerator{
 		UsePm2: false,
 	}
@@ -140,7 +140,7 @@ func ExampleNodeStartupScriptGenerator_getConfigJsCommand_returnsEmptyString_Whe
 	assert.Empty(t, command)
 }
 
-func ExampleNodeStartupScriptGenerator_getConfigYamlCommand_returnsEmptyString_WhenUsePm2IsFalse(t *testing.T) {
+func TestNodeStartupScriptGenerator_getConfigYamlCommand_returnsEmptyString_WhenUsePm2IsFalse(t *testing.T) {
 	gen := &NodeStartupScriptGenerator{
 		UsePm2: false,
 	}
