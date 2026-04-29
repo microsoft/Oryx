@@ -34,7 +34,7 @@ jobs:
       - name: Check for updates
         id: check
         run: |
-          python .github/auto-update/auto-update-stack.py --stack ${{ matrix.stack }} || echo "no_updates=true" >> $GITHUB_OUTPUT
+          python .github/auto-update/auto-update-stack.py --stack ${{ matrix.stack }}
 
       - name: Create Pull Request
         if: steps.check.outputs.no_updates != 'true'

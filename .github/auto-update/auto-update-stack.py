@@ -298,12 +298,27 @@ def main():
     parser.add_argument('--dry-run', action='store_true', help='Show what would change without writing')
     args = parser.parse_args()
 
-    stacks = STACKS.keys() if args.stack == 'all' else [args.stack]
-    all_summaries = []
-    for stack in stacks:
-        summary = STACKS[stack](args.dry_run)
-        if summary:
-            all_summaries.append(summary)
+    try:
+        stacks = STACKS.keys() if args.stack == 'all' else [args.stack]
+        all_summaries = []
+        for stack in stacks:
+            summary = STACKS[stack](args.dry_run)
+            if summary:
+                all_summaries.append(summary)
+    except Exception as e:
+        print(f"\nERROR: {e}", file=sys.stderr)
+        sys.exit(2)
+
+    gh_output = os.environ.get('GITHUB_OUTPUT')
+    if gh_output:
+        try:
+            with open(gh_output, 'a') as f:
+                if all_summaries:
+                    f.write(f"summary={', '.join(all_summaries)}\n")
+                else:
+                    f.write("no_updates=true\n")
+        except OSError:
+            pass
 
     if not all_summaries:
         print("\nNo updates found.")
@@ -312,12 +327,7 @@ def main():
     else:
         print("\nFiles updated. Ready for PR.")
 
-    gh_output = os.environ.get('GITHUB_OUTPUT')
-    if gh_output and all_summaries:
-        with open(gh_output, 'a') as f:
-            f.write(f"summary={', '.join(all_summaries)}\n")
-
-    sys.exit(0 if all_summaries else 1)
+    sys.exit(0)
 
 
 if __name__ == '__main__':

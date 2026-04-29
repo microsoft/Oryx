@@ -39,8 +39,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .Build()
                 .Deserialize<Dictionary<string, Dictionary<string, object>>>(File.ReadAllText(path));
 
-            cache = root?["variables"]?
-                .ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, object> variables = null;
+            root?.TryGetValue("variables", out variables);
+
+            cache = variables?
+                .ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             return cache;
         }
