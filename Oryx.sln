@@ -79,8 +79,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Integration.Tests", "tests\Oryx.Integration.Tests\Oryx.Integration.Tests.csproj", "{A563B2F8-26B1-4114-AE1C-C9E078BC7754}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedCodeGenerator", "build\tools\SharedCodeGenerator\SharedCodeGenerator.csproj", "{A7605A5F-9C7E-4BAF-BF13-949467DA9351}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{2AA826A1-5647-46B2-9885-20E89050653F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Tests", "tests\Oryx.Common.Tests\Common.Tests.csproj", "{48391B54-0D43-4E49-94C6-727B47F7C416}"
@@ -98,10 +96,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer", "src\BuildServer\BuildServer.csproj", "{F13BEF5A-5426-4F77-879F-A7F812F1E336}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer.Tests", "tests\BuildServer.Tests\BuildServer.Tests.csproj", "{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation", "build\tools\Automation\Automation.csproj", "{18F7BB74-0A1E-4289-9161-515E65E667CE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation.Tests", "tests\AutomationTests\Automation.Tests.csproj", "{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
