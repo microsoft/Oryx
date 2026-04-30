@@ -9,6 +9,7 @@ on:
         type: choice
         description: 'Stack to update'
         options:
+          - all
           - node
           - python
           - php
@@ -19,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stack: ${{ github.event_name == 'workflow_dispatch' && fromJSON(format('["{0}"]', inputs.stack)) || fromJSON('["node","python","php","dotnet"]') }}
+        stack: ${{ github.event_name == 'workflow_dispatch' && inputs.stack != 'all' && fromJSON(format('["{0}"]', inputs.stack)) || fromJSON('["node","python","php","dotnet"]') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
