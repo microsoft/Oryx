@@ -612,11 +612,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
         }
 
+        public static IEnumerable<object[]> DetectReturnsExpectedVersionTestData => new[]
+        {
+            new object[] { null, PythonVersions.Python38Version, null, PythonVersions.Python38Version },
+            new object[] { null, PythonVersions.Python38Version, PythonVersions.Python37Version, PythonVersions.Python38Version },
+            new object[] { null, null, PythonVersions.Python37Version, PythonVersions.Python37Version },
+            new object[] { PythonVersions.Python39Version, PythonVersions.Python38Version, PythonVersions.Python37Version, PythonVersions.Python39Version },
+        };
+
         [Theory]
-        [InlineData(null, PythonVersions.Python38Version, null, PythonVersions.Python38Version)]
-        [InlineData(null,PythonVersions.Python38Version,PythonVersions.Python37Version,PythonVersions.Python38Version)]
-        [InlineData(null,null,PythonVersions.Python37Version,PythonVersions.Python37Version)]
-        [InlineData(PythonVersions.Python39Version, PythonVersions.Python38Version, PythonVersions.Python37Version, PythonVersions.Python39Version)]
+        [MemberData(nameof(DetectReturnsExpectedVersionTestData))]
         public void Detect_ReturnsExpectedVersion_BasedOnHierarchy(
             string detectedVersion,
             string envVarDefaultVersion,

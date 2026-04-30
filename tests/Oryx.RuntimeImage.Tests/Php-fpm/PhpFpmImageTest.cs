@@ -8,6 +8,7 @@ using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using Xunit;
@@ -52,12 +53,17 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
         }
 
+        public static IEnumerable<object[]> BullseyePhpFpmVersionTestData => new[]
+        {
+            new object[] { "8.1-fpm", PhpVersions.Php81Version },
+            new object[] { "8.2-fpm", PhpVersions.Php82Version },
+            new object[] { "8.3-fpm", PhpVersions.Php83Version },
+            new object[] { "8.4-fpm", PhpVersions.Php84Version },
+        };
+
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("8.1-fpm", PhpVersions.Php81Version)]
-        [InlineData("8.2-fpm", PhpVersions.Php82Version)]
-        [InlineData("8.3-fpm", PhpVersions.Php83Version)]
-        [InlineData("8.4-fpm", PhpVersions.Php84Version)]
+        [MemberData(nameof(BullseyePhpFpmVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBullseyeImageName(string version, string expectedPhpVersion)
         {
@@ -77,10 +83,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> BookwormPhpFpmVersionTestData => new[]
+        {
+            new object[] { "8.3-fpm", PhpVersions.Php83Version },
+            new object[] { "8.4-fpm", PhpVersions.Php84Version },
+        };
+
         [Theory]
         [Trait("category", "runtime-bookworm")]
-        [InlineData("8.3-fpm", PhpVersions.Php83Version)]
-        [InlineData("8.4-fpm", PhpVersions.Php84Version)]
+        [MemberData(nameof(BookwormPhpFpmVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBookwormImageName(string version, string expectedPhpVersion)
         {
@@ -100,9 +111,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> NoblePhpFpmVersionTestData => new[]
+        {
+            new object[] { "8.5-fpm", PhpVersions.Php85Version },
+        };
+
         [Theory]
         [Trait("category", "runtime-noble")]
-        [InlineData("8.5-fpm", PhpVersions.Php85Version)]
+        [MemberData(nameof(NoblePhpFpmVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesNobleImageName(string version, string expectedPhpVersion)
         {
