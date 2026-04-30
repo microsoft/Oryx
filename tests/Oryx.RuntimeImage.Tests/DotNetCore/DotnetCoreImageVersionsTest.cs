@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
@@ -133,9 +134,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> BullseyeDotNetVersionTestData => new[]
+        {
+            new object[] { "8.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp80 },
+        };
+
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("8.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp80)]
+        [MemberData(nameof(BullseyeDotNetVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_Bullseye_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
@@ -158,10 +164,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> BookwormDotNetVersionTestData => new[]
+        {
+            new object[] { "8.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp80 },
+            new object[] { "9.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp90 },
+        };
+
         [Theory]
         [Trait("category", "runtime-bookworm")]
-        [InlineData("8.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp80)]
-        [InlineData("9.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp90)]
+        [MemberData(nameof(BookwormDotNetVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_Bookworm_HasExpectedDotNetVersion(string version, string expectedOutput)
         {
@@ -184,8 +195,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> NobleDotNetVersionTestData => new[]
+        {
+            new object[] { "10.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp100 },
+        };
+
         [Theory]
-        [InlineData("10.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp100)]
+        [MemberData(nameof(NobleDotNetVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_Noble_HasExpectedDotNetVersion(string version, string expectedOutput)
         {

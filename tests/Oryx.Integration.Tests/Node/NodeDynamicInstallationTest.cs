@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -139,10 +140,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
+        public static IEnumerable<object[]> BullseyeNodeVersionTestData => new[]
+        {
+            new object[] { NodeVersions.Node18Version },
+            new object[] { NodeVersions.Node20Version },
+            new object[] { NodeVersions.Node22Version },
+        };
+
         [Theory]
-        [InlineData(NodeVersions.Node18Version), Trait("category", "githubactions")]
-        [InlineData(NodeVersions.Node20Version), Trait("category", "githubactions")]
-        [InlineData(NodeVersions.Node22Version), Trait("category", "githubactions")]
+        [MemberData(nameof(BullseyeNodeVersionTestData))]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunApp_UsingScriptCommand_WithBullseyeBasedImages(string nodeVersion)
         {
@@ -193,9 +200,15 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
 
+        public static IEnumerable<object[]> BookwormNodeVersionTestData => new[]
+        {
+            new object[] { NodeVersions.Node20Version },
+            new object[] { NodeVersions.Node22Version },
+        };
+
         [Theory]
-        [InlineData(NodeVersions.Node20Version), Trait("category", "githubactions")]
-        [InlineData(NodeVersions.Node22Version), Trait("category", "githubactions")]
+        [MemberData(nameof(BookwormNodeVersionTestData))]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
         public async Task CanBuildAndRunNodeApp_UsingScriptCommand_WithBookwormBasedImages(string nodeVersion)
         {

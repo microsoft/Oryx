@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
@@ -156,11 +157,16 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> BookwormPythonVersionTestData => new[]
+        {
+            new object[] { "3.11", "Python " + PythonVersions.Python311Version },
+            new object[] { "3.12", "Python " + PythonVersions.Python312Version },
+            new object[] { "3.13", "Python " + PythonVersions.Python313Version },
+        };
+
         [Theory]
         [Trait("category", "runtime-bookworm")]
-        [InlineData("3.11", "Python " + PythonVersions.Python311Version)]
-        [InlineData("3.12", "Python " + PythonVersions.Python312Version)]
-        [InlineData("3.13", "Python " + PythonVersions.Python313Version)]
+        [MemberData(nameof(BookwormPythonVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void PythonVersionMatchesBookwormImageName(string pythonVersion, string expectedOutput)
         {
@@ -183,13 +189,18 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> BullseyePythonVersionTestData => new[]
+        {
+            new object[] { "3.9", "Python " + PythonVersions.Python39Version },
+            new object[] { "3.10", "Python " + PythonVersions.Python310Version },
+            new object[] { "3.11", "Python " + PythonVersions.Python311Version },
+            new object[] { "3.12", "Python " + PythonVersions.Python312Version },
+            new object[] { "3.13", "Python " + PythonVersions.Python313Version },
+        };
+
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
-        [InlineData("3.10", "Python " + PythonVersions.Python310Version)]
-        [InlineData("3.11", "Python " + PythonVersions.Python311Version)]
-        [InlineData("3.12", "Python " + PythonVersions.Python312Version)]
-        [InlineData("3.13", "Python " + PythonVersions.Python313Version)]
+        [MemberData(nameof(BullseyePythonVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void PythonVersionMatchesBullseyeImageName(string pythonVersion, string expectedOutput)
         {

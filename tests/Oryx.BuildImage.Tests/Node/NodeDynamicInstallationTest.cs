@@ -330,11 +330,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> BullseyeImageTestData => new[]
+        {
+            new object[] { NodeVersions.Node18Version, ImageTestHelperConstants.GitHubActionsBullseye },
+            new object[] { NodeVersions.Node20Version, ImageTestHelperConstants.GitHubActionsBullseye },
+            new object[] { NodeVersions.Node22Version, ImageTestHelperConstants.GitHubActionsBullseye },
+        };
+
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
-        [InlineData(NodeVersions.Node18Version, ImageTestHelperConstants.GitHubActionsBullseye)]
-        [InlineData(NodeVersions.Node20Version, ImageTestHelperConstants.GitHubActionsBullseye)]
-        [InlineData(NodeVersions.Node22Version, ImageTestHelperConstants.GitHubActionsBullseye)]
+        [MemberData(nameof(BullseyeImageTestData))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBullseyeImage(string version, string buildImageName)
         {
             // Arrange
@@ -368,10 +373,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> BookwormImageTestData => new[]
+        {
+            new object[] { NodeVersions.Node20Version, ImageTestHelperConstants.GitHubActionsBookworm },
+            new object[] { NodeVersions.Node22Version, ImageTestHelperConstants.GitHubActionsBookworm },
+        };
+
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
-        [InlineData(NodeVersions.Node20Version, ImageTestHelperConstants.GitHubActionsBookworm)]
-        [InlineData(NodeVersions.Node22Version, ImageTestHelperConstants.GitHubActionsBookworm)]
+        [MemberData(nameof(BookwormImageTestData))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBookwormImage(string version, string buildImageName)
         {
             // Arrange
