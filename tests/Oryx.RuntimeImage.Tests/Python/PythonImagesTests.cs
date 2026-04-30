@@ -21,7 +21,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("3.9")]
         [InlineData("3.10")]
         [InlineData("3.11")]
         [InlineData("3.12")]
@@ -101,7 +100,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("3.9")]
         [InlineData("3.10")]
         [InlineData("3.11")]
         [InlineData("3.12")]
@@ -191,7 +189,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         public static IEnumerable<object[]> BullseyePythonVersionTestData => new[]
         {
-            new object[] { "3.9", "Python " + PythonVersions.Python39Version },
             new object[] { "3.10", "Python " + PythonVersions.Python310Version },
             new object[] { "3.11", "Python " + PythonVersions.Python311Version },
             new object[] { "3.12", "Python " + PythonVersions.Python312Version },

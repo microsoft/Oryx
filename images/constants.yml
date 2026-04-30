@@ -12,7 +12,6 @@ variables:
   node20osFlavors: bullseye,bookworm
   node22osFlavors: bullseye,bookworm
   node24osFlavors: noble
-  python39osFlavors: bullseye
   python310osFlavors: bullseye
   python311osFlavors: bullseye,bookworm
   python312osFlavors: bullseye,bookworm
