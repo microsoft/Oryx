@@ -279,10 +279,9 @@ RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/
 RUN apt-get update
 RUN yes '' | apt-get install nginx=1.30.0-1~bookworm -y
 RUN ls -l /etc/nginx
-COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
-COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
-RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
-RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
+COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/conf.d/default.conf
+RUN sed -ri -e 's!worker_connections 1024!worker_connections 10068!g' /etc/nginx/nginx.conf
+RUN sed -ri -e '/worker_connections/a\    multi_accept on;' /etc/nginx/nginx.conf
 RUN ls -l /etc/nginx
 RUN nginx -t
 # Edit the default port setting
