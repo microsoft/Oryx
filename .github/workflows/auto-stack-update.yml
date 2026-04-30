@@ -40,6 +40,7 @@ jobs:
         if: steps.check.outputs.no_updates != 'true'
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.STACK_UPDATE_PAT }}
           title: "[${{ matrix.stack }}] Update: ${{ steps.check.outputs.summary }}"
           branch: auto-update/${{ matrix.stack }}
           commit-message: "Update ${{ matrix.stack }} to latest upstream version"
