@@ -276,18 +276,31 @@ ENV PHP_ORIGIN php-fpm
 ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
-# Install NGINX latest stable version using APT Method with Nginx Repository instead of distribution-provided one:
-# - https://www.linuxcapable.com/how-to-install-latest-nginx-mainline-or-stable-on-debian-11/
-RUN apt-get update
-RUN apt install curl nano -y
-RUN curl -sSL https://packages.sury.org/nginx/README.txt | bash -x
-RUN apt-get update
-RUN yes '' | apt-get install nginx-core nginx-common nginx nginx-full -y
+# Install NGINX from official nginx.org repository
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl gnupg2 ca-certificates nano \
+    && curl -sSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor > /usr/share/keyrings/nginx-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/debian bullseye nginx" \
+        > /etc/apt/sources.list.d/nginx.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends nginx \
+    && rm -rf /var/lib/apt/lists/*
 RUN ls -l /etc/nginx
-COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
-COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
-RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
-RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
+COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/conf.d/default.conf
+# Patch nginx.conf for behavioral parity with previous Debian/Sury nginx package
+RUN sed -ri -e 's!^user\s+\S+;!user  www-data;!' /etc/nginx/nginx.conf \
+    && sed -ri -e 's!worker_connections\s+1024!worker_connections  10068!g' /etc/nginx/nginx.conf \
+    && sed -ri -e '/worker_connections/a\    multi_accept on;' /etc/nginx/nginx.conf \
+    && sed -ri -e 's!#tcp_nopush\s+on;!tcp_nopush     on;!' /etc/nginx/nginx.conf \
+    && sed -ri -e 's!#gzip\s+on;!gzip  on;!' /etc/nginx/nginx.conf \
+    && sed -ri -e '/include\s+mime\.types;/a\    types_hash_max_size 2048;' /etc/nginx/nginx.conf \
+    && grep -q '^user  www-data;' /etc/nginx/nginx.conf || { echo 'ERROR: nginx user replacement failed'; exit 1; } \
+    && grep -q 'worker_connections.*10068' /etc/nginx/nginx.conf || { echo 'ERROR: worker_connections replacement failed'; exit 1; } \
+    && grep -q 'tcp_nopush' /etc/nginx/nginx.conf || { echo 'ERROR: tcp_nopush replacement failed'; exit 1; } \
+    && grep -q '^[^#]*gzip\s*on' /etc/nginx/nginx.conf || { echo 'ERROR: gzip replacement failed'; exit 1; } \
+    && grep -q 'types_hash_max_size.*2048' /etc/nginx/nginx.conf || { echo 'ERROR: types_hash_max_size insertion failed'; exit 1; }
+# Fix temp directory ownership after changing nginx user to www-data
+RUN chown -R www-data:www-data /var/cache/nginx
 RUN ls -l /etc/nginx
 RUN nginx -t
 # Edit the default port setting
