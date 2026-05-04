@@ -68,12 +68,12 @@ variables:
   php81Version_SHA: ffa9e0982e82eeaea848f57687b425ed173aa278fe563001310ae2638db5c251
   php82Version: 8.2.30
   php82Version_SHA: bc90523e17af4db46157e75d0c9ef0b9d0030b0514e62c26ba7b513b8c4eb015
-  php83Version: 8.3.29
-  php83Version_SHA: f7950ca034b15a78f5de9f1b22f4d9bad1dd497114d175cb1672a4ca78077af5
-  php84Version: 8.4.16
-  php84Version_SHA: f66f8f48db34e9e29f7bfd6901178e9cf4a1b163e6e497716dfcb8f88bcfae30
-  php85Version: 8.5.1
-  php85Version_SHA: 3f5bf99ce81201f526d25e288eddb2cfa111d068950d1e9a869530054ff98815
+  php83Version: 8.3.30
+  php83Version_SHA: 67f084d36852daab6809561a7c8023d130ca07fc6af8fb040684dd1414934d48
+  php84Version: 8.4.20
+  php84Version_SHA: e454c6f7c89a42f41ebb06dc5c3578e8c8b5f1a3f0da6675665affab04e221f7
+  php85Version: 8.5.5
+  php85Version_SHA: 95bec382f4bd00570a8ef52a58ec04d8d9b9a90494781f1c106d1b274a3902f2
   phpComposerVersion: 2.6.2
   python39Version: 3.9.24
   python310Version: 3.10.20
