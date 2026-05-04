@@ -284,14 +284,17 @@ RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/
     && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian bullseye nginx" > /etc/apt/sources.list.d/nginx.list
 RUN apt-get update
 RUN yes '' | apt-get install nginx=1.30.0-1~bullseye -y
-RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/conf.d/default.conf
-RUN sed -ri -e 's!worker_connections\s+1024!worker_connections  10068!g' /etc/nginx/nginx.conf \
-    && grep -q 'worker_connections.*10068' /etc/nginx/nginx.conf || (echo 'ERROR: worker_connections replacement failed' && exit 1)
-RUN sed -ri -e '/worker_connections/a\    multi_accept on;' /etc/nginx/nginx.conf
+# Patch nginx.conf for behavioral parity with previous Debian/Sury nginx package
 RUN sed -ri -e 's!^user\s+\S+;!user  www-data;!' /etc/nginx/nginx.conf \
-    && grep -q '^user  www-data;' /etc/nginx/nginx.conf || (echo 'ERROR: nginx user replacement failed' && exit 1)
-RUN ls -l /etc/nginx
+    && sed -ri -e 's!worker_connections\s+1024!worker_connections  10068!g' /etc/nginx/nginx.conf \
+    && sed -ri -e '/worker_connections/a\    multi_accept on;' /etc/nginx/nginx.conf \
+    && sed -ri -e 's!#tcp_nopush\s\+on;!tcp_nopush     on;!' /etc/nginx/nginx.conf \
+    && sed -ri -e 's!#gzip\s\+on;!gzip  on;!' /etc/nginx/nginx.conf \
+    && grep -q '^user  www-data;' /etc/nginx/nginx.conf || (echo 'ERROR: nginx user replacement failed' && exit 1) \
+    && grep -q 'worker_connections.*10068' /etc/nginx/nginx.conf || (echo 'ERROR: worker_connections replacement failed' && exit 1)
+# Fix temp directory ownership after changing nginx user to www-data
+RUN chown -R www-data:www-data /var/cache/nginx
 RUN nginx -t
 # Edit the default port setting
 ENV NGINX_PORT 8080
