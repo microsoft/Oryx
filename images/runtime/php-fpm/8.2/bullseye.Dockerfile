@@ -297,6 +297,7 @@ RUN sed -ri -e 's!^user\s+\S+;!user  www-data;!' /etc/nginx/nginx.conf \
     && sed -ri -e '/include\s+mime\.types;/a\    types_hash_max_size 2048;' /etc/nginx/nginx.conf \
     && grep -q '^user  www-data;' /etc/nginx/nginx.conf || { echo 'ERROR: nginx user replacement failed'; exit 1; } \
     && grep -q 'worker_connections.*10068' /etc/nginx/nginx.conf || { echo 'ERROR: worker_connections replacement failed'; exit 1; } \
+    && grep -q 'multi_accept.*on' /etc/nginx/nginx.conf || { echo 'ERROR: multi_accept insertion failed'; exit 1; } \
     && grep -q 'tcp_nopush' /etc/nginx/nginx.conf || { echo 'ERROR: tcp_nopush replacement failed'; exit 1; } \
     && grep -q '^[^#]*gzip\s*on' /etc/nginx/nginx.conf || { echo 'ERROR: gzip replacement failed'; exit 1; } \
     && grep -q 'types_hash_max_size.*2048' /etc/nginx/nginx.conf || { echo 'ERROR: types_hash_max_size insertion failed'; exit 1; }
