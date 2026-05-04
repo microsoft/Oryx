@@ -289,10 +289,12 @@ COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/conf.d/default.co
 RUN sed -ri -e 's!^user\s+\S+;!user  www-data;!' /etc/nginx/nginx.conf \
     && sed -ri -e 's!worker_connections\s+1024!worker_connections  10068!g' /etc/nginx/nginx.conf \
     && sed -ri -e '/worker_connections/a\    multi_accept on;' /etc/nginx/nginx.conf \
-    && sed -ri -e 's!#tcp_nopush\s\+on;!tcp_nopush     on;!' /etc/nginx/nginx.conf \
-    && sed -ri -e 's!#gzip\s\+on;!gzip  on;!' /etc/nginx/nginx.conf \
-    && grep -q '^user  www-data;' /etc/nginx/nginx.conf || (echo 'ERROR: nginx user replacement failed' && exit 1) \
-    && grep -q 'worker_connections.*10068' /etc/nginx/nginx.conf || (echo 'ERROR: worker_connections replacement failed' && exit 1)
+    && sed -ri -e 's!#tcp_nopush\s+on;!tcp_nopush     on;!' /etc/nginx/nginx.conf \
+    && sed -ri -e 's!#gzip\s+on;!gzip  on;!' /etc/nginx/nginx.conf \
+    && grep -q '^user  www-data;' /etc/nginx/nginx.conf || { echo 'ERROR: nginx user replacement failed'; exit 1; } \
+    && grep -q 'worker_connections.*10068' /etc/nginx/nginx.conf || { echo 'ERROR: worker_connections replacement failed'; exit 1; } \
+    && grep -q 'tcp_nopush' /etc/nginx/nginx.conf || { echo 'ERROR: tcp_nopush replacement failed'; exit 1; } \
+    && grep -q '^[^#]*gzip\s*on' /etc/nginx/nginx.conf || { echo 'ERROR: gzip replacement failed'; exit 1; }
 # Fix temp directory ownership after changing nginx user to www-data
 RUN chown -R www-data:www-data /var/cache/nginx
 RUN nginx -t
