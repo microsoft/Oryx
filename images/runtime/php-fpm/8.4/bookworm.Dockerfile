@@ -280,7 +280,8 @@ RUN apt-get update
 RUN yes '' | apt-get install nginx=1.30.0-1~bookworm -y
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/conf.d/default.conf
-RUN sed -ri -e 's!worker_connections 1024!worker_connections 10068!g' /etc/nginx/nginx.conf
+RUN sed -ri -e 's!worker_connections\s+1024!worker_connections  10068!g' /etc/nginx/nginx.conf \
+    && grep -q 'worker_connections.*10068' /etc/nginx/nginx.conf || (echo 'ERROR: worker_connections replacement failed' && exit 1)
 RUN sed -ri -e '/worker_connections/a\    multi_accept on;' /etc/nginx/nginx.conf
 RUN ls -l /etc/nginx
 RUN nginx -t
