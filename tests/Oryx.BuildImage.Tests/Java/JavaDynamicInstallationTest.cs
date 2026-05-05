@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        [Theory, Trait("category", "githubactions")]
+        [Theory(Skip = "Java detection disabled during Oryx build"), Trait("category", "githubactions")]
         [MemberData(nameof(VersionsData))]
         public void BuildsMavenArcheTypeSampleWithDynamicInstallationGithubActions(string version)
         {
