@@ -10,13 +10,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     public class PhpComposerOnDiskVersionProvider : IPhpComposerVersionProvider
     {
-        private const string DefaultOnDiskVersion = PhpVersions.ComposerDefaultVersion;
         private readonly ILogger<PhpComposerOnDiskVersionProvider> logger;
 
         public PhpComposerOnDiskVersionProvider(ILogger<PhpComposerOnDiskVersionProvider> logger)
         {
             this.logger = logger;
         }
+
+        private static string DefaultOnDiskVersion => PhpVersions.ComposerDefaultVersion;
 
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()

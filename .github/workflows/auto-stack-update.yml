@@ -1,0 +1,51 @@
+name: Auto Stack Update
+
+on:
+  schedule:
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+    inputs:
+      stack:
+        type: choice
+        description: 'Stack to update'
+        options:
+          - node
+          - python
+          - php
+          - dotnet
+
+jobs:
+  update:
+    strategy:
+      fail-fast: false
+      matrix:
+        stack: ${{ github.event_name == 'workflow_dispatch' && fromJSON(format('["{0}"]', inputs.stack)) || fromJSON('["node","python","php","dotnet"]') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check for updates
+        id: check
+        run: |
+          python .github/auto-update/auto-update-stack.py --stack ${{ matrix.stack }}
+
+      - name: Create Pull Request
+        if: steps.check.outputs.no_updates != 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "[${{ matrix.stack }}] Update: ${{ steps.check.outputs.summary }}"
+          branch: auto-update/${{ matrix.stack }}
+          commit-message: "Update ${{ matrix.stack }} to latest upstream version"
+          body: |
+            Automated stack version update for **${{ matrix.stack }}**.
+
+            Updated `images/constants.yml` and `versionsToBuild.txt` from upstream release APIs.
+
+            Please verify the versions and SHAs are correct before merging.
