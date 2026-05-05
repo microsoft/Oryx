@@ -286,13 +286,13 @@ RUN sed -ri -e 's!^user\s+\S+;!user  www-data;!' /etc/nginx/nginx.conf \
     && sed -ri -e '/worker_connections/a\    multi_accept  on;' /etc/nginx/nginx.conf \
     && sed -ri -e 's!#tcp_nopush\s+on;!tcp_nopush     on;!' /etc/nginx/nginx.conf \
     && sed -ri -e 's!#gzip\s+on;!gzip  on;!' /etc/nginx/nginx.conf \
-    && sed -ri -e '/include\s+mime\.types;/a\    types_hash_max_size  2048;' /etc/nginx/nginx.conf \
+	&& sed -ri -e '/include\s+.*mime\.types;/a\    types_hash_max_size  2048;' /etc/nginx/nginx.conf \
     && grep -q '^user  www-data;' /etc/nginx/nginx.conf || { echo 'ERROR: nginx user replacement failed'; exit 1; } \
     && grep -q 'worker_connections.*10068' /etc/nginx/nginx.conf || { echo 'ERROR: worker_connections replacement failed'; exit 1; } \
-    && grep -q 'multi_accept  on;' /etc/nginx/nginx.conf || { echo 'ERROR: multi_accept append failed'; exit 1; } \
+	&& grep -q 'multi_accept  on;' /etc/nginx/nginx.conf || { echo 'ERROR: multi_accept append failed'; exit 1; } \
     && grep -q '^[^#]*tcp_nopush\s*on' /etc/nginx/nginx.conf || { echo 'ERROR: tcp_nopush replacement failed'; exit 1; } \
     && grep -q '^[^#]*gzip\s*on' /etc/nginx/nginx.conf || { echo 'ERROR: gzip replacement failed'; exit 1; } \
-    && grep -q 'types_hash_max_size  2048;' /etc/nginx/nginx.conf || { echo 'ERROR: types_hash_max_size append failed'; exit 1; }
+	&& grep -q 'types_hash_max_size  2048;' /etc/nginx/nginx.conf || { echo 'ERROR: types_hash_max_size append failed'; exit 1; }
 # Fix temp directory ownership after changing nginx user to www-data
 RUN chown -R www-data:www-data /var/cache/nginx
 RUN nginx -t
