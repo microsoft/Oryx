@@ -281,6 +281,10 @@ ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 RUN apt-get update
 RUN apt install curl gnupg2 nano -y
 RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg \
+    && gpg --no-default-keyring \
+           --keyring /usr/share/keyrings/nginx-archive-keyring.gpg \
+           --list-keys 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62 \
+    || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; } \
     && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian bullseye nginx" > /etc/apt/sources.list.d/nginx.list
 RUN apt-get update
 RUN yes '' | apt-get install nginx=1.30.0-1~bullseye -y
@@ -306,8 +310,8 @@ RUN nginx -t
 ENV NGINX_PORT 8080
 
 # Install common PHP extensions
-# TEMPORARY: Holding odbc related packages from upgrading.
-RUN apt-mark hold msodbcsql17 msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
+# TEMPORARY: Holding odbc related packages and nginx from upgrading.
+RUN apt-mark hold msodbcsql17 msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev nginx \
     && apt-get update \
     && apt-get upgrade -y \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
