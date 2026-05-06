@@ -9,6 +9,7 @@ Usage:
 """
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -121,6 +122,39 @@ def check_node(dry_run):
 
 
 # --- Python ---
+def fetch_python_sha256(version):
+    tarball_url = f"https://www.python.org/ftp/python/{version}/Python-{version}.tar.xz"
+    try:
+        releases = fetch_json(f"https://www.python.org/api/v2/downloads/release/?name=Python+{version}")
+        if not releases:
+            return ''
+        release_id = releases[0].get('resource_uri', '').rstrip('/').split('/')[-1]
+        files = fetch_json(f"https://www.python.org/api/v2/downloads/release_file/?release={release_id}")
+        for f in files:
+            if f.get('url', '').endswith('.tar.xz'):
+                sha = f.get('sha256_sum', '')
+                if sha:
+                    return sha.upper()
+                tarball_url = f.get('url', tarball_url)
+                break
+    except Exception as e:
+        print(f"  WARNING: API lookup failed for Python {version}: {e}")
+    # Fallback: download tarball and compute SHA256 when API field is empty
+    try:
+        req = urllib.request.Request(tarball_url, headers={'User-Agent': 'Oryx-AutoUpdate/1.0'})
+        h = hashlib.sha256()
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            while True:
+                chunk = resp.read(65536)
+                if not chunk:
+                    break
+                h.update(chunk)
+        return h.hexdigest().upper()
+    except Exception as e:
+        print(f"  WARNING: Failed to compute SHA256 for Python {version}: {e}")
+    return ''
+
+
 def check_python(dry_run):
     print("=== Python ===")
     content = read_constants()
@@ -151,11 +185,20 @@ def check_python(dry_run):
     for minor, ver in updates.items():
         key = f'python{minor.replace(".", "")}Version'
         print(f"  Python {minor}: {tracked[minor]} -> {ver}")
+        # SHA256 is only needed for Python 3.14+ onward
+        needs_sha = version_tuple(minor) >= version_tuple('3.14')
+        sha = fetch_python_sha256(ver) if needs_sha else ''
+        if needs_sha and not sha:
+            print(f"  WARNING: No SHA256 found for Python {ver}, skipping versionsToBuild update")
         if not dry_run:
             content = update_constant(content, key, ver)
             gpg = get_current_version(content, f'python{minor.replace(".", "")}_GPG_keys') or ''
             for flavor in get_os_flavors(content, 'python', minor):
-                append_to_versions_to_build('python', flavor, f'{ver}, {gpg},')
+                if needs_sha:
+                    if sha:
+                        append_to_versions_to_build('python', flavor, f'{ver}, {gpg}, {sha},')
+                else:
+                    append_to_versions_to_build('python', flavor, f'{ver}, {gpg},')
 
     if not dry_run:
         write_constants(content)
