@@ -37,12 +37,16 @@ jobs:
         run: |
           python .github/auto-update/auto-update-stack.py --stack ${{ matrix.stack }}
 
+      - name: Get month name
+        id: month
+        run: echo "name=$(date +'%B %Y')" >> $GITHUB_OUTPUT
+
       - name: Create Pull Request
         if: steps.check.outputs.no_updates != 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.STACK_UPDATE_PAT }}
-          title: "[${{ matrix.stack }}] Update: ${{ steps.check.outputs.summary }}"
+          title: "[${{ steps.month.outputs.name }}][${{ matrix.stack }}] Update: ${{ steps.check.outputs.summary }}"
           branch: auto-update/${{ matrix.stack }}
           commit-message: "Update ${{ matrix.stack }} to latest upstream version"
           body: |
