@@ -2,7 +2,7 @@ name: Auto Stack Update
 
 on:
   schedule:
-    - cron: '30 0 * * *'
+    - cron: '30 0 * * 3'
   workflow_dispatch:
     inputs:
       stack:
