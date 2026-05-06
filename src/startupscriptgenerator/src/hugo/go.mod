@@ -1,6 +1,6 @@
 module hugo
 
-go 1.26.1
+go 1.26.2
 
 replace gopkg.in/yaml.v2 v2.2.1 => gopkg.in/yaml.v2 v2.4.0
 
