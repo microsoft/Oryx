@@ -32,5 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
         public string[] Property { get; set; }
 
         public string DynamicInstallRootDir { get; set; }
+
+        public bool SkipDetection { get; set; }
     }
 }

@@ -86,6 +86,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static readonly string PlatformsJsonOutput = "--json";
         public static readonly string PlatformsJsonOutputDescription = "Output the supported platform data in JSON format.";
 
+        // Skip-detection option
+        public static readonly string SkipDetection = "--skip-detection";
+        public static readonly string SkipDetectionDescription = "Skip auto-detection of platforms and use only the explicitly provided platform and version.";
+
         // PrepareEnvironmentCommand
         public static readonly string PrepareEnvironmentPlatformsAndVersions = "--platforms-and-versions";
         public static readonly string PrepareEnvironmentPlatformsAndVersionsDescription = "Comma separated values of platforms and versions to be installed. Example: dotnet=3.1.200,php=7.4.5,node=2.3";

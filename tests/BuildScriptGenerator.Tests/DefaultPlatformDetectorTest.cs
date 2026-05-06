@@ -115,11 +115,148 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         private DefaultPlatformsInformationProvider CreatePlatformDetector(
             IEnumerable<IProgrammingPlatform> platforms)
         {
+            return CreatePlatformDetector(platforms, new BuildScriptGeneratorOptions());
+        }
+
+        private DefaultPlatformsInformationProvider CreatePlatformDetector(
+            IEnumerable<IProgrammingPlatform> platforms,
+            BuildScriptGeneratorOptions options)
+        {
             return new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter(),
                 NullLogger<DefaultPlatformsInformationProvider>.Instance,
-                Options.Create(new BuildScriptGeneratorOptions()));
+                Options.Create(options));
+        }
+
+        [Fact]
+        public void SkipDetection_OnlyDetectsSpecifiedPlatform()
+        {
+            // Arrange
+            var platform1 = new Mock<IProgrammingPlatform>();
+            platform1.Setup(p => p.Name).Returns("nodejs");
+            platform1
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
+                .Returns(new PlatformDetectorResult { Platform = "nodejs", PlatformVersion = "18.0.0" });
+            platform1
+                .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
+                .Returns(true);
+
+            var platform2 = new Mock<IProgrammingPlatform>();
+            platform2.Setup(p => p.Name).Returns("python");
+            platform2
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
+                .Returns(new PlatformDetectorResult { Platform = "python", PlatformVersion = "3.10.0" });
+            platform2
+                .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
+                .Returns(true);
+
+            var platform3 = new Mock<IProgrammingPlatform>();
+            platform3.Setup(p => p.Name).Returns("dotnet");
+            platform3
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
+                .Returns(new PlatformDetectorResult { Platform = "dotnet", PlatformVersion = "6.0.0" });
+            platform3
+                .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
+                .Returns(true);
+
+            var options = new BuildScriptGeneratorOptions
+            {
+                SkipDetection = true,
+                PlatformName = "nodejs",
+            };
+
+            var detector = CreatePlatformDetector(
+                new[] { platform1.Object, platform2.Object, platform3.Object },
+                options);
+            var context = CreateScriptGeneratorContext();
+
+            // Act
+            var actualResults = detector.GetPlatformsInfo(context);
+
+            // Assert
+            Assert.NotNull(actualResults);
+            var actualResult = Assert.Single(actualResults);
+            Assert.Equal("nodejs", actualResult.DetectorResult.Platform);
+            Assert.Equal("18.0.0", actualResult.DetectorResult.PlatformVersion);
+
+            // Verify that Detect was NOT called on the other platforms
+            platform2.Verify(p => p.Detect(It.IsAny<RepositoryContext>()), Times.Never);
+            platform3.Verify(p => p.Detect(It.IsAny<RepositoryContext>()), Times.Never);
+        }
+
+        [Fact]
+        public void SkipDetection_False_DetectsAllPlatforms()
+        {
+            // Arrange
+            var platform1 = new Mock<IProgrammingPlatform>();
+            platform1.Setup(p => p.Name).Returns("nodejs");
+            platform1
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
+                .Returns(new PlatformDetectorResult { Platform = "nodejs", PlatformVersion = "18.0.0" });
+            platform1
+                .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
+                .Returns(true);
+
+            var platform2 = new Mock<IProgrammingPlatform>();
+            platform2.Setup(p => p.Name).Returns("python");
+            platform2
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
+                .Returns(new PlatformDetectorResult { Platform = "python", PlatformVersion = "3.10.0" });
+            platform2
+                .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
+                .Returns(true);
+
+            var options = new BuildScriptGeneratorOptions
+            {
+                SkipDetection = false,
+                PlatformName = "nodejs",
+            };
+
+            var detector = CreatePlatformDetector(
+                new[] { platform1.Object, platform2.Object },
+                options);
+            var context = CreateScriptGeneratorContext();
+
+            // Act
+            var actualResults = detector.GetPlatformsInfo(context);
+
+            // Assert — both platforms should be detected
+            Assert.NotNull(actualResults);
+            Assert.Equal(2, actualResults.Count());
+            platform1.Verify(p => p.Detect(It.IsAny<RepositoryContext>()), Times.Once);
+            platform2.Verify(p => p.Detect(It.IsAny<RepositoryContext>()), Times.Once);
+        }
+
+        [Fact]
+        public void SkipDetection_StillRespectsDisabledPlatform()
+        {
+            // Arrange — the specified platform is disabled
+            var platform1 = new Mock<IProgrammingPlatform>();
+            platform1.Setup(p => p.Name).Returns("nodejs");
+            platform1
+                .Setup(p => p.Detect(It.IsAny<RepositoryContext>()))
+                .Returns(new PlatformDetectorResult { Platform = "nodejs", PlatformVersion = "18.0.0" });
+            platform1
+                .Setup(p => p.IsEnabled(It.IsAny<RepositoryContext>()))
+                .Returns(false);
+
+            var options = new BuildScriptGeneratorOptions
+            {
+                SkipDetection = true,
+                PlatformName = "nodejs",
+            };
+
+            var detector = CreatePlatformDetector(new[] { platform1.Object }, options);
+            var context = CreateScriptGeneratorContext();
+
+            // Act
+            var actualResults = detector.GetPlatformsInfo(context);
+
+            // Assert — platform is disabled, so no results even with skip-detection
+            Assert.NotNull(actualResults);
+            Assert.Empty(actualResults);
+            platform1.Verify(p => p.Detect(It.IsAny<RepositoryContext>()), Times.Never);
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

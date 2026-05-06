@@ -112,6 +112,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return false;
             }
 
+            // When --skip-detection is set, only detect the user-specified platform
+            if (this.commonOptions.SkipDetection && !string.IsNullOrEmpty(this.commonOptions.PlatformName) && platform.Name != this.commonOptions.PlatformName)
+            {
+                this.logger.LogDebug(
+                    "Skipping detection for platform '{PlatformName}' because --skip-detection is enabled and only user-specified platform '{UserPlatform}' is considered.",
+                    platform.Name,
+                    this.commonOptions.PlatformName);
+                return false;
+            }
+
             if (this.commonOptions.EnableExternalAcrSdkProvider && !string.IsNullOrEmpty(this.commonOptions.PlatformName) && platform.Name != this.commonOptions.PlatformName)
             {
                 this.logger.LogDebug(

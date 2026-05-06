@@ -65,6 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.CompressDestinationDir = input.CompressDestinationDir;
             this.Properties = input.Property;
             this.DynamicInstallRootDir = input.DynamicInstallRootDir;
+            this.SkipDetection = input.SkipDetection;
             this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
 
@@ -123,6 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var compressDestDirOption = new Option<bool>(OptionArgumentTemplates.CompressDestinationDir, OptionArgumentTemplates.CompressDestinationDirDescription);
             var propertyOption = new Option<string[]>(OptionArgumentTemplates.Property, OptionArgumentTemplates.PropertyDescription);
             var dynamicInstallRootDirOption = new Option<string>(OptionArgumentTemplates.DynamicInstallRootDir, OptionArgumentTemplates.DynamicInstallRootDirDescription);
+            var skipDetectionOption = new Option<bool>(OptionArgumentTemplates.SkipDetection, OptionArgumentTemplates.SkipDetectionDescription);
 
             // Hiding Language Option because it is obselete
             var languageOption = new Option<string>(OptionArgumentTemplates.Language, OptionArgumentTemplates.LanguageDescription);
@@ -155,6 +157,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 compressDestDirOption,
                 propertyOption,
                 dynamicInstallRootDirOption,
+                skipDetectionOption,
                 languageOption,
                 languageVerOption,
                 logOption,
@@ -185,6 +188,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     compressDestinationDir: compressDestDirOption,
                     property: propertyOption,
                     dynamicInstallRootDir: dynamicInstallRootDirOption,
+                    skipDetection: skipDetectionOption,
                     logPath: logOption,
                     debugMode: debugOption));
             return command;
@@ -433,6 +437,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return false;
             }
 
+            // --skip-detection requires --platform to be specified
+            if (options.SkipDetection && string.IsNullOrEmpty(options.PlatformName))
+            {
+                logger.LogError("Cannot use --skip-detection without --platform");
+                console.WriteErrorLine("Cannot use --skip-detection without specifying --platform also.");
+                return false;
+            }
+
             if (!string.IsNullOrEmpty(options.AppType))
             {
                 var appType = options.AppType.ToLower();
@@ -518,6 +530,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                             options.ManifestDir = this.ManifestDir;
                             options.Properties = buildProperties;
                             options.ScriptOnly = false;
+                            options.SkipDetection = this.SkipDetection;
                             options.DebianFlavor = this.ResolveOsType(options, console);
                             options.ImageType = this.ResolveImageType(options, console);
                         });

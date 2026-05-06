@@ -106,6 +106,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool EnableExternalAcrSdkProvider { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether platform detection should be skipped.
+        /// When true, only the explicitly specified platform (via --platform) will be used.
+        /// </summary>
+        public bool SkipDetection { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the direct ACR SDK provider is enabled.
         /// When true, Oryx will discover and download SDKs directly from an OCI-compliant container registry.
         /// </summary>

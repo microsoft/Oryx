@@ -199,6 +199,46 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void IsValidInput_IsFalse_WhenSkipDetection_WithoutPlatform()
+        {
+            // Arrange
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                SkipDetection = true,
+            };
+            var testConsole = new TestConsole();
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
+
+            // Act
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
+
+            // Assert
+            Assert.False(isValid);
+            Assert.Contains("Cannot use --skip-detection without specifying --platform also.", testConsole.StdError);
+        }
+
+        [Fact]
+        public void IsValidInput_IsTrue_WhenSkipDetection_WithPlatform()
+        {
+            // Arrange
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                PlatformName = "nodejs",
+                SkipDetection = true,
+            };
+            var testConsole = new TestConsole();
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
+
+            // Act
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
+
+            // Assert
+            Assert.True(isValid);
+        }
+
+        [Fact]
         public void DoesNotShowHelp_EvenIfIntermediateDir_DoesNotExistYet()
         {
             // Arrange

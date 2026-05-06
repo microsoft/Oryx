@@ -44,6 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.CompressDestinationDir = input.CompressDestinationDir;
             this.Properties = input.Property;
             this.DynamicInstallRootDir = input.DynamicInstallRootDir;
+            this.SkipDetection = input.SkipDetection;
             this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
@@ -77,6 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var compressDestDirOption = new Option<bool>(OptionArgumentTemplates.CompressDestinationDir, OptionArgumentTemplates.CompressDestinationDirDescription);
             var propertyOption = new Option<string[]>(OptionArgumentTemplates.Property, OptionArgumentTemplates.PropertyDescription);
             var dynamicInstallRootDirOption = new Option<string>(OptionArgumentTemplates.DynamicInstallRootDir, OptionArgumentTemplates.DynamicInstallRootDirDescription);
+            var skipDetectionOption = new Option<bool>(OptionArgumentTemplates.SkipDetection, OptionArgumentTemplates.SkipDetectionDescription);
 
             // Hiding Language Option because it is obselete
             var languageOption = new Option<string>(OptionArgumentTemplates.Language, OptionArgumentTemplates.LanguageDescription);
@@ -107,6 +109,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 compressDestDirOption,
                 propertyOption,
                 dynamicInstallRootDirOption,
+                skipDetectionOption,
                 languageOption,
                 languageVerOption,
                 intermediateDirOption,
@@ -139,6 +142,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     compressDestinationDir: compressDestDirOption,
                     property: propertyOption,
                     dynamicInstallRootDir: dynamicInstallRootDirOption,
+                    skipDetection: skipDetectionOption,
                     logPath: logOption,
                     debugMode: debugOption));
 

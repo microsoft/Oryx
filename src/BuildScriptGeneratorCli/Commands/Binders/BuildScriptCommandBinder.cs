@@ -27,9 +27,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<bool> compressDestinationDir,
             Option<string[]> property,
             Option<string> dynamicInstallRootDir,
+            Option<bool> skipDetection,
             Option<string> logPath,
             Option<bool> debugMode)
-            : base(sourceDir, platform, platformVersion, package, osRequirements, appType, buildCommandFile, compressDestinationDir, property, dynamicInstallRootDir, logPath, debugMode)
+            : base(sourceDir, platform, platformVersion, package, osRequirements, appType, buildCommandFile, compressDestinationDir, property, dynamicInstallRootDir, skipDetection, logPath, debugMode)
         {
             this.OutputPath = outputPath;
         }
@@ -50,6 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
                 CompressDestinationDir = bindingContext.ParseResult.GetValueForOption(this.CompressDestinationDir),
                 Property = bindingContext.ParseResult.GetValueForOption(this.Property),
                 DynamicInstallRootDir = bindingContext.ParseResult.GetValueForOption(this.DynamicInstallRootDir),
+                SkipDetection = bindingContext.ParseResult.GetValueForOption(this.SkipDetection),
                 LogPath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
                 DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };

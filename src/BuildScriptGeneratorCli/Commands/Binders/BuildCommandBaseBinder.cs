@@ -27,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<bool> compressDestinationDir,
             Option<string[]> property,
             Option<string> dynamicInstallRootDir,
+            Option<bool> skipDetection,
             Option<string> logPath,
             Option<bool> debugMode)
             : base(logPath, debugMode)
@@ -41,6 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             this.CompressDestinationDir = compressDestinationDir;
             this.Property = property;
             this.DynamicInstallRootDir = dynamicInstallRootDir;
+            this.SkipDetection = skipDetection;
         }
 
         protected Argument<string> SourceDir { get; set; }
@@ -62,5 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
         protected Option<string[]> Property { get; set; }
 
         protected Option<string> DynamicInstallRootDir { get; set; }
+
+        protected Option<bool> SkipDetection { get; set; }
     }
 }

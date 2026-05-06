@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.CompressDestinationDir = input.CompressDestinationDir;
             this.Properties = input.Property;
             this.DynamicInstallRootDir = input.DynamicInstallRootDir;
+            this.SkipDetection = input.SkipDetection;
             this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
@@ -63,6 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var compressDestDirOption = new Option<bool>(OptionArgumentTemplates.CompressDestinationDir, OptionArgumentTemplates.CompressDestinationDirDescription);
             var propertyOption = new Option<string[]>(OptionArgumentTemplates.Property, OptionArgumentTemplates.PropertyDescription);
             var dynamicInstallRootDirOption = new Option<string>(OptionArgumentTemplates.DynamicInstallRootDir, OptionArgumentTemplates.DynamicInstallRootDirDescription);
+            var skipDetectionOption = new Option<bool>(OptionArgumentTemplates.SkipDetection, OptionArgumentTemplates.SkipDetectionDescription);
             var buildScriptOutputOption = new Option<string>(
                 aliases: OptionArgumentTemplates.Output,
                 description: OptionArgumentTemplates.BuildScriptOutputDescription);
@@ -81,6 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 compressDestDirOption,
                 propertyOption,
                 dynamicInstallRootDirOption,
+                skipDetectionOption,
                 buildScriptOutputOption,
             };
 
@@ -102,6 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     compressDestinationDir: compressDestDirOption,
                     property: propertyOption,
                     dynamicInstallRootDir: dynamicInstallRootDirOption,
+                    skipDetection: skipDetectionOption,
                     logPath: logOption,
                     debugMode: debugOption));
             return command;
@@ -158,6 +162,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return false;
             }
 
+            // --skip-detection requires --platform to be specified
+            if (options.SkipDetection && string.IsNullOrEmpty(options.PlatformName))
+            {
+                console.WriteErrorLine("Cannot use --skip-detection without specifying --platform also.");
+                return false;
+            }
+
             return true;
         }
 
@@ -195,6 +206,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     this.ConfigureBuildScriptGeneratorOptions(opts);
 
+                    opts.SkipDetection = this.SkipDetection;
                     opts.DebianFlavor = this.ResolveOsType(opts, console);
                     opts.ImageType = this.ResolveImageType(opts, console);
                 });
