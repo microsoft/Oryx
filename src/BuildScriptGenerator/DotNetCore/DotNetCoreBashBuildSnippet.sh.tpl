@@ -9,6 +9,12 @@ echo "Using .NET Core SDK Version: $dotnetCoreVersion"
     {{ InstallBlazorWebAssemblyAOTWorkloadCommand }}
 {{ end }}
 
+{{ if CustomBuildCommand | IsNotBlank }}
+echo
+echo "Running custom build command '{{ CustomBuildCommand }}'..."
+echo
+{{ CustomBuildCommand }}
+{{ else }}
 doc="https://docs.microsoft.com/en-us/azure/app-service/configure-language-dotnetcore?pivots=platform-linux"
 suggestion="Please build your app locally before publishing." 
 msg="${suggestion} | ${doc}"
@@ -39,3 +45,4 @@ else
     # but not during other dotnet builds
     cp ${SOURCE_DIR}/*.csproj ${DESTINATION_DIR} 2>/dev/null || :
 fi
+{{ end }}

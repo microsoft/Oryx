@@ -14,5 +14,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         public string PhpComposerVersion { get; set; }
 
         public string PhpComposerDefaultVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets custom build command that will run instead of the default
+        /// 'composer install' in the generated build script.
+        /// </summary>
+        public string CustomBuildCommand { get; set; }
     }
 }

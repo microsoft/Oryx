@@ -59,6 +59,149 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                             buildScriptSnippet.BashBuildScriptSnippet);
         }
 
+        [Fact]
+        public void GeneratedBuildSnippet_CustomBuildCommandWillExecute_InsteadOfRestoreAndPublish()
+        {
+            // Arrange
+            var installationScript = "test-script";
+            var dotNetCorePlatform = CreateDotNetCorePlatform(
+                DotNetCoreScriptGeneratorOptions: new DotNetCoreScriptGeneratorOptions
+                {
+                    CustomBuildCommand = "custom build command",
+                },
+                isDotNetCoreVersionAlreadyInstalled: true,
+                dotNetCoreInstallationScript: installationScript);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(ProjectFileAzureBlazorWasmClientWithTargetFramework6, "test.csproj");
+            var context = CreateContext(repo);
+            var detectedResult = new DotNetCorePlatformDetectorResult
+            {
+                Platform = DotNetCoreConstants.PlatformName,
+                PlatformVersion = "10.0",
+                ProjectFile = "test.csproj",
+            };
+
+            // Act
+            var buildScriptSnippet = dotNetCorePlatform.GenerateBashBuildScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("custom build command", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("dotnet restore", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("dotnet publish", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.True(buildScriptSnippet.CopySourceDirectoryContentToDestinationDirectory);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_DoesNotCopySourceToDestination_WhenNoCustomBuildCommand()
+        {
+            // Arrange
+            var dotNetCorePlatform = CreateDotNetCorePlatform(
+                isDotNetCoreVersionAlreadyInstalled: true);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(ProjectFileAzureBlazorWasmClientWithTargetFramework6, "test.csproj");
+            var context = CreateContext(repo);
+            var detectedResult = new DotNetCorePlatformDetectorResult
+            {
+                Platform = DotNetCoreConstants.PlatformName,
+                PlatformVersion = "10.0",
+                ProjectFile = "test.csproj",
+            };
+
+            // Act
+            var buildScriptSnippet = dotNetCorePlatform.GenerateBashBuildScriptSnippet(context, detectedResult);
+
+            // Assert - default dotnet publish handles output, so no auto-copy needed
+            Assert.NotNull(buildScriptSnippet);
+            Assert.False(buildScriptSnippet.CopySourceDirectoryContentToDestinationDirectory);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_SdkVersionDisplayIsPreserved_WithCustomBuildCommand()
+        {
+            // Arrange
+            var dotNetCorePlatform = CreateDotNetCorePlatform(
+                DotNetCoreScriptGeneratorOptions: new DotNetCoreScriptGeneratorOptions
+                {
+                    CustomBuildCommand = "make build",
+                },
+                isDotNetCoreVersionAlreadyInstalled: true);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(ProjectFileAzureBlazorWasmClientWithTargetFramework6, "test.csproj");
+            var context = CreateContext(repo);
+            var detectedResult = new DotNetCorePlatformDetectorResult
+            {
+                Platform = DotNetCoreConstants.PlatformName,
+                PlatformVersion = "10.0",
+                ProjectFile = "test.csproj",
+            };
+
+            // Act
+            var buildScriptSnippet = dotNetCorePlatform.GenerateBashBuildScriptSnippet(context, detectedResult);
+
+            // Assert - ensure dotnet env setup and display is preserved even when custom build command is used
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("dotnet --version", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("make build", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_UsesDotNetRestoreAndPublish_WhenNoCustomBuildCommandSet()
+        {
+            // Arrange
+            var dotNetCorePlatform = CreateDotNetCorePlatform(
+                isDotNetCoreVersionAlreadyInstalled: true);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(ProjectFileAzureBlazorWasmClientWithTargetFramework6, "test.csproj");
+            var context = CreateContext(repo);
+            var detectedResult = new DotNetCorePlatformDetectorResult
+            {
+                Platform = DotNetCoreConstants.PlatformName,
+                PlatformVersion = "10.0",
+                ProjectFile = "test.csproj",
+            };
+
+            // Act
+            var buildScriptSnippet = dotNetCorePlatform.GenerateBashBuildScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("dotnet restore", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("dotnet publish", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("Running custom build command", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_AOTWorkloadIsPreserved_WithCustomBuildCommand()
+        {
+            // Arrange
+            var dotNetCorePlatform = CreateDotNetCorePlatform(
+                DotNetCoreScriptGeneratorOptions: new DotNetCoreScriptGeneratorOptions
+                {
+                    CustomBuildCommand = "dotnet publish -c Release -o /output",
+                },
+                isDotNetCoreVersionAlreadyInstalled: true);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(ProjectFileAzureBlazorWasmClientWithTargetFramework6, "test.csproj");
+            var context = CreateContext(repo);
+            var detectedResult = new DotNetCorePlatformDetectorResult
+            {
+                Platform = DotNetCoreConstants.PlatformName,
+                PlatformVersion = "10.0",
+                InstallAOTWorkloads = true,
+                ProjectFile = "test.csproj",
+            };
+
+            // Act
+            var buildScriptSnippet = dotNetCorePlatform.GenerateBashBuildScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains(DotNetCoreConstants.InstallBlazorWebAssemblyAOTWorkloadCommand, buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("dotnet publish -c Release -o /output", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("dotnet restore", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
         {
             sourceRepo = sourceRepo ?? new MemorySourceRepo();

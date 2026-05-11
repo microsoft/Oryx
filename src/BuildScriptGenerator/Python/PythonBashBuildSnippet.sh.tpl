@@ -206,285 +206,299 @@ install_python_packages_impl() {
     source $VIRTUALENVIRONMENTNAME/bin/activate
 
     moreInformation="More information: https://aka.ms/troubleshoot-python"
-    if [ -e "$REQUIREMENTS_TXT_FILE" ]
-    then
-        if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-            set +e
-            echo "Fast build is enabled"
-            install_python_packages_impl "python" "$REQUIREMENTS_TXT_FILE" "" ""
-            pipInstallExitCode=$?
-            set -e
-            if [[ $pipInstallExitCode != 0 ]]
-            then
-                LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-                exit $pipInstallExitCode
-            fi
-        else
-            set +e
-            echo "Running pip install..."
-            START_TIME=$SECONDS
-            InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE" 
-            
-            # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
-            if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
-                echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
-                InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
-            fi
-            
-            printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-            pipInstallExitCode=${PIPESTATUS[0]}
+    {{ if CustomBuildCommand | IsNotBlank }}
+        echo
+        echo "Running custom build command '{{ CustomBuildCommand }}'..."
+        echo
+        {{ CustomBuildCommand }}
+    {{ else }}
+        if [ -e "$REQUIREMENTS_TXT_FILE" ]
+        then
+            if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                set +e
+                echo "Fast build is enabled"
+                install_python_packages_impl "python" "$REQUIREMENTS_TXT_FILE" "" ""
+                pipInstallExitCode=$?
+                set -e
+                if [[ $pipInstallExitCode != 0 ]]
+                then
+                    LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $pipInstallExitCode
+                fi
+            else
+                set +e
+                echo "Running pip install..."
+                START_TIME=$SECONDS
+                InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE" 
+                
+                # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+                if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+                    echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+                    InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+                fi
+                
+                printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+                pipInstallExitCode=${PIPESTATUS[0]}
 
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                set -e
+                echo "${output}"
+                echo "pip install done in $ELAPSED_TIME sec(s)."
+                if [[ $pipInstallExitCode != 0 ]]
+                then
+                    LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $pipInstallExitCode
+                fi
+            fi
+        elif [ -e "setup.py" ]
+        then
+            set +e
+            echo "Running pip install setuptools..."
+            START_TIME=$SECONDS
+            InstallSetuptoolsPipCommand="pip install setuptools"
+            printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
+            pip install setuptools
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "pip install setuptools done in $ELAPSED_TIME sec(s)."
+            echo "Running python setup.py install..."
+            START_TIME=$SECONDS
+            InstallCommand="pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary | ts $TS_FMT"
+            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            pythonBuildExitCode=${PIPESTATUS[0]}
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             set -e
             echo "${output}"
             echo "pip install done in $ELAPSED_TIME sec(s)."
-            if [[ $pipInstallExitCode != 0 ]]
+            if [[ $pythonBuildExitCode != 0 ]]
             then
-                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-                exit $pipInstallExitCode
+                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
+                exit $pythonBuildExitCode
             fi
-        fi
-    elif [ -e "setup.py" ]
-    then
-        set +e
-        echo "Running pip install setuptools..."
-        START_TIME=$SECONDS
-        InstallSetuptoolsPipCommand="pip install setuptools"
-        printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
-        pip install setuptools
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "pip install setuptools done in $ELAPSED_TIME sec(s)."
-        echo "Running python setup.py install..."
-        START_TIME=$SECONDS
-        InstallCommand="pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary | ts $TS_FMT"
-        printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-        pythonBuildExitCode=${PIPESTATUS[0]}
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        set -e
-        echo "${output}"
-        echo "pip install done in $ELAPSED_TIME sec(s)."
-        if [[ $pythonBuildExitCode != 0 ]]
+        elif [ -e "pyproject.toml" ]
         then
-            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
-            exit $pythonBuildExitCode
-        fi
-    elif [ -e "pyproject.toml" ]
-    then
-        if [ -e "uv.lock" ];
-        then
-            # Install using uv
-            set +e
-            echo "Detected uv.lock. Installing dependencies with uv..."
-            START_TIME=$SECONDS
-            InstallUvCommand="uv sync --active --link-mode copy"
-            printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
-            uvExitCode=${PIPESTATUS[0]}
-            ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "uv sync done in $ELAPSED_TIME sec(s)."
-            set -e
-            echo "${output}"
-            if [[ $uvExitCode != 0 ]]; then
-                LogError "${output} | Exit code: ${uvExitCode} | Please review your uv.lock | ${moreInformation}"
-                exit $uvExitCode
-            fi
-        else
-            # Fallback to poetry
+            if [ -e "uv.lock" ];
+            then
+                # Install using uv
+                set +e
+                echo "Detected uv.lock. Installing dependencies with uv..."
+                START_TIME=$SECONDS
+                InstallUvCommand="uv sync --active --link-mode copy"
+                printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
+                uvExitCode=${PIPESTATUS[0]}
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                echo "uv sync done in $ELAPSED_TIME sec(s)."
+                set -e
+                echo "${output}"
+                if [[ $uvExitCode != 0 ]]; then
+                    LogError "${output} | Exit code: ${uvExitCode} | Please review your uv.lock | ${moreInformation}"
+                    exit $uvExitCode
+                fi
+            else
+                # Fallback to poetry
 
-            set +e
-            echo "Running pip install poetry..."
-            START_TIME=$SECONDS
-            InstallPipCommand="pip install poetry"
-            printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-            pip install poetry
-            echo "Running poetry install..."
+                set +e
+                echo "Running pip install poetry..."
+                START_TIME=$SECONDS
+                InstallPipCommand="pip install poetry"
+                printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
+                pip install poetry
+                echo "Running poetry install..."
 
-            # Try with --only main flag as --no-dev option is depreciated in latest poetry versions
-            InstallPoetryCommand="poetry install --only main"
-            printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
-            pythonBuildExitCode=${PIPESTATUS[0]}
-
-            # Fallback to --no-dev flag
-            if [[ $pythonBuildExitCode != 0 ]]; then
-                echo "poetry install failed with --only main flag, falling back to --no-dev"
-                pip install poetry==1.8.5
-                InstallPoetryCommand="poetry install --no-dev"
+                # Try with --only main flag as --no-dev option is depreciated in latest poetry versions
+                InstallPoetryCommand="poetry install --only main"
                 printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
                 output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
                 pythonBuildExitCode=${PIPESTATUS[0]}
-                
-                # Final check after fallback
-                if [[ $pythonBuildExitCode != 0 ]]; then
-                    set -e
-                    echo "${output}"
-                    LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
-                    exit $pythonBuildExitCode
-                fi
-            fi
 
-            ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "poetry install done in $ELAPSED_TIME sec(s)."
-            set -e
-            echo "${output}"
+                # Fallback to --no-dev flag
+                if [[ $pythonBuildExitCode != 0 ]]; then
+                    echo "poetry install failed with --only main flag, falling back to --no-dev"
+                    pip install poetry==1.8.5
+                    InstallPoetryCommand="poetry install --no-dev"
+                    printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
+                    output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
+                    pythonBuildExitCode=${PIPESTATUS[0]}
+                    
+                    # Final check after fallback
+                    if [[ $pythonBuildExitCode != 0 ]]; then
+                        set -e
+                        echo "${output}"
+                        LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
+                        exit $pythonBuildExitCode
+                    fi
+                fi
+
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                echo "poetry install done in $ELAPSED_TIME sec(s)."
+                set -e
+                echo "${output}"
+            fi
+        else
+            echo $REQS_NOT_FOUND_MSG
         fi
-    else
-        echo $REQS_NOT_FOUND_MSG
-    fi
+    {{ end }}
 
     # For virtual environment, we use the actual 'python' alias that as setup by the venv,
     python_bin=python
 {{ else }}
     moreInformation="More information: https://aka.ms/troubleshoot-python"
-    if [ -e "$REQUIREMENTS_TXT_FILE" ]
-    then
-        if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-            set +e
-            echo "Fast build is enabled"
-            install_python_packages_impl "python" "$REQUIREMENTS_TXT_FILE" "" ""
-            pipInstallExitCode=$?
-            set -e
-            if [[ $pipInstallExitCode != 0 ]]
-            then
-                LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-                exit $pipInstallExitCode
+    {{ if CustomBuildCommand | IsNotBlank }}
+        echo
+        echo "Running custom build command '{{ CustomBuildCommand }}'..."
+        echo
+        {{ CustomBuildCommand }}
+    {{ else }}
+        if [ -e "$REQUIREMENTS_TXT_FILE" ]
+        then
+            if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                set +e
+                echo "Fast build is enabled"
+                install_python_packages_impl "python" "$REQUIREMENTS_TXT_FILE" "" ""
+                pipInstallExitCode=$?
+                set -e
+                if [[ $pipInstallExitCode != 0 ]]
+                then
+                    LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $pipInstallExitCode
+                fi
+            else
+                set +e
+                echo
+                echo Running pip install...
+                START_TIME=$SECONDS
+                InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }}" 
+
+                # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+                if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+                    echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+                    InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+                fi
+
+                printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+                pipInstallExitCode=${PIPESTATUS[0]}
+
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                set -e
+                echo "${output}"
+                echo "pip install done in $ELAPSED_TIME sec(s)."
+                if [[ $pipInstallExitCode != 0 ]]
+                then
+                    LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $pipInstallExitCode
+                fi
             fi
-        else
-            set +e
+        elif [ -e "setup.py" ]
+        then
             echo
-            echo Running pip install...
             START_TIME=$SECONDS
-            InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }}" 
+            UpgradeCommand="pip install --upgrade pip"
+            printf %s " , $UpgradeCommand" >> "$COMMAND_MANIFEST_FILE"
+            pip install --upgrade pip
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "pip upgrade done in $ELAPSED_TIME sec(s)."
 
-            # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
-            if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
-                echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
-                InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
-            fi
-
-            printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-            pipInstallExitCode=${PIPESTATUS[0]}
-
+            set +e
+            echo "Running pip install setuptools..."
+            START_TIME=$SECONDS
+            InstallSetuptoolsPipCommand="pip install setuptools"
+            printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
+            pip install setuptools
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "pip install setuptools done in $ELAPSED_TIME sec(s)."
+            echo "Running pip install..."
+            START_TIME=$SECONDS
+            InstallCommand="$python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target=\"{{ PackagesDirectory }}\" {{ PipUpgradeFlag }} | ts $TS_FMT"
+            printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( $python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+            pythonBuildExitCode=${PIPESTATUS[0]}
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             set -e
             echo "${output}"
             echo "pip install done in $ELAPSED_TIME sec(s)."
-            if [[ $pipInstallExitCode != 0 ]]
+            if [[ $pythonBuildExitCode != 0 ]]
             then
-                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
-                exit $pipInstallExitCode
+                LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
+                exit $pythonBuildExitCode
             fi
-        fi
-    elif [ -e "setup.py" ]
-    then
-        echo
-        START_TIME=$SECONDS
-        UpgradeCommand="pip install --upgrade pip"
-        printf %s " , $UpgradeCommand" >> "$COMMAND_MANIFEST_FILE"
-        pip install --upgrade pip
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "pip upgrade done in $ELAPSED_TIME sec(s)."
-
-        set +e
-        echo "Running pip install setuptools..."
-        START_TIME=$SECONDS
-        InstallSetuptoolsPipCommand="pip install setuptools"
-        printf %s " , $InstallSetuptoolsPipCommand" >> "$COMMAND_MANIFEST_FILE"
-        pip install setuptools
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "pip install setuptools done in $ELAPSED_TIME sec(s)."
-        echo "Running pip install..."
-        START_TIME=$SECONDS
-        InstallCommand="$python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target=\"{{ PackagesDirectory }}\" {{ PipUpgradeFlag }} | ts $TS_FMT"
-        printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( $python -m pip install . --cache-dir $PIP_CACHE_DIR --prefer-binary --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }} | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
-        pythonBuildExitCode=${PIPESTATUS[0]}
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        set -e
-        echo "${output}"
-        echo "pip install done in $ELAPSED_TIME sec(s)."
-        if [[ $pythonBuildExitCode != 0 ]]
+        elif [ -e "pyproject.toml" ]
         then
-            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
-            exit $pythonBuildExitCode
-        fi
-    elif [ -e "pyproject.toml" ]
-    then
-        if [ -e "uv.lock" ];
-        then
-            # Install using uv
-            echo "Detected uv.lock. Installing dependencies with uv..."
-            START_TIME=$SECONDS
-            echo "Installing uv..."
-            InstallUv="python -m pip install uv"
-            printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
-            $python -m pip install uv
-            ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "Installing uv done in $ELAPSED_TIME sec(s)."
-            START_TIME=$SECONDS
-            
-            set +e
-            SITE_PACKAGES_PATH="{{ PackagesDirectory }}"
-            echo "Installing dependencies..."
-            # Stream the export directly into uv pip install using process substitution
-            InstallUvCommand="uv export --locked | uv pip install --link-mode copy --target $SITE_PACKAGES_PATH -r -"
-            printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( eval $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
-            uvExitCode=${PIPESTATUS[0]}
-            ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            set -e
-            echo "${output}"
-            echo "uv pip install done in $ELAPSED_TIME sec(s)."
-            if [[ $uvExitCode != 0 ]]; then
-                LogError "${output} | Exit code: ${uvExitCode} | Please review your uv.lock | ${moreInformation}"
-                exit $uvExitCode
-            fi
-        else
-            # Fallback to poetry
+            if [ -e "uv.lock" ];
+            then
+                # Install using uv
+                echo "Detected uv.lock. Installing dependencies with uv..."
+                START_TIME=$SECONDS
+                echo "Installing uv..."
+                InstallUv="python -m pip install uv"
+                printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
+                $python -m pip install uv
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                echo "Installing uv done in $ELAPSED_TIME sec(s)."
+                START_TIME=$SECONDS
+                
+                set +e
+                SITE_PACKAGES_PATH="{{ PackagesDirectory }}"
+                echo "Installing dependencies..."
+                # Stream the export directly into uv pip install using process substitution
+                InstallUvCommand="uv export --locked | uv pip install --link-mode copy --target $SITE_PACKAGES_PATH -r -"
+                printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( eval $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
+                uvExitCode=${PIPESTATUS[0]}
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                set -e
+                echo "${output}"
+                echo "uv pip install done in $ELAPSED_TIME sec(s)."
+                if [[ $uvExitCode != 0 ]]; then
+                    LogError "${output} | Exit code: ${uvExitCode} | Please review your uv.lock | ${moreInformation}"
+                    exit $uvExitCode
+                fi
+            else
+                # Fallback to poetry
 
-            set +e
-            echo "Running pip install poetry..."
-            START_TIME=$SECONDS
-            InstallPipCommand="pip install poetry"
-            printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-            pip install poetry
-            echo "Running poetry install..."
+                set +e
+                echo "Running pip install poetry..."
+                START_TIME=$SECONDS
+                InstallPipCommand="pip install poetry"
+                printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
+                pip install poetry
+                echo "Running poetry install..."
 
-            # Try with --only main flag as --no-dev option is depreciated in latest poetry versions
-            InstallPoetryCommand="poetry install --only main"
-            printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
-            pythonBuildExitCode=${PIPESTATUS[0]}
-
-            # Fallback to --no-dev flag
-            if [[ $pythonBuildExitCode != 0 ]]; then
-                echo "poetry install failed with --only main flag, falling back to --no-dev"
-                pip install poetry==1.8.5
-                InstallPoetryCommand="poetry install --no-dev"
+                # Try with --only main flag as --no-dev option is depreciated in latest poetry versions
+                InstallPoetryCommand="poetry install --only main"
                 printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
                 output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
                 pythonBuildExitCode=${PIPESTATUS[0]}
-                
-                # Final check after fallback
-                if [[ $pythonBuildExitCode != 0 ]]; then
-                    set -e
-                    echo "${output}"
-                    LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
-                    exit $pythonBuildExitCode
-                fi
-            fi
 
-            ELAPSED_TIME=$(($SECONDS - $START_TIME))
-            echo "poetry install done in $ELAPSED_TIME sec(s)."
-            set -e
-            echo "${output}"
+                # Fallback to --no-dev flag
+                if [[ $pythonBuildExitCode != 0 ]]; then
+                    echo "poetry install failed with --only main flag, falling back to --no-dev"
+                    pip install poetry==1.8.5
+                    InstallPoetryCommand="poetry install --no-dev"
+                    printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
+                    output=$( ( $InstallPoetryCommand; exit ${PIPESTATUS[0]} ) 2>&1)
+                    pythonBuildExitCode=${PIPESTATUS[0]}
+                    
+                    # Final check after fallback
+                    if [[ $pythonBuildExitCode != 0 ]]; then
+                        set -e
+                        echo "${output}"
+                        LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
+                        exit $pythonBuildExitCode
+                    fi
+                fi
+
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                echo "poetry install done in $ELAPSED_TIME sec(s)."
+                set -e
+                echo "${output}"
+            fi
+        else
+            echo $REQS_NOT_FOUND_MSG
         fi
-    else
-        echo $REQS_NOT_FOUND_MSG
-    fi
+    {{ end }}
 
     # We need to use the python binary selected by benv
     python_bin=$python

@@ -206,7 +206,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     this.ConfigureBuildScriptGeneratorOptions(opts);
 
-                    opts.SkipDetection = this.SkipDetection;
+                    opts.SkipDetection = opts.SkipDetection || this.SkipDetection;
                     opts.DebianFlavor = this.ResolveOsType(opts, console);
                     opts.ImageType = this.ResolveImageType(opts, console);
                 });
