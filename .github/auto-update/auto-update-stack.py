@@ -67,23 +67,41 @@ def append_to_versions_to_build(stack, flavor, line):
         return
 
     with open(path) as f:
-        existing = f.read()
+        existing_lines = f.read().splitlines()
 
-    version = line.split(',')[0].strip()
-    existing_versions = {
-        existing_line.split(',', 1)[0].strip()
-        for existing_line in existing.splitlines()
-        if existing_line.strip() and not existing_line.strip().startswith('#')
-    }
-    if version in existing_versions:
-        print(f"  {flavor}: {version} already in versionsToBuild.txt")
-        return
+    version = line.split(',', 1)[0].strip()
+    header_lines = []
+    version_lines = []
+    for existing_line in existing_lines:
+        stripped = existing_line.strip()
+        if not stripped or stripped.startswith('#'):
+            header_lines.append(existing_line)
+            continue
+        version_lines.append(existing_line)
 
-    with open(path, 'a') as f:
-        if not existing.endswith('\n'):
-            f.write('\n')
-        f.write(line + '\n')
-    print(f"  {flavor}: appended {version}")
+    updated = False
+    for index, existing_line in enumerate(version_lines):
+        existing_version = existing_line.split(',', 1)[0].strip()
+        if existing_version == version:
+            if existing_line.strip() == line.strip():
+                print(f"  {flavor}: {version} already up to date in versionsToBuild.txt")
+                return
+            version_lines[index] = line
+            updated = True
+            break
+
+    if not updated:
+        version_lines.append(line)
+
+    version_lines.sort(key=lambda item: version_tuple(item.split(',', 1)[0].strip()))
+
+    with open(path, 'w') as f:
+        output_lines = header_lines + version_lines
+        if output_lines:
+            f.write('\n'.join(output_lines))
+
+    action = 'updated' if updated else 'inserted'
+    print(f"  {flavor}: {action} {version} in ascending order")
 
 
 # --- Node ---
