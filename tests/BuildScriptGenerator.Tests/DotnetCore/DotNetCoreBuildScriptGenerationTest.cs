@@ -89,7 +89,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Contains("custom build command", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("dotnet restore", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("dotnet publish", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.True(buildScriptSnippet.CopySourceDirectoryContentToDestinationDirectory);
+            // .NET always requires custom command to output to $DESTINATION_DIR directly
+            Assert.False(buildScriptSnippet.CopySourceDirectoryContentToDestinationDirectory);
         }
 
         [Fact]

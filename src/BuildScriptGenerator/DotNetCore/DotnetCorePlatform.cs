@@ -178,20 +178,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             SetStartupFileNameInfoInManifestFile(context, projectFile, manifestFileProperties);
 
-            // When a custom build command is used, the user has opted out of the standard
-            // 'dotnet publish -o $DESTINATION_DIR' flow and may be using a different build tool.
-            // In that case, enable auto-copy so the build output reaches $DESTINATION_DIR
-            var copySourceToDestination = !string.IsNullOrEmpty(
-                this.dotNetCoreScriptGeneratorOptions.CustomBuildCommand);
-
             return new BuildScriptSnippet
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
 
-                // Setting this to false to avoid copying files like '.cs' to the destination
-                // unless a custom build command is used, in which case we enable auto-copy.
-                CopySourceDirectoryContentToDestinationDirectory = copySourceToDestination,
+                // Always false for .NET: the custom build command (or default dotnet publish)
+                // must place output in $DESTINATION_DIR directly. Auto-copying source files
+                // would overwrite published output with .cs/.csproj files, breaking the app.
+                CopySourceDirectoryContentToDestinationDirectory = false,
             };
         }
 

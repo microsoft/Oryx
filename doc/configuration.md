@@ -34,7 +34,7 @@ DISABLE\_DOTNETCORE\_BUILD   | Do not apply .NET Core build even if repo indicat
 PROJECT                      | repo-relative path to directory with `.csproj` file for build  | ""      | "src/WebApp1/WebApp1.csproj"
 MSBUILD\_CONFIGURATION       | Configuration (Debug or Release) that is used to build a .NET Core project | `Release` | `Debug`, `Release`
 
-> When `CUSTOM_BUILD_COMMAND` is set for .NET apps, it replaces the default `dotnet restore` and `dotnet publish` commands
+> When `CUSTOM_BUILD_COMMAND` is set for .NET apps, it replaces the default `dotnet restore` and `dotnet publish` commands. The custom command must output to `$DESTINATION_DIR` (e.g., `dotnet publish -o $DESTINATION_DIR`).
 
 Setting name for Nodejs apps | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
