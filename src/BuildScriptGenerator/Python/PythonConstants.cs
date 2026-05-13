@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         public static readonly Dictionary<string, string> DefaultVersionPerFlavor = new Dictionary<string, string>
         {
-            { "bookworm", "3.8" },
-            { "bullseye", "3.8" },
+            { "bookworm", "3.13" },
+            { "bullseye", "3.10" },
             { "buster", "3.8" },
             { "focal-scm", "3.8" },
             { "noble", "3.14" },
