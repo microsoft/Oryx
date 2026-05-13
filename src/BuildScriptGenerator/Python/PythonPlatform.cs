@@ -834,10 +834,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             // If External ACR SDK provider is enabled, then we try to get the version from it first
             // before applying the hierarchical rules, because it has the highest priority in terms of version selection.
+            // Only use the version if it actually came from the External ACR provider, not from a fallback provider.
             if (this.commonOptions.EnableExternalAcrSdkProvider)
             {
                 var acrVersionInfo = this.versionProvider.GetVersionInfo();
-                if (acrVersionInfo?.DefaultVersion != null)
+                if (acrVersionInfo?.PlatformVersionSourceType == PlatformVersionSourceType.AvailableViaExternalAcrProvider
+                    && acrVersionInfo?.DefaultVersion != null)
                 {
                     return acrVersionInfo.DefaultVersion;
                 }

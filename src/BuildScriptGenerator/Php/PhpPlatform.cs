@@ -582,10 +582,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             string ResolvePhpVersion(string detectedVersion)
             {
                 // If external ACR provider is enabled, try to resolve version from it first.
+                // Only use the version if it actually came from the External ACR provider, not from a fallback provider.
                 if (this.commonOptions.EnableExternalAcrSdkProvider)
                 {
                     var acrVersionInfo = this.phpVersionProvider.GetVersionInfo();
-                    if (acrVersionInfo?.DefaultVersion != null)
+                    if (acrVersionInfo?.PlatformVersionSourceType == PlatformVersionSourceType.AvailableViaExternalAcrProvider
+                        && acrVersionInfo?.DefaultVersion != null)
                     {
                         this.logger.LogDebug("External ACR SDK provider is enabled and returned version {version} for PHP.", acrVersionInfo.DefaultVersion);
                         return acrVersionInfo.DefaultVersion;

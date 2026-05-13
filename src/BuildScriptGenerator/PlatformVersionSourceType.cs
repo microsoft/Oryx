@@ -11,5 +11,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         AvailableOnWeb,
         AvailableViaExternalProvider,
         AvailableOnAcr,
+        AvailableViaExternalAcrProvider,
     }
 }

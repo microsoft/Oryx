@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 return null;
             }
 
-            return PlatformVersionInfo.CreateAvailableOnAcr(
+            return PlatformVersionInfo.CreateAvailableViaExternalAcrProvider(
                 supportedVersions: new[] { version },
                 defaultVersion: version);
         }
