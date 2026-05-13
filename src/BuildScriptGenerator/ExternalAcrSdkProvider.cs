@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string ExternalAcrSdksStorageDir = "/var/OryxAcrSdks";
 
         private const string SocketPath = "/var/sdk-image-sockets/oryx-pull-sdk-image.socket";
-        private const int MaxTimeoutForSocketOperationInSeconds = 100;
+        private const int MaxTimeoutForSocketOperationInSeconds = 300;
 
         private readonly ILogger<ExternalAcrSdkProvider> logger;
         private readonly IStandardOutputWriter outputWriter;
