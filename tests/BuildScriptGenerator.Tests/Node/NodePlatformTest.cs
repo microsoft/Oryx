@@ -1181,11 +1181,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsVersionProviderDefault_WhenExternalAcrEnabled_OverridingDetectedVersion()
+        public void Detect_ReturnsDetectedVersion_WhenExternalAcrEnabled_ButVersionNotFromExternalAcr()
         {
             // Arrange
-            var detectedVersion = "14.0.0";
-            var versionProviderDefault = "18.0.0";
+            var detectedVersion = "22.0.0";
+            var versionProviderDefault = "24.0.0";
             var commonOptions = new BuildScriptGeneratorOptions
             {
                 EnableExternalAcrSdkProvider = true,
@@ -1200,11 +1200,89 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Act
             var result = platform.Detect(context);
 
-            // Assert - ExternalACR short-circuit uses version provider's DefaultVersion,
-            // overriding the detected version
+            // Assert - When the version info did not come from the External ACR provider,
+            // the detected version should be used instead of the provider's default
             Assert.NotNull(result);
             Assert.Equal(NodeConstants.PlatformName, result.Platform);
-            Assert.Equal(versionProviderDefault, result.PlatformVersion);
+            Assert.Equal(detectedVersion, result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsUserSpecifiedVersion_WhenExternalAcrEnabled_ButVersionNotFromExternalAcr()
+        {
+            // Arrange
+            var userVersion = "22.0.0";
+            var detectedVersion = "20.0.0";
+            var versionProviderDefault = "24.0.0";
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions
+            {
+                NodeVersion = userVersion,
+            };
+            var platform = CreateNodePlatform(
+                supportedNodeVersions: new[] { userVersion, detectedVersion, versionProviderDefault },
+                defaultVersion: versionProviderDefault,
+                detectedVersion: detectedVersion,
+                commonOptions: commonOptions,
+                nodeScriptGeneratorOptions: nodeScriptGeneratorOptions);
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - When ExternalACR fails and blob fallback is used,
+            // --platform-version should win over the blob default
+            Assert.NotNull(result);
+            Assert.Equal(NodeConstants.PlatformName, result.Platform);
+            Assert.Equal(userVersion, result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsExternalAcrVersion_WhenVersionSourceIsExternalAcr()
+        {
+            // Arrange
+            var detectedVersion = "22.0.0";
+            var externalAcrVersion = "24.0.0";
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
+            var versionProvider = new TestNodeVersionProvider(
+                new[] { detectedVersion, externalAcrVersion },
+                externalAcrVersion,
+                PlatformVersionSourceType.AvailableViaExternalAcrProvider);
+            var externalSdkProvider = new TestExternalSdkProvider();
+            var environment = new TestEnvironment();
+            var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
+            var platformInstaller = new NodePlatformInstaller(
+                Options.Create(commonOptions),
+                NullLoggerFactory.Instance);
+            var platform = new TestNodePlatform(
+                Options.Create(commonOptions),
+                Options.Create(nodeScriptGeneratorOptions),
+                versionProvider,
+                NullLogger<NodePlatform>.Instance,
+                detector,
+                environment,
+                platformInstaller,
+                externalSdkProvider,
+                new TestExternalAcrSdkProvider(),
+                new TestAcrSdkProvider(),
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - When version truly came from External ACR, it should override detected version
+            Assert.NotNull(result);
+            Assert.Equal(NodeConstants.PlatformName, result.Platform);
+            Assert.Equal(externalAcrVersion, result.PlatformVersion);
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1406,6 +1484,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             private readonly string[] _supportedNodeVersions;
             private readonly string _defaultVersion;
+            private readonly PlatformVersionSourceType _sourceType;
 
             public TestNodeVersionProvider()
             {
@@ -1415,11 +1494,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             {
                 _supportedNodeVersions = supportedNodeVersions;
                 _defaultVersion = defaultVersion;
+                _sourceType = PlatformVersionSourceType.OnDisk;
+            }
+
+            public TestNodeVersionProvider(
+                string[] supportedNodeVersions,
+                string defaultVersion,
+                PlatformVersionSourceType sourceType)
+            {
+                _supportedNodeVersions = supportedNodeVersions;
+                _defaultVersion = defaultVersion;
+                _sourceType = sourceType;
             }
 
             public PlatformVersionInfo GetVersionInfo()
             {
-                return PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedNodeVersions, _defaultVersion);
+                return _sourceType == PlatformVersionSourceType.AvailableViaExternalAcrProvider
+                    ? PlatformVersionInfo.CreateAvailableViaExternalAcrProvider(_supportedNodeVersions, _defaultVersion)
+                    : PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedNodeVersions, _defaultVersion);
             }
         }
 

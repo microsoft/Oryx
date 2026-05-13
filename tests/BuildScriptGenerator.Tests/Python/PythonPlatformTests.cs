@@ -648,11 +648,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReturnsVersionProviderDefault_WhenExternalAcrEnabled_OverridingDetectedVersion()
+        public void Detect_ReturnsDetectedVersion_WhenExternalAcrEnabled_ButVersionNotFromExternalAcr()
         {
             // Arrange
-            var detectedVersion = "3.8.0";
-            var versionProviderDefault = "3.10.0";
+            var detectedVersion = "3.13.0";
+            var versionProviderDefault = "3.14.0";
             var commonOptions = new BuildScriptGeneratorOptions
             {
                 EnableExternalAcrSdkProvider = true,
@@ -667,12 +667,84 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Act
             var result = platform.Detect(context);
 
-            // Assert - ExternalACR short-circuit uses version provider's DefaultVersion,
-            // overriding the detected version
+            // Assert - When the version info did not come from the External ACR provider,
+            // the detected version should be used instead of the provider's default
             Assert.NotNull(result);
             Assert.Equal(PythonConstants.PlatformName, result.Platform);
-            Assert.Equal(versionProviderDefault, result.PlatformVersion);
+            Assert.Equal(detectedVersion, result.PlatformVersion);
         }
+
+        [Fact]
+        public void Detect_ReturnsUserSpecifiedVersion_WhenExternalAcrEnabled_ButVersionNotFromExternalAcr()
+        {
+            // Arrange
+            var userVersion = "3.13.0";
+            var detectedVersion = "3.12.0";
+            var versionProviderDefault = "3.14.0";
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions
+            {
+                PythonVersion = userVersion,
+            };
+            var platform = CreatePlatform(
+                supportedVersions: new[] { userVersion, detectedVersion, versionProviderDefault },
+                defaultVersion: versionProviderDefault,
+                detectedVersion: detectedVersion,
+                commonOptions: commonOptions,
+                pythonScriptGeneratorOptions: pythonScriptGeneratorOptions);
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - When ExternalACR fails and blob fallback is used,
+            // --platform-version should win over the blob default
+            Assert.NotNull(result);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Equal(userVersion, result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsExternalAcrVersion_WhenVersionSourceIsExternalAcr()
+        {
+            // Arrange
+            var detectedVersion = "3.13.0";
+            var externalAcrVersion = "3.14.0";
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var versionProvider = new TestPythonVersionProvider(
+                new[] { detectedVersion, externalAcrVersion },
+                externalAcrVersion,
+                PlatformVersionSourceType.AvailableViaExternalAcrProvider);
+            var detector = new TestPythonPlatformDetector(detectedVersion: detectedVersion);
+            var platform = new PythonPlatform(
+                Options.Create(commonOptions),
+                Options.Create(new PythonScriptGeneratorOptions()),
+                versionProvider,
+                NullLogger<PythonPlatform>.Instance,
+                detector,
+                new PythonPlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
+                new TestExternalSdkProvider(),
+                new TestExternalAcrSdkProvider(),
+                new TestAcrSdkProvider(),
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - When version truly came from External ACR, it should override detected version
+            Assert.NotNull(result);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Equal(externalAcrVersion, result.PlatformVersion);
+        }
+
         private PythonPlatform CreatePlatform(
             IPythonVersionProvider pythonVersionProvider,
             IExternalSdkProvider externalSdkProvider,

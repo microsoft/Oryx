@@ -887,11 +887,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersionProviderDefault_WhenExternalAcrEnabled_OverridingDetectedVersion()
+        public void Detect_ReturnsDetectedVersion_WhenExternalAcrEnabled_ButVersionNotFromExternalAcr()
         {
             // Arrange
-            var detectedVersion = "7.3.5";
-            var versionProviderDefault = "8.1.0";
+            var detectedVersion = "8.3.0";
+            var versionProviderDefault = "8.4.0";
             var repo = new MemorySourceRepo();
             repo.AddFile("<?php echo true; ?>", "foo.php");
             var context = CreateContext(repo);
@@ -908,11 +908,97 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             // Act
             var result = platform.Detect(context);
 
-            // Assert - ExternalACR short-circuit uses version provider's DefaultVersion,
-            // overriding the detected version
+            // Assert - When the version info did not come from the External ACR provider,
+            // the detected version should be used instead of the provider's default
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
-            Assert.Equal(versionProviderDefault, result.PlatformVersion);
+            Assert.Equal(detectedVersion, result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsUserSpecifiedVersion_WhenExternalAcrEnabled_ButVersionNotFromExternalAcr()
+        {
+            // Arrange
+            var userVersion = "8.3.0";
+            var detectedVersion = "8.2.0";
+            var versionProviderDefault = "8.4.0";
+            var repo = new MemorySourceRepo();
+            repo.AddFile("<?php echo true; ?>", "foo.php");
+            var context = CreateContext(repo);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions
+            {
+                PhpVersion = userVersion,
+            };
+            var platform = CreatePhpPlatform(
+                supportedPhpVersions: new[] { userVersion, detectedVersion, versionProviderDefault },
+                defaultVersion: versionProviderDefault,
+                detectedVersion: detectedVersion,
+                commonOptions: commonOptions,
+                phpScriptGeneratorOptions: phpScriptGeneratorOptions);
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - When ExternalACR fails and blob fallback is used,
+            // --platform-version should win over the blob default
+            Assert.NotNull(result);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(userVersion, result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsExternalAcrVersion_WhenVersionSourceIsExternalAcr()
+        {
+            // Arrange
+            var detectedVersion = "8.3.0";
+            var externalAcrVersion = "8.4.0";
+            var repo = new MemorySourceRepo();
+            repo.AddFile("<?php echo true; ?>", "foo.php");
+            var context = CreateContext(repo);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                EnableExternalAcrSdkProvider = true,
+            };
+            var versionProvider = new TestPhpVersionProvider(
+                new[] { detectedVersion, externalAcrVersion },
+                externalAcrVersion,
+                PlatformVersionSourceType.AvailableViaExternalAcrProvider);
+            var composerVersionProvider = new TestPhpComposerVersionProvider(
+                new[] { PhpVersions.ComposerDefaultVersion },
+                PhpVersions.ComposerDefaultVersion);
+            var detector = new TestPhpPlatformDetector(detectedVersion: detectedVersion);
+            var phpInstaller = new TestPhpPlatformInstaller(
+                Options.Create(commonOptions),
+                isVersionAlreadyInstalled: true);
+            var phpComposerInstaller = new TestPhpComposerInstaller(
+                Options.Create(commonOptions),
+                isVersionAlreadyInstalled: true);
+            var platform = new TestPhpPlatform(
+                Options.Create(new PhpScriptGeneratorOptions()),
+                Options.Create(commonOptions),
+                versionProvider,
+                composerVersionProvider,
+                NullLogger<TestPhpPlatform>.Instance,
+                detector,
+                phpInstaller,
+                phpComposerInstaller,
+                new TestExternalSdkProvider(),
+                new TestExternalAcrSdkProvider(),
+                new TestAcrSdkProvider(),
+                TelemetryClientHelper.GetTelemetryClient(),
+                new DefaultStandardOutputWriter());
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert - When version truly came from External ACR, it should override detected version
+            Assert.NotNull(result);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(externalAcrVersion, result.PlatformVersion);
         }
 
         [Fact]

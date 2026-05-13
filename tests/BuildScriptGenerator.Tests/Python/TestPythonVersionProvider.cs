@@ -11,16 +11,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
     {
         private readonly string[] _supportedPythonVersions;
         private readonly string _defaultVersion;
+        private readonly PlatformVersionSourceType _sourceType;
 
         public TestPythonVersionProvider(string[] supportedPythonVersions, string defaultVersion)
         {
             _supportedPythonVersions = supportedPythonVersions;
             _defaultVersion = defaultVersion;
+            _sourceType = PlatformVersionSourceType.OnDisk;
+        }
+
+        public TestPythonVersionProvider(
+            string[] supportedPythonVersions,
+            string defaultVersion,
+            PlatformVersionSourceType sourceType)
+        {
+            _supportedPythonVersions = supportedPythonVersions;
+            _defaultVersion = defaultVersion;
+            _sourceType = sourceType;
         }
 
         public PlatformVersionInfo GetVersionInfo()
         {
-            return PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedPythonVersions, _defaultVersion);
+            return _sourceType == PlatformVersionSourceType.AvailableViaExternalAcrProvider
+                ? PlatformVersionInfo.CreateAvailableViaExternalAcrProvider(_supportedPythonVersions, _defaultVersion)
+                : PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedPythonVersions, _defaultVersion);
         }
     }
 }
