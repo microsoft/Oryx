@@ -315,6 +315,7 @@ RUN apt-mark hold msodbcsql17 msodbcsql18 odbcinst1debian2 odbcinst unixodbc uni
 RUN set -eux; \
     apt-get update \
     && apt-get upgrade -y \
+    && apt-mark unhold nginx \
     && apt-get install -y --no-install-recommends apache2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     # From php 8.4 version imap is removed from php core and moved to pecl

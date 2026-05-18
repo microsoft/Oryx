@@ -318,16 +318,12 @@ RUN apt-mark hold msodbcsql17 msodbcsql18 odbcinst1debian2 odbcinst unixodbc uni
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.*  || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* ]]; then \
-		apt-get update \
-        && apt-get upgrade -y \
-        && apt-get install -y --no-install-recommends apache2-dev \
-        && docker-php-ext-configure gd --with-freetype --with-jpeg \
-        && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
-    else \
-		docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-        && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
-    fi
+    apt-get update \
+    && apt-get upgrade -y \
+    && apt-mark unhold nginx \
+    && apt-get install -y --no-install-recommends apache2-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl
 
 RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install gd \
