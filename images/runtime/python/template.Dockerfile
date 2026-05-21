@@ -2,7 +2,7 @@ ARG DEBIAN_FLAVOR
 ARG BASE_IMAGE
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26.2-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26.3-${DEBIAN_FLAVOR} as startupCmdGen
 
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
