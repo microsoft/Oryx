@@ -12,6 +12,7 @@ echo "Using .NET Core SDK Version: $dotnetCoreVersion"
 {{ if CustomBuildCommand | IsNotBlank }}
 echo
 echo "Running custom build command '{{ CustomBuildCommand }}'..."
+echo "Note: the custom build command must output to \$DESTINATION_DIR (e.g., dotnet publish -c Release -o \$DESTINATION_DIR)."
 echo
 {{ CustomBuildCommand }}
 {{ else }}
