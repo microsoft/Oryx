@@ -15,5 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public string Configuration { get; set; }
 
         public string InstallBlazorWebAssemblyAOTWorkloadCommand { get; set; }
+
+        public string CustomBuildCommand { get; set; }
     }
 }

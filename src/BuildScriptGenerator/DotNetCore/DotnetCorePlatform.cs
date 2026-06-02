@@ -167,6 +167,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 ProjectFile = projectFile,
                 Configuration = this.GetBuildConfiguration(),
                 InstallBlazorWebAssemblyAOTWorkloadCommand = installBlazorWebAssemblyAOTWorkloadCommand,
+                CustomBuildCommand = this.dotNetCoreScriptGeneratorOptions.CustomBuildCommand,
             };
 
             var script = TemplateHelper.Render(
@@ -182,7 +183,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
 
-                // Setting this to false to avoid copying files like '.cs' to the destination
+                // Always false for .NET: the custom build command (or default dotnet publish)
+                // must place output in $DESTINATION_DIR directly. Auto-copying source files
+                // would overwrite published output with .cs/.csproj files, breaking the app.
                 CopySourceDirectoryContentToDestinationDirectory = false,
             };
         }

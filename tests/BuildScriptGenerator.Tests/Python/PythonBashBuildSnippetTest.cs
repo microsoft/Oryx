@@ -115,6 +115,158 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
+        public void GeneratedSnippet_ContainsCustomBuildCommand_InVirtualEnvironmentBranch()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: "antenv",
+                virtualEnvironmentModule: "venv",
+                virtualEnvironmentParameters: string.Empty,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.14",
+                runPythonPackageCommand: false,
+                customBuildCommand: "custom build command");
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.Contains("Running custom build command 'custom build command'...", text);
+            Assert.Contains("custom build command", text);
+            Assert.DoesNotContain("InstallUvCommand=\"uv sync --active --link-mode copy\"", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_ContainsCustomBuildCommand_InPackagesDirectoryBranch()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.14",
+                runPythonPackageCommand: false,
+                customBuildCommand: "custom build command");
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.Contains("Running custom build command 'custom build command'...", text);
+            Assert.Contains("custom build command", text);
+            Assert.DoesNotContain("UpgradeCommand=\"pip install --upgrade pip\"", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_VirtualenvCreationIsPreserved_WithCustomBuildCommand()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: "antenv",
+                virtualEnvironmentModule: "venv",
+                virtualEnvironmentParameters: string.Empty,
+                packagesDirectory: null,
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.14",
+                runPythonPackageCommand: false,
+                customBuildCommand: "pip install --no-deps -r requirements.txt");
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.Contains("Creating virtual environment", text);
+            Assert.Contains("Activating virtual environment", text);
+            Assert.Contains("pip install --no-deps -r requirements.txt", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_CollectstaticIsPreserved_WithCustomBuildCommand_InVenvBranch()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: "antenv",
+                virtualEnvironmentModule: "venv",
+                virtualEnvironmentParameters: string.Empty,
+                packagesDirectory: null,
+                enableCollectStatic: true,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.14",
+                runPythonPackageCommand: false,
+                customBuildCommand: "custom build command");
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.Contains("custom build command", text);
+            Assert.Contains("collectstatic", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_UsesDefaultPipInstall_WhenNoCustomBuildCommandSet_InVenvBranch()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: "antenv",
+                virtualEnvironmentModule: "venv",
+                virtualEnvironmentParameters: string.Empty,
+                packagesDirectory: null,
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.14",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.Contains("pip install", text);
+            Assert.DoesNotContain("Running custom build command", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_UsesDefaultPipInstall_WhenNoCustomBuildCommandSet_InPackagesDirBranch()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "__oryx_packages__",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.14",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.Contains("pip install", text);
+            Assert.DoesNotContain("Running custom build command", text);
+        }
+
+
+        [Fact]
         public void GeneratedSnippet_DoesNotContainPackageWheelType_If_PackageWheelType_IsNotProvided()
         {
             // Arrange

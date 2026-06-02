@@ -81,5 +81,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string EnableAcrSdkProvider = "ORYX_ENABLE_ACR_SDK_PROVIDER";
         public const string OryxAcrSdkRegistryUrl = "ORYX_ACR_SDK_REGISTRY_URL";
         public const string OryxAcrSdkRepositoryPrefix = "ORYX_ACR_SDK_REPOSITORY_PREFIX";
+
+        // Detection
+        public const string SkipPlatformDetection = "SKIP_PLATFORM_DETECTION";
     }
 }
