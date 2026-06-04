@@ -1,6 +1,6 @@
 module common
 
-go 1.26.3
+go 1.26
 
 require (
 	github.com/BurntSushi/toml v1.5.0
