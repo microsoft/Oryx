@@ -286,17 +286,11 @@ RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/
     || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; } \
     && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian bullseye nginx" > /etc/apt/sources.list.d/nginx.list
 RUN apt-get update
-<<<<<<< HEAD
 RUN yes '' | apt-get install nginx -y
 RUN rm -f /etc/nginx/conf.d/default.conf \
     && mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
-=======
-RUN yes '' | apt-get install nginx -y
-RUN rm -f /etc/nginx/conf.d/default.conf
-COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/conf.d/default.conf
->>>>>>> c78f737f9cf62be5d5b5ef5fb1547d5a473208f8
 # Patch nginx.conf for behavioral parity with previous Debian/Sury nginx package
 RUN sed -ri -e 's!^user\s+\S+;!user  www-data;!' /etc/nginx/nginx.conf \
     && sed -ri -e 's!worker_connections\s+1024!worker_connections  10068!g' /etc/nginx/nginx.conf \
