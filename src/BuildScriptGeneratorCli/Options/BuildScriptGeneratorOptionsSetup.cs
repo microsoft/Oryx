@@ -88,6 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
             options.OsFlavor = this.GetStringValue(SettingsKeys.OsFlavor);
             options.DebianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
+            options.SkipDetection = this.GetBooleanValue(SettingsKeys.SkipPlatformDetection);
         }
     }
 }

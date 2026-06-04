@@ -282,11 +282,17 @@ RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/
     || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; } \
     && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/ubuntu noble nginx" > /etc/apt/sources.list.d/nginx.list
 RUN apt-get update
+<<<<<<< HEAD
 RUN apt-get install -y nginx=1.30.0-1~noble
 RUN rm -f /etc/nginx/conf.d/default.conf \
     && mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
+=======
+RUN apt-get install -y nginx
+RUN rm -f /etc/nginx/conf.d/default.conf
+COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/conf.d/default.conf
+>>>>>>> c78f737f9cf62be5d5b5ef5fb1547d5a473208f8
 # Patch nginx.conf for behavioral parity with previous Debian/Sury nginx package
 RUN sed -ri -e 's!^user\s+\S+;!user  www-data;!' /etc/nginx/nginx.conf \
     && sed -ri -e 's!worker_connections\s+1024!worker_connections  10068!g' /etc/nginx/nginx.conf \
@@ -309,8 +315,8 @@ RUN nginx -t
 ENV NGINX_PORT=8080
 
 # Install common PHP extensions
-# TEMPORARY: Holding odbc related packages and nginx from upgrading.
-RUN apt-mark hold msodbcsql18 unixodbc unixodbc-dev nginx \
+# TEMPORARY: Holding odbc related packages from upgrading.
+RUN apt-mark hold msodbcsql18 unixodbc unixodbc-dev \
     && apt-get update \
     && apt-get upgrade -y \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
@@ -320,7 +326,6 @@ RUN apt-mark hold msodbcsql18 unixodbc unixodbc-dev nginx \
 RUN set -eux; \
     apt-get update \
     && apt-get upgrade -y \
-    && apt-mark unhold nginx \
     && apt-get install -y --no-install-recommends apache2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     # From php 8.4 version imap is removed from php core and moved to pecl

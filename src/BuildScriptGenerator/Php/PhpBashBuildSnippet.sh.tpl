@@ -1,7 +1,12 @@
 ﻿phpBin=`which php`
 echo "PHP executable: $phpBin"
 
-{{ if ComposerFileExists }}
+{{ if CustomBuildCommand | IsNotBlank }}
+echo
+echo "Running custom build command '{{ CustomBuildCommand }}'..."
+echo
+{{ CustomBuildCommand }}
+{{ else if ComposerFileExists }}
 echo "Composer archive: $composer"
 echo "Running 'composer install --ignore-platform-reqs --no-interaction'..."
 echo

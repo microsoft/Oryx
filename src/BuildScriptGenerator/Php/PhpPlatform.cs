@@ -167,6 +167,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             var props = new PhpBashBuildSnippetProperties
             {
                 ComposerFileExists = composerFileExists,
+                CustomBuildCommand = this.phpScriptGeneratorOptions.CustomBuildCommand,
             };
             string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.PhpBuildSnippet, props, this.logger, this.telemetryClient);
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties = buildProperties };

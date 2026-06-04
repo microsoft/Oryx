@@ -1068,6 +1068,114 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.Equal(expectedSdkVersion, result.PlatformVersion);
         }
 
+        [Fact]
+        public void GeneratedBuildSnippet_CustomBuildCommandWillExecute_InsteadOfComposerInstall()
+        {
+            // Arrange
+            var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions
+            {
+                CustomBuildCommand = "make build",
+            };
+            var phpPlatform = CreatePhpPlatform(
+                phpScriptGeneratorOptions: phpScriptGeneratorOptions);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "8.4.0",
+            };
+
+            // Act
+            var buildScriptSnippet = phpPlatform.GenerateBashBuildScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("make build", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("composer install", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_CustomBuildCommandWillExecute_EvenWithoutComposerJson()
+        {
+            // Arrange
+            var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions
+            {
+                CustomBuildCommand = "php artisan build",
+            };
+            var phpPlatform = CreatePhpPlatform(
+                phpScriptGeneratorOptions: phpScriptGeneratorOptions);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("<?php echo 'hi'; ?>", "index.php");
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "8.4.0",
+            };
+
+            // Act
+            var buildScriptSnippet = phpPlatform.GenerateBashBuildScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("php artisan build", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("No 'composer.json' file found", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_UsesComposerInstall_WhenNoCustomBuildCommandSet()
+        {
+            // Arrange
+            var phpPlatform = CreatePhpPlatform();
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "8.4.0",
+            };
+
+            // Act
+            var buildScriptSnippet = phpPlatform.GenerateBashBuildScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("composer install", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("Running custom build command", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_PhpExecutableDisplayIsPreserved_WithCustomBuildCommand()
+        {
+            // Arrange
+            var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions
+            {
+                CustomBuildCommand = "make build",
+            };
+            var phpPlatform = CreatePhpPlatform(
+                phpScriptGeneratorOptions: phpScriptGeneratorOptions);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "8.4.0",
+            };
+
+            // Act
+            var buildScriptSnippet = phpPlatform.GenerateBashBuildScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("which php", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("PHP executable", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("make build", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
         private PhpPlatform CreatePhpPlatform(
             string[] supportedPhpVersions = null,
             string[] supportedPhpComposerVersions = null,

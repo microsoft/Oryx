@@ -12,6 +12,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// </summary>
         public string MSBuildConfiguration { get; set; }
 
+        /// <summary>
+        /// Gets or sets custom build command that will run instead of the default
+        /// 'dotnet restore' and 'dotnet publish' in the generated build script.
+        /// </summary>
+        public string CustomBuildCommand { get; set; }
+
         public string DotNetCoreRuntimeVersion { get; set; }
 
         public string DefaultRuntimeVersion { get; set; }

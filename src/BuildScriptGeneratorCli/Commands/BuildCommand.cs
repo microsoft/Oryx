@@ -530,7 +530,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                             options.ManifestDir = this.ManifestDir;
                             options.Properties = buildProperties;
                             options.ScriptOnly = false;
-                            options.SkipDetection = this.SkipDetection;
+                            options.SkipDetection = options.SkipDetection || this.SkipDetection;
                             options.DebianFlavor = this.ResolveOsType(options, console);
                             options.ImageType = this.ResolveImageType(options, console);
                         });

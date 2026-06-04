@@ -296,7 +296,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 pythonBuildCommandsFileName: pythonBuildCommandsFile,
                 pythonPackageWheelProperty: pythonPackageWheelType,
                 customRequirementsTxtPath: customRequirementsTxtPath,
-                pipUpgradeFlag: pipUpgrade);
+                pipUpgradeFlag: pipUpgrade,
+                customBuildCommand: this.pythonScriptGeneratorOptions.CustomBuildCommand);
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,

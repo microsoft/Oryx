@@ -23,6 +23,8 @@ PLATFORM\_NAME               | Specify which platform the app is using. Possible
 PLATFORM\_VERSION            | Specify which platform version the app is using           | ""      | "3.7.1"
 REQUIRED\_OS\_PACKAGES       | Indicate if it requires OS packages for Node or Python packages | `false` | `true`, `false`
 CREATE\_PACKAGE              | Indicate if it should create packages for the app          | `false` | `true`, `false`
+CUSTOM\_BUILD\_COMMAND       | Custom build command to run instead of the default build. Supported for Node.js, Python, PHP, and .NET. | ""  | See per-stack docs
+SKIP\_PLATFORM\_DETECTION    | Skip auto-detection of platforms. Only the platform specified via `PLATFORM_NAME` (or `--platform`) will be used. Requires `PLATFORM_NAME` to be set. | `false` | `true`, `false`
 
 Setting name for .NET apps   | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
@@ -32,12 +34,13 @@ DISABLE\_DOTNETCORE\_BUILD   | Do not apply .NET Core build even if repo indicat
 PROJECT                      | repo-relative path to directory with `.csproj` file for build  | ""      | "src/WebApp1/WebApp1.csproj"
 MSBUILD\_CONFIGURATION       | Configuration (Debug or Release) that is used to build a .NET Core project | `Release` | `Debug`, `Release`
 
+> When `CUSTOM_BUILD_COMMAND` is set for .NET apps, it replaces the default `dotnet restore` and `dotnet publish` commands. The custom command must output to `$DESTINATION_DIR` (e.g., `dotnet publish -o $DESTINATION_DIR`).
+
 Setting name for Nodejs apps | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
 NODE\_VERSION                | Specify which Node version the app is using                    | ""      | "14.15.0"
 NODE\_DEFAULT\_VERSION       | Specify which Node version the app defaults to if none detected | ""      | "14.15.0"
 DISABLE\_NODEJS\_BUILD       | Do not apply Node.js build even if repo indicates it           | `false` | `true`, `false`
-CUSTOM_BUILD_COMMAND         | Custom build command to be run to build Node app               | ""  | "npm ci"
 RUN_BUILD_COMMAND            | Custom run build command to be run after package install commands  | ""  | "npm run build"
 ENABLE\_NODE\_MONOREPO\_BUILD| Apply node monorepo build if repo indicates it                 | `false` | `true`, `false`
 COMPRESS\_DESTINATION\_DIR   | Indicates if the entire output directory needs to be compressed.   | ""      | `false` | `true`, `false`
@@ -60,6 +63,8 @@ PYTHON\_GUNICORN\_CUSTOM\_THREAD\_NUM| Only works when `PYTHON\_ENABLE\_GUNICORN
 ORYX\_DISABLE\_PIP\_UPGRADE  | Remove the --upgrade flag from the pip install command when targeting a specific package installation directory. | `false` | `true`, `false`
 NGINX\_CONF\_FILE            | Specify a customized configuration file to modify nginx.conf file        | ""      | "newconfigfile.conf"
 
+> When `CUSTOM_BUILD_COMMAND` is set for Python apps, it replaces the default dependency installation (pip install, poetry install, uv sync) but preserves virtual environment setup
+
 Setting name for Php apps    | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
 PHP\_VERSION                 | Specify which Php version the app is using                     | ""      | "7.4"
@@ -71,6 +76,8 @@ FPM\_MAX\_CHILDREN           | The maximum number of child processes to be creat
 FPM\_START\_SERVERS          | The number of child processes created on startup               | `min_spare_servers + (max_spare_servers - min_spare_servers) / 2` | "10"
 FPM\_MAX\_SPARE\_SERVERS     | The desired maximum number of idle server processes            | `3`      | "15"
 FPM\_MIN\_SPARE\_SERVERS     | The desired minimum number of idle server processes            | `1`      | "5"
+
+> When `CUSTOM_BUILD_COMMAND` is set for PHP apps, it replaces the default `composer install` command.
 
 Setting name for Java apps | Description                                                    | Default | Example
 ---------------------------|----------------------------------------------------------------|---------|----------------

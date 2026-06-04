@@ -468,6 +468,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
+        [Fact]
+        public void GeneratedBuildSnippet_CustomBuildCommandWillExecute_InsteadOfDefaultInstallCommands()
+        {
+            // Arrange
+            var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions
+            {
+                CustomBuildCommand = "custom build command",
+            };
+            var scriptGenerator = CreatePlatform(pythonScriptGeneratorOptions: pythonScriptGeneratorOptions);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.7.5",
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains("custom build command", snippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("UpgradeCommand=\"pip install --upgrade pip\"", snippet.BashBuildScriptSnippet);
+        }
+
         [Theory]
         [InlineData(null, "bla.tar.gz")]
         [InlineData("tar-gz", "bla.tar.gz")]
