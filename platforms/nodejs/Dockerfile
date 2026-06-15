@@ -9,6 +9,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         jq \
         xz-utils \
+        gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /tmp/scripts

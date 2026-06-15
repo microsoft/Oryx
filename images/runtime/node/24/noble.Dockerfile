@@ -19,13 +19,16 @@ RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 FROM ${BASE_IMAGE} AS nodeDownloader
 ARG NODE24_VERSION
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ca-certificates xz-utils \
+    && apt-get install -y --no-install-recommends curl ca-certificates xz-utils gnupg \
     && curl -fsSLO "https://nodejs.org/dist/v${NODE24_VERSION}/node-v${NODE24_VERSION}-linux-x64.tar.xz" \
     && curl -fsSL "https://nodejs.org/dist/v${NODE24_VERSION}/SHASUMS256.txt" -o SHASUMS256.txt \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE24_VERSION}/SHASUMS256.txt.asc" -o SHASUMS256.txt.asc \
+    && curl -fsSL "https://github.com/nodejs/release-keys/raw/HEAD/gpg/pubring.kbx" -o nodejs-keyring.kbx \
+    && gpgv --keyring="$(pwd)/nodejs-keyring.kbx" SHASUMS256.txt.asc SHASUMS256.txt \
     && grep "node-v${NODE24_VERSION}-linux-x64.tar.xz" SHASUMS256.txt | sha256sum -c - \
     && mkdir -p /opt/nodejs \
     && tar -xJf "node-v${NODE24_VERSION}-linux-x64.tar.xz" -C /opt/nodejs --strip-components=1 \
-    && rm -f "node-v${NODE24_VERSION}-linux-x64.tar.xz" SHASUMS256.txt
+    && rm -f "node-v${NODE24_VERSION}-linux-x64.tar.xz" SHASUMS256.txt SHASUMS256.txt.asc nodejs-keyring.kbx
 
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
