@@ -29,27 +29,6 @@ grep "$nodeFileName" SHASUMS256.txt | sha256sum -c -
 tar -xJf "$nodeFileName" -C "$INSTALL_DIR" --strip-components=1
 rm -f "$nodeFileName" SHASUMS256.txt
 
-# Certain versions (ex: 6.4.1) of NPM have issues installing native modules
-# like 'grpc', so upgrading them to a version which we know works.
-upgradeNpm() {
-    local nodeDir="$INSTALL_DIR"
-    local nodeModulesDir="$nodeDir/lib/node_modules"
-    local npm_ver=`jq -r .version $nodeModulesDir/npm/package.json`
-    IFS='.' read -ra versionParts <<< "$npm_ver"
-    local majorPart="${versionParts[0]}"
-    local minorPart="${versionParts[1]}"
-
-    if [ "$majorPart" -eq "6" ] && [ "$minorPart" -lt "9" ] ; then
-        echo "Upgrading node $version's npm version from $npm_ver to 6.9.0"
-        cd $nodeModulesDir
-        PATH="$nodeDir/bin:$PATH" \
-        "$nodeModulesDir/npm/bin/npm-cli.js" install npm@6.9.0
-        echo
-    fi
-}
-
-upgradeNpm
-
 cd "$INSTALL_DIR"
 mkdir -p /tmp/compressedSdk/nodejs
 tar -zcf /tmp/compressedSdk/nodejs/$tarFileName .
