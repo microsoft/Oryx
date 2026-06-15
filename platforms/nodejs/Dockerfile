@@ -8,10 +8,8 @@ ENV VERSIONS_TO_BUILD_OVERRIDE=$VERSIONS_TO_BUILD_OVERRIDE
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         jq \
+        xz-utils \
     && rm -rf /var/lib/apt/lists/*
-ENV NVM_DIR /usr/local/nvm
-RUN mkdir -p $NVM_DIR \
-    && curl -sL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 
 RUN mkdir -p /tmp/scripts
 COPY platforms/nodejs/build.sh /tmp/scripts

@@ -14,16 +14,17 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-# Download Node.js via nvm in a disposable stage
+# Download Node.js directly from official source
 FROM ${BASE_IMAGE} AS nodeDownloader
 ARG NODE22_VERSION
-ENV NVM_DIR /usr/local/nvm
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ca-certificates \
-    && mkdir -p $NVM_DIR \
-    && curl -sL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
-    && nvm install ${NODE22_VERSION}
+    && apt-get install -y --no-install-recommends curl ca-certificates xz-utils \
+    && curl -fsSLO "https://nodejs.org/dist/v${NODE22_VERSION}/node-v${NODE22_VERSION}-linux-x64.tar.xz" \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE22_VERSION}/SHASUMS256.txt" -o SHASUMS256.txt \
+    && grep "node-v${NODE22_VERSION}-linux-x64.tar.xz" SHASUMS256.txt | sha256sum -c - \
+    && mkdir -p /opt/nodejs \
+    && tar -xJf "node-v${NODE22_VERSION}-linux-x64.tar.xz" -C /opt/nodejs --strip-components=1 \
+    && rm -f "node-v${NODE22_VERSION}-linux-x64.tar.xz" SHASUMS256.txt
 
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bookworm:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
@@ -48,7 +49,7 @@ ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 
-COPY --from=nodeDownloader /usr/local/nvm/versions/node/v${NODE22_VERSION}/ /usr/local/
+COPY --from=nodeDownloader /opt/nodejs/ /usr/local/
 RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 ARG NPM_VERSION
