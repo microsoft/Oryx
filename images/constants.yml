@@ -8,6 +8,7 @@ variables:
   USER_DOTNET_AI_VERSION: 2.8.42
   AI_CONNECTION_STRING: 1234(RANDOMVALUE)
   SDK_STORAGE_BASE_URL_VALUE: https://oryxsdksdev.blob.core.windows.net
+  node18osFlavors: bullseye
   node20osFlavors: bullseye,bookworm
   node22osFlavors: bullseye,bookworm
   node24osFlavors: noble
@@ -60,6 +61,7 @@ variables:
   DOTNET_SDK_80: 8.0.422
   DOTNET_SDK_90: 9.0.315
   DOTNET_SDK_100: 10.0.301
+  node18Version: 18.20.8
   node20Version: 20.20.2
   node22Version: 22.22.2
   node24Version: 24.15.0

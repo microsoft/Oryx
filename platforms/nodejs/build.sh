@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -euo pipefail
 
 version="$1"
 osFlavor="$OS_FLAVOR"
@@ -30,7 +30,10 @@ curl -fsSL "$NODE_KEYRING_URL" -o nodejs-keyring.kbx
 gpgv --keyring="$(pwd)/nodejs-keyring.kbx" SHASUMS256.txt.asc SHASUMS256.txt
 
 # Verify SHA256 integrity of the downloaded tarball
-grep "$nodeFileName" SHASUMS256.txt | sha256sum -c -
+grep "$nodeFileName" SHASUMS256.txt > node.sha256
+[ -s node.sha256 ] || { echo "ERROR: $nodeFileName not found in SHASUMS256.txt"; exit 1; }
+sha256sum -c node.sha256
+rm -f node.sha256
 
 # Extract to install directory
 tar -xJf "$nodeFileName" -C "$INSTALL_DIR" --strip-components=1

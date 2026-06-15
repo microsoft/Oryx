@@ -24,10 +24,12 @@ RUN apt-get update \
     && curl -fsSL "https://nodejs.org/dist/v${NODE22_VERSION}/SHASUMS256.txt.asc" -o SHASUMS256.txt.asc \
     && curl -fsSL "https://github.com/nodejs/release-keys/raw/HEAD/gpg/pubring.kbx" -o nodejs-keyring.kbx \
     && gpgv --keyring="$(pwd)/nodejs-keyring.kbx" SHASUMS256.txt.asc SHASUMS256.txt \
-    && grep "node-v${NODE22_VERSION}-linux-x64.tar.xz" SHASUMS256.txt | sha256sum -c - \
+    && grep "node-v${NODE22_VERSION}-linux-x64.tar.xz" SHASUMS256.txt > node.sha256 \
+    && [ -s node.sha256 ] \
+    && sha256sum -c node.sha256 \
     && mkdir -p /opt/nodejs \
     && tar -xJf "node-v${NODE22_VERSION}-linux-x64.tar.xz" -C /opt/nodejs --strip-components=1 \
-    && rm -f "node-v${NODE22_VERSION}-linux-x64.tar.xz" SHASUMS256.txt SHASUMS256.txt.asc nodejs-keyring.kbx
+    && rm -f "node-v${NODE22_VERSION}-linux-x64.tar.xz" SHASUMS256.txt SHASUMS256.txt.asc nodejs-keyring.kbx node.sha256
 
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}

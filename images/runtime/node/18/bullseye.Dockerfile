@@ -1,5 +1,4 @@
 ARG BASE_IMAGE
-ARG FEED_ACCESSTOKEN
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bullseye as startupCmdGen
@@ -15,28 +14,22 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-# Download Node.js directly from official source
+# Download Node.js via nvm in a disposable stage
 FROM ${BASE_IMAGE} AS nodeDownloader
-ARG NODE24_VERSION
+ARG NODE18_VERSION
+ENV NVM_DIR /usr/local/nvm
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ca-certificates xz-utils gnupg \
-    && curl -fsSLO "https://nodejs.org/dist/v${NODE24_VERSION}/node-v${NODE24_VERSION}-linux-x64.tar.xz" \
-    && curl -fsSL "https://nodejs.org/dist/v${NODE24_VERSION}/SHASUMS256.txt" -o SHASUMS256.txt \
-    && curl -fsSL "https://nodejs.org/dist/v${NODE24_VERSION}/SHASUMS256.txt.asc" -o SHASUMS256.txt.asc \
-    && curl -fsSL "https://github.com/nodejs/release-keys/raw/HEAD/gpg/pubring.kbx" -o nodejs-keyring.kbx \
-    && gpgv --keyring="$(pwd)/nodejs-keyring.kbx" SHASUMS256.txt.asc SHASUMS256.txt \
-    && grep "node-v${NODE24_VERSION}-linux-x64.tar.xz" SHASUMS256.txt > node.sha256 \
-    && [ -s node.sha256 ] \
-    && sha256sum -c node.sha256 \
-    && mkdir -p /opt/nodejs \
-    && tar -xJf "node-v${NODE24_VERSION}-linux-x64.tar.xz" -C /opt/nodejs --strip-components=1 \
-    && rm -f "node-v${NODE24_VERSION}-linux-x64.tar.xz" SHASUMS256.txt SHASUMS256.txt.asc nodejs-keyring.kbx node.sha256
+    && apt-get install -y --no-install-recommends curl ca-certificates \
+    && mkdir -p $NVM_DIR \
+    && curl -sL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install ${NODE18_VERSION}
 
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
 
-RUN groupadd --gid 1001 node \
-  && useradd --uid 1001 --gid node --shell /bin/bash --create-home node
+RUN groupadd --gid 1000 node \
+  && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -49,13 +42,13 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     *) echo "unsupported architecture"; exit 1 ;; \
   esac
 
-ARG NODE24_VERSION
-ENV NODE_VERSION=${NODE24_VERSION}
-ENV NPM_CONFIG_LOGLEVEL=info
+ARG NODE18_VERSION
+ENV NODE_VERSION ${NODE18_VERSION}
+ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 
-COPY --from=nodeDownloader /opt/nodejs/ /usr/local/
+COPY --from=nodeDownloader /usr/local/nvm/versions/node/v${NODE18_VERSION}/ /usr/local/
 RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 ARG NPM_VERSION
@@ -97,3 +90,5 @@ ENV LANG="C.UTF-8" \
     LC_ALL="C.UTF-8"
 
 CMD [ "node" ]
+
+
