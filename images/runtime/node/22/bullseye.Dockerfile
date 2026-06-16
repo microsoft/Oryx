@@ -14,16 +14,22 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-# Download Node.js via nvm in a disposable stage
+# Download Node.js directly from official source
 FROM ${BASE_IMAGE} AS nodeDownloader
 ARG NODE22_VERSION
-ENV NVM_DIR /usr/local/nvm
+WORKDIR /tmp/node-download
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ca-certificates \
-    && mkdir -p $NVM_DIR \
-    && curl -sL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
-    && nvm install ${NODE22_VERSION}
+    && apt-get install -y --no-install-recommends curl ca-certificates xz-utils gnupg \
+    && curl -fsSLO "https://nodejs.org/dist/v${NODE22_VERSION}/node-v${NODE22_VERSION}-linux-x64.tar.xz" \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE22_VERSION}/SHASUMS256.txt.asc" -o SHASUMS256.txt.asc \
+    && curl -fsSL "https://github.com/nodejs/release-keys/raw/HEAD/gpg/pubring.kbx" -o nodejs-keyring.kbx \
+    && gpg --no-default-keyring --keyring="/tmp/node-download/nodejs-keyring.kbx" --decrypt SHASUMS256.txt.asc > SHASUMS256.txt \
+    && grep "node-v${NODE22_VERSION}-linux-x64.tar.xz" SHASUMS256.txt > node.sha256 \
+    && [ -s node.sha256 ] \
+    && sha256sum -c node.sha256 \
+    && mkdir -p /opt/nodejs \
+    && tar -xJf "node-v${NODE22_VERSION}-linux-x64.tar.xz" -C /opt/nodejs --strip-components=1 \
+    && rm -rf /tmp/node-download
 
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
@@ -48,7 +54,7 @@ ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 
-COPY --from=nodeDownloader /usr/local/nvm/versions/node/v${NODE22_VERSION}/ /usr/local/
+COPY --from=nodeDownloader /opt/nodejs/ /usr/local/
 RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 ARG NPM_VERSION

@@ -4,38 +4,40 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -euo pipefail
 
 version="$1"
 osFlavor="$OS_FLAVOR"
 
 tarFileName=nodejs-$osFlavor-$version.tar.gz
+nodeFileName="node-v${version}-linux-x64.tar.xz"
 
-# Certain versions (ex: 6.4.1) of NPM have issues installing native modules
-# like 'grpc', so upgrading them to a version whch we know works.
-upgradeNpm() {
-    local node_ver="$1"
+NODE_DOWNLOAD_URL="https://nodejs.org/dist/v${version}/${nodeFileName}"
+NODE_SHASUM_ASC_URL="https://nodejs.org/dist/v${version}/SHASUMS256.txt.asc"
+NODE_KEYRING_URL="https://github.com/nodejs/release-keys/raw/HEAD/gpg/pubring.kbx"
 
-    local nodeDir="$NVM_DIR/versions/node/v$node_ver"
-    local nodeModulesDir="$nodeDir/lib/node_modules"
-    local npm_ver=`jq -r .version $nodeModulesDir/npm/package.json`
-    IFS='.' read -ra versionParts <<< "$npm_ver"
-    local majorPart="${versionParts[0]}"
-    local minorPart="${versionParts[1]}"
+INSTALL_DIR="/opt/nodejs/${version}"
+WORK_DIR="/tmp/node-download"
+mkdir -p "$INSTALL_DIR" "$WORK_DIR"
+cd "$WORK_DIR"
 
-    if [ "$majorPart" -eq "6" ] && [ "$minorPart" -lt "9" ] ; then
-        echo "Upgrading node $node_ver's npm version from $npm_ver to 6.9.0"
-        cd $nodeModulesDir
-        PATH="$nodeDir/bin:$PATH" \
-        "$nodeModulesDir/npm/bin/npm-cli.js" install npm@6.9.0
-        echo
-    fi
-}
+echo "Downloading Node.js v${version} from official source..."
+curl -fsSLO "$NODE_DOWNLOAD_URL"
+curl -fsSL "$NODE_SHASUM_ASC_URL" -o SHASUMS256.txt.asc
+curl -fsSL "$NODE_KEYRING_URL" -o nodejs-keyring.kbx
 
-export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
-. "$NVM_DIR/nvm.sh"
-nvm install $version
-upgradeNpm $version
-cd $NVM_DIR/versions/node/v$version
+# Verify GPG signature and extract verified checksums from clearsigned file
+gpg --no-default-keyring --keyring="$WORK_DIR/nodejs-keyring.kbx" --decrypt SHASUMS256.txt.asc > SHASUMS256.txt
+
+# Verify SHA256 integrity of the downloaded tarball
+grep "$nodeFileName" SHASUMS256.txt > node.sha256
+[ -s node.sha256 ] || { echo "ERROR: $nodeFileName not found in SHASUMS256.txt"; exit 1; }
+sha256sum -c node.sha256
+
+# Extract to install directory
+tar -xJf "$nodeFileName" -C "$INSTALL_DIR" --strip-components=1
+rm -rf "$WORK_DIR"
+
+cd "$INSTALL_DIR"
 mkdir -p /tmp/compressedSdk/nodejs
 tar -zcf /tmp/compressedSdk/nodejs/$tarFileName .
