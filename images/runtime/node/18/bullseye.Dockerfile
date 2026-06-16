@@ -30,6 +30,7 @@ RUN apt-get update \
     && mkdir -p /opt/nodejs \
     && tar -xJf "node-v${NODE18_VERSION}-linux-x64.tar.xz" -C /opt/nodejs --strip-components=1 \
     && rm -rf /tmp/node-download
+
 #FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
 
