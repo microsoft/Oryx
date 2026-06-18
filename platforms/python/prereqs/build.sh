@@ -85,7 +85,7 @@ then
     export LD_LIBRARY_PATH="/opt/python/$PYTHON_VERSION/lib/"
     /opt/python/$PYTHON_VERSION/bin/python3 --version
     rm -rf /usr/src/python
-    find /usr/local -depth \
+    find /opt/python -depth \
         \( \
             \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) \
             -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
