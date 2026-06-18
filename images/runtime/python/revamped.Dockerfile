@@ -1,3 +1,6 @@
+ARG OS_FLAVOR
+ARG BASE_IMAGE
+
 # -----------------------------------------------------------------------------
 # Stage 1: build the Oryx startup-script generator (the `oryx` CLI)
 #
@@ -27,11 +30,9 @@ RUN chmod +x build.sh && ./build.sh python /opt/startupcmdgen/startupcmdgen
 #   build.sh now parses versionsToBuild.txt itself (gpg key + sha256).
 #   Inputs are passed as ENV (ARGs are not visible to scripts).
 # -----------------------------------------------------------------------------
-ARG OS_FLAVOR
-ARG BASE_IMAGE
-ARG PYTHON_FULL_VERSION
-
 FROM ${BASE_IMAGE} AS pythonRuntimeBinariesBuilder
+ARG OS_FLAVOR
+ARG PYTHON_FULL_VERSION
 ENV OS_FLAVOR=${OS_FLAVOR}
 ENV PYTHON_VERSION=${PYTHON_FULL_VERSION}
 
