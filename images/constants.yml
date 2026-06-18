@@ -17,6 +17,7 @@ variables:
   python312osFlavors: bullseye,bookworm
   python313osFlavors: bullseye,bookworm
   python314osFlavors: noble
+  python315osFlavors: noble
   dotnet80osFlavors: bullseye,bookworm
   dotnet90osFlavors: bookworm
   dotnet100osFlavors: noble
