@@ -64,7 +64,9 @@ ARG OS_FLAVOR
 ENV OS_FLAVOR=${OS_FLAVOR}
 
 COPY images/runtime/python/revamped-install-dependencies.sh /tmp/revamped-install-dependencies.sh
-RUN /tmp/revamped-install-dependencies.sh && rm -f /tmp/revamped-install-dependencies.sh
+RUN chmod +x /tmp/revamped-install-dependencies.sh \
+    && bash /tmp/revamped-install-dependencies.sh \
+    && rm -f /tmp/revamped-install-dependencies.sh
 
 ARG PYTHON_FULL_VERSION
 ARG PYTHON_VERSION
