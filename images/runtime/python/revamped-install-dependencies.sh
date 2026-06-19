@@ -26,6 +26,7 @@ export ACCEPT_EULA=Y \
     && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
     && curl https://packages.microsoft.com/config/ubuntu/24.04/prod.list > /etc/apt/sources.list.d/mssql-release.list \
     && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
+    && apt-get update \
     && ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.6.1.1-1
 
 mkdir -p /etc/unixODBC
