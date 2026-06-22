@@ -308,9 +308,12 @@ RUN sed -ri -e 's!^user\s+\S+;!user  www-data;!' /etc/nginx/nginx.conf \
 	&& grep -q 'types_hash_max_size  2048;' /etc/nginx/nginx.conf || { echo 'ERROR: types_hash_max_size append failed'; exit 1; } \
     && grep -q 'include /etc/nginx/sites-enabled/\*;' /etc/nginx/nginx.conf || { echo 'ERROR: sites-enabled include append failed'; exit 1; }
 # Patch mime.types to restore video types removed in nginx.org package
-RUN sed -i '/video\/x-msvideo/a\    video/ogg                                        ogv;\n    video/x-matroska                                 mkv;' /etc/nginx/mime.types
+RUN sed -i '/video\/x-msvideo/a\    video/ogg                                        ogv;\n    video/x-matroska                                 mkv;' /etc/nginx/mime.types \
+    && grep -q 'video/ogg' /etc/nginx/mime.types || { echo 'ERROR: mime.types video/ogg patch failed'; exit 1; } \
+    && grep -q 'video/x-matroska' /etc/nginx/mime.types || { echo 'ERROR: mime.types video/x-matroska patch failed'; exit 1; }
 # Patch fastcgi_params to restore REMOTE_USER param removed in nginx.org package
-RUN sed -i '/REMOTE_PORT/a\fastcgi_param  REMOTE_USER        $remote_user;' /etc/nginx/fastcgi_params
+RUN sed -i '/REMOTE_PORT/a\fastcgi_param  REMOTE_USER        $remote_user;' /etc/nginx/fastcgi_params \
+    && grep -q 'REMOTE_USER' /etc/nginx/fastcgi_params || { echo 'ERROR: fastcgi_params REMOTE_USER patch failed'; exit 1; }
 # Restore files removed in nginx.org package for backward compatibility
 COPY images/runtime/php-fpm/nginx_conf/fastcgi.conf /etc/nginx/fastcgi.conf
 COPY images/runtime/php-fpm/nginx_conf/proxy_params /etc/nginx/proxy_params
