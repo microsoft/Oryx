@@ -17,6 +17,7 @@ variables:
   python312osFlavors: bullseye,bookworm
   python313osFlavors: bullseye,bookworm
   python314osFlavors: noble
+  python315osFlavors: noble
   dotnet80osFlavors: bullseye,bookworm
   dotnet90osFlavors: bookworm
   dotnet100osFlavors: noble
@@ -47,6 +48,8 @@ variables:
   python311_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
   python312_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
   python313_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
+  python314_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
+  python315_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
   python39_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
   ASPNET_CORE_APP_80: 8.0.26
   ASPNET_CORE_APP_80_SHA: 2a5d39bfdb2d734fd765f806bf4be6138bc8d9b44f2f8aee3250ced56eaad4c0e4bf06141dec6ef2c6a46a8faf3d8ffd60b7361b687ff7d8b45179df35bb0149
@@ -82,3 +85,4 @@ variables:
   python312Version: 3.12.13
   python313Version: 3.13.13
   python314Version: 3.14.4
+  python315Version: 3.15.0b3

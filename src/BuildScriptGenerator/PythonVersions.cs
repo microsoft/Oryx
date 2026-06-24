@@ -31,5 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public static string Python313Version => ConstantsYamlReader.Get("python313Version");
 
         public static string Python314Version => ConstantsYamlReader.TryGet("python314Version");
+
+        public static string Python315Version => ConstantsYamlReader.TryGet("python315Version");
     }
 }

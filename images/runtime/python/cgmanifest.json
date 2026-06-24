@@ -9,7 +9,8 @@
         },
         "Type": "pip"
       },
-      "DevelopmentDependency": false
+      "DevelopmentDependency": false,
+      "_comment": "Used by template.Dockerfile / noble.Dockerfile (3.9-3.14). Not installed in ubuntu-24.04-slim.Dockerfile (3.15+)."
     },
     {
       "Component": {
@@ -19,7 +20,8 @@
         },
         "Type": "pip"
       },
-      "DevelopmentDependency": false
+      "DevelopmentDependency": false,
+      "_comment": "Used by template.Dockerfile / noble.Dockerfile (3.9-3.14). Not installed in ubuntu-24.04-slim.Dockerfile (3.15+)."
     },
     {
       "Component": {
@@ -29,7 +31,9 @@
         },
         "Type": "pip"
       },
-      "DevelopmentDependency": false
+      "DevelopmentDependency": false,
+      "_comment": "Used by template.Dockerfile / noble.Dockerfile (3.9-3.14). Not installed in ubuntu-24.04-slim.Dockerfile (3.15+)."
     }
   ]
 }
+
