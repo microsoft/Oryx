@@ -156,6 +156,11 @@ case $stack_name in
             "3.14")
                 docker build -f ./images/runtime/python/template.Dockerfile -t python314_image_$os_flavor --build-arg PYTHON_FULL_VERSION=$python314Version --build-arg PYTHON_VERSION=3.14 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg OS_FLAVOR=$os_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$os_flavor" --build-arg SDK_STORAGE_BASE_URL_VALUE=$SDK_STORAGE_BASE_URL_VALUE .
             ;;
+
+            "3.15")
+                # TODO: Update to ubuntu 26 when available.
+                docker build -f ./images/runtime/python/ubuntu-24.04-slim.Dockerfile -t python315_image_$os_flavor --build-arg PYTHON_FULL_VERSION=$python315Version --build-arg PYTHON_VERSION=3.15 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$os_flavor --build-arg BASE_IMAGE="mcr.microsoft.com/mirror/docker/library/ubuntu:24.04" --build-arg SDK_STORAGE_BASE_URL_VALUE=$SDK_STORAGE_BASE_URL_VALUE .
+            ;;
         esac
     ;;
 esac
