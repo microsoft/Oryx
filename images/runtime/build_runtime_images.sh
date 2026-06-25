@@ -158,8 +158,7 @@ case $stack_name in
             ;;
 
             "3.15")
-                # Slim Dockerfile — net-new variant introduced for 3.15 on Ubuntu 24.04 LTS (Noble Numbat).
-                # Uses MCR-mirrored ubuntu:24.04 as runtime base directly (NOT buildpack-deps, NOT commonbase).
+                # TODO: Update to ubuntu 26 when available.
                 docker build -f ./images/runtime/python/ubuntu-24.04-slim.Dockerfile -t python315_image_$os_flavor --build-arg PYTHON_FULL_VERSION=$python315Version --build-arg PYTHON_VERSION=3.15 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$os_flavor --build-arg BASE_IMAGE="mcr.microsoft.com/mirror/docker/library/ubuntu:24.04" --build-arg SDK_STORAGE_BASE_URL_VALUE=$SDK_STORAGE_BASE_URL_VALUE .
             ;;
         esac
