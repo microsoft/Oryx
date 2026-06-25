@@ -6,12 +6,15 @@
 
 set -ex
 
-# Core runtime libs + DB driver dev headers.
+# Core runtime libs + DB driver dev headers + tools
 apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
+        wget \
+        less \
+        git \
         gnupg \
         libexpat1 \
         libodbc2 \
