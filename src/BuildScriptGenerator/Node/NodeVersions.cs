@@ -36,6 +36,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public static string Node24Version => ConstantsYamlReader.Get("node24Version");
 
+        public static string Node26Version => ConstantsYamlReader.TryGet("node26Version");
+
         public static string NodeAppInsightsSdkVersion => ConstantsYamlReader.Get("NODE_APP_INSIGHTS_SDK_VERSION");
 
         public static string Pm2Version => ConstantsYamlReader.Get("PM2_VERSION");

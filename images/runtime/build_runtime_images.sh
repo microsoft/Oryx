@@ -97,6 +97,11 @@ case $stack_name in
                 docker build -f ./images/runtime/node/24/$os_flavor.Dockerfile -t node24_$os_flavor --build-arg NODE24_VERSION=$node24Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$os_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
                 rm -f ./nodejs-$os_flavor-$node24Version.tar.gz
             ;;
+
+            "26")
+                # TODO: Switch BASE_IMAGE to ubuntu:26.04 (resolute) once MCR mirror catches up.
+                docker build -f ./images/runtime/node/26/ubuntu-24.04-slim.Dockerfile -t node26_$os_flavor --build-arg NODE_FULL_VERSION=$node26Version --build-arg NODE_SHA256=$node26Sha256 --build-arg BASE_IMAGE="mcr.microsoft.com/mirror/docker/library/ubuntu:24.04" --build-arg SDK_STORAGE_BASE_URL_VALUE=$SDK_STORAGE_BASE_URL_VALUE --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+            ;;
         esac
     ;;
 
