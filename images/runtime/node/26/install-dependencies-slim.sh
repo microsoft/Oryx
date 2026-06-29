@@ -17,7 +17,9 @@ apt-get update \
         tzdata \
         xz-utils \
         libstdc++6 \
-        libgcc-s1
+        libgcc-s1 \
+        libatomic1 \
+        zstd
 
 # Clean up apt lists — keep at the very end so every apt-get install above
 # is included.

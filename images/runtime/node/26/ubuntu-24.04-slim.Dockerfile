@@ -30,7 +30,7 @@ RUN set -ex \
     && mkdir -p /opt/node \
     && tar -xJf "node-v${NODE_FULL_VERSION}-linux-x64.tar.xz" -C /opt/node --strip-components=1 \
     && rm "node-v${NODE_FULL_VERSION}-linux-x64.tar.xz" \
-    && rm -rf /opt/node/share/doc /opt/node/share/man /opt/node/share/systemtap
+    && rm -rf /opt/node/share/doc /opt/node/share/man /opt/node/share/systemtap /opt/node/include
 
 
 # Stage 3 — final runtime image.
@@ -56,13 +56,10 @@ COPY --from=nodeDownloader /opt/node/ /usr/local/
 
 RUN ln -sf /usr/local/bin/node /usr/local/bin/nodejs
 
-# Layer 3 — Enable corepack and pre-activate yarn so it's on PATH at build
-# time (no first-run network fetch in customer container). Same yarn binary
-# UX as the apt yarn this replaces.
-RUN corepack enable \
-    && corepack prepare yarn@1.22.22 --activate \
-    && corepack prepare pnpm@9.15.4 --activate \
-    || true
+# Layer 3 — Install yarn (1.x classic) + pnpm globally via npm. Corepack
+# was removed from Node distributions in 26.x, so we install the package
+# managers directly. Same `yarn` / `pnpm` binary UX on PATH.
+RUN npm install --global --no-fund --no-audit yarn@1.22.22 pnpm@9.15.4
 
 # AI + cert envs (kept for parity with other runtime images; bundled SDK is
 # not installed — see Dockerfile header for rationale).
