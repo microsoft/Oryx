@@ -19,12 +19,9 @@ ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 WORKDIR /usr/oryx
 COPY build build
 # Signed oryx binaries produced by the pipeline build step
-COPY binaries /opt/buildscriptgen/
+COPY binaries /opt/oryx/
 COPY src src
 COPY build/FinalPublicKey.snk build/
-
-RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript \
-    && chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
 
 ARG IMAGES_DIR=/opt/tmp/images
 ARG BUILD_DIR=/opt/tmp/build
@@ -36,14 +33,9 @@ RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \; \
     && find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 # Assemble /opt/oryx with all artifacts required for the volume mount
-RUN mkdir -p /opt/oryx \
-    && cp /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && cp /opt/buildscriptgen/Microsoft.Oryx.BuildServer /opt/oryx/Microsoft.Oryx.BuildServer \
+RUN mv /opt/oryx/GenerateBuildScript /opt/oryx/oryx \
     && chmod a+x /opt/oryx/oryx \
     && chmod a+x /opt/oryx/Microsoft.Oryx.BuildServer \
-    && cp -P /opt/buildscriptgen/*.dll /opt/oryx/ 2>/dev/null || true \
-    && cp -P /opt/buildscriptgen/*.so /opt/oryx/ 2>/dev/null || true \
-    && cp -P /opt/buildscriptgen/*.json /opt/oryx/ 2>/dev/null || true \
     && cp -f $IMAGES_DIR/build/benv.sh /opt/oryx/benv \
     && cp -f $IMAGES_DIR/build/logger.sh /opt/oryx/logger \
     && chmod +x /opt/oryx/benv \
