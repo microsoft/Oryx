@@ -1,4 +1,4 @@
-# Oryx Builder - Volume Mount Image
+# Oryx Tools - Volume Mount Image
 # Packages Oryx build system binaries into a minimal filesystem-only image.
 # LWAS volume-mounts this image at /opt/oryx inside the Kudu container at runtime.
 
