@@ -330,13 +330,20 @@ echo "Manifest file created."
 {{ end }}
 {{ end }}
 
-OS_TYPE_SOURCE_DIR="/opt/oryx/.ostype"
-if [ -f "$OS_TYPE_SOURCE_DIR" ]
+if [ -n "$DEBIAN_FLAVOR" ]
 then
-	echo "Copying .ostype to manifest output directory."
-	cp "$OS_TYPE_SOURCE_DIR" "$MANIFEST_DIR/.ostype"
+	echo "Generating .ostype from DEBIAN_FLAVOR environment variable."
+	echo "DEBIAN|$DEBIAN_FLAVOR" | tr '[a-z]' '[A-Z]' > "$MANIFEST_DIR/.ostype"
+elif [ -n "$OS_FLAVOR" ]
+then
+	echo "Generating .ostype from OS_FLAVOR environment variable."
+	echo "DEBIAN|$OS_FLAVOR" | tr '[a-z]' '[A-Z]' > "$MANIFEST_DIR/.ostype"
+elif [ -f "/opt/oryx/.ostype" ]
+then
+	echo "Copying .ostype from /opt/oryx/.ostype to manifest output directory."
+	cp "/opt/oryx/.ostype" "$MANIFEST_DIR/.ostype"
 else
-	echo "File $OS_TYPE_SOURCE_DIR does not exist. Cannot copy to manifest directory." 1>&2
+	echo "No OS flavor environment variable set and /opt/oryx/.ostype does not exist. Cannot generate .ostype." 1>&2
 	exit 1
 fi
 
