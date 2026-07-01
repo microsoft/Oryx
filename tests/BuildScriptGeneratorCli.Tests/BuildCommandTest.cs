@@ -39,6 +39,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             _testDir = testFixture;
             _testDirPath = testFixture.RootDirPath;
+
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DEBIAN_FLAVOR")))
+            {
+                Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", "bookworm");
+            }
         }
 
         [Fact]
