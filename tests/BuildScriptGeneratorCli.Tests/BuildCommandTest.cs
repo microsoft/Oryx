@@ -39,6 +39,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             _testDir = testFixture;
             _testDirPath = testFixture.RootDirPath;
+
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DEBIAN_FLAVOR")))
+            {
+                Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", "bookworm");
+            }
         }
 
         [Fact]
@@ -296,31 +301,74 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [EnableOnPlatform("LINUX")]
-        public void BuildScriptFails_WhenOstypeFile_NotPresent()
+        public void BuildScriptSucceeds_WhenOstypeFile_NotPresent_ButDebianFlavorEnvVarSet()
         {
             // Arrange
             var stringToPrint = "Hello World";
             var script = $"#!/bin/bash\necho {stringToPrint}\n";
-            var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform(
-                    platformName: "test",
-                    platformVersions: new[] { "1.0.0" },
-                    canGenerateScript: true,
-                    scriptContent: script,
-                    detector: new TestPlatformDetectorUsingPlatformName(
-                        detectedPlatformName: "test",
-                        detectedPlatformVersion: "1.0.0")),
-                scriptOnly: false,
-                createOsTypeFile: false);
-            var buildCommand = new BuildCommand();
-            var testConsole = new TestConsole(newLineCharacter: string.Empty);
+            Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", "bookworm");
+            try
+            {
+                var serviceProvider = CreateServiceProvider(
+                    new TestProgrammingPlatform(
+                        platformName: "test",
+                        platformVersions: new[] { "1.0.0" },
+                        canGenerateScript: true,
+                        scriptContent: script,
+                        detector: new TestPlatformDetectorUsingPlatformName(
+                            detectedPlatformName: "test",
+                            detectedPlatformVersion: "1.0.0")),
+                    scriptOnly: false,
+                    createOsTypeFile: false);
+                var buildCommand = new BuildCommand();
+                var testConsole = new TestConsole(newLineCharacter: string.Empty);
 
-            // Act
-            var exitCode = buildCommand.Execute(serviceProvider, testConsole);
+                // Act
+                var exitCode = buildCommand.Execute(serviceProvider, testConsole);
 
-            // Assert failed with exit code 1
-            Assert.Equal(1, exitCode);
-            Assert.Contains($"File {OS_TYPE_FILE_PATH} does not exist. Cannot copy to manifest directory.", testConsole.StdError);
+                // Assert
+                Assert.Equal(0, exitCode);
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", null);
+            }
+        }
+
+        [EnableOnPlatform("LINUX")]
+        public void BuildScriptFails_WhenOstypeFile_NotPresent_AndNoEnvVarSet()
+        {
+            // Arrange
+            var stringToPrint = "Hello World";
+            var script = $"#!/bin/bash\necho {stringToPrint}\n";
+            var originalDebianFlavor = Environment.GetEnvironmentVariable("DEBIAN_FLAVOR");
+            Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", null);
+            try
+            {
+                var serviceProvider = CreateServiceProvider(
+                    new TestProgrammingPlatform(
+                        platformName: "test",
+                        platformVersions: new[] { "1.0.0" },
+                        canGenerateScript: true,
+                        scriptContent: script,
+                        detector: new TestPlatformDetectorUsingPlatformName(
+                            detectedPlatformName: "test",
+                            detectedPlatformVersion: "1.0.0")),
+                    scriptOnly: false,
+                    createOsTypeFile: false);
+                var buildCommand = new BuildCommand();
+                var testConsole = new TestConsole(newLineCharacter: string.Empty);
+
+                // Act
+                var exitCode = buildCommand.Execute(serviceProvider, testConsole);
+
+                // Assert
+                Assert.Equal(1, exitCode);
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", originalDebianFlavor);
+            }
         }
 
         [Fact]

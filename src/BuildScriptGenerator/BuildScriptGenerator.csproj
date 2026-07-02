@@ -29,7 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
     <PackageReference Include="Nett" Version="0.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="Scriban.Signed" Version="5.5.2" />
+    <PackageReference Include="Scriban.Signed" Version="7.2.0" />
     <PackageReference Include="SemanticVersioning" Version="2.0.2" />
     <PackageReference Include="System.CodeDom" Version="7.0.0" />
     <PackageReference Include="YamlDotNet" Version="12.3.1" />
