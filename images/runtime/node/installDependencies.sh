@@ -13,6 +13,15 @@ set -ex
 mkdir -p /node_modules
 chmod 777 /node_modules
 
+# zstd is needed to extract node_modules.tar.zst produced by the build image.
+if ! command -v zstd > /dev/null 2>&1; then
+    echo "Installing zstd..."
+    apt-get update \
+        && apt-get install -y --no-install-recommends zstd \
+        && rm -rf /var/lib/apt/lists/*
+    echo "Done installing zstd."
+fi
+
 # PM2_VERSION=$1
 # NODE_APP_INSIGHTS_SDK_VERSION=$2
 

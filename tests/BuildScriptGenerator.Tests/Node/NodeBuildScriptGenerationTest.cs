@@ -668,6 +668,61 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void GeneratedScript_ZipsNodeModulesWithZstd_WhenZstdEnabledViaEnvVar()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.PlatformVersion = "8.2.1";
+            commonOptions.Properties = new Dictionary<string, string>();
+            var environment = new TestEnvironment();
+            environment.SetEnvironmentVariable(NodeConstants.CompressWithZstdEnvVarName, "true");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                commonOptions,
+                new NodeScriptGeneratorOptions(),
+                environment);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = "tar-gz";
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
+                NpmRunBuildCommand = "npm run build",
+                NpmRunBuildAzureCommand = "npm run build:azure",
+                HasProdDependencies = true,
+                HasDevDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                CompressedNodeModulesFileName = "node_modules.tar.zst",
+                CompressNodeModulesCommand = "tar -I zstd -cf",
+                NodeBuildProperties = new Dictionary<string, string>
+                {
+                    {"PlatformWithVersion", "Node.js 10.10.10" },
+                },
+                NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Equal(
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
         public void GeneratedScript_ZipsNodeModules_IfZipNodeProperty_IsNull()
         {
             // Arrange
@@ -965,7 +1020,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         private static IProgrammingPlatform GetNodePlatform(
             string defaultNodeVersion,
             BuildScriptGeneratorOptions commonOptions,
-            NodeScriptGeneratorOptions nodeScriptGeneratorOptions)
+            NodeScriptGeneratorOptions nodeScriptGeneratorOptions,
+            IEnvironment environment = null)
         {
             var nodeVersionProvider = new TestNodeVersionProvider(
                 new[] { "6.11.0", NodeVersions.Node8Version, NodeVersions.Node10Version, NodeVersions.Node12Version },
@@ -981,7 +1037,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 nodeVersionProvider,
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
-                new TestEnvironment(),
+                environment ?? new TestEnvironment(),
                 new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),

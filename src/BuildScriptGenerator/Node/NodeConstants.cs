@@ -46,6 +46,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string NodeModulesToBeDeletedName = "_del_node_modules";
         public const string NodeModulesZippedFileName = "node_modules.zip";
         public const string NodeModulesTarGzFileName = "node_modules.tar.gz";
+        public const string NodeModulesTarZstFileName = "node_modules.tar.zst";
+
+        // Set to 'true' to compress node_modules with zstd instead of the default gzip.
+        public const string CompressWithZstdEnvVarName = "ORYX_COMPRESS_WITH_ZSTD";
         public const string NodeModulesFileBuildProperty = "compressedNodeModulesFile";
         public const string NodeAppInsightsPackageName = "applicationinsights";
         public const string InjectedAppInsights = "injectedAppInsights";

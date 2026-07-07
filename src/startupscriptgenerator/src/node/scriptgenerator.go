@@ -90,7 +90,13 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	if !gen.SkipNodeModulesExtraction && gen.Manifest.CompressedNodeModulesFile != "" {
 		targetNodeModulesDir := "/node_modules"
-		if strings.HasSuffix(gen.Manifest.CompressedNodeModulesFile, ".zip") {
+		if strings.HasSuffix(gen.Manifest.CompressedNodeModulesFile, ".tar.zst") {
+			scriptBuilder.WriteString("echo Found tar.zst based node_modules.\n")
+			scriptBuilder.WriteString(
+				"extractionCommand=\"tar -I zstd -xf " + gen.Manifest.CompressedNodeModulesFile +
+					" -C " + targetNodeModulesDir + "\"\n")
+
+		} else if strings.HasSuffix(gen.Manifest.CompressedNodeModulesFile, ".zip") {
 			scriptBuilder.WriteString("echo Found zip-based node_modules.\n")
 			scriptBuilder.WriteString(
 				"extractionCommand=\"unzip -q " + gen.Manifest.CompressedNodeModulesFile +
@@ -103,7 +109,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 					" -C " + targetNodeModulesDir + "\"\n")
 		} else {
 			fmt.Printf(
-				"Error: Unrecognizable file '%s'. Expected a file with an extension '.zip' or '.tar.gz'\n",
+				"Error: Unrecognizable file '%s'. Expected a file with an extension '.zip', '.tar.zst' or '.tar.gz'\n",
 				gen.Manifest.CompressedNodeModulesFile)
 			os.Exit(consts.FAILURE_EXIT_CODE)
 		}

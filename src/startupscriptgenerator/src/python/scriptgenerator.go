@@ -217,13 +217,18 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 				scriptBuilder.WriteString(
 					"extractionCommand=\"unzip -q " + compressedFile + " -d " + virtualEnvDir + "\"\n")
 
+			} else if strings.HasSuffix(compressedFile, ".tar.zst") {
+				scriptBuilder.WriteString("echo Found virtual environment .tar.zst archive.\n")
+				scriptBuilder.WriteString(
+					"extractionCommand=\"tar -I zstd -xf " + compressedFile + " -C " + virtualEnvDir + "\"\n")
+
 			} else if strings.HasSuffix(compressedFile, ".tar.gz") {
 				scriptBuilder.WriteString("echo Found virtual environment .tar.gz archive.\n")
 				scriptBuilder.WriteString(
 					"extractionCommand=\"tar -xzf " + compressedFile + " -C " + virtualEnvDir + "\"\n")
 			} else {
 				fmt.Printf(
-					"Error: Unrecognizable file '%s'. Expected a file with a '.zip' or '.tar.gz' extension.\n",
+					"Error: Unrecognizable file '%s'. Expected a file with a '.zip', '.tar.zst' or '.tar.gz' extension.\n",
 					compressedFile)
 				os.Exit(consts.FAILURE_EXIT_CODE)
 			}
