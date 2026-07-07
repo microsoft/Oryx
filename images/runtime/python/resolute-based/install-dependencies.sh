@@ -20,7 +20,7 @@ apt-get update \
         unzip \
         libodbc2
 
-# Microsoft SQL Server 2017
+# Microsoft SQL Server 2018
 # https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 export ACCEPT_EULA=Y \
     && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
@@ -33,7 +33,7 @@ mkdir -p /etc/unixODBC
 cat >/etc/unixODBC/odbcinst.ini <<EOL
 [ODBC Driver 18 for SQL Server]
 Description=Microsoft ODBC Driver 18 for SQL Server
-Driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.1.so.1.1
+Driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.6.so.1.1
 Threading=1
 UsageCount=1
 

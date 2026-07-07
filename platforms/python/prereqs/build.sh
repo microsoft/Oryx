@@ -85,11 +85,21 @@ then
     export LD_LIBRARY_PATH="/opt/python/$PYTHON_VERSION/lib/"
     /opt/python/$PYTHON_VERSION/bin/python3 --version
     rm -rf /usr/src/python
-    find /opt/python -depth \
+    find /usr/local -depth \
         \( \
             \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) \
             -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
-        \) -exec rm -rf '{}' + \
+        \) -exec rm -rf '{}' +
+
+    
+    if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "15" ]; then
+        find /opt/python -depth \
+        \( \
+            \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) \
+            -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
+        \) -exec rm -rf '{}' +
+    fi
+    
 
     ldconfig
 

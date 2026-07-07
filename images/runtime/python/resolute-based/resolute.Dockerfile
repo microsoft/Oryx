@@ -63,10 +63,10 @@ FROM ${BASE_IMAGE} as main
 ARG OS_FLAVOR
 ENV OS_FLAVOR=${OS_FLAVOR}
 
-COPY images/runtime/python/revamped-install-dependencies.sh /tmp/revamped-install-dependencies.sh
-RUN chmod +x /tmp/revamped-install-dependencies.sh \
-    && bash /tmp/revamped-install-dependencies.sh \
-    && rm -f /tmp/revamped-install-dependencies.sh
+COPY images/runtime/python/resolute-based/install-dependencies.sh /tmp/install-dependencies.sh
+RUN chmod +x /tmp/install-dependencies.sh \
+    && bash /tmp/install-dependencies.sh \
+    && rm -f /tmp/install-dependencies.sh
 
 ARG PYTHON_FULL_VERSION
 ARG PYTHON_VERSION
@@ -102,7 +102,6 @@ LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 RUN --mount=type=secret,id=pip_index_url,target=/run/secrets/pip_index_url \
     pip install --index-url $(cat /run/secrets/pip_index_url) --upgrade pip && \
     pip install --index-url $(cat /run/secrets/pip_index_url) gunicorn uvicorn==0.46.0 uvicorn-worker==0.4.0 && \
-    ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/oryx
 
@@ -111,3 +110,4 @@ ENV LANG="C.UTF-8" \
     LC_ALL="C.UTF-8"
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
