@@ -282,5 +282,14 @@ then
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
 		echo "Done in $ELAPSED_TIME sec(s)."
 	fi
+
+	# Keep only the current node_modules archive format in the output directory. If a previous
+	# build produced a different format (e.g. gzip), remove that stale archive.
+	for staleModulesArchive in node_modules.zip node_modules.tar.gz node_modules.tar.zst; do
+		if [ "$staleModulesArchive" != "$zippedModulesFileName" ] && [ -f "$DESTINATION_DIR/$staleModulesArchive" ]; then
+			echo "Removing stale node_modules archive '$DESTINATION_DIR/$staleModulesArchive'..."
+			rm -f "$DESTINATION_DIR/$staleModulesArchive"
+		fi
+	done
 fi
 {{ end }}
