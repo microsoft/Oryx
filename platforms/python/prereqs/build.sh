@@ -52,7 +52,6 @@ fi
         liblzma-dev \
         libsqlite3-dev \
         lzma \
-        lzma-dev \
         zlib1g-dev
 
 PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
