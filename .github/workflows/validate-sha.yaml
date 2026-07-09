@@ -1,4 +1,6 @@
 # Validates SHA hashes against official upstream sources.
+# PR comments are posted by validate-sha-comment.yaml so that forked PRs are
+# also covered (workflow_run runs in the base-repo context with write access).
 name: Validate SHA Hashes
 
 on:
@@ -11,7 +13,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   validate:
@@ -55,7 +56,7 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
           echo "$output" | grep -q "SHA VALIDATION PASSED" && exit 0 || exit 1
 
-      - name: Post summary
+      - name: Save results and write summary
         if: always() && (steps.changes.outputs.php == 'true' || steps.changes.outputs.dotnet == 'true')
         uses: actions/github-script@v7
         env:
@@ -63,6 +64,7 @@ jobs:
           DOTNET_OUTPUT: ${{ steps.dotnet.outputs.output }}
         with:
           script: |
+            const fs = require('fs');
             const php = '${{ steps.changes.outputs.php }}' === 'true';
             const dotnet = '${{ steps.changes.outputs.dotnet }}' === 'true';
             const phpStatus = '${{ steps.php.outcome }}';
@@ -70,40 +72,45 @@ jobs:
             const phpOutput = process.env.PHP_OUTPUT || '';
             const dotnetOutput = process.env.DOTNET_OUTPUT || '';
             const icon = s => s === 'success' ? '✅' : s === 'skipped' ? '⏭️' : '❌';
-            const pullRequest = context.payload.pull_request;
-            const isFork = pullRequest?.head?.repo?.full_name !== pullRequest?.base?.repo?.full_name;
-            
+
             let body = '## SHA Validation Summary\n| Stack | Status |\n|-------|--------|\n';
             if (php) body += `| PHP | ${icon(phpStatus)} ${phpStatus} |\n`;
             if (dotnet) body += `| .NET | ${icon(dotnetStatus)} ${dotnetStatus} |\n`;
-            
             if (php && phpOutput) {
               body += `\n<details><summary>PHP Validation Output</summary>\n\n\`\`\`\n${phpOutput}\n\`\`\`\n</details>\n`;
             }
             if (dotnet && dotnetOutput) {
               body += `\n<details><summary>.NET Validation Output</summary>\n\n\`\`\`\n${dotnetOutput}\n\`\`\`\n</details>\n`;
             }
-            
-            await core.summary
-              .addRaw(body, true)
-              .write();
 
-            if (!isFork && context.issue.number) {
-              try {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.issue.number,
-                  body
-                });
-              } catch (error) {
-                core.warning(`Unable to post SHA validation comment: ${error.message}`);
-              }
-            } else {
-              core.info('Skipping SHA validation PR comment for forked pull_request runs.');
-            }
-            
-            // Fail the job if any validation failed
-            if (phpStatus === 'failure' || dotnetStatus === 'failure') {
-              core.setFailed('SHA validation failed');
-            }
+            // Write job summary (visible in the Actions UI for all run types)
+            await core.summary.addRaw(body, true).write();
+
+            // Persist results so validate-sha-comment.yaml can post a PR comment
+            // with base-repo token permissions (works for forked PRs too).
+            const results = {
+              php, dotnet, phpStatus, dotnetStatus,
+              phpOutput, dotnetOutput,
+              pr_number: context.payload.pull_request?.number ?? null,
+              summary_body: body
+            };
+            fs.mkdirSync('/tmp/validation-results', { recursive: true });
+            fs.writeFileSync('/tmp/validation-results/results.json', JSON.stringify(results));
+
+      - name: Upload validation results
+        if: always() && (steps.changes.outputs.php == 'true' || steps.changes.outputs.dotnet == 'true')
+        uses: actions/upload-artifact@v4
+        with:
+          name: sha-validation-results
+          path: /tmp/validation-results/results.json
+          retention-days: 1
+
+      - name: Fail if SHA validation failed
+        if: always()
+        run: |
+          PHP_OUTCOME="${{ steps.php.outcome }}"
+          DOTNET_OUTCOME="${{ steps.dotnet.outcome }}"
+          if [[ "$PHP_OUTCOME" == "failure" || "$DOTNET_OUTCOME" == "failure" ]]; then
+            echo "::error::SHA validation failed"
+            exit 1
+          fi
