@@ -58,7 +58,7 @@ RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
     chmod +x /tmp/installDependencies.sh && \
     PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} /tmp/installDependencies.sh && \
     npm cache clean --force && \
-    rm -rf /tmp/ && \
+    find /tmp -mindepth 1 -delete && \
     rm -rf /root/.npmrc
 
 # Install Yarn
