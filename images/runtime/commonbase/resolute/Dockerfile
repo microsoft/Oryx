@@ -25,7 +25,10 @@ RUN apt-get update \
 		curl \
 		gnupg \
 		netbase \
-		wget
+		wget \
+        unzip \
+		# Not shipped in Resolute, but will be required by Node runtime. It is tiny, would save from unexpected runtime failures in other frameworks too
+		libatomic1
 
 RUN  rm -rf /var/lib/apt/lists/*
 
