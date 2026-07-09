@@ -70,6 +70,8 @@ jobs:
             const phpOutput = process.env.PHP_OUTPUT || '';
             const dotnetOutput = process.env.DOTNET_OUTPUT || '';
             const icon = s => s === 'success' ? '✅' : s === 'skipped' ? '⏭️' : '❌';
+            const pullRequest = context.payload.pull_request;
+            const isFork = pullRequest?.head?.repo?.full_name !== pullRequest?.base?.repo?.full_name;
             
             let body = '## SHA Validation Summary\n| Stack | Status |\n|-------|--------|\n';
             if (php) body += `| PHP | ${icon(phpStatus)} ${phpStatus} |\n`;
@@ -82,12 +84,24 @@ jobs:
               body += `\n<details><summary>.NET Validation Output</summary>\n\n\`\`\`\n${dotnetOutput}\n\`\`\`\n</details>\n`;
             }
             
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body
-            });
+            await core.summary
+              .addRaw(body, true)
+              .write();
+
+            if (!isFork && context.issue.number) {
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body
+                });
+              } catch (error) {
+                core.warning(`Unable to post SHA validation comment: ${error.message}`);
+              }
+            } else {
+              core.info('Skipping SHA validation PR comment for forked pull_request runs.');
+            }
             
             // Fail the job if any validation failed
             if (phpStatus === 'failure' || dotnetStatus === 'failure') {
