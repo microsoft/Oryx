@@ -663,7 +663,62 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal(
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
-            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.Contains("Archiving existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_ZipsNodeModulesWithZstd_WhenZstdEnabledViaEnvVar()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.PlatformVersion = NodeVersions.Node24Version;
+            commonOptions.Properties = new Dictionary<string, string>();
+            var environment = new TestEnvironment();
+            environment.SetEnvironmentVariable(NodeConstants.CompressWithZstdEnvVarName, "true");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node24Version,
+                commonOptions,
+                new NodeScriptGeneratorOptions(),
+                environment);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = "tar-gz";
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = NodeVersions.Node24Version,
+            };
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
+                NpmRunBuildCommand = "npm run build",
+                NpmRunBuildAzureCommand = "npm run build:azure",
+                HasProdDependencies = true,
+                HasDevDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                CompressedNodeModulesFileName = "node_modules.tar.zst",
+                CompressNodeModulesCommand = "tar -I zstd -cf",
+                NodeBuildProperties = new Dictionary<string, string>
+                {
+                    {"PlatformWithVersion", $"Node.js {NodeVersions.Node24Version}" },
+                },
+                NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Equal(
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.Contains("Archiving existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -713,7 +768,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.Contains("Archiving existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
@@ -765,7 +820,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.Contains("Archiving existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
@@ -965,7 +1020,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         private static IProgrammingPlatform GetNodePlatform(
             string defaultNodeVersion,
             BuildScriptGeneratorOptions commonOptions,
-            NodeScriptGeneratorOptions nodeScriptGeneratorOptions)
+            NodeScriptGeneratorOptions nodeScriptGeneratorOptions,
+            IEnvironment environment = null)
         {
             var nodeVersionProvider = new TestNodeVersionProvider(
                 new[] { "6.11.0", NodeVersions.Node8Version, NodeVersions.Node10Version, NodeVersions.Node12Version },
@@ -981,7 +1037,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 nodeVersionProvider,
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
-                new TestEnvironment(),
+                environment ?? new TestEnvironment(),
                 new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
                 externalSdkProvider,
                 new TestExternalAcrSdkProvider(),

@@ -352,7 +352,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             string compressNodeModulesCommand = null;
             string compressedNodeModulesFileName = null;
-            GetNodeModulesPackOptions(ctx, out compressNodeModulesCommand, out compressedNodeModulesFileName);
+            GetNodeModulesPackOptions(ctx, this.environment, out compressNodeModulesCommand, out compressedNodeModulesFileName);
 
             if (!string.IsNullOrWhiteSpace(compressedNodeModulesFileName))
             {
@@ -466,7 +466,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
 
             // If the node modules folder is being packaged in a file, we don't copy it to the output
-            if (GetNodeModulesPackOptions(ctx, out _, out string compressedFileName))
+            if (GetNodeModulesPackOptions(ctx, this.environment, out _, out string compressedFileName))
             {
                 // we need to make sure we are not copying the root's node_modules folder
                 // if there are any other node_modules folder we will copy them to destination
@@ -494,6 +494,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeConstants.NodeModulesToBeDeletedName,
                 NodeConstants.NodeModulesZippedFileName,
                 NodeConstants.NodeModulesTarGzFileName,
+                NodeConstants.NodeModulesTarZstFileName,
             };
         }
 
@@ -635,6 +636,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private static bool GetNodeModulesPackOptions(
             BuildScriptGeneratorContext context,
+            IEnvironment environment,
             out string compressNodeModulesCommand,
             out string compressedNodeModulesFileName)
         {
@@ -648,8 +650,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 if (string.IsNullOrEmpty(compressNodeModulesOption) ||
                     compressNodeModulesOption.EqualsIgnoreCase(TarGzNodeModulesOption))
                 {
-                    compressedNodeModulesFileName = NodeConstants.NodeModulesTarGzFileName;
-                    compressNodeModulesCommand = $"tar -zcf";
+                    // Default to gzip; use zstd (faster compress/decompress) only when
+                    // ORYX_COMPRESS_WITH_ZSTD=true. The startup script generator picks the
+                    // extraction command by file extension.
+                    if (environment.GetBoolEnvironmentVariable(NodeConstants.CompressWithZstdEnvVarName) == true)
+                    {
+                        compressedNodeModulesFileName = NodeConstants.NodeModulesTarZstFileName;
+                        compressNodeModulesCommand = "tar -I zstd -cf";
+                    }
+                    else
+                    {
+                        compressedNodeModulesFileName = NodeConstants.NodeModulesTarGzFileName;
+                        compressNodeModulesCommand = "tar -zcf";
+                    }
+
                     isNodeModulesPackaged = true;
                 }
                 else if (compressNodeModulesOption.EqualsIgnoreCase(ZipNodeModulesOption))
