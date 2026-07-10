@@ -283,7 +283,7 @@ then
 	if [ -d node_modules ]
 	then
 		echo
-		echo "Zipping existing 'node_modules' folder into '$zippedModulesFileName'..."
+		echo "Archiving existing 'node_modules' folder into '$zippedModulesFileName'..."
 		START_TIME=$SECONDS
 		# Make the contents of the node_modules folder appear in the zip file, not the folder itself
 		cd node_modules

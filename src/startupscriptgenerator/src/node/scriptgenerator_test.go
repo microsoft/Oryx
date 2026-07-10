@@ -6,11 +6,29 @@
 package main
 
 import (
+	"common"
 	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestNodeStartupScriptGenerator_GeneratesZstdExtractionCommand_WhenNodeModulesIsTarZst(t *testing.T) {
+	// Arrange
+	gen := &NodeStartupScriptGenerator{
+		SourcePath: "/app",
+		Manifest: common.BuildManifest{
+			CompressedNodeModulesFile: "node_modules.tar.zst",
+		},
+	}
+
+	// Act
+	script := gen.GenerateEntrypointScript()
+
+	// Assert
+	assert.Contains(t, script, "echo Found tar.zst based node_modules.")
+	assert.Contains(t, script, "extractionCommand=\"tar -I zstd -xf node_modules.tar.zst -C /node_modules\"")
+}
 
 func ExampleNodeStartupScriptGenerator_getPackageJsonStartCommand_subDir() {
 	gen := &NodeStartupScriptGenerator{
