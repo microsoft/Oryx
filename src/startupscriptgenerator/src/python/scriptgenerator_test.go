@@ -6,11 +6,30 @@
 package main
 
 import (
+	"common"
 	"os"
 	"path/filepath"
 	"testing"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestPythonStartupScriptGenerator_GeneratesZstdExtractionCommand_WhenVirtualEnvIsTarZst(t *testing.T) {
+	// Arrange
+	gen := PythonStartupScriptGenerator{
+		AppPath:        "/app",
+		VirtualEnvName: "antenv",
+		Manifest: common.BuildManifest{
+			CompressedVirtualEnvFile: "antenv.tar.zst",
+		},
+	}
+
+	// Act
+	command := gen.getPackageSetupCommand()
+
+	// Assert
+	assert.Contains(t, command, "echo Found virtual environment .tar.zst archive.")
+	assert.Contains(t, command, "extractionCommand=\"tar -I zstd -xf antenv.tar.zst -C /antenv\"")
+}
 
 func Test_ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_onlyModule(t *testing.T) {
 	// Arrange

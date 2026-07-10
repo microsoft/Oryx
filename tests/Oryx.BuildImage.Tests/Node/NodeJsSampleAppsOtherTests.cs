@@ -602,6 +602,84 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "githubactions")]
+        public void BuildsNodeApp_AndZipsNodeModules_WithZstd_WhenCompressWithZstdEnabled_AndTarGz()
+        {
+            // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
+            //  "tar: node_modules/form-data: file changed as we read it"
+            // related to zipping files on a folder which is volume mounted.
+
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(NodeConstants.CompressWithZstdEnvVarName, "true")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p compress_node_modules=tar-gz")
+                .AddFileExistsCheck($"{appOutputDir}/{NodeConstants.NodeModulesTarZstFileName}")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/{NodeConstants.NodeModulesTarGzFileName}")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .AddStringExistsInFileCheck(
+                    $"compressedNodeModulesFile=\"{NodeConstants.NodeModulesTarZstFileName}\"",
+                    $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void BuildsNodeApp_AndZipsNodeModules_AsZip_WhenCompressWithZstdEnabled_AndZip()
+        {
+            // Zstd only affects the tar-gz path; the zip (express) path must be unchanged.
+
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(NodeConstants.CompressWithZstdEnvVarName, "true")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p compress_node_modules=zip")
+                .AddFileExistsCheck($"{appOutputDir}/{NodeConstants.NodeModulesZippedFileName}")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/{NodeConstants.NodeModulesTarZstFileName}")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .AddStringExistsInFileCheck(
+                    $"compressedNodeModulesFile=\"{NodeConstants.NodeModulesZippedFileName}\"",
+                    $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "githubactions")]
         public void BuildsNodeApp_AndZipsNodeModules_IfCompressNodeModulesIsZip()
         {
             // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
