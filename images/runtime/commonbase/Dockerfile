@@ -15,6 +15,8 @@ RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]'
 	fi
 
 FROM mcr.microsoft.com/mirror/docker/library/${OS_TYPE}:${OS_FLAVOR}
+ARG IMAGES_DIR=/tmp/oryx/images
+ARG BUILD_DIR=/tmp/oryx/build
 ARG INCLUDE_AZURELINUX_CERTS
 
 RUN apt-get update \
@@ -52,5 +54,7 @@ RUN set -e; \
 RUN	rm -f /usr/local/bin/install-azurelinux-certs.sh; \
 	rm -rf /tmp/azurelinux-ca-certs;
 
-
-#removed images_dir and build_dir just for testing out python image
+ADD images ${IMAGES_DIR}
+ADD build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
