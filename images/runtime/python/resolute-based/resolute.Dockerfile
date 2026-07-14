@@ -76,7 +76,6 @@ ENV PYTHON_VERSION ${PYTHON_FULL_VERSION}
 COPY --from=pythonRuntimeBinariesBuilder /opt/python/${PYTHON_FULL_VERSION} /opt/python/${PYTHON_FULL_VERSION}
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s ${PYTHON_FULL_VERSION} ${PYTHON_VERSION} \
  && ln -s ${PYTHON_VERSION} ${PYTHON_MAJOR_VERSION} \
  && echo /opt/python/${PYTHON_MAJOR_VERSION}/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
