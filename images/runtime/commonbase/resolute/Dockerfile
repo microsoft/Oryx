@@ -28,7 +28,7 @@ RUN apt-get update \
 		wget \
         unzip \
 		# Not shipped in Resolute, but will be required by Node runtime. It is tiny, would save from unexpected runtime failures in other frameworks too
-		libatomic1
+		libatomic1 \
 	&& rm -rf /var/lib/apt/lists/*
 
 	
