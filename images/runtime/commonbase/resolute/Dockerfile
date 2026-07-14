@@ -28,9 +28,8 @@ RUN apt-get update \
 		wget \
         unzip \
 		# Not shipped in Resolute, but will be required by Node runtime. It is tiny, would save from unexpected runtime failures in other frameworks too
-		libatomic1
-
-RUN  rm -rf /var/lib/apt/lists/*
+		libatomic1 \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Copy Azure linux certs to a temporary location
 RUN mkdir -p /tmp/azurelinux-ca-certs && \
