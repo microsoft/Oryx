@@ -85,11 +85,6 @@ variables:
   python310Version: 3.10.20
   python311Version: 3.11.15
   python312Version: 3.12.13
-<<<<<<< HEAD
   python313Version: 3.13.14
   python314Version: 3.14.6
-=======
-  python313Version: 3.13.13
-  python314Version: 3.14.4
   python315Version: 3.15.0b3
->>>>>>> dc162afce (Coming in shape)
