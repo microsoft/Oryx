@@ -21,9 +21,7 @@ FROM ${BASE_IMAGE} AS nodeDownloader
 ARG NODE_FULL_VERSION
 ARG NODE_SHA256
 WORKDIR /tmp/node-download
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ca-certificates xz-utils gnupg \
-    && curl -fsSLO "https://nodejs.org/dist/v${NODE_FULL_VERSION}/node-v${NODE_FULL_VERSION}-linux-x64.tar.xz" \
+RUN curl -fsSLO "https://nodejs.org/dist/v${NODE_FULL_VERSION}/node-v${NODE_FULL_VERSION}-linux-x64.tar.xz" \
     && curl -fsSL "https://nodejs.org/dist/v${NODE_FULL_VERSION}/SHASUMS256.txt.asc" -o SHASUMS256.txt.asc \
     && curl -fsSL "https://github.com/nodejs/release-keys/raw/HEAD/gpg/pubring.kbx" -o nodejs-keyring.kbx \
     && gpg --no-default-keyring --keyring="/tmp/node-download/nodejs-keyring.kbx" --decrypt SHASUMS256.txt.asc > SHASUMS256.txt \
