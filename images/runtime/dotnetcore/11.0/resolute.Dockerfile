@@ -59,7 +59,7 @@ RUN apt-get update \
         libc6 \
         libgcc-s1 \
         libgssapi-krb5-2 \
-        libicu74 \
+        libicu78 \
         libssl3 \
         libstdc++6 \
         zlib1g \
