@@ -122,7 +122,10 @@ then
 	echo "Running '{{ ProductionOnlyPackageInstallCommand }}'..."
 	echo
 	printf %s ", {{ ProductionOnlyPackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	START_TIME=$SECONDS
 	{{ ProductionOnlyPackageInstallCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Installing production dependencies done in $ELAPSED_TIME sec(s)."
 	
 
 	if [ -d "node_modules" ]; then
@@ -131,7 +134,7 @@ then
 		START_TIME=$SECONDS
 		rsync -rcE --links "node_modules/" "$SOURCE_DIR/node_modules"
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
-		echo "Done in $ELAPSED_TIME sec(s)."
+		echo "Copying production dependencies done in $ELAPSED_TIME sec(s)."
 	fi
 fi
 
@@ -150,16 +153,25 @@ cd "$SOURCE_DIR"
 	echo "Running '{{ CustomBuildCommand }}'..."
 	echo
 	printf %s ", {{ CustomBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	START_TIME=$SECONDS
 	{{ CustomBuildCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Custom build command done in $ELAPSED_TIME sec(s)."
 {{ else if CustomRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ PackageInstallCommand }}'..."
 	echo
 	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	START_TIME=$SECONDS
 	{{ PackageInstallCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Package install done in $ELAPSED_TIME sec(s)."
 	echo
 	printf %s ", {{ CustomRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	START_TIME=$SECONDS
 	{{ CustomRunBuildCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Custom run build command done in $ELAPSED_TIME sec(s)."
 	echo
 {{ else if LernaRunBuildCommand | IsNotBlank }}
 	echo
@@ -169,44 +181,65 @@ cd "$SOURCE_DIR"
 	echo
 	echo "Running '{{ LernaInitCommand }} & {{ LernaBootstrapCommand }}':"
 	printf %s ", {{ LernaInitCommand }}', '{{ LernaBootstrapCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	START_TIME=$SECONDS
 	{{ LernaInitCommand }}
 	{{ LernaBootstrapCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Lerna init and bootstrap done in $ELAPSED_TIME sec(s)."
 	echo
 	echo
 	echo "Running '{{ LernaRunBuildCommand }}'..."
 	echo
 	printf %s ", {{ LernaRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	START_TIME=$SECONDS
 	{{ LernaRunBuildCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Lerna run build command done in $ELAPSED_TIME sec(s)."
 {{ else if LageRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running ' {{ InstallLageCommand }} ':"
 	printf %s ", {{ InstallLageCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	START_TIME=$SECONDS
 	{{ InstallLageCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Installing Lage done in $ELAPSED_TIME sec(s)."
 	echo
 	echo
 	echo "Running '{{ LageRunBuildCommand }}'..."
 	printf %s ", {{ LageRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
+	START_TIME=$SECONDS
 	{{ LageRunBuildCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Lage run build command done in $ELAPSED_TIME sec(s)."
 {{ else }}
 	echo
 	echo "Running '{{ PackageInstallCommand }}'..."
 	echo
 	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	START_TIME=$SECONDS
 	{{ PackageInstallCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Package install done in $ELAPSED_TIME sec(s)."
 	{{ if NpmRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ NpmRunBuildCommand }}'..."
 	printf %s ", {{ NpmRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
+	START_TIME=$SECONDS
 	{{ NpmRunBuildCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "npm run build done in $ELAPSED_TIME sec(s)."
 	{{ end }}
 	{{ if NpmRunBuildAzureCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ NpmRunBuildAzureCommand }}'..."
 	printf %s ", {{ NpmRunBuildAzureCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
+	START_TIME=$SECONDS
 	{{ NpmRunBuildAzureCommand }}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "npm run build (Azure) done in $ELAPSED_TIME sec(s)."
 	{{ end }}
 {{ end }}
 
@@ -222,14 +255,20 @@ cd "$SOURCE_DIR"
 echo
 echo "Running custom packaging scripts that might exist..."
 echo
+START_TIME=$SECONDS
 npm run package || true
 npm run prepublishOnly || true
+ELAPSED_TIME=$(($SECONDS - $START_TIME))
+echo "Custom packaging scripts done in $ELAPSED_TIME sec(s)."
 printf %s ", npm run package || true, npm run prepublishOnly || true" >> "$COMMAND_MANIFEST_FILE"
 echo
 echo "Running 'npm pack'..."
 echo
 printf %s ", npm pack" >> "$COMMAND_MANIFEST_FILE"
+START_TIME=$SECONDS
 npm pack
+ELAPSED_TIME=$(($SECONDS - $START_TIME))
+echo "npm pack done in $ELAPSED_TIME sec(s)."
 {{ end }}
 
 
@@ -289,7 +328,7 @@ then
 		cd node_modules
 		{{ CompressNodeModulesCommand }} ../$zippedModulesFileName .
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
-		echo "Done in $ELAPSED_TIME sec(s)."
+		echo "Archiving node_modules done in $ELAPSED_TIME sec(s)."
 	fi
 fi
 {{ end }}
