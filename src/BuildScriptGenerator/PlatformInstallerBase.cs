@@ -116,9 +116,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string directoryToInstall = null,
             bool skipSdkBinaryDownload = false)
         {
-            var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
-
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))
             {
@@ -171,8 +168,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         .AppendLine($"fi")
                         .AppendLine($"echo \"Successfully extracted {platformName} version {version} from cached tarball.\"");
                 }
+            else if (this.CommonOptions.DisableCdnSdkProvider)
+                {
+                    // Downloading SDK binaries from the public SDK storage account (CDN) is disabled.
+                    // No SDK provider supplied a cached tarball, so fail fast instead of falling back to storage.
+                    snippet
+                        .AppendLine($"echo \"ERROR: SDK download from storage is disabled (via 'ORYX_DISABLE_CDN_SDK_PROVIDER').\"")
+                        .AppendLine($"echo \"No cached tarball was found for '{platformName}' version '{version}'.\"")
+                        .AppendLine("exit 1");
+                }
             else
                 {
+                var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
+                var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
                 snippet.AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine("downloaded=1")
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")

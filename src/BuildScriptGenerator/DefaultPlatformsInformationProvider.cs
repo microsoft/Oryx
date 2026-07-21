@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.outputWriter.WriteLine($"  External ACR SDK provider: {(this.commonOptions.EnableExternalAcrSdkProvider ? "Enabled" : "Disabled")}");
             this.outputWriter.WriteLine($"  External SDK provider: {(this.commonOptions.EnableExternalSdkProvider ? "Enabled" : "Disabled")}");
             this.outputWriter.WriteLine($"  Direct ACR SDK provider: {(this.commonOptions.EnableAcrSdkProvider ? "Enabled" : "Disabled")}");
-            this.outputWriter.WriteLine($"  Blob SDK provider: Enabled");
+            this.outputWriter.WriteLine($"  Blob SDK provider: {(this.commonOptions.DisableCdnSdkProvider ? "Disabled" : "Enabled")}");
 
             if (this.commonOptions.EnableExternalAcrSdkProvider && !string.IsNullOrEmpty(this.commonOptions.PlatformName))
             {

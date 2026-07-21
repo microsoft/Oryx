@@ -118,6 +118,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool EnableAcrSdkProvider { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the CDN/blob storage SDK provider is disabled.
+        /// When true, Oryx will not download SDK binaries from, nor list SDK versions using, the
+        /// public SDK storage account (the tier-4 CDN fallback).
+        /// </summary>
+        public bool DisableCdnSdkProvider { get; set; }
+
+        /// <summary>
         /// Gets or sets the base URL of the OCI registry hosting SDK images.
         /// e.g. "https://mcr.microsoft.com"
         /// </summary>

@@ -68,6 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.EnableExternalAcrSdkProvider = options.EnableExternalAcrSdkProvider && !options.EnableMultiPlatformBuild;
 
             options.EnableAcrSdkProvider = this.GetBooleanValue(SettingsKeys.EnableAcrSdkProvider);
+            options.DisableCdnSdkProvider = this.GetBooleanValue(SettingsKeys.DisableCdnSdkProvider);
             options.OryxAcrSdkRegistryUrl = this.GetStringValue(SettingsKeys.OryxAcrSdkRegistryUrl);
             options.OryxAcrSdkRepositoryPrefix = this.GetStringValue(SettingsKeys.OryxAcrSdkRepositoryPrefix);
 
