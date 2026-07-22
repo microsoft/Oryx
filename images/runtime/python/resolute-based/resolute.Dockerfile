@@ -3,12 +3,6 @@ ARG BASE_IMAGE
 
 # -----------------------------------------------------------------------------
 # Stage 1: build the Oryx startup-script generator (the `oryx` CLI)
-#
-# Pin to a PATCHED Go toolchain. The compiled binary embeds its toolchain
-# version (readable via `go version -m`), so image scanners flag Go stdlib CVEs
-# even though Go is absent from the runtime. go1.26.2 was flagged for 4 reachable
-# stdlib CVEs (GO-2026-5039/5037/4971/4918); all are fixed in go1.26.4.
-# Bump this on Go security releases and rebuild the CLI (it is Python-agnostic).
 # -----------------------------------------------------------------------------
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26.4-bookworm AS startupCmdGen
 
