@@ -64,14 +64,10 @@ RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
     rm -rf /root/.npmrc
 
 # Install Yarn
-ARG YARN_VERSION
-ENV YARN_VERSION ${YARN_VERSION}
-COPY images/yarn-v${YARN_VERSION}.tar.gz .
-RUN mkdir -p /opt \
-  && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/ \
-  && ln -s /opt/yarn-v$YARN_VERSION/bin/yarn /usr/local/bin/yarn \
-  && ln -s /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg \
-  && rm yarn-v$YARN_VERSION.tar.gz
+ARG YARN_VERSION=1.22.22
+ENV YARN_VERSION=${YARN_VERSION}
+RUN npm install --global "yarn@${YARN_VERSION}" \
+  && yarn --version
 
 
 # Bake Application Insights key from pipeline variable into final image
