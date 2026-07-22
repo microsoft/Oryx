@@ -42,13 +42,13 @@ if [ "$majorVersion" -ge 26 ]; then
 	yarnVersion="${YARN_VERSION:-}"
 	if [ -z "$yarnVersion" ]; then
 		echo "WARNING: YARN_VERSION is not set; skipping Yarn packaging for Node $version."
-	elif ! "$INSTALL_DIR/bin/npm" install -g --prefix "$INSTALL_DIR" "yarn@${yarnVersion}"; then
+	elif ! PATH="$INSTALL_DIR/bin:$PATH" "$INSTALL_DIR/bin/npm" install -g --prefix "$INSTALL_DIR" "yarn@${yarnVersion}"; then
 		echo "WARNING: Yarn installation failed for Node $version; continuing without Yarn."
-	elif ! "$INSTALL_DIR/bin/yarn" --version; then
+	elif ! PATH="$INSTALL_DIR/bin:$PATH" "$INSTALL_DIR/bin/yarn" --version; then
 		echo "WARNING: Yarn binary verification failed for Node $version; continuing without Yarn validation."
 	else
 		# Ensure global package prefix stays within the SDK directory so sdk-only images remain self-contained.
-		installedPrefix="$("$INSTALL_DIR/bin/npm" prefix -g)"
+		installedPrefix="$(PATH="$INSTALL_DIR/bin:$PATH" "$INSTALL_DIR/bin/npm" prefix -g)"
 		if [ "$installedPrefix" != "$INSTALL_DIR" ]; then
 			echo "WARNING: npm global prefix is '$installedPrefix', expected '$INSTALL_DIR'."
 		fi
