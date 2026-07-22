@@ -119,6 +119,13 @@ then
         --disable-pip-version-check \
         --no-cache-dir \
         --no-warn-script-location
+
+    # Pre-bundle uv in Python 3.15+ SDKs so build-time scripts do not need to fetch it dynamically.
+    if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "15" ]; then
+        echo "Installing uv into Python $PYTHON_VERSION SDK..."
+        /opt/python/$PYTHON_VERSION/bin/python3 -m pip install --no-cache-dir uv
+        /opt/python/$PYTHON_VERSION/bin/uv --version
+    fi
     rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
     rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
     rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
