@@ -58,7 +58,7 @@ RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
     echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc && \
     echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc && \
     chmod +x /tmp/installDependencies.sh && \
-    PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} /tmp/installDependencies.sh && \
+    PM2_VERSION=${PM2_VERSION} /tmp/installDependencies.sh && \
     npm cache clean --force && \
     find /tmp -mindepth 1 -delete && \
     rm -rf /root/.npmrc
