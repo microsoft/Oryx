@@ -18,8 +18,7 @@ RUN --mount=type=secret,id=vss_nuget_accesstoken,target=/run/secrets/vss_nuget_a
     dotnet tool install --tool-path /dotnetcore-tools dotnet-trace && \
     dotnet tool install --tool-path /dotnetcore-tools dotnet-dump && \
     dotnet tool install --tool-path /dotnetcore-tools dotnet-counters && \
-    dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump && \
-    dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor
+    dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump 
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26.4-bookworm AS startupCmdGen

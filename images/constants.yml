@@ -64,7 +64,7 @@ variables:
   DOTNET_SDK_80: 8.0.422
   DOTNET_SDK_90: 9.0.315
   DOTNET_SDK_100: 10.0.301
-  DOTNET_SDK_110: 11.0.100-preview.6
+  DOTNET_SDK_110: 11.0.100-preview.6.26359.118
   node18Version: 18.20.8
   node20Version: 20.20.2
   node22Version: 22.23.1
