@@ -277,7 +277,7 @@ func (gen *PythonStartupScriptGenerator) getVenvHandlingScript(virtualEnvName st
 	scriptBuilder.WriteString(
 		"echo Using packages from virtual environment '" + virtualEnvName + "' located at '" + virtualEnvDir + "'.\n")
 	virtualEnvSitePackagesDir := "\"" + virtualEnvDir + "/lib/python$PYTHON_VERSION/site-packages\""
-	scriptBuilder.WriteString("export PYTHONPATH=$PYTHONPATH:" + virtualEnvSitePackagesDir + "\n")
+	scriptBuilder.WriteString("export PYTHONPATH=${PYTHONPATH:+$PYTHONPATH:}" + virtualEnvSitePackagesDir + "\n")
 	scriptBuilder.WriteString("echo \"Updated PYTHONPATH to '$PYTHONPATH'\"\n")
 
 	if gen.Manifest.CompressDestinationDir == "true" {
