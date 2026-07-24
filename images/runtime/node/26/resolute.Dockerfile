@@ -1,9 +1,7 @@
 ARG BASE_IMAGE
-ARG NODE_FULL_VERSION
-ARG NODE_SHA256
 
 # build the Oryx startup-script generator (the `oryx` CLI).
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26.4-bookworm as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26.5-2-bookworm as startupCmdGen
 
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
@@ -19,7 +17,6 @@ RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 # Download Node.js directly from official source and verify SHA256
 FROM ${BASE_IMAGE} AS nodeDownloader
 ARG NODE_FULL_VERSION
-ARG NODE_SHA256
 WORKDIR /tmp/node-download
 RUN curl -fsSLO "https://nodejs.org/dist/v${NODE_FULL_VERSION}/node-v${NODE_FULL_VERSION}-linux-x64.tar.xz" \
     && curl -fsSL "https://nodejs.org/dist/v${NODE_FULL_VERSION}/SHASUMS256.txt.asc" -o SHASUMS256.txt.asc \
@@ -47,9 +44,7 @@ RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 COPY images/runtime/node/installDependencies.sh /tmp/installDependencies.sh
 
-ARG NPM_VERSION
 ARG PM2_VERSION
-ARG NODE_APP_INSIGHTS_SDK_VERSION
 
 RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
     FEED_ACCESSTOKEN=$(cat /run/secrets/npmrc) && \
