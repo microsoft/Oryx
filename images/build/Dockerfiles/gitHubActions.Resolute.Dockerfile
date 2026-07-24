@@ -111,15 +111,7 @@ RUN tmpDir="/opt/tmp" \
     && echo "${UBUNTU}|${OS_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
     && rm -rf /opt/tmp
 
-
-# Docker has an issue with variable expansion when all are used in a single ENV command.
-# For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 
-#   ENV LASTNAME="JORDAN" \
-#       NAME="MICHAEL $LASTNAME"
-#
-# Even though this adds a new docker layer we are doing this 
-# because we want to avoid duplication (which is always error-prone)
-
+    
 # Resolute based Github Action Image to use ACR to fetch SDKs instead of Storage 
 ARG ORYX_ENABLE_ACR_SDK_PROVIDER
 ARG ORYX_ACR_SDK_REGISTRY_URL
