@@ -121,7 +121,8 @@ then
         --no-warn-script-location
 
     # Pre-bundle uv in Python 3.15+ SDKs so build-time scripts do not need to fetch it dynamically.
-    if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "15" ]; then
+    # Only the SDK build passes INSTALL_UV=true; runtime image builds leave it unset (default false).
+    if [ "${INSTALL_UV:-false}" == "true" ] && [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "15" ]; then
         echo "Installing uv into Python $PYTHON_VERSION SDK..."
         /opt/python/$PYTHON_VERSION/bin/python3 -m pip install --no-cache-dir uv
         /opt/python/$PYTHON_VERSION/bin/uv --version
