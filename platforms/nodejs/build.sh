@@ -36,6 +36,31 @@ sha256sum -c node.sha256
 
 # Extract to install directory
 tar -xJf "$nodeFileName" -C "$INSTALL_DIR" --strip-components=1
+
+majorVersion="${version%%.*}"
+if [ "$majorVersion" -ge 26 ]; then
+	yarnVersion="${YARN_VERSION:-}"
+	if [ -z "$yarnVersion" ]; then
+		echo "WARNING: YARN_VERSION is not set; skipping Yarn packaging for Node $version."
+	elif ! PATH="$INSTALL_DIR/bin:$PATH" "$INSTALL_DIR/bin/npm" install -g --prefix "$INSTALL_DIR" "yarn@${yarnVersion}"; then
+		echo "WARNING: Yarn installation failed for Node $version; continuing without Yarn."
+	elif ! PATH="$INSTALL_DIR/bin:$PATH" "$INSTALL_DIR/bin/yarn" --version; then
+		echo "WARNING: Yarn binary verification failed for Node $version; continuing without Yarn validation."
+	else
+		# Ensure global package prefix stays within the SDK directory so sdk-only images remain self-contained.
+		installedPrefix="$(PATH="$INSTALL_DIR/bin:$PATH" "$INSTALL_DIR/bin/npm" prefix -g)"
+		if [ "$installedPrefix" != "$INSTALL_DIR" ]; then
+			echo "WARNING: npm global prefix is '$installedPrefix', expected '$INSTALL_DIR'."
+		fi
+
+		# Ensure yarn binary resolves to the SDK-local global package path.
+		yarnLinkTarget="$(readlink "$INSTALL_DIR/bin/yarn")"
+		case "$yarnLinkTarget" in
+			../lib/node_modules/yarn/bin/yarn.js) ;;
+			*) echo "WARNING: Unexpected yarn symlink target '$yarnLinkTarget'." ;;
+		esac
+	fi
+fi
 rm -rf "$WORK_DIR"
 
 cd "$INSTALL_DIR"
