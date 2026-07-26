@@ -63,6 +63,14 @@ tar -xJf /python.tar.xz --strip-components=1 -C .
 
 INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
+# https://github.com/python/cpython/pull/134078
+# Python 3.15 will need this flag to use bundled libmpdec.
+# From Python 3.16, we might need to install libmpdec-dev package via apt.
+configureArgs=()
+if [[ "$PYTHON_VERSION" == 3.15.* ]]; then
+    configureArgs+=(--without-system-libmpdec)
+fi
+
 ./configure \
     --prefix=$INSTALLATION_PREFIX \
     --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
@@ -71,7 +79,8 @@ INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
     --enable-optimizations \
     --with-lto \
     --with-system-ffi \
-    --without-ensurepip
+    --without-ensurepip \
+    "${configureArgs[@]}"
 
 make -j $(nproc)
 
