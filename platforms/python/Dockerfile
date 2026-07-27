@@ -1,6 +1,8 @@
 # Install Python build prerequisites
 ARG OS_FLAVOR
-FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${OS_FLAVOR}
+# OS_FLAVOR of resolute is not in the mirror, we can still use other existing Ubuntu flavor for sdk downloading purpose
+ARG BASE_IMAGE_OS=${OS_FLAVOR}
+FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${BASE_IMAGE_OS}
 ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
 ARG VERSIONS_TO_BUILD_OVERRIDE=""

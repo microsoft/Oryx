@@ -52,7 +52,6 @@ fi
         liblzma-dev \
         libsqlite3-dev \
         lzma \
-        lzma-dev \
         zlib1g-dev
 
 PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
@@ -64,6 +63,14 @@ tar -xJf /python.tar.xz --strip-components=1 -C .
 
 INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
+# https://github.com/python/cpython/pull/134078
+# Python 3.15 will need this flag to use bundled libmpdec.
+# From Python 3.16, we might need to install libmpdec-dev package via apt.
+configureArgs=()
+if [[ "$PYTHON_VERSION" == 3.15.* ]]; then
+    configureArgs+=(--without-system-libmpdec)
+fi
+
 ./configure \
     --prefix=$INSTALLATION_PREFIX \
     --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
@@ -72,7 +79,8 @@ INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
     --enable-optimizations \
     --with-lto \
     --with-system-ffi \
-    --without-ensurepip
+    --without-ensurepip \
+    "${configureArgs[@]}"
 
 make -j $(nproc)
 
@@ -89,7 +97,17 @@ then
         \( \
             \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) \
             -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
-        \) -exec rm -rf '{}' + \
+        \) -exec rm -rf '{}' +
+
+    
+    if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "15" ]; then
+        find /opt/python -depth \
+        \( \
+            \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) \
+            -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
+        \) -exec rm -rf '{}' +
+    fi
+    
 
     ldconfig
 
@@ -110,6 +128,14 @@ then
         --disable-pip-version-check \
         --no-cache-dir \
         --no-warn-script-location
+
+    # Pre-bundle uv in Python 3.15+ SDKs so build-time scripts do not need to fetch it dynamically.
+    # Only the SDK build passes INSTALL_UV=true; runtime image builds leave it unset (default false).
+    if [ "${INSTALL_UV:-false}" == "true" ] && [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "15" ]; then
+        echo "Installing uv into Python $PYTHON_VERSION SDK..."
+        /opt/python/$PYTHON_VERSION/bin/python3 -m pip install --no-cache-dir uv
+        /opt/python/$PYTHON_VERSION/bin/uv --version
+    fi
     rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
     rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
     rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 

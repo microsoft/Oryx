@@ -34,7 +34,7 @@ buildPython() {
 		rm -rf /usr/src/python
 		mkdir /usr/src/python
 		cd /usr/src/python
-		OS_FLAVOR=$osFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION PYTHON_SHA256=$python_sha /tmp/build.sh
+		OS_FLAVOR=$osFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION PYTHON_SHA256=$python_sha INSTALL_UV=true /tmp/build.sh
 		cd $REPO_DIR
 
 		rm -r /opt/python/*
