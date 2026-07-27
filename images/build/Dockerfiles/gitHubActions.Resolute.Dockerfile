@@ -108,7 +108,7 @@ RUN tmpDir="/opt/tmp" \
     && chmod a+rw /var/nuget \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "githubactions" > /opt/oryx/.imagetype \
-    && echo "${UBUNTU}|${OS_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
+    && echo "UBUNTU|${OS_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
     && rm -rf /opt/tmp
 
     
