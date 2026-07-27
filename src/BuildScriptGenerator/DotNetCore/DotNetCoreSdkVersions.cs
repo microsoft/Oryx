@@ -26,12 +26,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public const string DotNet70SdkVersion = "7.0.410";
 
-        public static readonly List<string> RuntimeVersions = new List<string> { "3.0-debian-buster", "3.1-debian-bullseye", "3.1-debian-buster", "5.0-debian-buster", "6.0-debian-bullseye", "6.0-debian-buster", "7.0-debian-bullseye", "7.0-debian-buster", "8.0-debian-bullseye", "8.0-debian-bookworm", "9.0-debian-bookworm", "10.0-ubuntu-noble", "dynamic-debian-buster" };
+        public static readonly List<string> RuntimeVersions = new List<string> { "3.0-debian-buster", "3.1-debian-bullseye", "3.1-debian-buster", "5.0-debian-buster", "6.0-debian-bullseye", "6.0-debian-buster", "7.0-debian-bullseye", "7.0-debian-buster", "8.0-debian-bullseye", "8.0-debian-bookworm", "9.0-debian-bookworm", "10.0-ubuntu-noble", "11.0-ubuntu-resolute", "dynamic-debian-buster" };
 
         public static string DotNet80SdkVersion => ConstantsYamlReader.Get("DOTNET_SDK_80");
 
         public static string DotNet90SdkVersion => ConstantsYamlReader.Get("DOTNET_SDK_90");
 
         public static string DotNet100SdkVersion => ConstantsYamlReader.Get("DOTNET_SDK_100");
+
+        public static string DotNet110SdkVersion => ConstantsYamlReader.Get("DOTNET_SDK_110");
     }
 }

@@ -36,6 +36,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActionsBuster = ImageTestHelperConstants.GitHubActionsBuster;
         private const string _gitHubActionsBullseye = ImageTestHelperConstants.GitHubActionsBullseye;
         private const string _gitHubActionsBookworm = ImageTestHelperConstants.GitHubActionsBookworm;
+        private const string _gitHubActionsResolute = ImageTestHelperConstants.GitHubActionsResolute;
         private const string _gitHubActionsNoble = ImageTestHelperConstants.GitHubActionsNoble;
         private const string _gitHubActionsStretchBase = ImageTestHelperConstants.GitHubActionsStretchBase;
         private const string _gitHubActionsBusterBase = ImageTestHelperConstants.GitHubActionsBusterBase;
@@ -327,6 +328,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsNoble}{_tagSuffix}";
             }
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsResolute))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsResolute}{_tagSuffix}";
+            }
             else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBookworm))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBookworm}{_tagSuffix}";
@@ -518,6 +523,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string OsTypeDebianBullseye = "debian-bullseye";
         public const string OsTypeDebianBookworm = "debian-bookworm";
         public const string OsTypeUbuntuNoble = "ubuntu-noble";
+        public const string OsTypeUbuntuResolute = "ubuntu-resolute";
 
         public const string AzureFunctionsJamStackStretch = "azfunc-jamstack-debian-stretch";
         public const string AzureFunctionsJamStackBuster = "azfunc-jamstack-debian-buster";
@@ -526,6 +532,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsBuster = "github-actions-debian-buster";
         public const string GitHubActionsBullseye = "github-actions-debian-bullseye";
         public const string GitHubActionsBookworm = "github-actions-debian-bookworm";
+        public const string GitHubActionsResolute = "github-actions-ubuntu-resolute";
         public const string GitHubActionsNoble = "github-actions-ubuntu-noble";
         public const string GitHubActionsStretchBase = "github-actions-debian-stretch-base";
         public const string GitHubActionsBusterBase = "github-actions-debian-buster-base";

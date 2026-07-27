@@ -200,6 +200,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             new object[] { "10.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp100 },
         };
 
+        public static IEnumerable<object[]> ResoluteDotNetVersionTestData => new[]
+        {
+            new object[] { "11.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp110 },
+        };
+
         [Theory]
         [MemberData(nameof(NobleDotNetVersionTestData))]
         [Trait(TestConstants.Category, TestConstants.Release)]
@@ -209,6 +214,31 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeUbuntuNoble),
+                CommandToExecuteOnRun = "dotnet",
+                CommandArguments = new[] { "--info" }
+            });
+
+            // Assert
+            var actualOutput = string.Join("", result.StdOut.ReplaceNewLine().Where(c => !char.IsWhiteSpace(c)));
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Join("", expectedOutput.Where(c => !char.IsWhiteSpace(c))), actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [Trait("category", "runtime-resolute")]
+        [MemberData(nameof(ResoluteDotNetVersionTestData))]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void RuntimeImage_Resolute_HasExpectedDotNetVersion(string version, string expectedOutput)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeUbuntuResolute),
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--info" }
             });
