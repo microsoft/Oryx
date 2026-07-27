@@ -87,13 +87,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public static string AspnetCoreApp100 => ConstantsYamlReader.Get("ASPNET_CORE_APP_100");
 
         public static string AspnetCoreApp100Sha => ConstantsYamlReader.TryGet("ASPNET_CORE_APP_100_SHA");
-
-        public static string NetCoreApp110 => ConstantsYamlReader.Get("NET_CORE_APP_110");
-
-        public static string NetCoreApp110Sha => ConstantsYamlReader.TryGet("NET_CORE_APP_110_SHA");
-
-        public static string AspnetCoreApp110 => ConstantsYamlReader.Get("ASPNET_CORE_APP_110");
-
-        public static string AspnetCoreApp110Sha => ConstantsYamlReader.TryGet("ASPNET_CORE_APP_110_SHA");
     }
 }

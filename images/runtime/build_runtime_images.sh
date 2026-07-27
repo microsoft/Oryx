@@ -67,10 +67,6 @@ case $stack_name in
             "10.0")
                 docker build -f ./images/runtime/dotnetcore/10.0/$os_flavor.Dockerfile -t dotnet10_image_$os_flavor --build-arg NET_CORE_APP_100_SHA=$NET_CORE_APP_100_SHA --build-arg ASPNET_CORE_APP_100_SHA=$ASPNET_CORE_APP_100_SHA --build-arg NET_CORE_APP_100=$NET_CORE_APP_100 --build-arg ASPNET_CORE_APP_100=$ASPNET_CORE_APP_100 --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
             ;;
-
-            "11.0")
-                docker build -f ./images/runtime/dotnetcore/11.0/$os_flavor.Dockerfile -t dotnet11_image_$os_flavor --build-arg NET_CORE_APP_110_SHA=$NET_CORE_APP_110_SHA --build-arg ASPNET_CORE_APP_110_SHA=$ASPNET_CORE_APP_110_SHA --build-arg NET_CORE_APP_110=$NET_CORE_APP_110 --build-arg ASPNET_CORE_APP_110=$ASPNET_CORE_APP_110 --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
-            ;;
         esac
 
         rm -f ./DotNetCoreAgent.2.8.42.zip
