@@ -51,4 +51,6 @@ npm install -g pm2@$PM2_VERSION -loglevel silent
 # Application-Insights is supported as an option for telemetry when running the app,
 # so we need to make sure it is available in our images.
 # Updated to 1.8.3 that doesn't emit json payload in stdout which is causing issues to customers in ant-88
-npm install -g applicationinsights@$NODE_APP_INSIGHTS_SDK_VERSION -loglevel silent
+if [ -n "$NODE_APP_INSIGHTS_SDK_VERSION" ]; then
+    npm install -g applicationinsights@$NODE_APP_INSIGHTS_SDK_VERSION -loglevel silent
+fi

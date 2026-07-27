@@ -1,9 +1,13 @@
 ARG OS_FLAVOR
-FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${OS_FLAVOR}
+# OS_FLAVOR of resolute is not in the mirror, we can still use other existing Ubuntu flavor for sdk downloading purpose
+ARG BASE_IMAGE_OS=${OS_FLAVOR}
+FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${BASE_IMAGE_OS}
 ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
 ARG VERSIONS_TO_BUILD_OVERRIDE=""
 ENV VERSIONS_TO_BUILD_OVERRIDE=$VERSIONS_TO_BUILD_OVERRIDE
+ARG YARN_VERSION=1.22.22
+ENV YARN_VERSION=${YARN_VERSION}
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
