@@ -22,13 +22,14 @@ variables:
   dotnet80osFlavors: bullseye,bookworm
   dotnet90osFlavors: bookworm
   dotnet100osFlavors: noble
+  dotnet110osFlavors: resolute
   php81osFlavors: bullseye
   php82osFlavors: bullseye
   php83osFlavors: bullseye,bookworm
   php84osFlavors: bullseye,bookworm
   php85osFlavors: noble
   osFlavors: bullseye,bookworm,noble
-  dotnetosFlavors: bookworm,bullseye,noble
+  dotnetosFlavors: bookworm,bullseye,noble,resolute
   nodejsosFlavors: bookworm,bullseye,noble,resolute
   phposFlavors: bookworm,bullseye,noble
   pythonosFlavors: bookworm,bullseye,noble,resolute
@@ -57,14 +58,17 @@ variables:
   ASPNET_CORE_APP_90: 9.0.17
   ASPNET_CORE_APP_90_SHA: a800b47a7db2bebd418a77553b232f9a30a7d1e3da0e7b07572878ac3a75cfa8317f7c969ab78b79acc2e8cbacea5467566d4108def115b3f2659377660aab8a
   ASPNET_CORE_APP_100: 10.0.9
+  ASPNET_CORE_APP_110: 11.0.0-preview.6.26359.118
   NET_CORE_APP_80: 8.0.28
   NET_CORE_APP_80_SHA: de3d06fbd5bd3ffe413e798867bbef24e218b863c7a224ca7f63c84e0b282c588fa0579a913d36e276e93516b24f3d32edf85ebb6d61152dbfdb8b81e8dc1cf1
   NET_CORE_APP_90: 9.0.17
   NET_CORE_APP_90_SHA: ad6fc3ee72b6445e9a3385d0963361ae2c260aa72dd16bb52ccf44c23abe682f70bea8b2d91585f13d58ecd74498add305bfbe0907fd73b60180fc26aa657634
   NET_CORE_APP_100: 10.0.9
+  NET_CORE_APP_110: 11.0.0-preview.6.26359.118
   DOTNET_SDK_80: 8.0.422
   DOTNET_SDK_90: 9.0.315
   DOTNET_SDK_100: 10.0.301
+  DOTNET_SDK_110: 11.0.100-preview.6.26359.118
   node18Version: 18.20.8
   node20Version: 20.20.2
   node22Version: 22.23.1

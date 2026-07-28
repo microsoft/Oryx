@@ -1,0 +1,3 @@
+# NOTE: Make sure to set the default version in 'defaultVersion.txt' file
+# version, sha, download url
+11.0.100-preview.6.26359.118, 8c8fce87d5332dd6a7403c16bb124f65754e2afb2d8992ccc1d2959b31775fc43f70004f317cc7245b0b63ec74959f137a12efebd75fa0c6c586535de4eda8e0,
