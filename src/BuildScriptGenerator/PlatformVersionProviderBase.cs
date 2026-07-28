@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
@@ -96,6 +97,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     this.outputWriter.WriteLine("Version resolved using direct ACR SDK provider.");
                     return result;
                 }
+            }
+
+            if (this.options.DisableCdnSdkProvider)
+            {
+                this.outputWriter.WriteLine(
+                    $"CDN SDK provider is disabled. No version could be resolved for '{this.PlatformName}' " +
+                    "using the enabled SDK providers.");
+                this.logger.LogWarning(
+                    "CDN SDK provider is disabled and no other provider resolved a version for {PlatformName}.",
+                    this.PlatformName);
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(new List<string>(), defaultVersion: null);
             }
 
             this.outputWriter.WriteLine("Version resolved using blob SDK storage provider(CDN).");

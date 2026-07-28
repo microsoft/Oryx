@@ -330,14 +330,14 @@ echo "Manifest file created."
 {{ end }}
 {{ end }}
 
-if [ -n "$DEBIAN_FLAVOR" ]
+if [ -z "$DEBIAN_FLAVOR" ] && [ -n "$OS_FLAVOR" ]
+then
+	echo "Generating .ostype from OS_FLAVOR environment variable."
+	echo "UBUNTU|$OS_FLAVOR" | tr '[a-z]' '[A-Z]' > "$MANIFEST_DIR/.ostype"
+elif [ -n "$DEBIAN_FLAVOR" ]
 then
 	echo "Generating .ostype from DEBIAN_FLAVOR environment variable."
 	echo "DEBIAN|$DEBIAN_FLAVOR" | tr '[a-z]' '[A-Z]' > "$MANIFEST_DIR/.ostype"
-elif [ -n "$OS_FLAVOR" ]
-then
-	echo "Generating .ostype from OS_FLAVOR environment variable."
-	echo "DEBIAN|$OS_FLAVOR" | tr '[a-z]' '[A-Z]' > "$MANIFEST_DIR/.ostype"
 elif [ -f "/opt/oryx/.ostype" ]
 then
 	echo "Copying .ostype from /opt/oryx/.ostype to manifest output directory."

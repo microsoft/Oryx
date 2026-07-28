@@ -79,6 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string EnableExternalSdkProvider = "ORYX_ENABLE_EXTERNAL_SDK_PROVIDER";
         public const string EnableExternalAcrSdkProvider = "ORYX_ENABLE_EXTERNAL_ACR_SDK_PROVIDER";
         public const string EnableAcrSdkProvider = "ORYX_ENABLE_ACR_SDK_PROVIDER";
+        public const string DisableCdnSdkProvider = "ORYX_DISABLE_CDN_SDK_PROVIDER";
         public const string OryxAcrSdkRegistryUrl = "ORYX_ACR_SDK_REGISTRY_URL";
         public const string OryxAcrSdkRepositoryPrefix = "ORYX_ACR_SDK_REPOSITORY_PREFIX";
 
