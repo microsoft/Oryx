@@ -19,7 +19,7 @@
     "@angular/platform-browser-dynamic": "^14.0.0",
     "@angular/router": "^14.0.0",
     "loader-utils": "^3.2.1",
-    "postcss": "^8.4.31",
+    "postcss": "^8.5.23",
     "rxjs": "~7.5.0",
     "semver": "^7.5.2",
     "terser": "^5.14.2",
