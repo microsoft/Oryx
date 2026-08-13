@@ -21,8 +21,8 @@ PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 PHP_CPPFLAGS="$PHP_CFLAGS"
 PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-PHP_URL="https://secure.php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror"
-PHP_ASC_URL="" # "https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror"
+PHP_URL="https://www.php.net/distributions/php-$PHP_VERSION.tar.xz"
+PHP_ASC_URL="" # "https://www.php.net/distributions/php-$PHP_VERSION.tar.xz.asc"
 GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
 
