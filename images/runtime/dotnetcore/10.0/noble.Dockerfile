@@ -13,13 +13,14 @@ RUN wget -qO- https://aka.ms/install-artifacts-credprovider.sh | bash
 
 # Install dotnet tools with authentication
 RUN --mount=type=secret,id=vss_nuget_accesstoken,target=/run/secrets/vss_nuget_accesstoken \
-    VSS_NUGET_ACCESSTOKEN=$(cat /run/secrets/vss_nuget_accesstoken) \
-    dotnet tool install --tool-path /dotnetcore-tools dotnet-sos && \
-    dotnet tool install --tool-path /dotnetcore-tools dotnet-trace && \
-    dotnet tool install --tool-path /dotnetcore-tools dotnet-dump && \
-    dotnet tool install --tool-path /dotnetcore-tools dotnet-counters && \
-    dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump && \
-    dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 10.0.0-rc.1.25460.1
+    export VSS_NUGET_ACCESSTOKEN=$(cat /run/secrets/vss_nuget_accesstoken) && \
+    printf '%s\n' '<?xml version="1.0" encoding="utf-8"?>' '<configuration>' '  <packageSources>' '    <clear />' '    <add key="One_PublicPackages" value="https://pkgs.dev.azure.com/msazure/one/_packaging/One_PublicPackages/nuget/v3/index.json" />' '  </packageSources>' '</configuration>' > /tmp/tools-nuget.config && \
+    dotnet tool install --configfile /tmp/tools-nuget.config --tool-path /dotnetcore-tools dotnet-sos && \
+    dotnet tool install --configfile /tmp/tools-nuget.config --tool-path /dotnetcore-tools dotnet-trace && \
+    dotnet tool install --configfile /tmp/tools-nuget.config --tool-path /dotnetcore-tools dotnet-dump && \
+    dotnet tool install --configfile /tmp/tools-nuget.config --tool-path /dotnetcore-tools dotnet-counters && \
+    dotnet tool install --configfile /tmp/tools-nuget.config --tool-path /dotnetcore-tools dotnet-gcdump && \
+    dotnet tool install --configfile /tmp/tools-nuget.config --tool-path /dotnetcore-tools dotnet-monitor --version 10.0.0-rc.1.25460.1
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bookworm AS startupCmdGen

@@ -45,7 +45,12 @@ RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
 COPY images/runtime/node/installDependencies.sh /tmp/installDependencies.sh
 
 ARG PM2_VERSION
+ARG YARN_VERSION=1.22.22
+ENV YARN_VERSION=${YARN_VERSION}
 
+# Install PM2 and Yarn inside the authenticated feed layer so every npm pull (including
+# yarn) resolves from the private Azure Artifacts registry. Installing yarn after the
+# .npmrc is removed would fall back to the public registry.npmjs.org and break network isolation.
 RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
     FEED_ACCESSTOKEN=$(cat /run/secrets/npmrc) && \
     echo "registry=https://pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/" > /root/.npmrc && \
@@ -54,15 +59,11 @@ RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
     echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc && \
     chmod +x /tmp/installDependencies.sh && \
     PM2_VERSION=${PM2_VERSION} /tmp/installDependencies.sh && \
+    npm install --global "yarn@${YARN_VERSION}" && \
+    yarn --version && \
     npm cache clean --force && \
     find /tmp -mindepth 1 -delete && \
     rm -rf /root/.npmrc
-
-# Install Yarn
-ARG YARN_VERSION=1.22.22
-ENV YARN_VERSION=${YARN_VERSION}
-RUN npm install --global "yarn@${YARN_VERSION}" \
-  && yarn --version
 
 
 # Bake Application Insights key from pipeline variable into final image
