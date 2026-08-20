@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 
         public static readonly List<string> RuntimeVersions = new List<string> { "7.4-debian-bullseye", "7.4-debian-buster", "8.0-debian-bullseye", "8.0-debian-buster", "8.1-debian-bullseye", "8.1-debian-buster", "8.2-debian-bullseye", "8.2-debian-buster", "8.3-debian-bullseye", "8.3-debian-buster", "8.3-debian-bookworm" };
 
-        public static readonly List<string> FpmRuntimeVersions = new List<string> { "7.4-fpm-debian-bullseye", "8.0-fpm-debian-bullseye", "8.1-fpm-debian-bullseye", "8.2-fpm-debian-bullseye", "8.3-fpm-debian-bullseye", "8.3-fpm-debian-bookworm", "8.4-fpm-debian-bullseye", "8.4-fpm-debian-bookworm", "8.5-fpm-ubuntu-noble" };
+        public static readonly List<string> FpmRuntimeVersions = new List<string> { "7.4-fpm-debian-bullseye", "8.0-fpm-debian-bullseye", "8.1-fpm-debian-bullseye", "8.2-fpm-debian-bullseye", "8.3-fpm-debian-bullseye", "8.3-fpm-debian-bookworm", "8.4-fpm-debian-bullseye", "8.4-fpm-debian-bookworm", "8.5-fpm-ubuntu-noble", "8.6-fpm-ubuntu-resolute" };
 
         public static readonly Dictionary<string, string[]> ComposerVersionsPerDebianFlavor = new Dictionary<string, string[]>
         {
@@ -81,6 +81,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         };
 
         public static string ComposerDefaultVersion => ConstantsYamlReader.Get("phpComposerVersion");
+
+        public static string Php86Version => ConstantsYamlReader.Get("php86Version");
+
+        public static string Php86Keys => ConstantsYamlReader.Get("php86_GPG_keys");
+
+        public static string Php86TarSha256 => ConstantsYamlReader.Get("php86Version_SHA");
 
         public static string Php85Version => ConstantsYamlReader.Get("php85Version");
 

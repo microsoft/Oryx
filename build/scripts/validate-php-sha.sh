@@ -80,13 +80,11 @@ validated=0
 
 # Extract PHP versions and SHAs from constants.yml
 while IFS= read -r line; do
-    # Match lines like:   php85Version: 8.5.1 (with optional leading spaces)
-    if [[ "$line" =~ ^[[:space:]]*php([0-9]+)Version:[[:space:]]*([0-9.]+)$ ]]; then
+    if [[ "$line" =~ ^[[:space:]]*php([0-9]+)Version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+((alpha|beta|RC)[0-9]+)?)$ ]]; then
         php_key="php${BASH_REMATCH[1]}"
         version="${BASH_REMATCH[2]}"
         
-        # Security: Validate version format strictly (only digits and dots, reasonable length)
-        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || [[ ${#version} -gt 20 ]]; then
+        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+((alpha|beta|RC)[0-9]+)?$ ]] || [[ ${#version} -gt 20 ]]; then
             echo "Warning: Skipping invalid version format: $version" >&2
             continue
         fi
@@ -97,7 +95,7 @@ while IFS= read -r line; do
             local_sha="${BASH_REMATCH[1]}"
             
             # Security: Sanitize output to prevent log injection
-            safe_version="${version//[^0-9.]/}"
+            safe_version="${version//[^0-9A-Za-z.]/}"
             echo -n "PHP $safe_version: "
             
             # Fetch official SHA from php.net with retry (URL-encode version just in case)

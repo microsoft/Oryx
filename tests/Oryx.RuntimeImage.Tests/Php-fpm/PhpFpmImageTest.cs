@@ -138,6 +138,112 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        [Trait("category", "runtime-resolute")]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void Php86ResoluteVersionAndOsMatch()
+        {
+            var image = _imageHelper.GetRuntimeImage(
+                "php",
+                "8.6-fpm",
+                ImageTestHelperConstants.OsTypeUbuntuResolute);
+
+            var versionResult = _dockerCli.Run(image, "php", new[] { "--version" });
+            var osResult = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = image,
+                CommandToExecuteOnRun = "bash",
+                CommandArguments = new[] { "-c", ". /etc/os-release && test \"$VERSION_CODENAME\" = resolute" }
+            });
+
+            RunAsserts(() =>
+            {
+                Assert.True(versionResult.IsSuccess);
+                Assert.Contains("PHP " + PhpVersions.Php86Version, versionResult.StdOut);
+                Assert.Contains("beta1", versionResult.StdOut);
+                Assert.True(osResult.IsSuccess);
+            },
+                versionResult.GetDebugInfo() + Environment.NewLine + osResult.GetDebugInfo());
+        }
+
+        [Fact]
+        [Trait("category", "runtime-resolute")]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void Php86ResoluteContainsRequiredExtensions()
+        {
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage(
+                    "php",
+                    "8.6-fpm",
+                    ImageTestHelperConstants.OsTypeUbuntuResolute),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-r", "echo implode(',', get_loaded_extensions());" }
+            });
+
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                foreach (var extension in new[]
+                {
+                    "ftp", "gd", "intl", "ldap", "mbstring", "mongodb", "mysqli", "odbc", "PDO",
+                    "pdo_mysql", "PDO_ODBC", "pdo_pgsql", "redis", "Zend OPcache", "zip"
+                })
+                {
+                    Assert.Contains(extension, result.StdOut);
+                }
+            },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        [Trait("category", "runtime-resolute")]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void Php86ResoluteHasDisabledXdebugAndDisabledJit()
+        {
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage(
+                    "php",
+                    "8.6-fpm",
+                    ImageTestHelperConstants.OsTypeUbuntuResolute),
+                CommandToExecuteOnRun = "bash",
+                CommandArguments = new[]
+                {
+                    "-c",
+                    "test \"$(find /usr/local/lib/php/extensions -name xdebug.so | wc -l)\" -eq 1" +
+                    " && ! php -m | grep -qi xdebug" +
+                    " && ! grep -Rqi xdebug /usr/local/etc/php/conf.d" +
+                    " && php -r '$s=opcache_get_status(false); exit(extension_loaded(\"Zend OPcache\") && isset($s[\"jit\"]) && !$s[\"jit\"][\"enabled\"] ? 0 : 1);'"
+                }
+            });
+
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
+        }
+
+        [Fact]
+        [Trait("category", "runtime-resolute")]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void Php86ResoluteExcludesSshAndBuildPackages()
+        {
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage(
+                    "php",
+                    "8.6-fpm",
+                    ImageTestHelperConstants.OsTypeUbuntuResolute),
+                CommandToExecuteOnRun = "bash",
+                CommandArguments = new[]
+                {
+                    "-c",
+                    "! dpkg-query -W -f='${binary:Package}\\n' | grep -E -- '(^openssh-(client|server)(:.*)?$|-dev(:.*)?$)'" +
+                    " && for tool in gcc g++ make autoconf phpize php-config ssh sshd sftp; do ! command -v \"$tool\"; done"
+                }
+            });
+
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
+        }
+
         [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("8.1-fpm")]

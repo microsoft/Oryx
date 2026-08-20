@@ -28,7 +28,7 @@ stack_name=$1;
 stack_version=$2;
 os_flavor=$3;
 
-if [ "$os_flavor" == "noble" ]; then
+if [[ "$os_flavor" == "noble" || "$os_flavor" == "resolute" ]]; then
     os_type="ubuntu"
 else
     os_type="debian"
@@ -101,7 +101,9 @@ case $stack_name in
     ;;
 
     "php-fpm")
-        docker build -f ./images/runtime/commonbase/phpFpmRuntimeBase.Dockerfile -t oryx_php_fpm_run_base_$os_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$os_flavor" .
+        if [ "$stack_version" != "8.6" ]; then
+            docker build -f ./images/runtime/commonbase/phpFpmRuntimeBase.Dockerfile -t oryx_php_fpm_run_base_$os_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$os_flavor" .
+        fi
         case $stack_version in
             "8.1")
                 docker build -f ./images/runtime/php-fpm/8.1/$os_flavor.Dockerfile -t phpfpm81_image_$os_flavor --build-arg PHP_VERSION=$php81Version --build-arg PHP_SHA256=$php81Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$os_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
@@ -121,6 +123,10 @@ case $stack_name in
 
             "8.5")
                 docker build -f ./images/runtime/php-fpm/8.5/$os_flavor.Dockerfile -t phpfpm85_image_$os_flavor --build-arg PHP_VERSION=$php85Version --build-arg PHP_SHA256=$php85Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$os_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+            ;;
+
+            "8.6")
+                docker build -f ./images/runtime/php-fpm/8.6/$os_flavor.Dockerfile -t phpfpm86_image_$os_flavor --build-arg PHP_VERSION=$php86Version --build-arg PHP_SHA256=$php86Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$os_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
             ;;
         esac
     ;;
@@ -162,5 +168,4 @@ esac
 
 
                 
-
 
