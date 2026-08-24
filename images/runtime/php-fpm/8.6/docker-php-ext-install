@@ -1,0 +1,73 @@
+#!/bin/sh
+set -e
+
+: ${CFLAGS:=$PHP_CFLAGS}
+: ${CPPFLAGS:=$PHP_CPPFLAGS}
+: ${LDFLAGS:=$PHP_LDFLAGS}
+export CFLAGS CPPFLAGS LDFLAGS
+
+srcExists=
+if [ -d /usr/src/php ]; then
+	srcExists=1
+fi
+docker-php-source extract
+if [ -z "$srcExists" ]; then
+	touch /usr/src/php/.docker-delete-me
+fi
+
+cd /usr/src/php/ext
+
+usage() {
+	echo "usage: $0 [-jN] [--ini-name file.ini] ext-name [ext-name ...]"
+}
+
+opts="$(getopt -o 'h?j:' --long 'help,ini-name:,jobs:' -- "$@" || { usage >&2 && false; })"
+eval set -- "$opts"
+
+j=1
+iniName=
+while true; do
+	flag="$1"
+	shift
+	case "$flag" in
+		--help|-h|'-?') usage && exit 0 ;;
+		--ini-name) iniName="$1" && shift ;;
+		--jobs|-j) j="$1" && shift ;;
+		--) break ;;
+		*) echo >&2 "error: unknown flag: $flag"; usage >&2; exit 1 ;;
+	esac
+done
+
+exts=
+for ext; do
+	[ -n "$ext" ] || continue
+	if [ ! -d "$ext" ]; then
+		echo >&2 "error: $PWD/$ext does not exist"
+		exit 1
+	fi
+	exts="$exts $ext"
+done
+
+[ -n "$exts" ] || { usage >&2; exit 1; }
+
+popDir="$PWD"
+for ext in $exts; do
+	cd "$ext"
+	[ -e Makefile ] || docker-php-ext-configure "$ext"
+	make -j"$j"
+
+	if ! php -n -d 'display_errors=stderr' -r 'exit(ZEND_DEBUG_BUILD ? 0 : 1);' > /dev/null; then
+		find modules -maxdepth 1 -name '*.so' \
+			-exec sh -euxc 'strip --strip-all "$@" || :' -- '{}' +
+	fi
+
+	make -j"$j" install
+	find modules -maxdepth 1 -name '*.so' -exec basename '{}' '.so' ';' \
+		| xargs -r docker-php-ext-enable ${iniName:+--ini-name "$iniName"}
+	make -j"$j" clean
+	cd "$popDir"
+done
+
+if [ -e /usr/src/php/.docker-delete-me ]; then
+	docker-php-source delete
+fi

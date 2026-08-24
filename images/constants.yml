@@ -28,10 +28,11 @@ variables:
   php83osFlavors: bullseye,bookworm
   php84osFlavors: bullseye,bookworm
   php85osFlavors: noble
+  php86osFlavors: resolute
   osFlavors: bullseye,bookworm,noble
   dotnetosFlavors: bookworm,bullseye,noble,resolute
   nodejsosFlavors: bookworm,bullseye,noble,resolute
-  phposFlavors: bookworm,bullseye,noble
+  phposFlavors: bookworm,bullseye,noble,resolute
   pythonosFlavors: bookworm,bullseye,noble,resolute
   cliDebianFlavors: bullseye
   cliBuilderDebianFlavors: bullseye
@@ -46,6 +47,7 @@ variables:
   php83_GPG_keys: "1198C0117593497A5EC5C199286AF1F9897469DC AFD8691FDAEDF03BDF6E460563F15A9B715376CA"
   php84_GPG_keys: "AFD8691FDAEDF03BDF6E460563F15A9B715376CA 9D7F99A0CB8F05C8A6958D6256A97AF7600A39A6"
   php85_GPG_keys: "1198C0117593497A5EC5C199286AF1F9897469DC 49D9AF6BC72A80D6691719C8AA23F5BE9C7097D4"
+  php86_GPG_keys: "D95C03BC702BE9515344AE3374E44BC9067701A5 016895DE9A475111D537A6E69134FF30BC5A99B5 5CFF17B64DC1C244F5D0EAC3E43535E2EB19010E"
   python310_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
   python311_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
   python312_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
@@ -84,6 +86,8 @@ variables:
   php84Version_SHA: 7cf5d8ab12c3b2016875bcfaec71bef1ef0b07bed6148f2c447577074431f984
   php85Version: 8.5.6
   php85Version_SHA: 826c600b7c6f956bd335558ca3bdbcab23b22126c1cc8d9348be2280a2204bb7
+  php86Version: 8.6.0beta1
+  php86Version_SHA: e44571d75b368b36a2d6db6878705e5512af5d2a78e31463c49796a94018d282
   phpComposerVersion: 2.6.2
   python39Version: 3.9.24
   python310Version: 3.10.20

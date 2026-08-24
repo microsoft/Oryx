@@ -168,13 +168,13 @@ buildPlatform() {
 		# Read the version file but only invoke the build function for matching versions.
 		# This preserves extra args (e.g. GPG keys, SHAs) that some platforms need.
 		while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]; do
-			VERSION_INFO="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//')"
+			VERSION_INFO="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 			if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]]; then
 				continue
 			fi
 
 			IFS=',' read -ra VERSION_INFO_PARTS <<< "$VERSION_INFO"
-			lineVersion="$(echo -e "${VERSION_INFO_PARTS[0]}" | sed -e 's/^[[:space:]]*//')"
+			lineVersion="$(echo -e "${VERSION_INFO_PARTS[0]}" | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 
 			if [ -z "${_force_set[$lineVersion]:-}" ]; then
 				continue
@@ -183,7 +183,7 @@ buildPlatform() {
 			echo "Force-building version: $lineVersion"
 			versionArgs=()
 			for arg in "${VERSION_INFO_PARTS[@]}"; do
-				arg="$(echo -e "${arg}" | sed -e 's/^[[:space:]]*//')"
+				arg="$(echo -e "${arg}" | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 				versionArgs+=("$arg")
 			done
 
@@ -195,7 +195,7 @@ buildPlatform() {
 	while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]
 	do
 		# remove all whitespace before first character
-		VERSION_INFO="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//')"
+		VERSION_INFO="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 		# Ignore empty lines and comments
 		if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]] ; then
 			continue
@@ -206,7 +206,7 @@ buildPlatform() {
 		for arg in "${VERSION_INFO[@]}"
 		do
 			# Trim beginning whitespace
-			arg="$(echo -e "${arg}" | sed -e 's/^[[:space:]]*//')"
+			arg="$(echo -e "${arg}" | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 			versionArgs+=("$arg")
 		done
 

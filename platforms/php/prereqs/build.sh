@@ -19,10 +19,14 @@ mkdir -p "$PHP_INI_DIR/conf.d";
 # https://github.com/docker-library/php/issues/272
 PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 PHP_CPPFLAGS="$PHP_CFLAGS"
-PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
+PHP_LDFLAGS="-Wl,-O1 -pie"
 
 PHP_URL="https://secure.php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror"
 PHP_ASC_URL="" # "https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror"
+if [[ "$PHP_VERSION" =~ [a-zA-Z] ]]; then
+	PHP_URL="https://downloads.php.net/~svpernova09/php-$PHP_VERSION.tar.xz"
+	PHP_ASC_URL="$PHP_URL.asc"
+fi
 GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
 
@@ -34,18 +38,24 @@ if [ "$osFlavor" == "stretch" ]; then
 	phpSdkFileName=php-$PHP_VERSION.tar.gz
 else
 	phpSdkFileName=php-$osFlavor-$PHP_VERSION.tar.gz
+	ncursesDevPackage='libncurses5-dev'
+	libxmlRuntimePackage='libxml2'
+	if [ "$OS_FLAVOR" = "resolute" ]; then
+		ncursesDevPackage='libncurses-dev'
+		libxmlRuntimePackage='libxml2-16'
+	fi
 	# for buster and ubuntu we would need following libraries to build php 
 	apt-get update && \
 	apt-get upgrade -y && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		libssl-dev \
-		libncurses5-dev \
+		$ncursesDevPackage \
 		libsqlite3-dev \
 		libreadline-dev \
 		libgdm-dev \
 		$(echo "$OS_FLAVOR" | grep -qE "^(bullseye|bookworm)$" && echo "libdb4o-cil-dev") \
 		libpcap-dev \
-		libxml2 \
+		$libxmlRuntimePackage \
 		libxml2-dev
 fi
 
@@ -71,7 +81,7 @@ fi;
 if [ -n "$PHP_ASC_URL" ]; then
 	wget -O php.tar.xz.asc "$PHP_ASC_URL";
 	export GNUPGHOME="$(mktemp -d)";
-	/tmp/receiveGpgKeys.sh ${GPG_KEYS[0]} ${GPG_KEYS[1]}
+	/tmp/receiveGpgKeys.sh "${GPG_KEYS[@]}"
 	gpg --batch --verify php.tar.xz.asc php.tar.xz;
 	command -v gpgconf > /dev/null && gpgconf --kill all;
 	rm -rf "$GNUPGHOME";
@@ -110,7 +120,9 @@ rm -rf /var/lib/apt/lists/*;
 export \
 	CFLAGS="$PHP_CFLAGS" \
 	CPPFLAGS="$PHP_CPPFLAGS" \
-	LDFLAGS="$PHP_LDFLAGS"
+	LDFLAGS="$PHP_LDFLAGS" \
+	PHP_BUILD_PROVIDER='https://github.com/microsoft/Oryx' \
+	PHP_UNAME='Linux - Oryx'
 
 /php/docker-php-source.sh extract;
 cd $PHP_SRC_DIR;
@@ -125,6 +137,8 @@ debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)";
 # fi;
 
 versionConfigureArgs=''
+readlineConfigureArg='--with-libedit'
+sysconfConfigureArg=''
 # in PHP 7.4+, the pecl/pear installers are officially deprecated (requiring an explicit "--with-pear") and will be removed in PHP 8+; 
 # see also https://github.com/docker-library/php/issues/846#issuecomment-505638494
 if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then
@@ -132,9 +146,15 @@ if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then
 else
 	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
 fi
+if [[ $PHP_VERSION == 8.6.* ]]; then
+	versionConfigureArgs="$versionConfigureArgs --enable-pic --disable-phpdbg"
+	readlineConfigureArg='--with-readline'
+	sysconfConfigureArg="--sysconfdir=$INSTALLATION_PREFIX/etc"
+fi
 
 ./configure \
 		--build="$gnuArch" \
+		$sysconfConfigureArg \
 		--prefix="$INSTALLATION_PREFIX" \
 		--with-config-file-path="$PHP_INI_DIR" \
 		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
@@ -146,7 +166,7 @@ fi
 		--enable-bcmath \
 		$versionConfigureArgs \
 		--with-curl \
-		--with-libedit \
+		$readlineConfigureArg \
 		--with-openssl \
 		--with-zlib \
 		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \

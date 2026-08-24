@@ -1,5 +1,6 @@
 ARG OS_FLAVOR
-FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${OS_FLAVOR} AS php-buildpack-prereqs
+ARG BUILDPACK_DEPS_REGISTRY=mcr.microsoft.com/mirror/docker/library
+FROM ${BUILDPACK_DEPS_REGISTRY}/buildpack-deps:${OS_FLAVOR} AS php-buildpack-prereqs
 ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
 COPY platforms/php/prereqs /php
