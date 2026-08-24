@@ -46,8 +46,8 @@ COPY images/runtime/php-fpm/8.6/docker-php-ext-* images/runtime/php-fpm/8.6/dock
 COPY images/runtime/php-fpm/8.6/docker-php-source /usr/local/bin/
 COPY images/runtime/php-fpm/8.6/scripts/ /opt/oryx/php/
 
-RUN sed -i 's/\r$//' /usr/local/bin/docker-php-* /opt/oryx/php/*.sh \
-	&& chmod +x /usr/local/bin/docker-php-* /opt/oryx/php/*.sh
+RUN sed -i 's/\r$//' "${IMAGES_DIR}/receiveGpgKeys.sh" /usr/local/bin/docker-php-* /opt/oryx/php/*.sh \
+	&& chmod 755 "${IMAGES_DIR}/receiveGpgKeys.sh" /usr/local/bin/docker-php-* /opt/oryx/php/*.sh
 
 RUN /opt/oryx/php/install-php-runtime-dependencies.sh
 RUN /opt/oryx/php/download-and-verify-php-source.sh
