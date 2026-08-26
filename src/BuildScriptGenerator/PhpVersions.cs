@@ -1,5 +1,6 @@
 // Current versions are read from images/constants.yml via ConstantsYamlReader.
 
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Common
@@ -81,7 +82,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             { "resolute", new[] { "2.6.2", "2.7.7", "2.8.2", "2.8.4", "2.8.6", "2.8.8" } },
         };
 
-        public static string ComposerDefaultVersion => ConstantsYamlReader.Get("phpComposerVersion");
+        public static string ComposerDefaultVersion =>
+            string.Equals(Environment.GetEnvironmentVariable("OS_FLAVOR"), "resolute", StringComparison.OrdinalIgnoreCase)
+                ? Composer28Version
+                : ConstantsYamlReader.Get("phpComposerVersion");
 
         public static string Php85Version => ConstantsYamlReader.Get("php85Version");
 
