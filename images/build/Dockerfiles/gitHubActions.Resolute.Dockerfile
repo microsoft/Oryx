@@ -88,7 +88,6 @@ ARG AI_CONNECTION_STRING
 COPY images/retry.sh ${TEMP_DIR}
 COPY images/build/benv.sh  ${TEMP_DIR}
 COPY images/build/logger.sh  ${TEMP_DIR}
-COPY images/constants.yml /opt/tmp/images/constants.yml
 
 
 RUN tmpDir="/opt/tmp" \
@@ -112,7 +111,8 @@ RUN tmpDir="/opt/tmp" \
     && echo "UBUNTU|${OS_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
     && rm -rf /opt/tmp
 
-    
+COPY images/constants.yml /opt/tmp/images/constants.yml
+
 # Resolute based Github Action Image to use ACR to fetch SDKs instead of Storage 
 ARG ORYX_ENABLE_ACR_SDK_PROVIDER
 ARG ORYX_ACR_SDK_REGISTRY_URL
