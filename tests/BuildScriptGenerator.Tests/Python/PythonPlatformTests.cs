@@ -468,6 +468,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
+        [Theory]
+        [InlineData("audit", "audit")]
+        [InlineData("block", "block")]
+        [InlineData("BLOCK", "block")]
+        [InlineData("invalid", "audit")]
+        [InlineData(null, "audit")]
+        public void GeneratedScript_UsesSafeBuildCliProperties(
+            string configuredMode,
+            string expectedMode)
+        {
+            // Arrange
+            var scriptGenerator = CreatePlatform();
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            var properties = new Dictionary<string, string>
+            {
+                [PythonPlatform.SafeOryxBuildEnabledPropertyKey] = "true",
+            };
+            if (configuredMode != null)
+            {
+                properties[PythonPlatform.SafeOryxBuildModePropertyKey] = configuredMode;
+            }
+
+            var context = new BuildScriptGeneratorContext
+            {
+                SourceRepo = repo,
+                Properties = properties,
+            };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.11",
+                HasRequirementsTxtFile = true,
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.Contains($"--mode \"{expectedMode}\"", snippet.BashBuildScriptSnippet);
+            Assert.Contains("install_with_safe_oryx_build", snippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("ORYX_SAFE_BUILD_ENABLED", snippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("ORYX_SAFE_BUILD_MODE", snippet.BashBuildScriptSnippet);
+        }
+
         [Fact]
         public void GeneratedBuildSnippet_CustomBuildCommandWillExecute_InsteadOfDefaultInstallCommands()
         {

@@ -40,6 +40,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         "folder. Option is '" + UniversalWheel + ". Default is to not Non universal wheel. " +
         "For example, when this property is enabled, wheel build command will be " +
         "'python setup.py bdist_wheel --universal'")]
+    [BuildProperty(
+        SafeOryxBuildEnabledPropertyKey,
+        "Enables dependency vulnerability assessment before Python package installation.")]
+    [BuildProperty(
+        SafeOryxBuildModePropertyKey,
+        "Sets Safe Oryx Build policy to 'audit' or 'block'. Defaults to 'audit'.")]
     internal class PythonPlatform : IProgrammingPlatform
     {
         /// <summary>
@@ -61,6 +67,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// The Package Wheel Property.
         /// </summary>
         internal const string PythonPackageWheelPropertyKey = "packagewheel";
+
+        internal const string SafeOryxBuildEnabledPropertyKey = "safe_oryx_build_enabled";
+
+        internal const string SafeOryxBuildModePropertyKey = "safe_oryx_build_mode";
 
         /// <summary>
         /// The zip option.
@@ -297,7 +307,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 pythonPackageWheelProperty: pythonPackageWheelType,
                 customRequirementsTxtPath: customRequirementsTxtPath,
                 pipUpgradeFlag: pipUpgrade,
-                customBuildCommand: this.pythonScriptGeneratorOptions.CustomBuildCommand);
+                customBuildCommand: this.pythonScriptGeneratorOptions.CustomBuildCommand,
+                safeOryxBuildEnabled: BuildPropertiesHelper.IsTrue(
+                    SafeOryxBuildEnabledPropertyKey,
+                    context,
+                    valueIsRequired: true),
+                safeOryxBuildMode: GetSafeOryxBuildMode(context));
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
@@ -491,6 +506,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             return packageDir;
+        }
+
+        private static string GetSafeOryxBuildMode(BuildScriptGeneratorContext context)
+        {
+            if (context.Properties != null &&
+                context.Properties.TryGetValue(SafeOryxBuildModePropertyKey, out string mode) &&
+                mode.EqualsIgnoreCase("block"))
+            {
+                return "block";
+            }
+
+            return "audit";
         }
 
         private static string GetDefaultVirtualEnvName(PlatformDetectorResult detectorResult)

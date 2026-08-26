@@ -3,8 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
@@ -88,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotNull(text);
             Assert.Contains("install_via_uv() {", text);
             Assert.Contains("uv pip install", text);
-            Assert.Contains("base_cmd=\"$base_cmd -r $requirements_file\"", text);
+            Assert.Contains("base_cmd+=(-r \"$requirements_file\")", text);
         }
 
         [Fact]
@@ -480,10 +483,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("Running pip install...", text);
             
             // Verify it calls impl function (uv with fallback) when enabled - note: cache_dir param removed
-            Assert.Contains("install_python_packages_impl \"python\" \"$REQUIREMENTS_TXT_FILE\"", text);
+            Assert.Contains("install_python_requirements \"$python\" \"$REQUIREMENTS_TXT_FILE\"", text);
             
             // Verify it uses pip directly when not enabled
-            Assert.Contains("python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE", text);
+            Assert.Contains("local base_cmd=(\"$python_cmd\" -m pip install", text);
         }
 
         [Fact]
@@ -545,7 +548,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             
             // Verify install_python_packages_impl is called when flag is set for requirements.txt
             // Note: cache_dir param removed, now it's just: python_cmd, requirements_file, target_dir, upgrade_flag
-            Assert.Contains("install_python_packages_impl \"python\" \"$REQUIREMENTS_TXT_FILE\"", text);
+            Assert.Contains("install_python_requirements \"$python\" \"$REQUIREMENTS_TXT_FILE\"", text);
         }
 
         [Fact]
@@ -576,11 +579,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("# Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set", text);
             Assert.Contains("if [ -n \"$PYTHON_PRELOADED_WHEELS_DIR\" ]; then", text);
             Assert.Contains("echo \"Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR\"", text);
-            Assert.Contains("base_cmd=\"$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR\"", text);
+            Assert.Contains("base_cmd+=(--find-links \"$PYTHON_PRELOADED_WHEELS_DIR\")", text);
             
             // Verify UV_PIP_CACHE_DIR is used
             Assert.Contains("UV_PIP_CACHE_DIR=", text);
-            Assert.Contains("uv pip install --cache-dir $UV_PIP_CACHE_DIR", text);
+            Assert.Contains("local base_cmd=(uv pip install --cache-dir \"$UV_PIP_CACHE_DIR\"", text);
         }
 
         [Fact]
@@ -689,7 +692,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             
             // The script should contain the else branch with pip direct install
             Assert.Contains("echo", text);
-            Assert.Contains("echo Running pip install...", text);
+            Assert.Contains("echo \"Running pip install...\"", text);
             
             // In non-virtual env mode, should have 3 locations with preloaded wheels support:
             // 1. install_via_uv (shared function)
@@ -705,8 +708,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 index += searchPattern.Length;
             }
             
-            // Should appear 3 times in non-virtual env mode
-            Assert.Equal(3, count);
+            Assert.True(count >= 2, $"Expected shared pip and uv preloaded wheels checks, found {count}");
         }
 
         [Fact]
@@ -752,7 +754,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 commentCount++;
                 index += commentPattern.Length;
             }
-            Assert.Equal(3, commentCount);
+            Assert.True(commentCount >= 2, $"Expected shared pip and uv comments, found {commentCount}");
             
             // All checks should have the echo message
             int echoCount = 0;
@@ -763,18 +765,138 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 echoCount++;
                 index += echoPattern.Length;
             }
-            Assert.Equal(3, echoCount);
+            Assert.True(echoCount >= 2, $"Expected shared pip and uv messages, found {echoCount}");
             
             // All checks should have --find-links flag
             int findLinksCount = 0;
             index = 0;
-            string findLinksPattern = "--find-links=$PYTHON_PRELOADED_WHEELS_DIR";
+            string findLinksPattern = "--find-links";
             while ((index = text.IndexOf(findLinksPattern, index)) != -1)
             {
                 findLinksCount++;
                 index += findLinksPattern.Length;
             }
-            Assert.Equal(3, findLinksCount);
+            Assert.True(findLinksCount >= 2, $"Expected shared pip and uv find-links options, found {findLinksCount}");
+        }
+
+        [Fact]
+        public void GeneratedSnippet_OmitsSafeBuildFlowByDefault()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.DoesNotContain("install_with_safe_oryx_build", text);
+            Assert.DoesNotContain("ORYX_SAFE_BUILD_", text);
+        }
+
+        [Theory]
+        [InlineData("audit")]
+        [InlineData("block")]
+        public void GeneratedSnippet_ContainsSafeBuildFlowFromBuildProperties(string mode)
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false,
+                safeOryxBuildEnabled: true,
+                safeOryxBuildMode: mode);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.Contains("pip install --dry-run --ignore-installed --report", text);
+            Assert.Contains("uv pip compile --python", text);
+            Assert.Contains("command -v oryx-safe-build-checker", text);
+            Assert.Contains("oryx-safe-build-checker \\", text);
+            Assert.Contains("--resolution \"$resolution_file\"", text);
+            Assert.Contains("--constraints \"$constraints_file\"", text);
+            Assert.Contains($"--mode \"{mode}\"", text);
+            Assert.Contains("return 42", text);
+            Assert.Contains("return 75", text);
+            Assert.Contains("if [ \"$SAFE_ORYX_BUILD_CHECKED\" = \"true\" ]; then", text);
+            Assert.Contains("install_python_packages_impl \"$python_cmd\" \"$requirements_file\" \"\" \"\"", text);
+            Assert.Contains("pipInstallExitCode == 42", text);
+            Assert.Contains("oryx-safe-build-checker is not installed", text);
+            Assert.Contains("assessment_exit_code != 0", text);
+            Assert.DoesNotContain("http://127.0.0.1:8080/v1/audit", text);
+            Assert.DoesNotContain("SafeOryxBuild.py", text);
+            Assert.DoesNotContain("SAFE_ORYX_BUILD_OUTCOME", text);
+            Assert.DoesNotContain("SAFE_ORYX_BUILD_TEMP_ROOT", text);
+            Assert.Contains("SAFE_ORYX_BUILD_CHECKED=true", text);
+            Assert.DoesNotContain("ORYX_SAFE_BUILD_ENABLED", text);
+            Assert.DoesNotContain("ORYX_SAFE_BUILD_MODE", text);
+        }
+
+        [Fact]
+        public void GeneratedSafeBuildSnippet_HasValidBashSyntax()
+        {
+            var bash = OperatingSystem.IsWindows()
+                ? @"C:\Program Files\Git\bin\bash.exe"
+                : "bash";
+            if (OperatingSystem.IsWindows() && !File.Exists(bash))
+            {
+                return;
+            }
+
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.11",
+                runPythonPackageCommand: false,
+                safeOryxBuildEnabled: true,
+                safeOryxBuildMode: "block");
+            string path = Path.Combine(
+                Path.GetTempPath(),
+                $"oryx-safe-build-{Guid.NewGuid():N}.sh");
+
+            try
+            {
+                File.WriteAllText(
+                    path,
+                    TemplateHelper.Render(
+                        TemplateHelper.TemplateResource.PythonSnippet,
+                        snippetProps));
+                var result = ProcessHelper.RunProcess(
+                    bash,
+                    new[] { "-n", path },
+                    workingDirectory: null,
+                    waitTimeForExit: TimeSpan.FromSeconds(10));
+
+                Assert.True(result.ExitCode == 0, result.Error);
+            }
+            finally
+            {
+                File.Delete(path);
+            }
         }
     }
 }
