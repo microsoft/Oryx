@@ -88,6 +88,7 @@ ARG AI_CONNECTION_STRING
 COPY images/retry.sh ${TEMP_DIR}
 COPY images/build/benv.sh  ${TEMP_DIR}
 COPY images/build/logger.sh  ${TEMP_DIR}
+COPY images/constants.yml /opt/tmp/images/constants.yml
 
 
 RUN tmpDir="/opt/tmp" \
