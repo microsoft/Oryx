@@ -158,14 +158,14 @@ install_via_pip() {
     return $exit_code
 }
 
-{{ if SafeOryxBuildEnabled }}
+{{ if OryxSafeBuildEnabled }}
 SAFE_ORYX_BUILD_CHECKED=false
 
-safe_oryx_build_unavailable() {
-    echo "Safe Oryx Build audit: Assessment was unavailable because $1; deployment will continue using the original Oryx installation path."
+oryx_safe_build_unavailable() {
+    echo "Oryx SafeBuild audit: Assessment was unavailable because $1; deployment will continue using the original Oryx installation path."
 }
 
-install_with_safe_oryx_build() {
+install_with_oryx_safe_build() {
     local manager=$1
     local python_cmd=$2
     local requirements_file=$3
@@ -176,25 +176,26 @@ install_with_safe_oryx_build() {
     SAFE_ORYX_BUILD_CHECKED=false
 
     if ! command -v oryx-safe-build-checker > /dev/null 2>&1; then
-        safe_oryx_build_unavailable "oryx-safe-build-checker is not installed"
+        oryx_safe_build_unavailable "oryx-safe-build-checker is not installed"
         return 75
     fi
 
     temp_dir=$(mktemp -d 2> /dev/null)
     if [ -z "$temp_dir" ]; then
-        safe_oryx_build_unavailable "a temporary directory could not be created"
+        oryx_safe_build_unavailable "a temporary directory could not be created"
         return 75
     fi
 
-    local resolution_file="$temp_dir/resolution"
-    local constraints_file="$temp_dir/approved-constraints.txt"
+    local resolver_output_file="$temp_dir/resolver-output"
+    local frozen_packages_file="$temp_dir/frozen-packages.txt"
+    local exceptions_file="/opt/Kudu/OryxSafeBuild/bin/exceptions.json"
     local resolve_cmd
     local resolve_exit_code=0
     if [ "$manager" = "uv" ]; then
         ensure_uv "$python_cmd" || resolve_exit_code=$?
-        resolve_cmd=(uv pip compile --python "$python_cmd" --cache-dir "$UV_PIP_CACHE_DIR" --no-header --no-annotate --output-file "$resolution_file")
+        resolve_cmd=(uv pip compile --python "$python_cmd" --cache-dir "$UV_PIP_CACHE_DIR" --no-header --no-annotate --output-file "$resolver_output_file")
     else
-        resolve_cmd=("$python_cmd" -m pip install --dry-run --ignore-installed --report "$resolution_file" --cache-dir "$PIP_CACHE_DIR" --prefer-binary)
+        resolve_cmd=("$python_cmd" -m pip install --dry-run --ignore-installed --report "$resolver_output_file" --cache-dir "$PIP_CACHE_DIR" --prefer-binary)
         if [ -n "$target_dir" ]; then
             resolve_cmd+=(--target "$target_dir")
         fi
@@ -214,7 +215,7 @@ install_with_safe_oryx_build() {
         "${resolve_cmd[@]}" > "$temp_dir/resolver.log" 2>&1 || resolve_exit_code=$?
     fi
     if [[ $resolve_exit_code != 0 ]]; then
-        safe_oryx_build_unavailable "$manager dependency resolution failed"
+        oryx_safe_build_unavailable "$manager dependency resolution failed"
         rm -rf -- "$temp_dir"
         return 75
     fi
@@ -222,20 +223,21 @@ install_with_safe_oryx_build() {
     local assessment_exit_code=0
     oryx-safe-build-checker \
         --manager "$manager" \
-        --resolution "$resolution_file" \
-        --constraints "$constraints_file" \
-        --mode "{{ SafeOryxBuildMode }}" || assessment_exit_code=$?
+        --resolver-output "$resolver_output_file" \
+        --frozen-packages "$frozen_packages_file" \
+        --exceptions "$exceptions_file" \
+        --mode "{{ OryxSafeBuildMode }}" || assessment_exit_code=$?
 
     if [[ $assessment_exit_code == 42 ]]; then
         SAFE_ORYX_BUILD_CHECKED=true
         rm -rf -- "$temp_dir"
         return 42
     elif [[ $assessment_exit_code != 0 ]]; then
-        safe_oryx_build_unavailable "oryx-safe-build-checker could not complete the assessment"
+        oryx_safe_build_unavailable "oryx-safe-build-checker could not complete the assessment"
         rm -rf -- "$temp_dir"
         return 75
-    elif [ ! -f "$constraints_file" ]; then
-        safe_oryx_build_unavailable "oryx-safe-build-checker did not produce approved constraints"
+    elif [ ! -f "$frozen_packages_file" ]; then
+        oryx_safe_build_unavailable "oryx-safe-build-checker did not produce frozen packages"
         rm -rf -- "$temp_dir"
         return 75
     fi
@@ -243,9 +245,9 @@ install_with_safe_oryx_build() {
     SAFE_ORYX_BUILD_CHECKED=true
     local install_exit_code=0
     if [ "$manager" = "uv" ]; then
-        install_via_uv "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$constraints_file" "false" || install_exit_code=$?
+        install_via_uv "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$frozen_packages_file" "false" || install_exit_code=$?
     else
-        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$constraints_file" "false" || install_exit_code=$?
+        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$frozen_packages_file" "false" || install_exit_code=$?
     fi
     rm -rf -- "$temp_dir"
     return $install_exit_code
@@ -281,13 +283,13 @@ install_python_requirements() {
     local target_dir=$3
     local upgrade_flag=$4
 
-{{ if SafeOryxBuildEnabled }}
+{{ if OryxSafeBuildEnabled }}
     local manager="pip"
     if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
         manager="uv"
     fi
 
-    install_with_safe_oryx_build "$manager" "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+    install_with_oryx_safe_build "$manager" "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
     local safe_build_exit_code=$?
     if [ "$SAFE_ORYX_BUILD_CHECKED" = "true" ]; then
         return $safe_build_exit_code
@@ -372,7 +374,7 @@ install_python_requirements() {
             set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
-                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]{{ if SafeOryxBuildEnabled }} || [[ $pipInstallExitCode == 42 ]]{{ end }}; then
+                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]{{ if OryxSafeBuildEnabled }} || [[ $pipInstallExitCode == 42 ]]{{ end }}; then
                     LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 else
                     LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
@@ -490,7 +492,7 @@ install_python_requirements() {
             set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
-                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]{{ if SafeOryxBuildEnabled }} || [[ $pipInstallExitCode == 42 ]]{{ end }}; then
+                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]{{ if OryxSafeBuildEnabled }} || [[ $pipInstallExitCode == 42 ]]{{ end }}; then
                     LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 else
                     LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"

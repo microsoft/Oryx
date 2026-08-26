@@ -41,11 +41,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         "For example, when this property is enabled, wheel build command will be " +
         "'python setup.py bdist_wheel --universal'")]
     [BuildProperty(
-        SafeOryxBuildEnabledPropertyKey,
+        OryxSafeBuildEnabledPropertyKey,
         "Enables dependency vulnerability assessment before Python package installation.")]
     [BuildProperty(
-        SafeOryxBuildModePropertyKey,
-        "Sets Safe Oryx Build policy to 'audit' or 'block'. Defaults to 'audit'.")]
+        OryxSafeBuildModePropertyKey,
+        "Sets Oryx SafeBuild policy to 'audit' or 'block'. Defaults to 'audit'.")]
     internal class PythonPlatform : IProgrammingPlatform
     {
         /// <summary>
@@ -68,9 +68,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         internal const string PythonPackageWheelPropertyKey = "packagewheel";
 
-        internal const string SafeOryxBuildEnabledPropertyKey = "safe_oryx_build_enabled";
+        internal const string OryxSafeBuildEnabledPropertyKey = "oryx_safe_build_enabled";
 
-        internal const string SafeOryxBuildModePropertyKey = "safe_oryx_build_mode";
+        internal const string OryxSafeBuildModePropertyKey = "oryx_safe_build_mode";
 
         /// <summary>
         /// The zip option.
@@ -308,11 +308,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 customRequirementsTxtPath: customRequirementsTxtPath,
                 pipUpgradeFlag: pipUpgrade,
                 customBuildCommand: this.pythonScriptGeneratorOptions.CustomBuildCommand,
-                safeOryxBuildEnabled: BuildPropertiesHelper.IsTrue(
-                    SafeOryxBuildEnabledPropertyKey,
+                oryxSafeBuildEnabled: BuildPropertiesHelper.IsTrue(
+                    OryxSafeBuildEnabledPropertyKey,
                     context,
                     valueIsRequired: true),
-                safeOryxBuildMode: GetSafeOryxBuildMode(context));
+                oryxSafeBuildMode: GetOryxSafeBuildMode(context));
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
@@ -508,10 +508,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return packageDir;
         }
 
-        private static string GetSafeOryxBuildMode(BuildScriptGeneratorContext context)
+        private static string GetOryxSafeBuildMode(BuildScriptGeneratorContext context)
         {
             if (context.Properties != null &&
-                context.Properties.TryGetValue(SafeOryxBuildModePropertyKey, out string mode) &&
+                context.Properties.TryGetValue(OryxSafeBuildModePropertyKey, out string mode) &&
                 mode.EqualsIgnoreCase("block"))
             {
                 return "block";

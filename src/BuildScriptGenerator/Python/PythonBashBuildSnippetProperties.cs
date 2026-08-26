@@ -25,8 +25,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string customRequirementsTxtPath = null,
             string pipUpgradeFlag = null,
             string customBuildCommand = null,
-            bool safeOryxBuildEnabled = false,
-            string safeOryxBuildMode = "audit")
+            bool oryxSafeBuildEnabled = false,
+            string oryxSafeBuildMode = "audit")
         {
             this.VirtualEnvironmentName = virtualEnvironmentName;
             this.VirtualEnvironmentModule = virtualEnvironmentModule;
@@ -42,8 +42,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.CustomRequirementsTxtPath = customRequirementsTxtPath;
             this.PipUpgradeFlag = pipUpgradeFlag;
             this.CustomBuildCommand = customBuildCommand;
-            this.SafeOryxBuildEnabled = safeOryxBuildEnabled;
-            this.SafeOryxBuildMode = safeOryxBuildMode;
+            this.OryxSafeBuildEnabled = oryxSafeBuildEnabled;
+            this.OryxSafeBuildMode = oryxSafeBuildMode;
         }
 
         public string VirtualEnvironmentName { get; set; }
@@ -80,8 +80,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public string CustomBuildCommand { get; set; }
 
-        public bool SafeOryxBuildEnabled { get; set; }
+        public bool OryxSafeBuildEnabled { get; set; }
 
-        public string SafeOryxBuildMode { get; set; }
+        public string OryxSafeBuildMode { get; set; }
     }
 }

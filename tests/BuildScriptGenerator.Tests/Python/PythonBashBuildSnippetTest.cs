@@ -780,7 +780,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void GeneratedSnippet_OmitsSafeBuildFlowByDefault()
+        public void GeneratedSnippet_OmitsOryxSafeBuildFlowByDefault()
         {
             // Arrange
             var snippetProps = new PythonBashBuildSnippetProperties(
@@ -799,14 +799,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
 
             // Assert
-            Assert.DoesNotContain("install_with_safe_oryx_build", text);
+            Assert.DoesNotContain("install_with_oryx_safe_build", text);
             Assert.DoesNotContain("ORYX_SAFE_BUILD_", text);
         }
 
         [Theory]
         [InlineData("audit")]
         [InlineData("block")]
-        public void GeneratedSnippet_ContainsSafeBuildFlowFromBuildProperties(string mode)
+        public void GeneratedSnippet_ContainsOryxSafeBuildFlowFromBuildProperties(string mode)
         {
             // Arrange
             var snippetProps = new PythonBashBuildSnippetProperties(
@@ -820,8 +820,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: "3.11",
                 runPythonPackageCommand: false,
-                safeOryxBuildEnabled: true,
-                safeOryxBuildMode: mode);
+                oryxSafeBuildEnabled: true,
+                oryxSafeBuildMode: mode);
 
             // Act
             var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
@@ -831,8 +831,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("uv pip compile --python", text);
             Assert.Contains("command -v oryx-safe-build-checker", text);
             Assert.Contains("oryx-safe-build-checker \\", text);
-            Assert.Contains("--resolution \"$resolution_file\"", text);
-            Assert.Contains("--constraints \"$constraints_file\"", text);
+            Assert.Contains("--resolver-output \"$resolver_output_file\"", text);
+            Assert.Contains("--frozen-packages \"$frozen_packages_file\"", text);
+            Assert.Contains("exceptions_file=\"/opt/Kudu/OryxSafeBuild/bin/exceptions.json\"", text);
+            Assert.Contains("--exceptions \"$exceptions_file\"", text);
+            Assert.Contains("did not produce frozen packages", text);
             Assert.Contains($"--mode \"{mode}\"", text);
             Assert.Contains("return 42", text);
             Assert.Contains("return 75", text);
@@ -842,7 +845,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("oryx-safe-build-checker is not installed", text);
             Assert.Contains("assessment_exit_code != 0", text);
             Assert.DoesNotContain("http://127.0.0.1:8080/v1/audit", text);
-            Assert.DoesNotContain("SafeOryxBuild.py", text);
             Assert.DoesNotContain("SAFE_ORYX_BUILD_OUTCOME", text);
             Assert.DoesNotContain("SAFE_ORYX_BUILD_TEMP_ROOT", text);
             Assert.Contains("SAFE_ORYX_BUILD_CHECKED=true", text);
@@ -851,7 +853,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void GeneratedSafeBuildSnippet_HasValidBashSyntax()
+        public void GeneratedOryxSafeBuildSnippet_HasValidBashSyntax()
         {
             var bash = OperatingSystem.IsWindows()
                 ? @"C:\Program Files\Git\bin\bash.exe"
@@ -872,8 +874,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: "3.11",
                 runPythonPackageCommand: false,
-                safeOryxBuildEnabled: true,
-                safeOryxBuildMode: "block");
+                oryxSafeBuildEnabled: true,
+                oryxSafeBuildMode: "block");
             string path = Path.Combine(
                 Path.GetTempPath(),
                 $"oryx-safe-build-{Guid.NewGuid():N}.sh");
