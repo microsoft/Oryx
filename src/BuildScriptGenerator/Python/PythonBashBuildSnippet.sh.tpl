@@ -374,7 +374,13 @@ install_python_requirements() {
             set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
-                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]{{ if OryxSafeBuildEnabled }} || [[ $pipInstallExitCode == 42 ]]{{ end }}; then
+                {{ if OryxSafeBuildEnabled }}
+                if [[ $pipInstallExitCode == 42 ]]; then
+                    LogError "Oryx SafeBuild blocked the deployment because critical vulnerabilities were found in the resolved Python packages | Exit code: ${pipInstallExitCode} | Review the Oryx SafeBuild assessment above and update your requirements.txt"
+                elif [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                {{ else }}
+                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                {{ end }}
                     LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 else
                     LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
@@ -492,7 +498,13 @@ install_python_requirements() {
             set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
-                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]{{ if OryxSafeBuildEnabled }} || [[ $pipInstallExitCode == 42 ]]{{ end }}; then
+                {{ if OryxSafeBuildEnabled }}
+                if [[ $pipInstallExitCode == 42 ]]; then
+                    LogError "Oryx SafeBuild blocked the deployment because critical vulnerabilities were found in the resolved Python packages | Exit code: ${pipInstallExitCode} | Review the Oryx SafeBuild assessment above and update your requirements.txt"
+                elif [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                {{ else }}
+                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                {{ end }}
                     LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 else
                     LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"

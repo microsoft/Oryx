@@ -842,6 +842,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("if [ \"$SAFE_ORYX_BUILD_CHECKED\" = \"true\" ]; then", text);
             Assert.Contains("install_python_packages_impl \"$python_cmd\" \"$requirements_file\" \"\" \"\"", text);
             Assert.Contains("pipInstallExitCode == 42", text);
+            Assert.Contains(
+                "Oryx SafeBuild blocked the deployment because critical vulnerabilities " +
+                "were found in the resolved Python packages",
+                text);
+            Assert.DoesNotContain(
+                "PYTHON_FAST_BUILD_ENABLED\" = \"true\" ] || " +
+                "[[ $pipInstallExitCode == 42",
+                text);
             Assert.Contains("oryx-safe-build-checker is not installed", text);
             Assert.Contains("assessment_exit_code != 0", text);
             Assert.DoesNotContain("http://127.0.0.1:8080/v1/audit", text);
