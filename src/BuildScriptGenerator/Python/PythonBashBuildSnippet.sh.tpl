@@ -34,6 +34,7 @@ fi
 {{ end }}
 
 # Function to install packages via uv
+{{ if OryxSafeBuildEnabled }}
 ensure_uv() {
     local python_cmd=$1
 
@@ -48,6 +49,7 @@ ensure_uv() {
     echo "uv is already installed, skipping installation..."
     return 0
 }
+{{ end }}
 
 install_via_uv() {
     # Create UV cache directory if it doesn't exist
@@ -63,46 +65,48 @@ install_via_uv() {
     local constraints_file=$5
     local write_manifest=${6:-true}
     
-    ensure_uv "$python_cmd"
-    local ensure_uv_exit_code=$?
-    if [[ $ensure_uv_exit_code != 0 ]]; then
-        return $ensure_uv_exit_code
+    # Install uv if not already available
+    if ! command -v uv &> /dev/null; then
+        echo "Installing uv..."
+        local install_uv_cmd="$python_cmd -m pip install uv"
+        printf %s " , $install_uv_cmd" >> "$COMMAND_MANIFEST_FILE"
+        $python_cmd -m pip install uv
+    else
+        echo "uv is already installed, skipping installation..."
     fi
     
     set +e
     echo "Running uv pip install..."
     
-    # Build the command as an array so paths are not reinterpreted by the shell.
-    local base_cmd=(uv pip install --cache-dir "$UV_PIP_CACHE_DIR" --compile-bytecode)
+    # Build the command with --no-build to only use pre-built wheels
+    local base_cmd="uv pip install --cache-dir $UV_PIP_CACHE_DIR --compile-bytecode"
     
     # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
     if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
         echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
-        base_cmd+=(--find-links "$PYTHON_PRELOADED_WHEELS_DIR")
+        base_cmd="$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
     fi
     
-    base_cmd+=(-r "$requirements_file")
+    base_cmd="$base_cmd -r $requirements_file"
     if [ -n "$constraints_file" ]; then
-        base_cmd+=(-c "$constraints_file")
+        base_cmd="$base_cmd -c $constraints_file"
     fi
     
     if [ -n "$target_dir" ]; then
-        base_cmd+=(--target "$target_dir")
+        base_cmd="$base_cmd --target=\"$target_dir\""
     fi
     if [ -n "$upgrade_flag" ]; then
-        base_cmd+=("$upgrade_flag")
+        base_cmd="$base_cmd $upgrade_flag"
     fi
     
     # Log the command
-    local uv_cmd
-    printf -v uv_cmd '%q ' "${base_cmd[@]}"
-    uv_cmd="${uv_cmd}| ts $TS_FMT"
+    local uv_cmd="$base_cmd | ts $TS_FMT"
     if [ "$write_manifest" = "true" ]; then
         printf %s " , $uv_cmd" >> "$COMMAND_MANIFEST_FILE"
     fi
     
     # Execute uv pip install (uv manages its own cache)
-    output=$( ( "${base_cmd[@]}" | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+    output=$( ( $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
     local exit_code=${PIPESTATUS[0]}
     echo "${output}"
     ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -124,33 +128,31 @@ install_via_pip() {
     echo "Running pip install..."
     
     # Build the command
-    local base_cmd=("$python_cmd" -m pip install --cache-dir "$PIP_CACHE_DIR" --prefer-binary -r "$requirements_file")
+    local base_cmd="$python_cmd -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $requirements_file"
     if [ -n "$constraints_file" ]; then
-        base_cmd+=(-c "$constraints_file")
+        base_cmd="$base_cmd -c $constraints_file"
     fi
     if [ -n "$target_dir" ]; then
-        base_cmd+=(--target "$target_dir")
+        base_cmd="$base_cmd --target=\"$target_dir\""
     fi
     if [ -n "$upgrade_flag" ]; then
-        base_cmd+=("$upgrade_flag")
+        base_cmd="$base_cmd $upgrade_flag"
     fi
 
     # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
     if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
         echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
-        base_cmd+=(--find-links "$PYTHON_PRELOADED_WHEELS_DIR")
+        base_cmd="$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
     fi
     
     # Log the command
-    local pip_cmd
-    printf -v pip_cmd '%q ' "${base_cmd[@]}"
-    pip_cmd="${pip_cmd}| ts $TS_FMT"
+    local pip_cmd="$base_cmd | ts $TS_FMT"
     if [ "$write_manifest" = "true" ]; then
         printf %s " , $pip_cmd" >> "$COMMAND_MANIFEST_FILE"
     fi
     
     # Execute pip install
-    output=$( ( "${base_cmd[@]}" | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+    output=$( ( $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
     local exit_code=${PIPESTATUS[0]}
     echo "${output}"
     ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -159,8 +161,6 @@ install_via_pip() {
 }
 
 {{ if OryxSafeBuildEnabled }}
-SAFE_ORYX_BUILD_CHECKED=false
-
 oryx_safe_build_unavailable() {
     echo "Oryx SafeBuild audit: Assessment was unavailable because $1; deployment will continue using the original Oryx installation path."
 }
@@ -181,24 +181,25 @@ install_with_oryx_safe_build() {
     local temp_dir
     local safe_build_start_time=$SECONDS
 
-    SAFE_ORYX_BUILD_CHECKED=false
-
     if ! command -v oryx-safe-build-checker > /dev/null 2>&1; then
         oryx_safe_build_unavailable "oryx-safe-build-checker is not installed"
         oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
-        return 75
+        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
     fi
     if ! command -v timeout > /dev/null 2>&1; then
         oryx_safe_build_unavailable "the timeout command is not installed"
         oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
-        return 75
+        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
     fi
 
     temp_dir=$(mktemp -d 2> /dev/null)
     if [ -z "$temp_dir" ]; then
         oryx_safe_build_unavailable "a temporary directory could not be created"
         oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
-        return 75
+        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
     fi
 
     local resolver_output_file="$temp_dir/resolver-output"
@@ -236,7 +237,8 @@ install_with_oryx_safe_build() {
         oryx_safe_build_unavailable "$manager dependency resolution failed"
         rm -rf -- "$temp_dir"
         oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
-        return 75
+        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
     fi
 
     local assessment_exit_code=0
@@ -257,9 +259,9 @@ install_with_oryx_safe_build() {
             "oryx-safe-build-checker exceeded the {{ OryxSafeBuildCheckerTimeoutInMinutes }}-minute time limit"
         rm -rf -- "$temp_dir"
         oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
-        return 75
+        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
     elif [[ $assessment_exit_code == 42 ]]; then
-        SAFE_ORYX_BUILD_CHECKED=true
         rm -rf -- "$temp_dir"
         oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
         return 42
@@ -267,18 +269,19 @@ install_with_oryx_safe_build() {
         oryx_safe_build_unavailable "oryx-safe-build-checker could not complete the assessment"
         rm -rf -- "$temp_dir"
         oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
-        return 75
+        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
     elif [ ! -f "$frozen_packages_file" ]; then
         oryx_safe_build_unavailable "oryx-safe-build-checker did not produce frozen packages"
         rm -rf -- "$temp_dir"
         oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
-        return 75
+        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
     fi
 
-    SAFE_ORYX_BUILD_CHECKED=true
     local install_exit_code=0
     if [ "$manager" = "uv" ]; then
-        install_via_uv "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$frozen_packages_file" "false" || install_exit_code=$?
+        install_python_packages_impl "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$frozen_packages_file" "false" || install_exit_code=$?
     else
         install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$frozen_packages_file" "false" || install_exit_code=$?
     fi
@@ -294,16 +297,18 @@ install_python_packages_impl() {
     local requirements_file=$2
     local target_dir=$3
     local upgrade_flag=$4
+    local constraints_file=$5
+    local write_manifest=${6:-true}
     
     set +e
     # Try uv first
-    install_via_uv "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" ""
+    install_via_uv "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$constraints_file" "$write_manifest"
     local exit_code=$?
     
     # Fallback to pip if uv fails
     if [[ $exit_code != 0 ]]; then
         echo "uv pip install failed with exit code ${exit_code}, falling back to pip install..."
-        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" ""
+        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$constraints_file" "$write_manifest"
         exit_code=$?
     fi
     set -e
@@ -311,24 +316,12 @@ install_python_packages_impl() {
     return $exit_code
 }
 
-install_python_requirements() {
+{{ if OryxSafeBuildEnabled }}
+install_python_packages() {
     local python_cmd=$1
     local requirements_file=$2
     local target_dir=$3
     local upgrade_flag=$4
-
-{{ if OryxSafeBuildEnabled }}
-    local manager="pip"
-    if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-        manager="uv"
-    fi
-
-    install_with_oryx_safe_build "$manager" "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
-    local safe_build_exit_code=$?
-    if [ "$SAFE_ORYX_BUILD_CHECKED" = "true" ]; then
-        return $safe_build_exit_code
-    fi
-{{ end }}
 
     if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
         install_python_packages_impl "$python_cmd" "$requirements_file" "" ""
@@ -336,6 +329,7 @@ install_python_requirements() {
         install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" ""
     fi
 }
+{{ end }}
 
 {{ if VirtualEnvironmentName | IsNotBlank }}
     {{ if PackagesDirectory | IsNotBlank }}
@@ -399,28 +393,68 @@ install_python_requirements() {
     {{ else }}
         if [ -e "$REQUIREMENTS_TXT_FILE" ]
         then
+            {{ if OryxSafeBuildEnabled }}
             if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
                 echo "Fast build is enabled"
             fi
             set +e
-            install_python_requirements "python" "$REQUIREMENTS_TXT_FILE" "" ""
+            safe_build_manager="pip"
+            if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                safe_build_manager="uv"
+            fi
+            install_with_oryx_safe_build "$safe_build_manager" "python" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
             set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
-                {{ if OryxSafeBuildEnabled }}
                 if [[ $pipInstallExitCode == 42 ]]; then
                     LogError "Oryx SafeBuild blocked the deployment because critical vulnerabilities were found in the resolved Python packages | Exit code: ${pipInstallExitCode} | Review the Oryx SafeBuild assessment above and update your requirements.txt"
                 elif [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-                {{ else }}
-                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-                {{ end }}
                     LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 else
                     LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 fi
                 exit $pipInstallExitCode
             fi
+            {{ else }}
+            if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                set +e
+                echo "Fast build is enabled"
+                install_python_packages_impl "python" "$REQUIREMENTS_TXT_FILE" "" ""
+                pipInstallExitCode=$?
+                set -e
+                if [[ $pipInstallExitCode != 0 ]]
+                then
+                    LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $pipInstallExitCode
+                fi
+            else
+                set +e
+                echo "Running pip install..."
+                START_TIME=$SECONDS
+                InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE"
+
+                # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+                if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+                    echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+                    InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+                fi
+
+                printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+                pipInstallExitCode=${PIPESTATUS[0]}
+
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                set -e
+                echo "${output}"
+                echo "pip install done in $ELAPSED_TIME sec(s)."
+                if [[ $pipInstallExitCode != 0 ]]
+                then
+                    LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $pipInstallExitCode
+                fi
+            fi
+            {{ end }}
         elif [ -e "setup.py" ]
         then
             set +e
@@ -523,28 +557,69 @@ install_python_requirements() {
     {{ else }}
         if [ -e "$REQUIREMENTS_TXT_FILE" ]
         then
+            {{ if OryxSafeBuildEnabled }}
             if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
                 echo "Fast build is enabled"
             fi
             set +e
-            install_python_requirements "$python" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
+            safe_build_manager="pip"
+            if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                safe_build_manager="uv"
+            fi
+            install_with_oryx_safe_build "$safe_build_manager" "$python" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
             pipInstallExitCode=$?
             set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
-                {{ if OryxSafeBuildEnabled }}
                 if [[ $pipInstallExitCode == 42 ]]; then
                     LogError "Oryx SafeBuild blocked the deployment because critical vulnerabilities were found in the resolved Python packages | Exit code: ${pipInstallExitCode} | Review the Oryx SafeBuild assessment above and update your requirements.txt"
                 elif [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-                {{ else }}
-                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-                {{ end }}
                     LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 else
                     LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 fi
                 exit $pipInstallExitCode
             fi
+            {{ else }}
+            if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                set +e
+                echo "Fast build is enabled"
+                install_python_packages_impl "python" "$REQUIREMENTS_TXT_FILE" "" ""
+                pipInstallExitCode=$?
+                set -e
+                if [[ $pipInstallExitCode != 0 ]]
+                then
+                    LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $pipInstallExitCode
+                fi
+            else
+                set +e
+                echo
+                echo Running pip install...
+                START_TIME=$SECONDS
+                InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }}"
+
+                # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
+                if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
+                    echo "Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR"
+                    InstallCommand="$InstallCommand --find-links=$PYTHON_PRELOADED_WHEELS_DIR"
+                fi
+
+                printf %s " , $InstallCommand | ts $TS_FMT" >> "$COMMAND_MANIFEST_FILE"
+                output=$( ( $InstallCommand | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+                pipInstallExitCode=${PIPESTATUS[0]}
+
+                ELAPSED_TIME=$(($SECONDS - $START_TIME))
+                set -e
+                echo "${output}"
+                echo "pip install done in $ELAPSED_TIME sec(s)."
+                if [[ $pipInstallExitCode != 0 ]]
+                then
+                    LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+                    exit $pipInstallExitCode
+                fi
+            fi
+            {{ end }}
         elif [ -e "setup.py" ]
         then
             echo

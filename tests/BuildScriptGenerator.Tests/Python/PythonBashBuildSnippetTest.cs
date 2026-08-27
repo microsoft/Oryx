@@ -5,6 +5,7 @@
 
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
@@ -91,7 +92,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotNull(text);
             Assert.Contains("install_via_uv() {", text);
             Assert.Contains("uv pip install", text);
-            Assert.Contains("base_cmd+=(-r \"$requirements_file\")", text);
+            Assert.Contains("base_cmd=\"$base_cmd -r $requirements_file\"", text);
         }
 
         [Fact]
@@ -483,10 +484,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("Running pip install...", text);
             
             // Verify it calls impl function (uv with fallback) when enabled - note: cache_dir param removed
-            Assert.Contains("install_python_requirements \"$python\" \"$REQUIREMENTS_TXT_FILE\"", text);
+            Assert.Contains("install_python_packages_impl \"python\" \"$REQUIREMENTS_TXT_FILE\"", text);
             
             // Verify it uses pip directly when not enabled
-            Assert.Contains("local base_cmd=(\"$python_cmd\" -m pip install", text);
+            Assert.Contains("python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE", text);
         }
 
         [Fact]
@@ -548,7 +549,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             
             // Verify install_python_packages_impl is called when flag is set for requirements.txt
             // Note: cache_dir param removed, now it's just: python_cmd, requirements_file, target_dir, upgrade_flag
-            Assert.Contains("install_python_requirements \"$python\" \"$REQUIREMENTS_TXT_FILE\"", text);
+            Assert.Contains("install_python_packages_impl \"python\" \"$REQUIREMENTS_TXT_FILE\"", text);
         }
 
         [Fact]
@@ -579,11 +580,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("# Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set", text);
             Assert.Contains("if [ -n \"$PYTHON_PRELOADED_WHEELS_DIR\" ]; then", text);
             Assert.Contains("echo \"Using preloaded wheels from: $PYTHON_PRELOADED_WHEELS_DIR\"", text);
-            Assert.Contains("base_cmd+=(--find-links \"$PYTHON_PRELOADED_WHEELS_DIR\")", text);
+            Assert.Contains("base_cmd=\"$base_cmd --find-links=$PYTHON_PRELOADED_WHEELS_DIR\"", text);
             
             // Verify UV_PIP_CACHE_DIR is used
             Assert.Contains("UV_PIP_CACHE_DIR=", text);
-            Assert.Contains("local base_cmd=(uv pip install --cache-dir \"$UV_PIP_CACHE_DIR\"", text);
+            Assert.Contains("uv pip install --cache-dir $UV_PIP_CACHE_DIR", text);
         }
 
         [Fact]
@@ -856,9 +857,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 "oryx-safe-build-checker exceeded the 7-minute time limit",
                 text);
             Assert.Contains("return 42", text);
-            Assert.Contains("return 75", text);
-            Assert.Contains("if [ \"$SAFE_ORYX_BUILD_CHECKED\" = \"true\" ]; then", text);
-            Assert.Contains("install_python_packages_impl \"$python_cmd\" \"$requirements_file\" \"\" \"\"", text);
+            Assert.DoesNotContain("return 75", text);
+            Assert.DoesNotContain("SAFE_ORYX_BUILD_CHECKED", text);
+            Assert.Contains(
+                "install_python_packages \"$python_cmd\" \"$requirements_file\" " +
+                "\"$target_dir\" \"$upgrade_flag\"",
+                text);
+            Assert.Contains(
+                "install_python_packages_impl \"$python_cmd\" \"$requirements_file\" " +
+                "\"$target_dir\" \"$upgrade_flag\" \"$frozen_packages_file\" \"false\"",
+                text);
+            Assert.Equal(2, Regex.Matches(
+                text,
+                "base_cmd=\"\\$base_cmd -c \\$constraints_file\"").Count);
+            Assert.DoesNotContain(
+                "base_cmd=\"$base_cmd -c \\\"$constraints_file\\\"\"",
+                text);
+            Assert.Contains(
+                "install_with_oryx_safe_build \"$safe_build_manager\" \"$python\" " +
+                "\"$REQUIREMENTS_TXT_FILE\"",
+                text);
+            Assert.DoesNotContain(
+                "install_python_packages \"$python\" \"$REQUIREMENTS_TXT_FILE\" " +
+                "\"packages_dir\"",
+                text);
             Assert.Contains("pipInstallExitCode == 42", text);
             Assert.Contains(
                 "Oryx SafeBuild blocked the deployment because critical vulnerabilities " +
@@ -873,7 +895,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.DoesNotContain("http://127.0.0.1:8080/v1/audit", text);
             Assert.DoesNotContain("SAFE_ORYX_BUILD_OUTCOME", text);
             Assert.DoesNotContain("SAFE_ORYX_BUILD_TEMP_ROOT", text);
-            Assert.Contains("SAFE_ORYX_BUILD_CHECKED=true", text);
             Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_ENABLED", text);
             Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_MODE", text);
         }
