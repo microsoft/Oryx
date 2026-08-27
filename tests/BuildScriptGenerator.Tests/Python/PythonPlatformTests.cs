@@ -510,6 +510,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains($"--mode \"{expectedMode}\"", snippet.BashBuildScriptSnippet);
             Assert.Contains("install_with_oryx_safe_build", snippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("--exceptions", snippet.BashBuildScriptSnippet);
+            Assert.Contains(
+                "Oryx SafeBuild dependency resolution\" \\",
+                snippet.BashBuildScriptSnippet);
+            Assert.Contains(
+                "Oryx SafeBuild assessment\" \\",
+                snippet.BashBuildScriptSnippet);
+            Assert.Contains(
+                "\"Oryx SafeBuild\" \"$safe_build_start_time\"",
+                snippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_ENABLED", snippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_MODE", snippet.BashBuildScriptSnippet);
         }

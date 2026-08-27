@@ -838,6 +838,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("--resolver-output \"$resolver_output_file\"", text);
             Assert.Contains("--frozen-packages \"$frozen_packages_file\"", text);
             Assert.DoesNotContain("--exceptions", text);
+            Assert.Contains(
+                "Oryx SafeBuild dependency resolution\" \\",
+                text);
+            Assert.Contains("Oryx SafeBuild assessment\" \\", text);
+            Assert.Contains(
+                "oryx_safe_build_log_elapsed " +
+                "\"Oryx SafeBuild\" \"$safe_build_start_time\"",
+                text);
+            Assert.Contains("local safe_build_start_time=$SECONDS", text);
+            Assert.Contains("local resolution_start_time=$SECONDS", text);
+            Assert.Contains("local assessment_start_time=$SECONDS", text);
             Assert.Contains("did not produce frozen packages", text);
             Assert.Contains($"--mode \"{mode}\"", text);
             Assert.Contains("assessment_exit_code == 124 || $assessment_exit_code == 137", text);

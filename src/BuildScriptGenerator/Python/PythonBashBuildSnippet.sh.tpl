@@ -165,6 +165,13 @@ oryx_safe_build_unavailable() {
     echo "Oryx SafeBuild audit: Assessment was unavailable because $1; deployment will continue using the original Oryx installation path."
 }
 
+oryx_safe_build_log_elapsed() {
+    local operation=$1
+    local start_time=$2
+    local elapsed_time=$(($SECONDS - $start_time))
+    echo "$operation done in $elapsed_time sec(s)."
+}
+
 install_with_oryx_safe_build() {
     local manager=$1
     local python_cmd=$2
@@ -172,21 +179,25 @@ install_with_oryx_safe_build() {
     local target_dir=$4
     local upgrade_flag=$5
     local temp_dir
+    local safe_build_start_time=$SECONDS
 
     SAFE_ORYX_BUILD_CHECKED=false
 
     if ! command -v oryx-safe-build-checker > /dev/null 2>&1; then
         oryx_safe_build_unavailable "oryx-safe-build-checker is not installed"
+        oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
         return 75
     fi
     if ! command -v timeout > /dev/null 2>&1; then
         oryx_safe_build_unavailable "the timeout command is not installed"
+        oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
         return 75
     fi
 
     temp_dir=$(mktemp -d 2> /dev/null)
     if [ -z "$temp_dir" ]; then
         oryx_safe_build_unavailable "a temporary directory could not be created"
+        oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
         return 75
     fi
 
@@ -194,6 +205,7 @@ install_with_oryx_safe_build() {
     local frozen_packages_file="$temp_dir/frozen-packages.txt"
     local resolve_cmd
     local resolve_exit_code=0
+    local resolution_start_time=$SECONDS
     if [ "$manager" = "uv" ]; then
         ensure_uv "$python_cmd" || resolve_exit_code=$?
         resolve_cmd=(uv pip compile --python "$python_cmd" --cache-dir "$UV_PIP_CACHE_DIR" --no-header --no-annotate --output-file "$resolver_output_file")
@@ -217,13 +229,18 @@ install_with_oryx_safe_build() {
     if [[ $resolve_exit_code == 0 ]]; then
         "${resolve_cmd[@]}" > "$temp_dir/resolver.log" 2>&1 || resolve_exit_code=$?
     fi
+    oryx_safe_build_log_elapsed \
+        "Oryx SafeBuild dependency resolution" \
+        "$resolution_start_time"
     if [[ $resolve_exit_code != 0 ]]; then
         oryx_safe_build_unavailable "$manager dependency resolution failed"
         rm -rf -- "$temp_dir"
+        oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
         return 75
     fi
 
     local assessment_exit_code=0
+    local assessment_start_time=$SECONDS
     timeout --signal=TERM --kill-after=10s \
         "{{ OryxSafeBuildCheckerTimeoutInMinutes }}m" \
         oryx-safe-build-checker \
@@ -231,23 +248,30 @@ install_with_oryx_safe_build() {
         --resolver-output "$resolver_output_file" \
         --frozen-packages "$frozen_packages_file" \
         --mode "{{ OryxSafeBuildMode }}" || assessment_exit_code=$?
+    oryx_safe_build_log_elapsed \
+        "Oryx SafeBuild assessment" \
+        "$assessment_start_time"
 
     if [[ $assessment_exit_code == 124 || $assessment_exit_code == 137 ]]; then
         oryx_safe_build_unavailable \
             "oryx-safe-build-checker exceeded the {{ OryxSafeBuildCheckerTimeoutInMinutes }}-minute time limit"
         rm -rf -- "$temp_dir"
+        oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
         return 75
     elif [[ $assessment_exit_code == 42 ]]; then
         SAFE_ORYX_BUILD_CHECKED=true
         rm -rf -- "$temp_dir"
+        oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
         return 42
     elif [[ $assessment_exit_code != 0 ]]; then
         oryx_safe_build_unavailable "oryx-safe-build-checker could not complete the assessment"
         rm -rf -- "$temp_dir"
+        oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
         return 75
     elif [ ! -f "$frozen_packages_file" ]; then
         oryx_safe_build_unavailable "oryx-safe-build-checker did not produce frozen packages"
         rm -rf -- "$temp_dir"
+        oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
         return 75
     fi
 
@@ -259,6 +283,7 @@ install_with_oryx_safe_build() {
         install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$frozen_packages_file" "false" || install_exit_code=$?
     fi
     rm -rf -- "$temp_dir"
+    oryx_safe_build_log_elapsed "Oryx SafeBuild" "$safe_build_start_time"
     return $install_exit_code
 }
 {{ end }}
