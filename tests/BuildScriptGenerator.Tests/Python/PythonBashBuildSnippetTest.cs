@@ -837,8 +837,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("oryx-safe-build-checker \\", text);
             Assert.Contains("--resolver-output \"$resolver_output_file\"", text);
             Assert.Contains("--frozen-packages \"$frozen_packages_file\"", text);
-            Assert.Contains("exceptions_file=\"/opt/Kudu/OryxSafeBuild/bin/exceptions.json\"", text);
-            Assert.Contains("--exceptions \"$exceptions_file\"", text);
+            Assert.DoesNotContain("--exceptions", text);
             Assert.Contains("did not produce frozen packages", text);
             Assert.Contains($"--mode \"{mode}\"", text);
             Assert.Contains("assessment_exit_code == 124 || $assessment_exit_code == 137", text);

@@ -192,7 +192,6 @@ install_with_oryx_safe_build() {
 
     local resolver_output_file="$temp_dir/resolver-output"
     local frozen_packages_file="$temp_dir/frozen-packages.txt"
-    local exceptions_file="/opt/Kudu/OryxSafeBuild/bin/exceptions.json"
     local resolve_cmd
     local resolve_exit_code=0
     if [ "$manager" = "uv" ]; then
@@ -231,7 +230,6 @@ install_with_oryx_safe_build() {
         --manager "$manager" \
         --resolver-output "$resolver_output_file" \
         --frozen-packages "$frozen_packages_file" \
-        --exceptions "$exceptions_file" \
         --mode "{{ OryxSafeBuildMode }}" || assessment_exit_code=$?
 
     if [[ $assessment_exit_code == 124 || $assessment_exit_code == 137 ]]; then
