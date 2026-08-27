@@ -856,8 +856,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.DoesNotContain("SAFE_ORYX_BUILD_OUTCOME", text);
             Assert.DoesNotContain("SAFE_ORYX_BUILD_TEMP_ROOT", text);
             Assert.Contains("SAFE_ORYX_BUILD_CHECKED=true", text);
-            Assert.DoesNotContain("ORYX_SAFE_BUILD_ENABLED", text);
-            Assert.DoesNotContain("ORYX_SAFE_BUILD_MODE", text);
+            Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_ENABLED", text);
+            Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_MODE", text);
         }
 
         [Fact]

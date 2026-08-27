@@ -509,8 +509,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.Contains($"--mode \"{expectedMode}\"", snippet.BashBuildScriptSnippet);
             Assert.Contains("install_with_oryx_safe_build", snippet.BashBuildScriptSnippet);
-            Assert.DoesNotContain("ORYX_SAFE_BUILD_ENABLED", snippet.BashBuildScriptSnippet);
-            Assert.DoesNotContain("ORYX_SAFE_BUILD_MODE", snippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_ENABLED", snippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_MODE", snippet.BashBuildScriptSnippet);
         }
 
         [Fact]
