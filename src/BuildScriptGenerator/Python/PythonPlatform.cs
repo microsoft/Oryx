@@ -46,6 +46,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     [BuildProperty(
         OryxSafeBuildModePropertyKey,
         "Sets Oryx SafeBuild policy to 'audit' or 'block'. Defaults to 'audit'.")]
+    [BuildProperty(
+        OryxSafeBuildCheckerTimeoutInMinutesPropertyKey,
+        "Sets the Oryx SafeBuild checker timeout in minutes. Defaults to 5 minutes.")]
     internal class PythonPlatform : IProgrammingPlatform
     {
         /// <summary>
@@ -72,6 +75,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         internal const string OryxSafeBuildModePropertyKey = "oryx_safe_build_mode";
 
+        internal const string OryxSafeBuildCheckerTimeoutInMinutesPropertyKey =
+            "oryx_safe_build_checker_timeout_in_min";
+
         /// <summary>
         /// The zip option.
         /// </summary>
@@ -91,6 +97,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// The pip upgrade command
         /// </summary>
         internal const string PipUpgradeFlag = "--upgrade";
+
+        private const int DefaultOryxSafeBuildCheckerTimeoutInMinutes = 5;
 
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly PythonScriptGeneratorOptions pythonScriptGeneratorOptions;
@@ -312,7 +320,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     OryxSafeBuildEnabledPropertyKey,
                     context,
                     valueIsRequired: true),
-                oryxSafeBuildMode: GetOryxSafeBuildMode(context));
+                oryxSafeBuildMode: GetOryxSafeBuildMode(context),
+                oryxSafeBuildCheckerTimeoutInMinutes:
+                    GetOryxSafeBuildCheckerTimeoutInMinutes(context));
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
@@ -518,6 +528,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             return "audit";
+        }
+
+        private static int GetOryxSafeBuildCheckerTimeoutInMinutes(
+            BuildScriptGeneratorContext context)
+        {
+            if (context.Properties != null &&
+                context.Properties.TryGetValue(
+                    OryxSafeBuildCheckerTimeoutInMinutesPropertyKey,
+                    out string configuredTimeout) &&
+                int.TryParse(configuredTimeout, out int timeoutInMinutes) &&
+                timeoutInMinutes > 0)
+            {
+                return timeoutInMinutes;
+            }
+
+            return DefaultOryxSafeBuildCheckerTimeoutInMinutes;
         }
 
         private static string GetDefaultVirtualEnvName(PlatformDetectorResult detectorResult)

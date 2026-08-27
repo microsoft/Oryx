@@ -821,7 +821,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 pythonVersion: "3.11",
                 runPythonPackageCommand: false,
                 oryxSafeBuildEnabled: true,
-                oryxSafeBuildMode: mode);
+                oryxSafeBuildMode: mode,
+                oryxSafeBuildCheckerTimeoutInMinutes: 7);
 
             // Act
             var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
@@ -830,6 +831,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("pip install --dry-run --ignore-installed --report", text);
             Assert.Contains("uv pip compile --python", text);
             Assert.Contains("command -v oryx-safe-build-checker", text);
+            Assert.Contains("command -v timeout", text);
+            Assert.Contains("timeout --signal=TERM --kill-after=10s \\", text);
+            Assert.Contains("\"7m\" \\", text);
             Assert.Contains("oryx-safe-build-checker \\", text);
             Assert.Contains("--resolver-output \"$resolver_output_file\"", text);
             Assert.Contains("--frozen-packages \"$frozen_packages_file\"", text);
@@ -837,6 +841,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("--exceptions \"$exceptions_file\"", text);
             Assert.Contains("did not produce frozen packages", text);
             Assert.Contains($"--mode \"{mode}\"", text);
+            Assert.Contains("assessment_exit_code == 124 || $assessment_exit_code == 137", text);
+            Assert.Contains(
+                "oryx-safe-build-checker exceeded the 7-minute time limit",
+                text);
             Assert.Contains("return 42", text);
             Assert.Contains("return 75", text);
             Assert.Contains("if [ \"$SAFE_ORYX_BUILD_CHECKED\" = \"true\" ]; then", text);

@@ -179,6 +179,10 @@ install_with_oryx_safe_build() {
         oryx_safe_build_unavailable "oryx-safe-build-checker is not installed"
         return 75
     fi
+    if ! command -v timeout > /dev/null 2>&1; then
+        oryx_safe_build_unavailable "the timeout command is not installed"
+        return 75
+    fi
 
     temp_dir=$(mktemp -d 2> /dev/null)
     if [ -z "$temp_dir" ]; then
@@ -221,14 +225,21 @@ install_with_oryx_safe_build() {
     fi
 
     local assessment_exit_code=0
-    oryx-safe-build-checker \
+    timeout --signal=TERM --kill-after=10s \
+        "{{ OryxSafeBuildCheckerTimeoutInMinutes }}m" \
+        oryx-safe-build-checker \
         --manager "$manager" \
         --resolver-output "$resolver_output_file" \
         --frozen-packages "$frozen_packages_file" \
         --exceptions "$exceptions_file" \
         --mode "{{ OryxSafeBuildMode }}" || assessment_exit_code=$?
 
-    if [[ $assessment_exit_code == 42 ]]; then
+    if [[ $assessment_exit_code == 124 || $assessment_exit_code == 137 ]]; then
+        oryx_safe_build_unavailable \
+            "oryx-safe-build-checker exceeded the {{ OryxSafeBuildCheckerTimeoutInMinutes }}-minute time limit"
+        rm -rf -- "$temp_dir"
+        return 75
+    elif [[ $assessment_exit_code == 42 ]]; then
         SAFE_ORYX_BUILD_CHECKED=true
         rm -rf -- "$temp_dir"
         return 42

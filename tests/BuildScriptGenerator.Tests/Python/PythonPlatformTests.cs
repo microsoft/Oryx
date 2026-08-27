@@ -513,6 +513,50 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_MODE", snippet.BashBuildScriptSnippet);
         }
 
+        [Theory]
+        [InlineData(null, "5m")]
+        [InlineData("", "5m")]
+        [InlineData("0", "5m")]
+        [InlineData("-1", "5m")]
+        [InlineData("invalid", "5m")]
+        [InlineData("12", "12m")]
+        public void GeneratedScript_UsesValidatedOryxSafeBuildCheckerTimeout(
+            string configuredTimeout,
+            string expectedTimeout)
+        {
+            var scriptGenerator = CreatePlatform();
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            var properties = new Dictionary<string, string>
+            {
+                [PythonPlatform.OryxSafeBuildEnabledPropertyKey] = "true",
+            };
+            if (configuredTimeout != null)
+            {
+                properties[
+                    PythonPlatform.OryxSafeBuildCheckerTimeoutInMinutesPropertyKey] =
+                    configuredTimeout;
+            }
+
+            var context = new BuildScriptGeneratorContext
+            {
+                SourceRepo = repo,
+                Properties = properties,
+            };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.11",
+                HasRequirementsTxtFile = true,
+            };
+
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(
+                context,
+                detectorResult);
+
+            Assert.Contains($"\"{expectedTimeout}\"", snippet.BashBuildScriptSnippet);
+        }
+
         [Fact]
         public void GeneratedBuildSnippet_CustomBuildCommandWillExecute_InsteadOfDefaultInstallCommands()
         {
