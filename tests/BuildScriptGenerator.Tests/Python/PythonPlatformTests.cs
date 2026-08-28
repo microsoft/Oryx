@@ -474,7 +474,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         [InlineData("BLOCK", "block")]
         [InlineData("invalid", "audit")]
         [InlineData(null, "audit")]
-        public void GeneratedScript_UsesOryxSafeBuildCliProperties(
+        public void GeneratedScript_UsesOryxSecureBuildCliProperties(
             string configuredMode,
             string expectedMode)
         {
@@ -484,11 +484,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             var properties = new Dictionary<string, string>
             {
-                [PythonPlatform.OryxSafeBuildEnabledPropertyKey] = "true",
+                [PythonPlatform.OryxSecureBuildEnabledPropertyKey] = "true",
             };
             if (configuredMode != null)
             {
-                properties[PythonPlatform.OryxSafeBuildModePropertyKey] = configuredMode;
+                properties[PythonPlatform.OryxSecureBuildModePropertyKey] = configuredMode;
             }
 
             var context = new BuildScriptGeneratorContext
@@ -508,19 +508,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.Contains($"--mode \"{expectedMode}\"", snippet.BashBuildScriptSnippet);
-            Assert.Contains("install_with_oryx_safe_build", snippet.BashBuildScriptSnippet);
+            Assert.Contains("install_with_oryx_secure_build", snippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("--exceptions", snippet.BashBuildScriptSnippet);
             Assert.Contains(
-                "Oryx SafeBuild dependency resolution\" \\",
+                "Oryx SecureBuild dependency resolution\" \\",
                 snippet.BashBuildScriptSnippet);
             Assert.Contains(
-                "Oryx SafeBuild assessment\" \\",
+                "Oryx SecureBuild assessment\" \\",
                 snippet.BashBuildScriptSnippet);
             Assert.Contains(
-                "\"Oryx SafeBuild\" \"$safe_build_start_time\"",
+                "\"Oryx SecureBuild\" \"$secure_build_start_time\"",
                 snippet.BashBuildScriptSnippet);
-            Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_ENABLED", snippet.BashBuildScriptSnippet);
-            Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_MODE", snippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_ENABLED", snippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_MODE", snippet.BashBuildScriptSnippet);
         }
 
         [Theory]
@@ -530,7 +530,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         [InlineData("-1", "5m")]
         [InlineData("invalid", "5m")]
         [InlineData("12", "12m")]
-        public void GeneratedScript_UsesValidatedOryxSafeBuildCheckerTimeout(
+        public void GeneratedScript_UsesValidatedOryxSecureBuildCheckerTimeout(
             string configuredTimeout,
             string expectedTimeout)
         {
@@ -539,12 +539,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             var properties = new Dictionary<string, string>
             {
-                [PythonPlatform.OryxSafeBuildEnabledPropertyKey] = "true",
+                [PythonPlatform.OryxSecureBuildEnabledPropertyKey] = "true",
             };
             if (configuredTimeout != null)
             {
                 properties[
-                    PythonPlatform.OryxSafeBuildCheckerTimeoutInMinutesPropertyKey] =
+                    PythonPlatform.OryxSecureBuildCheckerTimeoutInMinutesPropertyKey] =
                     configuredTimeout;
             }
 

@@ -781,7 +781,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void GeneratedSnippet_OmitsOryxSafeBuildFlowByDefault()
+        public void GeneratedSnippet_OmitsOryxSecureBuildFlowByDefault()
         {
             // Arrange
             var snippetProps = new PythonBashBuildSnippetProperties(
@@ -800,14 +800,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
 
             // Assert
-            Assert.DoesNotContain("install_with_oryx_safe_build", text);
-            Assert.DoesNotContain("ORYX_SAFE_BUILD_", text);
+            Assert.DoesNotContain("install_with_oryx_secure_build", text);
+            Assert.DoesNotContain("ORYX_SECURE_BUILD_", text);
         }
 
         [Theory]
         [InlineData("audit")]
         [InlineData("block")]
-        public void GeneratedSnippet_ContainsOryxSafeBuildFlowFromBuildProperties(string mode)
+        public void GeneratedSnippet_ContainsOryxSecureBuildFlowFromBuildProperties(string mode)
         {
             // Arrange
             var snippetProps = new PythonBashBuildSnippetProperties(
@@ -821,9 +821,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: "3.11",
                 runPythonPackageCommand: false,
-                oryxSafeBuildEnabled: true,
-                oryxSafeBuildMode: mode,
-                oryxSafeBuildCheckerTimeoutInMinutes: 7);
+                oryxSecureBuildEnabled: true,
+                oryxSecureBuildMode: mode,
+                oryxSecureBuildCheckerTimeoutInMinutes: 7);
 
             // Act
             var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
@@ -831,30 +831,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.Contains("pip install --dry-run --ignore-installed --report", text);
             Assert.Contains("uv pip compile --python", text);
-            Assert.Contains("command -v oryx-safe-build-checker", text);
+            Assert.Contains("command -v oryx-secure-build-checker", text);
             Assert.Contains("command -v timeout", text);
             Assert.Contains("timeout --signal=TERM --kill-after=10s \\", text);
             Assert.Contains("\"7m\" \\", text);
-            Assert.Contains("oryx-safe-build-checker \\", text);
+            Assert.Contains("oryx-secure-build-checker \\", text);
             Assert.Contains("--resolver-output \"$resolver_output_file\"", text);
             Assert.Contains("--frozen-packages \"$frozen_packages_file\"", text);
             Assert.DoesNotContain("--exceptions", text);
             Assert.Contains(
-                "Oryx SafeBuild dependency resolution\" \\",
+                "Oryx SecureBuild dependency resolution\" \\",
                 text);
-            Assert.Contains("Oryx SafeBuild assessment\" \\", text);
+            Assert.Contains("Oryx SecureBuild assessment\" \\", text);
             Assert.Contains(
-                "oryx_safe_build_log_elapsed " +
-                "\"Oryx SafeBuild\" \"$safe_build_start_time\"",
+                "oryx_secure_build_log_elapsed " +
+                "\"Oryx SecureBuild\" \"$secure_build_start_time\"",
                 text);
-            Assert.Contains("local safe_build_start_time=$SECONDS", text);
+            Assert.Contains("local secure_build_start_time=$SECONDS", text);
             Assert.Contains("local resolution_start_time=$SECONDS", text);
             Assert.Contains("local assessment_start_time=$SECONDS", text);
             Assert.Contains("did not produce frozen packages", text);
             Assert.Contains($"--mode \"{mode}\"", text);
             Assert.Contains("assessment_exit_code == 124 || $assessment_exit_code == 137", text);
             Assert.Contains(
-                "oryx-safe-build-checker exceeded the 7-minute time limit",
+                "oryx-secure-build-checker exceeded the 7-minute time limit",
                 text);
             Assert.Contains("return 42", text);
             Assert.DoesNotContain("return 75", text);
@@ -874,7 +874,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 "base_cmd=\"$base_cmd -c \\\"$constraints_file\\\"\"",
                 text);
             Assert.Contains(
-                "install_with_oryx_safe_build \"$safe_build_manager\" \"$python\" " +
+                "install_with_oryx_secure_build \"$secure_build_manager\" \"$python\" " +
                 "\"$REQUIREMENTS_TXT_FILE\"",
                 text);
             Assert.DoesNotContain(
@@ -883,24 +883,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 text);
             Assert.Contains("pipInstallExitCode == 42", text);
             Assert.Contains(
-                "Oryx SafeBuild blocked the deployment because critical vulnerabilities " +
+                "Oryx SecureBuild blocked the deployment because critical vulnerabilities " +
                 "were found in the resolved Python packages",
                 text);
             Assert.DoesNotContain(
                 "PYTHON_FAST_BUILD_ENABLED\" = \"true\" ] || " +
                 "[[ $pipInstallExitCode == 42",
                 text);
-            Assert.Contains("oryx-safe-build-checker is not installed", text);
+            Assert.Contains("oryx-secure-build-checker is not installed", text);
             Assert.Contains("assessment_exit_code != 0", text);
             Assert.DoesNotContain("http://127.0.0.1:8080/v1/audit", text);
             Assert.DoesNotContain("SAFE_ORYX_BUILD_OUTCOME", text);
             Assert.DoesNotContain("SAFE_ORYX_BUILD_TEMP_ROOT", text);
-            Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_ENABLED", text);
-            Assert.DoesNotContain("WEBSITE_ORYX_SAFE_BUILD_MODE", text);
+            Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_ENABLED", text);
+            Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_MODE", text);
         }
 
         [Fact]
-        public void GeneratedOryxSafeBuildSnippet_HasValidBashSyntax()
+        public void GeneratedOryxSecureBuildSnippet_HasValidBashSyntax()
         {
             var bash = OperatingSystem.IsWindows()
                 ? @"C:\Program Files\Git\bin\bash.exe"
@@ -921,11 +921,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: "3.11",
                 runPythonPackageCommand: false,
-                oryxSafeBuildEnabled: true,
-                oryxSafeBuildMode: "block");
+                oryxSecureBuildEnabled: true,
+                oryxSecureBuildMode: "block");
             string path = Path.Combine(
                 Path.GetTempPath(),
-                $"oryx-safe-build-{Guid.NewGuid():N}.sh");
+                $"oryx-secure-build-{Guid.NewGuid():N}.sh");
 
             try
             {
