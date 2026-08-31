@@ -1,6 +1,6 @@
 module ruby
 
-go 1.23.1
+go 1.26
 
 require (
 	code.cloudfoundry.org/clock v1.32.0 // indirect
