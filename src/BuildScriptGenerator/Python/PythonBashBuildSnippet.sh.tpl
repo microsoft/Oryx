@@ -173,6 +173,11 @@ log_secure_build_unavailable_and_cleanup_temp_dir() {
     log_oryx_secure_build_elapsed "Oryx SecureBuild" "$secure_build_start_time"
 }
 
+# Once we determine the transitivie dependencies with their exact version,
+# we write two files to the specified output_dir.
+# 1. dependency-resolution-metadata.json - Contains infomation about ecosystem, manager and path to resolved dependencies file.
+# 2. dependency-resolution.* - The actual format of the file, depends on the tool used to determine the dependencies.
+#                            - pip --dry-run generates a json file while uv generates a txt file.
 publish_dependency_resolution() {
     local manager=$1
     local source_file=$2
@@ -188,13 +193,11 @@ publish_dependency_resolution() {
         return 1
     fi
 
-    if ! (umask 077 && mkdir -p -- "$output_dir"); then
+    if ! (mkdir -p -- "$output_dir"); then
         return 1
     fi
 
     (
-        umask 077
-
         local metadata_file_name="dependency-resolution-metadata.json"
         local staging_suffix=".$$.${RANDOM}.tmp"
         local staged_resolution_file="$output_dir/$resolution_file_name$staging_suffix"
@@ -204,6 +207,8 @@ publish_dependency_resolution() {
 
         rm -f -- "$metadata_file"
         cp -- "$source_file" "$staged_resolution_file" || exit $?
+
+        # Use Python to generate a json file.        
         "$python_cmd" -c \
             'import json, sys; json.dump({"schemaVersion": 1, "manager": sys.argv[1], "dependencyResolutionFilePath": sys.argv[2]}, sys.stdout, indent=2); print()' \
             "$manager" \
@@ -213,6 +218,7 @@ publish_dependency_resolution() {
                 exit 1
             }
 
+        # Move these files to the destination directory.
         mv -f -- "$staged_resolution_file" "$resolution_file" || {
             rm -f -- "$staged_metadata_file"
             exit 1
@@ -222,6 +228,7 @@ publish_dependency_resolution() {
             exit 1
         }
 
+        # Cleanup
         if [ "$manager" = "pip" ]; then
             rm -f -- "$output_dir/dependency-resolution.txt"
         else
@@ -230,6 +237,15 @@ publish_dependency_resolution() {
     )
 }
 
+# Splits the install into three phases.
+# 1. Resolve dependencies to get transitive dependencies with exact version.
+# 2. Run oryx-secure-build-checker (if enabled).
+# 3. Installed the resolved dependencies.
+#
+# Pip (and uv) accept -r (list of packages to install) and -c (indicating package constraints).
+# So in essence, we determine -c first and then pass this along with pip install.
+#
+# Note: if a package is present in -r and not in -c, pip install will still install the package.
 install_with_dependency_resolution() {
     local manager=$1
     local python_cmd=$2
@@ -267,20 +283,28 @@ install_with_dependency_resolution() {
             resolve_cmd+=("$upgrade_flag")
         fi
     fi
+
+    # Set the path to pre-loaded wheels if it exists.
     if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
         resolve_cmd+=(--find-links "$PYTHON_PRELOADED_WHEELS_DIR")
     fi
+
     if [ "$manager" = "pip" ]; then
         resolve_cmd+=(-r "$requirements_file")
     else
         resolve_cmd+=("$requirements_file")
     fi
+
     if [[ $resolve_exit_code == 0 ]]; then
         "${resolve_cmd[@]}" > "$temp_dir/resolver.log" 2>&1 || resolve_exit_code=$?
     fi
+    
     log_oryx_secure_build_elapsed \
         "Oryx dependency resolution" \
         "$resolution_start_time"
+
+    # If we fail to resolve the dependencies (non-zero exit code), then we fall back to 
+    # pip install or uv pip install.
     if [[ $resolve_exit_code != 0 ]]; then
         echo "Oryx dependency resolution was unavailable because $manager dependency resolution failed; deployment will continue using the original Oryx installation path."
         rm -rf -- "$temp_dir"
@@ -288,6 +312,7 @@ install_with_dependency_resolution() {
         return $?
     fi
 
+    # Write the resolved dependencies to output_dir.
     if [ -n "$dependency_resolution_output_dir" ]; then
         if publish_dependency_resolution \
             "$manager" \
@@ -300,12 +325,14 @@ install_with_dependency_resolution() {
         fi
     fi
 
+    # If SecureBuild is not enabled, continue with package installation and stop.
     if [ "$secure_build_enabled" != "true" ]; then
         rm -rf -- "$temp_dir"
         install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
         return $?
     fi
 
+    # If oryx-secure-build-checker doesnt exist, continue with package installation, instead of failing deployment.
     if ! command -v oryx-secure-build-checker > /dev/null 2>&1; then
         log_secure_build_unavailable_and_cleanup_temp_dir \
             "oryx-secure-build-checker is not installed" \
@@ -314,6 +341,8 @@ install_with_dependency_resolution() {
         install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
         return $?
     fi
+
+    # If timeout command doesnt exist, continue with package installation, instead of failing deployment.
     if ! command -v timeout > /dev/null 2>&1; then
         log_secure_build_unavailable_and_cleanup_temp_dir \
             "the timeout command is not installed" \
@@ -323,6 +352,7 @@ install_with_dependency_resolution() {
         return $?
     fi
 
+    # Run Oryx Secure Build Checker with timeout.
     local assessment_exit_code=0
     local assessment_start_time=$SECONDS
     local assessment_output_file="$temp_dir/security-assessment.json"
