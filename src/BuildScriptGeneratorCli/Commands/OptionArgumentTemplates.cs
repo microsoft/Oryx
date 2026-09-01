@@ -20,6 +20,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static readonly string CompressDestinationDirDescription = "Compresses the destination directory(excluding the manifest file) into a tarball.";
         public static readonly string Debug = "--debug";
         public static readonly string DebugDescription = "Print stack traces for exceptions.";
+        public static readonly string DependencyResolutionOutputDir = "--dependency-resolution-output-dir";
+        public static readonly string DependencyResolutionOutputDirDescription = "The path to a directory into which dependency resolution replay artifacts should be written.";
         public static readonly string DynamicInstallRootDir = "--dynamic-install-root-dir";
         public static readonly string DynamicInstallRootDirDescription = "Root directory path under which dynamically installed SDKs are created under.";
         public static readonly string EventName = "--event-name";

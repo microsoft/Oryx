@@ -322,7 +322,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     valueIsRequired: true),
                 oryxSecureBuildMode: GetOryxSecureBuildMode(context),
                 oryxSecureBuildCheckerTimeoutInMinutes:
-                    GetOryxSecureBuildCheckerTimeoutInMinutes(context));
+                    GetOryxSecureBuildCheckerTimeoutInMinutes(context),
+                dependencyResolutionOutputDir:
+                    this.commonOptions.DependencyResolutionOutputDir);
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,

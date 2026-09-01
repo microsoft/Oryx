@@ -39,6 +39,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string ManifestDir { get; set; }
 
+        public string DependencyResolutionOutputDir { get; set; }
+
         public bool EnableDynamicInstall { get; set; }
 
         public bool EnableExternalSdkProvider { get; set; }

@@ -781,7 +781,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void GeneratedSnippet_OmitsOryxSecureBuildFlowByDefault()
+        public void GeneratedSnippet_DoesNotInvokeOryxSecureBuildFlowByDefault()
         {
             // Arrange
             var snippetProps = new PythonBashBuildSnippetProperties(
@@ -800,7 +800,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
 
             // Assert
-            Assert.DoesNotContain("install_with_oryx_secure_build", text);
+            Assert.Contains("install_with_dependency_resolution() {", text);
+            Assert.DoesNotContain(
+                "install_with_dependency_resolution \"$secure_build_manager\"",
+                text);
             Assert.DoesNotContain("ORYX_SECURE_BUILD_", text);
         }
 
@@ -836,15 +839,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("timeout --signal=TERM --kill-after=10s \\", text);
             Assert.Contains("\"7m\" \\", text);
             Assert.Contains("oryx-secure-build-checker \\", text);
-            Assert.Contains("--resolver-output \"$resolver_output_file\"", text);
-            Assert.Contains("--frozen-packages \"$frozen_packages_file\"", text);
+            Assert.Contains(
+                "--dependency-resolution-file \"$dependency_resolution_file\"",
+                text);
+            Assert.Contains(
+                "--assessment-output \"$assessment_output_file\"",
+                text);
+            Assert.Contains(
+                "--frozen-packages-output \"$secure_build_constraints_file\"",
+                text);
             Assert.DoesNotContain("--exceptions", text);
             Assert.Contains(
-                "Oryx SecureBuild dependency resolution\" \\",
+                "Oryx dependency resolution\" \\",
                 text);
             Assert.Contains("Oryx SecureBuild assessment\" \\", text);
             Assert.Contains(
-                "oryx_secure_build_log_elapsed " +
+                "log_oryx_secure_build_elapsed " +
                 "\"Oryx SecureBuild\" \"$secure_build_start_time\"",
                 text);
             Assert.Contains("local secure_build_start_time=$SECONDS", text);
@@ -852,7 +862,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("local assessment_start_time=$SECONDS", text);
             Assert.Contains("did not produce frozen packages", text);
             Assert.Contains($"--mode \"{mode}\"", text);
-            Assert.Contains("assessment_exit_code == 124 || $assessment_exit_code == 137", text);
+            Assert.Contains("124|137)", text);
             Assert.Contains(
                 "oryx-secure-build-checker exceeded the 7-minute time limit",
                 text);
@@ -865,7 +875,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 text);
             Assert.Contains(
                 "install_python_packages_impl \"$python_cmd\" \"$requirements_file\" " +
-                "\"$target_dir\" \"$upgrade_flag\" \"$frozen_packages_file\" \"false\"",
+                "\"$target_dir\" \"$upgrade_flag\" \"$secure_build_constraints_file\" \"false\"",
                 text);
             Assert.Equal(2, Regex.Matches(
                 text,
@@ -874,7 +884,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 "base_cmd=\"$base_cmd -c \\\"$constraints_file\\\"\"",
                 text);
             Assert.Contains(
-                "install_with_oryx_secure_build \"$secure_build_manager\" \"$python\" " +
+                "install_with_dependency_resolution \"$secure_build_manager\" \"$python\" " +
                 "\"$REQUIREMENTS_TXT_FILE\"",
                 text);
             Assert.DoesNotContain(
@@ -891,12 +901,94 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 "[[ $pipInstallExitCode == 42",
                 text);
             Assert.Contains("oryx-secure-build-checker is not installed", text);
-            Assert.Contains("assessment_exit_code != 0", text);
             Assert.DoesNotContain("http://127.0.0.1:8080/v1/audit", text);
             Assert.DoesNotContain("SAFE_ORYX_BUILD_OUTCOME", text);
             Assert.DoesNotContain("SAFE_ORYX_BUILD_TEMP_ROOT", text);
             Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_ENABLED", text);
             Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_MODE", text);
+            Assert.Contains("case \"$assessment_exit_code\" in", text);
+            Assert.Contains(
+                "oryx-secure-build-checker could not complete the assessment",
+                text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_CapturesDependencyResolutionWithoutSecureBuildAssessment()
+        {
+            // Arrange
+            const string outputDir = "/home/site/deployments/deployment-id/dependency-resolution";
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.14",
+                runPythonPackageCommand: false,
+                dependencyResolutionOutputDir: outputDir);
+
+            // Act
+            var text = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.PythonSnippet,
+                snippetProps);
+
+            // Assert
+            Assert.Contains(
+                $"local dependency_resolution_output_dir='{outputDir}'",
+                text);
+            Assert.Contains("local secure_build_enabled=\"false\"", text);
+            Assert.Contains("publish_dependency_resolution()", text);
+            Assert.Contains("\"dependency-resolution.json\"", text);
+            Assert.Contains("\"dependency-resolution.txt\"", text);
+            Assert.Contains("\"dependency-resolution-metadata.json\"", text);
+            Assert.Contains("\"schemaVersion\": 1", text);
+            Assert.Contains("\"dependencyResolutionFilePath\"", text);
+            Assert.Contains("\"$resolution_file\"", text);
+            Assert.Contains(
+                "install_with_dependency_resolution \"$secure_build_manager\" \"$python\"",
+                text);
+
+            int skipAssessmentIndex = text.IndexOf(
+                "if [ \"$secure_build_enabled\" != \"true\" ]; then",
+                StringComparison.Ordinal);
+            int checkerIndex = text.IndexOf(
+                "if ! command -v oryx-secure-build-checker",
+                StringComparison.Ordinal);
+            Assert.True(skipAssessmentIndex >= 0);
+            Assert.True(checkerIndex > skipAssessmentIndex);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_ShellEscapesDependencyResolutionOutputDirectory()
+        {
+            // Arrange
+            const string outputDir = "/home/site/deployments/deployment'id/dependency-resolution";
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.14",
+                runPythonPackageCommand: false,
+                dependencyResolutionOutputDir: outputDir);
+
+            // Act
+            var text = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.PythonSnippet,
+                snippetProps);
+
+            // Assert
+            Assert.Contains(
+                "local dependency_resolution_output_dir=" +
+                "'/home/site/deployments/deployment'\"'\"'id/dependency-resolution'",
+                text);
         }
 
         [Fact]

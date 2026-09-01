@@ -508,10 +508,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.Contains($"--mode \"{expectedMode}\"", snippet.BashBuildScriptSnippet);
-            Assert.Contains("install_with_oryx_secure_build", snippet.BashBuildScriptSnippet);
+            Assert.Contains("install_with_dependency_resolution", snippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("--exceptions", snippet.BashBuildScriptSnippet);
             Assert.Contains(
-                "Oryx SecureBuild dependency resolution\" \\",
+                "Oryx dependency resolution\" \\",
                 snippet.BashBuildScriptSnippet);
             Assert.Contains(
                 "Oryx SecureBuild assessment\" \\",
@@ -521,6 +521,47 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 snippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_ENABLED", snippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_MODE", snippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedScript_UsesDependencyResolutionOutputDirectoryWithoutSecureBuild()
+        {
+            // Arrange
+            const string outputDir = "/home/site/deployments/deployment-id/dependency-resolution";
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                DependencyResolutionOutputDir = outputDir,
+            };
+            var scriptGenerator = CreatePlatform(commonOptions: commonOptions);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            var context = new BuildScriptGeneratorContext
+            {
+                SourceRepo = repo,
+                Properties = new Dictionary<string, string>(),
+            };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.14",
+                HasRequirementsTxtFile = true,
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(
+                context,
+                detectorResult);
+
+            // Assert
+            Assert.Contains(
+                $"local dependency_resolution_output_dir='{outputDir}'",
+                snippet.BashBuildScriptSnippet);
+            Assert.Contains(
+                "install_with_dependency_resolution",
+                snippet.BashBuildScriptSnippet);
+            Assert.Contains(
+                "local secure_build_enabled=\"false\"",
+                snippet.BashBuildScriptSnippet);
         }
 
         [Theory]

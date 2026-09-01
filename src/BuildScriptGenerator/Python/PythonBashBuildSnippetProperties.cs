@@ -27,7 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string customBuildCommand = null,
             bool oryxSecureBuildEnabled = false,
             string oryxSecureBuildMode = "audit",
-            int oryxSecureBuildCheckerTimeoutInMinutes = 5)
+            int oryxSecureBuildCheckerTimeoutInMinutes = 5,
+            string dependencyResolutionOutputDir = null)
         {
             this.VirtualEnvironmentName = virtualEnvironmentName;
             this.VirtualEnvironmentModule = virtualEnvironmentModule;
@@ -46,6 +47,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.OryxSecureBuildEnabled = oryxSecureBuildEnabled;
             this.OryxSecureBuildMode = oryxSecureBuildMode;
             this.OryxSecureBuildCheckerTimeoutInMinutes = oryxSecureBuildCheckerTimeoutInMinutes;
+            this.DependencyResolutionOutputDir = dependencyResolutionOutputDir;
+            this.DependencyResolutionOutputDirBashValue =
+                ToBashSingleQuotedString(dependencyResolutionOutputDir);
+            this.DependencyResolutionRequired =
+                oryxSecureBuildEnabled ||
+                !string.IsNullOrEmpty(dependencyResolutionOutputDir);
         }
 
         public string VirtualEnvironmentName { get; set; }
@@ -87,5 +94,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public string OryxSecureBuildMode { get; set; }
 
         public int OryxSecureBuildCheckerTimeoutInMinutes { get; set; }
+
+        public string DependencyResolutionOutputDir { get; set; }
+
+        public string DependencyResolutionOutputDirBashValue { get; set; }
+
+        public bool DependencyResolutionRequired { get; set; }
+
+        private static string ToBashSingleQuotedString(string value)
+        {
+            return value == null
+                ? "''"
+                : $"'{value.Replace("'", "'\"'\"'")}'";
+        }
     }
 }
