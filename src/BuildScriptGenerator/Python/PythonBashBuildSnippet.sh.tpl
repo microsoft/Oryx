@@ -173,6 +173,48 @@ log_secure_build_unavailable_and_cleanup_temp_dir() {
     log_oryx_secure_build_elapsed "Oryx SecureBuild" "$secure_build_start_time"
 }
 
+# We sanitize to avoid any secrets from getting logged.
+sanitize_dependency_resolution() {
+    local manager=$1
+    local source_file=$2
+    local destination_file=$3
+    local python_cmd=$4
+
+    "$python_cmd" - "$manager" "$source_file" "$destination_file" <<'PY'
+import json
+import re
+import sys
+
+manager, source_path, destination_path = sys.argv[1:4]
+
+if manager == "pip":
+    with open(source_path, encoding="utf-8") as source:
+        resolution = json.load(source)
+
+    for item in resolution.get("install", []):
+        download_info = item.get("download_info")
+        if isinstance(download_info, dict) and "url" in download_info:
+            download_info["url"] = "[redacted]"
+
+    with open(destination_path, "w", encoding="utf-8") as destination:
+        json.dump(resolution, destination, indent=2)
+        destination.write("\n")
+
+elif manager == "uv":
+    with open(source_path, encoding="utf-8") as source:
+        resolution = source.read()
+
+    resolution = re.sub(
+        r"[A-Za-z][A-Za-z0-9+.-]*://\S+",
+        "[redacted]",
+        resolution,
+    )
+
+    with open(destination_path, "w", encoding="utf-8") as destination:
+        destination.write(resolution)
+PY
+}
+
 # Once we determine the transitivie dependencies with their exact version,
 # we write two files to the specified output_dir.
 # 1. dependency-resolution-metadata.json - Contains infomation about ecosystem, manager and path to resolved dependencies file.
@@ -206,7 +248,16 @@ publish_dependency_resolution() {
         local metadata_file="$output_dir/$metadata_file_name"
 
         rm -f -- "$metadata_file"
-        cp -- "$source_file" "$staged_resolution_file" || exit $?
+
+        # Redact secrets from dependency-resolution files.
+        sanitize_dependency_resolution \
+            "$manager" \
+            "$source_file" \
+            "$staged_resolution_file" \
+            "$python_cmd" || {
+                rm -f -- "$staged_resolution_file"
+                exit 1
+            }
 
         # Use Python to generate a json file.        
         "$python_cmd" -c \

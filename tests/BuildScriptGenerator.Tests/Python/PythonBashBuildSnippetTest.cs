@@ -941,6 +941,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 text);
             Assert.Contains("local secure_build_enabled=\"false\"", text);
             Assert.Contains("publish_dependency_resolution()", text);
+            Assert.Contains("sanitize_dependency_resolution()", text);
+            Assert.Contains(
+                "download_info[\"url\"] = \"[redacted]\"",
+                text);
+            Assert.Contains(
+                "r\"[A-Za-z][A-Za-z0-9+.-]*://\\S+\"",
+                text);
+            Assert.Contains(
+                "sanitize_dependency_resolution \\",
+                text);
+            Assert.DoesNotContain(
+                "cp -- \"$source_file\" \"$staged_resolution_file\"",
+                text);
             Assert.Contains("\"dependency-resolution.json\"", text);
             Assert.Contains("\"dependency-resolution.txt\"", text);
             Assert.Contains("\"dependency-resolution-metadata.json\"", text);
