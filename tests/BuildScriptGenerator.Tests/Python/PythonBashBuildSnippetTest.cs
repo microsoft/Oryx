@@ -781,139 +781,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void GeneratedSnippet_DoesNotInvokeOryxSecureBuildFlowByDefault()
-        {
-            // Arrange
-            var snippetProps = new PythonBashBuildSnippetProperties(
-                virtualEnvironmentName: null,
-                virtualEnvironmentModule: null,
-                virtualEnvironmentParameters: null,
-                packagesDirectory: "packages_dir",
-                enableCollectStatic: false,
-                compressVirtualEnvCommand: null,
-                compressedVirtualEnvFileName: null,
-                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
-                pythonVersion: "3.11",
-                runPythonPackageCommand: false);
-
-            // Act
-            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
-
-            // Assert
-            Assert.Contains("install_with_dependency_resolution() {", text);
-            Assert.DoesNotContain(
-                "install_with_dependency_resolution \"$secure_build_manager\"",
-                text);
-            Assert.DoesNotContain("ORYX_SECURE_BUILD_", text);
-        }
-
-        [Theory]
-        [InlineData("audit")]
-        [InlineData("block")]
-        public void GeneratedSnippet_ContainsOryxSecureBuildFlowFromBuildProperties(string mode)
-        {
-            // Arrange
-            var snippetProps = new PythonBashBuildSnippetProperties(
-                virtualEnvironmentName: null,
-                virtualEnvironmentModule: null,
-                virtualEnvironmentParameters: null,
-                packagesDirectory: "packages_dir",
-                enableCollectStatic: false,
-                compressVirtualEnvCommand: null,
-                compressedVirtualEnvFileName: null,
-                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
-                pythonVersion: "3.11",
-                runPythonPackageCommand: false,
-                oryxSecureBuildEnabled: true,
-                oryxSecureBuildMode: mode,
-                oryxSecureBuildCheckerTimeoutInMinutes: 7);
-
-            // Act
-            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
-
-            // Assert
-            Assert.Contains("pip install --dry-run --ignore-installed --report", text);
-            Assert.Contains("uv pip compile --python", text);
-            Assert.Contains("command -v oryx-secure-build-checker", text);
-            Assert.Contains("command -v timeout", text);
-            Assert.Contains("timeout --signal=TERM --kill-after=10s \\", text);
-            Assert.Contains("\"7m\" \\", text);
-            Assert.Contains("oryx-secure-build-checker \\", text);
-            Assert.Contains(
-                "--dependency-resolution-file \"$dependency_resolution_file\"",
-                text);
-            Assert.Contains(
-                "--assessment-output \"$assessment_output_file\"",
-                text);
-            Assert.Contains(
-                "--frozen-packages-output \"$secure_build_constraints_file\"",
-                text);
-            Assert.DoesNotContain("--exceptions", text);
-            Assert.Contains(
-                "Oryx dependency resolution\" \\",
-                text);
-            Assert.Contains("Oryx SecureBuild assessment\" \\", text);
-            Assert.Contains(
-                "log_oryx_secure_build_elapsed " +
-                "\"Oryx SecureBuild\" \"$secure_build_start_time\"",
-                text);
-            Assert.Contains("local secure_build_start_time=$SECONDS", text);
-            Assert.Contains("local resolution_start_time=$SECONDS", text);
-            Assert.Contains("local assessment_start_time=$SECONDS", text);
-            Assert.Contains("did not produce frozen packages", text);
-            Assert.Contains($"--mode \"{mode}\"", text);
-            Assert.Contains("124|137)", text);
-            Assert.Contains(
-                "oryx-secure-build-checker exceeded the 7-minute time limit",
-                text);
-            Assert.Contains("return 42", text);
-            Assert.DoesNotContain("return 75", text);
-            Assert.DoesNotContain("SAFE_ORYX_BUILD_CHECKED", text);
-            Assert.Contains(
-                "install_python_packages \"$python_cmd\" \"$requirements_file\" " +
-                "\"$target_dir\" \"$upgrade_flag\"",
-                text);
-            Assert.Contains(
-                "install_python_packages_impl \"$python_cmd\" \"$requirements_file\" " +
-                "\"$target_dir\" \"$upgrade_flag\" \"$secure_build_constraints_file\" \"false\"",
-                text);
-            Assert.Equal(2, Regex.Matches(
-                text,
-                "base_cmd=\"\\$base_cmd -c \\$constraints_file\"").Count);
-            Assert.DoesNotContain(
-                "base_cmd=\"$base_cmd -c \\\"$constraints_file\\\"\"",
-                text);
-            Assert.Contains(
-                "install_with_dependency_resolution \"$secure_build_manager\" \"$python\" " +
-                "\"$REQUIREMENTS_TXT_FILE\"",
-                text);
-            Assert.DoesNotContain(
-                "install_python_packages \"$python\" \"$REQUIREMENTS_TXT_FILE\" " +
-                "\"packages_dir\"",
-                text);
-            Assert.Contains("pipInstallExitCode == 42", text);
-            Assert.Contains(
-                "Oryx SecureBuild blocked the deployment because critical vulnerabilities " +
-                "were found in the resolved Python packages",
-                text);
-            Assert.DoesNotContain(
-                "PYTHON_FAST_BUILD_ENABLED\" = \"true\" ] || " +
-                "[[ $pipInstallExitCode == 42",
-                text);
-            Assert.Contains("oryx-secure-build-checker is not installed", text);
-            Assert.DoesNotContain("http://127.0.0.1:8080/v1/audit", text);
-            Assert.DoesNotContain("SAFE_ORYX_BUILD_OUTCOME", text);
-            Assert.DoesNotContain("SAFE_ORYX_BUILD_TEMP_ROOT", text);
-            Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_ENABLED", text);
-            Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_MODE", text);
-            Assert.Contains("case \"$assessment_exit_code\" in", text);
-            Assert.Contains(
-                "oryx-secure-build-checker could not complete the assessment",
-                text);
-        }
-
-        [Fact]
-        public void GeneratedSnippet_CapturesDependencyResolutionWithoutSecureBuildAssessment()
+        public void GeneratedSnippet_CapturesDependencyResolution()
         {
             // Arrange
             const string outputDir = "/home/site/deployments/deployment-id/dependency-resolution";
@@ -939,7 +807,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains(
                 $"local dependency_resolution_output_dir='{outputDir}'",
                 text);
-            Assert.Contains("local secure_build_enabled=\"false\"", text);
             Assert.Contains("publish_dependency_resolution()", text);
             Assert.Contains("sanitize_dependency_resolution()", text);
             Assert.Contains(
@@ -961,17 +828,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("\"dependencyResolutionFilePath\"", text);
             Assert.Contains("\"$resolution_file\"", text);
             Assert.Contains(
-                "install_with_dependency_resolution \"$secure_build_manager\" \"$python\"",
+                "install_with_dependency_resolution \"$dependency_resolution_manager\" \"$python\"",
                 text);
-
-            int skipAssessmentIndex = text.IndexOf(
-                "if [ \"$secure_build_enabled\" != \"true\" ]; then",
-                StringComparison.Ordinal);
-            int checkerIndex = text.IndexOf(
-                "if ! command -v oryx-secure-build-checker",
-                StringComparison.Ordinal);
-            Assert.True(skipAssessmentIndex >= 0);
-            Assert.True(checkerIndex > skipAssessmentIndex);
+            Assert.DoesNotContain("oryx-secure-build-checker", text);
+            Assert.DoesNotContain("security-assessment.json", text);
+            Assert.DoesNotContain("secure-build-constraints.txt", text);
         }
 
         [Fact]
@@ -1005,7 +866,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void GeneratedOryxSecureBuildSnippet_HasValidBashSyntax()
+        public void GeneratedDependencyResolutionSnippet_HasValidBashSyntax()
         {
             var bash = OperatingSystem.IsWindows()
                 ? @"C:\Program Files\Git\bin\bash.exe"
@@ -1026,11 +887,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: "3.11",
                 runPythonPackageCommand: false,
-                oryxSecureBuildEnabled: true,
-                oryxSecureBuildMode: "block");
+                dependencyResolutionOutputDir: "/tmp/dependency-resolution");
             string path = Path.Combine(
                 Path.GetTempPath(),
-                $"oryx-secure-build-{Guid.NewGuid():N}.sh");
+                $"oryx-dependency-resolution-{Guid.NewGuid():N}.sh");
 
             try
             {

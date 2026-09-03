@@ -40,15 +40,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         "folder. Option is '" + UniversalWheel + ". Default is to not Non universal wheel. " +
         "For example, when this property is enabled, wheel build command will be " +
         "'python setup.py bdist_wheel --universal'")]
-    [BuildProperty(
-        OryxSecureBuildEnabledPropertyKey,
-        "Enables dependency vulnerability assessment before Python package installation.")]
-    [BuildProperty(
-        OryxSecureBuildModePropertyKey,
-        "Sets Oryx SecureBuild policy to 'audit' or 'block'. Defaults to 'audit'.")]
-    [BuildProperty(
-        OryxSecureBuildCheckerTimeoutInMinutesPropertyKey,
-        "Sets the Oryx SecureBuild checker timeout in minutes. Defaults to 5 minutes.")]
     internal class PythonPlatform : IProgrammingPlatform
     {
         /// <summary>
@@ -71,13 +62,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         internal const string PythonPackageWheelPropertyKey = "packagewheel";
 
-        internal const string OryxSecureBuildEnabledPropertyKey = "oryx_secure_build_enabled";
-
-        internal const string OryxSecureBuildModePropertyKey = "oryx_secure_build_mode";
-
-        internal const string OryxSecureBuildCheckerTimeoutInMinutesPropertyKey =
-            "oryx_secure_build_checker_timeout_in_min";
-
         /// <summary>
         /// The zip option.
         /// </summary>
@@ -97,8 +81,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// The pip upgrade command
         /// </summary>
         internal const string PipUpgradeFlag = "--upgrade";
-
-        private const int DefaultOryxSecureBuildCheckerTimeoutInMinutes = 5;
 
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly PythonScriptGeneratorOptions pythonScriptGeneratorOptions;
@@ -316,13 +298,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 customRequirementsTxtPath: customRequirementsTxtPath,
                 pipUpgradeFlag: pipUpgrade,
                 customBuildCommand: this.pythonScriptGeneratorOptions.CustomBuildCommand,
-                oryxSecureBuildEnabled: BuildPropertiesHelper.IsTrue(
-                    OryxSecureBuildEnabledPropertyKey,
-                    context,
-                    valueIsRequired: true),
-                oryxSecureBuildMode: GetOryxSecureBuildMode(context),
-                oryxSecureBuildCheckerTimeoutInMinutes:
-                    GetOryxSecureBuildCheckerTimeoutInMinutes(context),
                 dependencyResolutionOutputDir:
                     this.commonOptions.DependencyResolutionOutputDir);
 
@@ -518,34 +493,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             return packageDir;
-        }
-
-        private static string GetOryxSecureBuildMode(BuildScriptGeneratorContext context)
-        {
-            if (context.Properties != null &&
-                context.Properties.TryGetValue(OryxSecureBuildModePropertyKey, out string mode) &&
-                mode.EqualsIgnoreCase("block"))
-            {
-                return "block";
-            }
-
-            return "audit";
-        }
-
-        private static int GetOryxSecureBuildCheckerTimeoutInMinutes(
-            BuildScriptGeneratorContext context)
-        {
-            if (context.Properties != null &&
-                context.Properties.TryGetValue(
-                    OryxSecureBuildCheckerTimeoutInMinutesPropertyKey,
-                    out string configuredTimeout) &&
-                int.TryParse(configuredTimeout, out int timeoutInMinutes) &&
-                timeoutInMinutes > 0)
-            {
-                return timeoutInMinutes;
-            }
-
-            return DefaultOryxSecureBuildCheckerTimeoutInMinutes;
         }
 
         private static string GetDefaultVirtualEnvName(PlatformDetectorResult detectorResult)

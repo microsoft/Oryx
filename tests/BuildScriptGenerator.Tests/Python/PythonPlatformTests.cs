@@ -468,63 +468,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
-        [Theory]
-        [InlineData("audit", "audit")]
-        [InlineData("block", "block")]
-        [InlineData("BLOCK", "block")]
-        [InlineData("invalid", "audit")]
-        [InlineData(null, "audit")]
-        public void GeneratedScript_UsesOryxSecureBuildCliProperties(
-            string configuredMode,
-            string expectedMode)
-        {
-            // Arrange
-            var scriptGenerator = CreatePlatform();
-            var repo = new MemorySourceRepo();
-            repo.AddFile("", PythonConstants.RequirementsFileName);
-            var properties = new Dictionary<string, string>
-            {
-                [PythonPlatform.OryxSecureBuildEnabledPropertyKey] = "true",
-            };
-            if (configuredMode != null)
-            {
-                properties[PythonPlatform.OryxSecureBuildModePropertyKey] = configuredMode;
-            }
-
-            var context = new BuildScriptGeneratorContext
-            {
-                SourceRepo = repo,
-                Properties = properties,
-            };
-            var detectorResult = new PythonPlatformDetectorResult
-            {
-                Platform = PythonConstants.PlatformName,
-                PlatformVersion = "3.11",
-                HasRequirementsTxtFile = true,
-            };
-
-            // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
-
-            // Assert
-            Assert.Contains($"--mode \"{expectedMode}\"", snippet.BashBuildScriptSnippet);
-            Assert.Contains("install_with_dependency_resolution", snippet.BashBuildScriptSnippet);
-            Assert.DoesNotContain("--exceptions", snippet.BashBuildScriptSnippet);
-            Assert.Contains(
-                "Oryx dependency resolution\" \\",
-                snippet.BashBuildScriptSnippet);
-            Assert.Contains(
-                "Oryx SecureBuild assessment\" \\",
-                snippet.BashBuildScriptSnippet);
-            Assert.Contains(
-                "\"Oryx SecureBuild\" \"$secure_build_start_time\"",
-                snippet.BashBuildScriptSnippet);
-            Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_ENABLED", snippet.BashBuildScriptSnippet);
-            Assert.DoesNotContain("WEBSITE_ORYX_SECURE_BUILD_MODE", snippet.BashBuildScriptSnippet);
-        }
-
         [Fact]
-        public void GeneratedScript_UsesDependencyResolutionOutputDirectoryWithoutSecureBuild()
+        public void GeneratedScript_UsesDependencyResolutionOutputDirectory()
         {
             // Arrange
             const string outputDir = "/home/site/deployments/deployment-id/dependency-resolution";
@@ -559,53 +504,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains(
                 "install_with_dependency_resolution",
                 snippet.BashBuildScriptSnippet);
-            Assert.Contains(
-                "local secure_build_enabled=\"false\"",
+            Assert.DoesNotContain(
+                "oryx-secure-build-checker",
                 snippet.BashBuildScriptSnippet);
-        }
-
-        [Theory]
-        [InlineData(null, "5m")]
-        [InlineData("", "5m")]
-        [InlineData("0", "5m")]
-        [InlineData("-1", "5m")]
-        [InlineData("invalid", "5m")]
-        [InlineData("12", "12m")]
-        public void GeneratedScript_UsesValidatedOryxSecureBuildCheckerTimeout(
-            string configuredTimeout,
-            string expectedTimeout)
-        {
-            var scriptGenerator = CreatePlatform();
-            var repo = new MemorySourceRepo();
-            repo.AddFile("", PythonConstants.RequirementsFileName);
-            var properties = new Dictionary<string, string>
-            {
-                [PythonPlatform.OryxSecureBuildEnabledPropertyKey] = "true",
-            };
-            if (configuredTimeout != null)
-            {
-                properties[
-                    PythonPlatform.OryxSecureBuildCheckerTimeoutInMinutesPropertyKey] =
-                    configuredTimeout;
-            }
-
-            var context = new BuildScriptGeneratorContext
-            {
-                SourceRepo = repo,
-                Properties = properties,
-            };
-            var detectorResult = new PythonPlatformDetectorResult
-            {
-                Platform = PythonConstants.PlatformName,
-                PlatformVersion = "3.11",
-                HasRequirementsTxtFile = true,
-            };
-
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(
-                context,
-                detectorResult);
-
-            Assert.Contains($"\"{expectedTimeout}\"", snippet.BashBuildScriptSnippet);
         }
 
         [Fact]

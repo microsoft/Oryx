@@ -25,9 +25,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string customRequirementsTxtPath = null,
             string pipUpgradeFlag = null,
             string customBuildCommand = null,
-            bool oryxSecureBuildEnabled = false,
-            string oryxSecureBuildMode = "audit",
-            int oryxSecureBuildCheckerTimeoutInMinutes = 5,
             string dependencyResolutionOutputDir = null)
         {
             this.VirtualEnvironmentName = virtualEnvironmentName;
@@ -44,14 +41,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.CustomRequirementsTxtPath = customRequirementsTxtPath;
             this.PipUpgradeFlag = pipUpgradeFlag;
             this.CustomBuildCommand = customBuildCommand;
-            this.OryxSecureBuildEnabled = oryxSecureBuildEnabled;
-            this.OryxSecureBuildMode = oryxSecureBuildMode;
-            this.OryxSecureBuildCheckerTimeoutInMinutes = oryxSecureBuildCheckerTimeoutInMinutes;
             this.DependencyResolutionOutputDir = dependencyResolutionOutputDir;
             this.DependencyResolutionOutputDirBashValue =
                 ToBashSingleQuotedString(dependencyResolutionOutputDir);
             this.DependencyResolutionRequired =
-                oryxSecureBuildEnabled ||
                 !string.IsNullOrEmpty(dependencyResolutionOutputDir);
         }
 
@@ -88,12 +81,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public string PipUpgradeFlag { get; set; }
 
         public string CustomBuildCommand { get; set; }
-
-        public bool OryxSecureBuildEnabled { get; set; }
-
-        public string OryxSecureBuildMode { get; set; }
-
-        public int OryxSecureBuildCheckerTimeoutInMinutes { get; set; }
 
         public string DependencyResolutionOutputDir { get; set; }
 

@@ -60,8 +60,6 @@ install_via_uv() {
     local requirements_file=$2
     local target_dir=$3
     local upgrade_flag=$4
-    local constraints_file=$5
-    local write_manifest=${6:-true}
     
     ensure_uv "$python_cmd"
     
@@ -78,9 +76,6 @@ install_via_uv() {
     fi
     
     base_cmd="$base_cmd -r $requirements_file"
-    if [ -n "$constraints_file" ]; then
-        base_cmd="$base_cmd -c $constraints_file"
-    fi
     
     if [ -n "$target_dir" ]; then
         base_cmd="$base_cmd --target=\"$target_dir\""
@@ -91,9 +86,7 @@ install_via_uv() {
     
     # Log the command
     local uv_cmd="$base_cmd | ts $TS_FMT"
-    if [ "$write_manifest" = "true" ]; then
-        printf %s " , $uv_cmd" >> "$COMMAND_MANIFEST_FILE"
-    fi
+    printf %s " , $uv_cmd" >> "$COMMAND_MANIFEST_FILE"
     
     # Execute uv pip install (uv manages its own cache)
     output=$( ( $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
@@ -111,17 +104,12 @@ install_via_pip() {
     local requirements_file=$2
     local target_dir=$3
     local upgrade_flag=$4
-    local constraints_file=$5
-    local write_manifest=${6:-true}
     
     set +e
     echo "Running pip install..."
     
     # Build the command
     local base_cmd="$python_cmd -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $requirements_file"
-    if [ -n "$constraints_file" ]; then
-        base_cmd="$base_cmd -c $constraints_file"
-    fi
     if [ -n "$target_dir" ]; then
         base_cmd="$base_cmd --target=\"$target_dir\""
     fi
@@ -137,9 +125,7 @@ install_via_pip() {
     
     # Log the command
     local pip_cmd="$base_cmd | ts $TS_FMT"
-    if [ "$write_manifest" = "true" ]; then
-        printf %s " , $pip_cmd" >> "$COMMAND_MANIFEST_FILE"
-    fi
+    printf %s " , $pip_cmd" >> "$COMMAND_MANIFEST_FILE"
     
     # Execute pip install
     output=$( ( $base_cmd | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
@@ -150,27 +136,11 @@ install_via_pip() {
     return $exit_code
 }
 
-log_oryx_secure_build_unavailable() {
-    echo "Oryx SecureBuild audit: Assessment was unavailable because $1; deployment will continue using the original Oryx installation path."
-}
-
-log_oryx_secure_build_elapsed() {
+log_dependency_resolution_elapsed() {
     local operation=$1
     local start_time=$2
     local elapsed_time=$(($SECONDS - $start_time))
     echo "$operation done in $elapsed_time sec(s)."
-}
-
-log_secure_build_unavailable_and_cleanup_temp_dir() {
-    local reason=$1
-    local secure_build_start_time=$2
-    local temp_dir=$3
-
-    log_oryx_secure_build_unavailable "$reason"
-    if [ -n "$temp_dir" ]; then
-        rm -rf -- "$temp_dir"
-    fi
-    log_oryx_secure_build_elapsed "Oryx SecureBuild" "$secure_build_start_time"
 }
 
 # We sanitize to avoid any secrets from getting logged.
@@ -288,15 +258,8 @@ publish_dependency_resolution() {
     )
 }
 
-# Splits the install into three phases.
-# 1. Resolve dependencies to get transitive dependencies with exact version.
-# 2. Run oryx-secure-build-checker (if enabled).
-# 3. Installed the resolved dependencies.
-#
-# Pip (and uv) accept -r (list of packages to install) and -c (indicating package constraints).
-# So in essence, we determine -c first and then pass this along with pip install.
-#
-# Note: if a package is present in -r and not in -c, pip install will still install the package.
+# Resolves exact direct and transitive dependencies, publishes the sanitized
+# resolution artifact, and then continues through the normal installation path.
 install_with_dependency_resolution() {
     local manager=$1
     local python_cmd=$2
@@ -304,8 +267,6 @@ install_with_dependency_resolution() {
     local target_dir=$4
     local upgrade_flag=$5
     local temp_dir=""
-    local secure_build_start_time=$SECONDS
-    local secure_build_enabled="{{ OryxSecureBuildEnabled }}"
     local dependency_resolution_output_dir={{ DependencyResolutionOutputDirBashValue }}
 
     temp_dir=$(mktemp -d 2> /dev/null)
@@ -316,12 +277,11 @@ install_with_dependency_resolution() {
     fi
 
     local dependency_resolution_file="$temp_dir/dependency-resolution"
-    local secure_build_constraints_file="$temp_dir/secure-build-constraints.txt"
     local resolve_cmd
     local resolve_exit_code=0
     local resolution_start_time=$SECONDS
 
-    # Resolve exact direct and transitive versions for capture and optional assessment.
+    # Resolve exact direct and transitive versions for capture.
     if [ "$manager" = "uv" ]; then
         ensure_uv "$python_cmd" || resolve_exit_code=$?
         resolve_cmd=(uv pip compile --python "$python_cmd" --cache-dir "$UV_PIP_CACHE_DIR" --no-header --no-annotate --output-file "$dependency_resolution_file")
@@ -350,7 +310,7 @@ install_with_dependency_resolution() {
         "${resolve_cmd[@]}" > "$temp_dir/resolver.log" 2>&1 || resolve_exit_code=$?
     fi
     
-    log_oryx_secure_build_elapsed \
+    log_dependency_resolution_elapsed \
         "Oryx dependency resolution" \
         "$resolution_start_time"
 
@@ -376,94 +336,9 @@ install_with_dependency_resolution() {
         fi
     fi
 
-    # If SecureBuild is not enabled, continue with package installation and stop.
-    if [ "$secure_build_enabled" != "true" ]; then
-        rm -rf -- "$temp_dir"
-        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
-        return $?
-    fi
-
-    # If oryx-secure-build-checker doesnt exist, continue with package installation, instead of failing deployment.
-    if ! command -v oryx-secure-build-checker > /dev/null 2>&1; then
-        log_secure_build_unavailable_and_cleanup_temp_dir \
-            "oryx-secure-build-checker is not installed" \
-            "$secure_build_start_time" \
-            "$temp_dir"
-        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
-        return $?
-    fi
-
-    # If timeout command doesnt exist, continue with package installation, instead of failing deployment.
-    if ! command -v timeout > /dev/null 2>&1; then
-        log_secure_build_unavailable_and_cleanup_temp_dir \
-            "the timeout command is not installed" \
-            "$secure_build_start_time" \
-            "$temp_dir"
-        install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
-        return $?
-    fi
-
-    # Run Oryx Secure Build Checker with timeout.
-    local assessment_exit_code=0
-    local assessment_start_time=$SECONDS
-    local assessment_output_file="$temp_dir/security-assessment.json"
-    timeout --signal=TERM --kill-after=10s \
-        "{{ OryxSecureBuildCheckerTimeoutInMinutes }}m" \
-        oryx-secure-build-checker \
-        --manager "$manager" \
-        --dependency-resolution-file "$dependency_resolution_file" \
-        --assessment-output "$assessment_output_file" \
-        --frozen-packages-output "$secure_build_constraints_file" \
-        --mode "{{ OryxSecureBuildMode }}" || assessment_exit_code=$?
-    log_oryx_secure_build_elapsed \
-        "Oryx SecureBuild assessment" \
-        "$assessment_start_time"
-
-    case "$assessment_exit_code" in
-        0)
-            if [ ! -f "$secure_build_constraints_file" ]; then
-                log_secure_build_unavailable_and_cleanup_temp_dir \
-                    "oryx-secure-build-checker did not produce frozen packages" \
-                    "$secure_build_start_time" \
-                    "$temp_dir"
-                install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
-                return $?
-            fi
-            ;;
-        42)
-            # Exit code 42 is the only checker result that blocks deployment.
-            rm -rf -- "$temp_dir"
-            log_oryx_secure_build_elapsed "Oryx SecureBuild" "$secure_build_start_time"
-            return 42
-            ;;
-        124|137)
-            log_secure_build_unavailable_and_cleanup_temp_dir \
-                "oryx-secure-build-checker exceeded the {{ OryxSecureBuildCheckerTimeoutInMinutes }}-minute time limit" \
-                "$secure_build_start_time" \
-                "$temp_dir"
-            install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
-            return $?
-            ;;
-        *)
-            log_secure_build_unavailable_and_cleanup_temp_dir \
-                "oryx-secure-build-checker could not complete the assessment" \
-                "$secure_build_start_time" \
-                "$temp_dir"
-            install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
-            return $?
-            ;;
-    esac
-
-    # Constrain installation to the exact versions that passed assessment.
-    local install_exit_code=0
-    if [ "$manager" = "uv" ]; then
-        install_python_packages_impl "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$secure_build_constraints_file" "false" || install_exit_code=$?
-    else
-        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$secure_build_constraints_file" "false" || install_exit_code=$?
-    fi
     rm -rf -- "$temp_dir"
-    log_oryx_secure_build_elapsed "Oryx SecureBuild" "$secure_build_start_time"
-    return $install_exit_code
+    install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+    return $?
 }
 
 # Internal function to install packages with uv and fallback to pip
@@ -472,18 +347,16 @@ install_python_packages_impl() {
     local requirements_file=$2
     local target_dir=$3
     local upgrade_flag=$4
-    local constraints_file=$5
-    local write_manifest=${6:-true}
     
     set +e
     # Try uv first
-    install_via_uv "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$constraints_file" "$write_manifest"
+    install_via_uv "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
     local exit_code=$?
     
     # Fallback to pip if uv fails
     if [[ $exit_code != 0 ]]; then
         echo "uv pip install failed with exit code ${exit_code}, falling back to pip install..."
-        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" "$constraints_file" "$write_manifest"
+        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
         exit_code=$?
     fi
     set -e
@@ -500,7 +373,7 @@ install_python_packages() {
     if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
         install_python_packages_impl "$python_cmd" "$requirements_file" "" ""
     else
-        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag" ""
+        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
     fi
 }
 
@@ -571,18 +444,16 @@ install_python_packages() {
                 echo "Fast build is enabled"
             fi
             set +e
-            secure_build_manager="pip"
+            dependency_resolution_manager="pip"
             if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-                secure_build_manager="uv"
+                dependency_resolution_manager="uv"
             fi
-            install_with_dependency_resolution "$secure_build_manager" "python" "$REQUIREMENTS_TXT_FILE" "" ""
+            install_with_dependency_resolution "$dependency_resolution_manager" "python" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
             set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
-                if [[ $pipInstallExitCode == 42 ]]; then
-                    LogError "Oryx SecureBuild blocked the deployment because critical vulnerabilities were found in the resolved Python packages | Exit code: ${pipInstallExitCode} | Review the Oryx SecureBuild assessment above and update your requirements.txt"
-                elif [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
                     LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 else
                     LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
@@ -735,18 +606,16 @@ install_python_packages() {
                 echo "Fast build is enabled"
             fi
             set +e
-            secure_build_manager="pip"
+            dependency_resolution_manager="pip"
             if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-                secure_build_manager="uv"
+                dependency_resolution_manager="uv"
             fi
-            install_with_dependency_resolution "$secure_build_manager" "$python" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
+            install_with_dependency_resolution "$dependency_resolution_manager" "$python" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
             pipInstallExitCode=$?
             set -e
             if [[ $pipInstallExitCode != 0 ]]
             then
-                if [[ $pipInstallExitCode == 42 ]]; then
-                    LogError "Oryx SecureBuild blocked the deployment because critical vulnerabilities were found in the resolved Python packages | Exit code: ${pipInstallExitCode} | Review the Oryx SecureBuild assessment above and update your requirements.txt"
-                elif [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
+                if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
                     LogError "Package installation failed | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
                 else
                     LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
