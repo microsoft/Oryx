@@ -55,6 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.IntermediateDir = input.IntermediateDir;
             this.DestinationDir = input.DestinationDir;
             this.ManifestDir = input.ManifestDir;
+            this.DependencyResolutionOutputDir = input.DependencyResolutionOutputDir;
             this.SourceDir = input.SourceDir;
             this.PlatformName = input.Platform;
             this.PlatformVersion = input.PlatformVersion;
@@ -107,6 +108,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public string ManifestDir { get; set; }
 
+        public string DependencyResolutionOutputDir { get; set; }
+
         public static Command Export(IConsole console)
         {
             var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
@@ -141,6 +144,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var destinationDirOption = new Option<string>(aliases: OptionArgumentTemplates.Output, OptionArgumentTemplates.OutputDescription);
 
             var manifestDirOption = new Option<string>(OptionArgumentTemplates.ManifestDir, OptionArgumentTemplates.ManifestDirDescription);
+            var dependencyResolutionOutputDirOption = new Option<string>(
+                OptionArgumentTemplates.DependencyResolutionOutputDir,
+                OptionArgumentTemplates.DependencyResolutionOutputDirDescription);
 
             var command = new Command(Name, Description)
             {
@@ -148,6 +154,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 intermediateDirOption,
                 destinationDirOption,
                 manifestDirOption,
+                dependencyResolutionOutputDirOption,
                 platformOption,
                 platformVersionOption,
                 packageOption,
@@ -178,6 +185,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     intermediateDir: intermediateDirOption,
                     destinationDir: destinationDirOption,
                     manifestDir: manifestDirOption,
+                    dependencyResolutionOutputDir: dependencyResolutionOutputDirOption,
                     sourceDir: sourceDirArgument,
                     platform: platformOption,
                     platformVersion: platformVersionOption,
@@ -494,6 +502,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ?
                 Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
             this.ManifestDir = string.IsNullOrEmpty(this.ManifestDir) ? null : Path.GetFullPath(this.ManifestDir);
+            this.DependencyResolutionOutputDir = string.IsNullOrEmpty(this.DependencyResolutionOutputDir)
+                ? null
+                : Path.GetFullPath(this.DependencyResolutionOutputDir);
             this.IntermediateDir = string.IsNullOrEmpty(this.IntermediateDir) ? null : Path.GetFullPath(this.IntermediateDir);
             this.DestinationDir = string.IsNullOrEmpty(this.DestinationDir) ? null : Path.GetFullPath(this.DestinationDir);
             this.BuildCommandsFileName = string.IsNullOrEmpty(this.BuildCommandsFileName) ?
@@ -528,6 +539,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                             options.IntermediateDir = this.IntermediateDir;
                             options.DestinationDir = this.DestinationDir;
                             options.ManifestDir = this.ManifestDir;
+                            options.DependencyResolutionOutputDir = this.DependencyResolutionOutputDir;
                             options.Properties = buildProperties;
                             options.ScriptOnly = false;
                             options.SkipDetection = options.SkipDetection || this.SkipDetection;

@@ -24,7 +24,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string pythonPackageWheelProperty = null,
             string customRequirementsTxtPath = null,
             string pipUpgradeFlag = null,
-            string customBuildCommand = null)
+            string customBuildCommand = null,
+            string dependencyResolutionOutputDir = null)
         {
             this.VirtualEnvironmentName = virtualEnvironmentName;
             this.VirtualEnvironmentModule = virtualEnvironmentModule;
@@ -40,6 +41,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.CustomRequirementsTxtPath = customRequirementsTxtPath;
             this.PipUpgradeFlag = pipUpgradeFlag;
             this.CustomBuildCommand = customBuildCommand;
+            this.DependencyResolutionOutputDir = dependencyResolutionOutputDir;
+            this.DependencyResolutionOutputDirBashValue =
+                ToBashSingleQuotedString(dependencyResolutionOutputDir);
+            this.DependencyResolutionRequired =
+                !string.IsNullOrEmpty(dependencyResolutionOutputDir);
         }
 
         public string VirtualEnvironmentName { get; set; }
@@ -75,5 +81,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public string PipUpgradeFlag { get; set; }
 
         public string CustomBuildCommand { get; set; }
+
+        public string DependencyResolutionOutputDir { get; set; }
+
+        public string DependencyResolutionOutputDirBashValue { get; set; }
+
+        public bool DependencyResolutionRequired { get; set; }
+
+        private static string ToBashSingleQuotedString(string value)
+        {
+            return value == null
+                ? "''"
+                : $"'{value.Replace("'", "'\"'\"'")}'";
+        }
     }
 }
