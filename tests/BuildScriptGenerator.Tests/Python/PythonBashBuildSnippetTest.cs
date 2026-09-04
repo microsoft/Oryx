@@ -837,7 +837,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains(
                 "install_via_uv \\\n" +
                 "        \"$python_cmd\" \\\n" +
-                "        \"$dependency_resolution_file\"",
+                "        \"$requirements_file\"",
                 text);
             Assert.Contains(
                 "if [ \"$PYTHON_FAST_BUILD_ENABLED\" != \"true\" ]; then",
@@ -852,7 +852,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 text.IndexOf(
                     "install_via_uv \\\n" +
                     "        \"$python_cmd\" \\\n" +
-                    "        \"$dependency_resolution_file\"",
+                    "        \"$requirements_file\"",
                     StringComparison.Ordinal) <
                 text.IndexOf(
                     "if publish_dependency_resolution",

@@ -238,8 +238,8 @@ publish_dependency_resolution() {
     )
 }
 
-# Resolves exact direct and transitive dependencies, installs that exact
-# resolution with uv, and publishes a sanitized artifact after installation.
+# Resolves exact direct and transitive dependencies for capture, installs from
+# the customer's requirements file, and publishes a sanitized artifact.
 install_with_dependency_resolution() {
     local python_cmd=$1
     local requirements_file=$2
@@ -268,7 +268,7 @@ install_with_dependency_resolution() {
     local resolve_exit_code=0
     local resolution_start_time=$SECONDS
 
-    # Resolve exact direct and transitive versions for capture and installation.
+    # Resolve exact direct and transitive versions for capture.
     ensure_uv "$python_cmd" || resolve_exit_code=$?
     resolve_cmd=(uv pip compile --python "$python_cmd" --cache-dir "$UV_PIP_CACHE_DIR" --no-header --no-annotate --output-file "$dependency_resolution_file")
 
@@ -298,7 +298,7 @@ install_with_dependency_resolution() {
 
     install_via_uv \
         "$python_cmd" \
-        "$dependency_resolution_file" \
+        "$requirements_file" \
         "$target_dir" \
         "$upgrade_flag"
     local install_exit_code=$?
@@ -309,7 +309,7 @@ install_with_dependency_resolution() {
         return $?
     fi
 
-    # Publish only after uv successfully installs the compiled resolution.
+    # Publish only after uv successfully installs the original requirements.
     if [ -n "$dependency_resolution_output_dir" ]; then
         if publish_dependency_resolution \
             "$dependency_resolution_file" \
