@@ -145,65 +145,51 @@ log_dependency_resolution_elapsed() {
 
 # We sanitize to avoid any secrets from getting logged.
 sanitize_dependency_resolution() {
-    local manager=$1
-    local source_file=$2
-    local destination_file=$3
-    local python_cmd=$4
+    local source_file=$1
+    local destination_file=$2
+    local python_cmd=$3
 
-    "$python_cmd" - "$manager" "$source_file" "$destination_file" <<'PY'
-import json
+    "$python_cmd" - "$source_file" "$destination_file" <<'PY'
 import re
 import sys
 
-manager, source_path, destination_path = sys.argv[1:4]
+source_path, destination_path = sys.argv[1:3]
+with open(source_path, encoding="utf-8") as source:
+    resolution = source.read()
 
-if manager == "pip":
-    with open(source_path, encoding="utf-8") as source:
-        resolution = json.load(source)
+resolution = re.sub(
+    r"[A-Za-z][A-Za-z0-9+.-]*://\S+",
+    "[redacted]",
+    resolution,
+)
 
-    for item in resolution.get("install", []):
-        download_info = item.get("download_info")
-        if isinstance(download_info, dict) and "url" in download_info:
-            download_info["url"] = "[redacted]"
-
-    with open(destination_path, "w", encoding="utf-8") as destination:
-        json.dump(resolution, destination, indent=2)
-        destination.write("\n")
-
-elif manager == "uv":
-    with open(source_path, encoding="utf-8") as source:
-        resolution = source.read()
-
-    resolution = re.sub(
-        r"[A-Za-z][A-Za-z0-9+.-]*://\S+",
-        "[redacted]",
-        resolution,
-    )
-
-    with open(destination_path, "w", encoding="utf-8") as destination:
-        destination.write(resolution)
+with open(destination_path, "w", encoding="utf-8") as destination:
+    destination.write(resolution)
 PY
+}
+
+clear_dependency_resolution_artifacts() {
+    local output_dir=$1
+
+    if [ -z "$output_dir" ]; then
+        return
+    fi
+
+    rm -f -- \
+        "$output_dir/dependency-resolution-metadata.json" \
+        "$output_dir/dependency-resolution.txt" \
+        "$output_dir/dependency-resolution.json"
 }
 
 # Once we determine the transitivie dependencies with their exact version,
 # we write two files to the specified output_dir.
 # 1. dependency-resolution-metadata.json - Contains infomation about ecosystem, manager and path to resolved dependencies file.
-# 2. dependency-resolution.* - The actual format of the file, depends on the tool used to determine the dependencies.
-#                            - pip --dry-run generates a json file while uv generates a txt file.
+# 2. dependency-resolution.txt - The exact dependencies compiled by uv.
 publish_dependency_resolution() {
-    local manager=$1
-    local source_file=$2
-    local output_dir=$3
-    local python_cmd=$4
-    local resolution_file_name
-
-    if [ "$manager" = "pip" ]; then
-        resolution_file_name="dependency-resolution.json"
-    elif [ "$manager" = "uv" ]; then
-        resolution_file_name="dependency-resolution.txt"
-    else
-        return 1
-    fi
+    local source_file=$1
+    local output_dir=$2
+    local python_cmd=$3
+    local resolution_file_name="dependency-resolution.txt"
 
     if ! (mkdir -p -- "$output_dir"); then
         return 1
@@ -221,7 +207,6 @@ publish_dependency_resolution() {
 
         # Redact secrets from dependency-resolution files.
         sanitize_dependency_resolution \
-            "$manager" \
             "$source_file" \
             "$staged_resolution_file" \
             "$python_cmd" || {
@@ -232,7 +217,7 @@ publish_dependency_resolution() {
         # Use Python to generate a json file.        
         "$python_cmd" -c \
             'import json, sys; json.dump({"schemaVersion": 1, "manager": sys.argv[1], "dependencyResolutionFilePath": sys.argv[2]}, sys.stdout, indent=2); print()' \
-            "$manager" \
+            "uv" \
             "$resolution_file" \
             > "$staged_metadata_file" || {
                 rm -f -- "$staged_resolution_file"
@@ -249,25 +234,27 @@ publish_dependency_resolution() {
             exit 1
         }
 
-        # Cleanup
-        if [ "$manager" = "pip" ]; then
-            rm -f -- "$output_dir/dependency-resolution.txt"
-        else
-            rm -f -- "$output_dir/dependency-resolution.json"
-        fi
+        rm -f -- "$output_dir/dependency-resolution.json"
     )
 }
 
-# Resolves exact direct and transitive dependencies, publishes the sanitized
-# resolution artifact, and then continues through the normal installation path.
+# Resolves exact direct and transitive dependencies, installs that exact
+# resolution with uv, and publishes a sanitized artifact after installation.
 install_with_dependency_resolution() {
-    local manager=$1
-    local python_cmd=$2
-    local requirements_file=$3
-    local target_dir=$4
-    local upgrade_flag=$5
+    local python_cmd=$1
+    local requirements_file=$2
+    local target_dir=$3
+    local upgrade_flag=$4
     local temp_dir=""
     local dependency_resolution_output_dir={{ DependencyResolutionOutputDirBashValue }}
+
+    clear_dependency_resolution_artifacts "$dependency_resolution_output_dir"
+
+    if [ "$PYTHON_FAST_BUILD_ENABLED" != "true" ]; then
+        echo "Oryx dependency resolution is unavailable because Python fast build is disabled; deployment will continue using pip installation."
+        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
+    fi
 
     temp_dir=$(mktemp -d 2> /dev/null)
     if [ -z "$temp_dir" ]; then
@@ -281,30 +268,16 @@ install_with_dependency_resolution() {
     local resolve_exit_code=0
     local resolution_start_time=$SECONDS
 
-    # Resolve exact direct and transitive versions for capture.
-    if [ "$manager" = "uv" ]; then
-        ensure_uv "$python_cmd" || resolve_exit_code=$?
-        resolve_cmd=(uv pip compile --python "$python_cmd" --cache-dir "$UV_PIP_CACHE_DIR" --no-header --no-annotate --output-file "$dependency_resolution_file")
-    else
-        resolve_cmd=("$python_cmd" -m pip install --dry-run --ignore-installed --report "$dependency_resolution_file" --cache-dir "$PIP_CACHE_DIR" --prefer-binary)
-        if [ -n "$target_dir" ]; then
-            resolve_cmd+=(--target "$target_dir")
-        fi
-        if [ -n "$upgrade_flag" ]; then
-            resolve_cmd+=("$upgrade_flag")
-        fi
-    fi
+    # Resolve exact direct and transitive versions for capture and installation.
+    ensure_uv "$python_cmd" || resolve_exit_code=$?
+    resolve_cmd=(uv pip compile --python "$python_cmd" --cache-dir "$UV_PIP_CACHE_DIR" --no-header --no-annotate --output-file "$dependency_resolution_file")
 
     # Set the path to pre-loaded wheels if it exists.
     if [ -n "$PYTHON_PRELOADED_WHEELS_DIR" ]; then
         resolve_cmd+=(--find-links "$PYTHON_PRELOADED_WHEELS_DIR")
     fi
 
-    if [ "$manager" = "pip" ]; then
-        resolve_cmd+=(-r "$requirements_file")
-    else
-        resolve_cmd+=("$requirements_file")
-    fi
+    resolve_cmd+=("$requirements_file")
 
     if [[ $resolve_exit_code == 0 ]]; then
         "${resolve_cmd[@]}" > "$temp_dir/resolver.log" 2>&1 || resolve_exit_code=$?
@@ -317,16 +290,28 @@ install_with_dependency_resolution() {
     # If we fail to resolve the dependencies (non-zero exit code), then we fall back to 
     # pip install or uv pip install.
     if [[ $resolve_exit_code != 0 ]]; then
-        echo "Oryx dependency resolution was unavailable because $manager dependency resolution failed; deployment will continue using the original Oryx installation path."
+        echo "Oryx dependency resolution was unavailable because uv dependency resolution failed; deployment will continue using the original Oryx installation path."
         rm -rf -- "$temp_dir"
         install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
         return $?
     fi
 
-    # Write the resolved dependencies to output_dir.
+    install_via_uv \
+        "$python_cmd" \
+        "$dependency_resolution_file" \
+        "$target_dir" \
+        "$upgrade_flag"
+    local install_exit_code=$?
+    if [[ $install_exit_code != 0 ]]; then
+        echo "uv pip install failed with exit code ${install_exit_code}, falling back to pip install without dependency resolution artifacts..."
+        rm -rf -- "$temp_dir"
+        install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
+        return $?
+    fi
+
+    # Publish only after uv successfully installs the compiled resolution.
     if [ -n "$dependency_resolution_output_dir" ]; then
         if publish_dependency_resolution \
-            "$manager" \
             "$dependency_resolution_file" \
             "$dependency_resolution_output_dir" \
             "$python_cmd"; then
@@ -337,8 +322,7 @@ install_with_dependency_resolution() {
     fi
 
     rm -rf -- "$temp_dir"
-    install_python_packages "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
-    return $?
+    return 0
 }
 
 # Internal function to install packages with uv and fallback to pip
@@ -371,7 +355,7 @@ install_python_packages() {
     local upgrade_flag=$4
 
     if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-        install_python_packages_impl "$python_cmd" "$requirements_file" "" ""
+        install_python_packages_impl "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
     else
         install_via_pip "$python_cmd" "$requirements_file" "$target_dir" "$upgrade_flag"
     fi
@@ -444,11 +428,7 @@ install_python_packages() {
                 echo "Fast build is enabled"
             fi
             set +e
-            dependency_resolution_manager="pip"
-            if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-                dependency_resolution_manager="uv"
-            fi
-            install_with_dependency_resolution "$dependency_resolution_manager" "python" "$REQUIREMENTS_TXT_FILE" "" ""
+            install_with_dependency_resolution "python" "$REQUIREMENTS_TXT_FILE" "" ""
             pipInstallExitCode=$?
             set -e
             if [[ $pipInstallExitCode != 0 ]]
@@ -606,11 +586,7 @@ install_python_packages() {
                 echo "Fast build is enabled"
             fi
             set +e
-            dependency_resolution_manager="pip"
-            if [ "$PYTHON_FAST_BUILD_ENABLED" = "true" ]; then
-                dependency_resolution_manager="uv"
-            fi
-            install_with_dependency_resolution "$dependency_resolution_manager" "$python" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
+            install_with_dependency_resolution "$python" "$REQUIREMENTS_TXT_FILE" "{{ PackagesDirectory }}" "{{ PipUpgradeFlag }}"
             pipInstallExitCode=$?
             set -e
             if [[ $pipInstallExitCode != 0 ]]

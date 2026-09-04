@@ -809,8 +809,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 text);
             Assert.Contains("publish_dependency_resolution()", text);
             Assert.Contains("sanitize_dependency_resolution()", text);
+            Assert.Contains("clear_dependency_resolution_artifacts()", text);
             Assert.Contains(
-                "download_info[\"url\"] = \"[redacted]\"",
+                "clear_dependency_resolution_artifacts \"$dependency_resolution_output_dir\"",
                 text);
             Assert.Contains(
                 "r\"[A-Za-z][A-Za-z0-9+.-]*://\\S+\"",
@@ -821,15 +822,43 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.DoesNotContain(
                 "cp -- \"$source_file\" \"$staged_resolution_file\"",
                 text);
-            Assert.Contains("\"dependency-resolution.json\"", text);
             Assert.Contains("\"dependency-resolution.txt\"", text);
+            Assert.Contains(
+                "rm -f -- \"$output_dir/dependency-resolution.json\"",
+                text);
             Assert.Contains("\"dependency-resolution-metadata.json\"", text);
             Assert.Contains("\"schemaVersion\": 1", text);
+            Assert.Contains("\"uv\"", text);
             Assert.Contains("\"dependencyResolutionFilePath\"", text);
             Assert.Contains("\"$resolution_file\"", text);
             Assert.Contains(
-                "install_with_dependency_resolution \"$dependency_resolution_manager\" \"$python\"",
+                "install_with_dependency_resolution \"$python\"",
                 text);
+            Assert.Contains(
+                "install_via_uv \\\n" +
+                "        \"$python_cmd\" \\\n" +
+                "        \"$dependency_resolution_file\"",
+                text);
+            Assert.Contains(
+                "if [ \"$PYTHON_FAST_BUILD_ENABLED\" != \"true\" ]; then",
+                text);
+            Assert.Contains(
+                "deployment will continue using pip installation",
+                text);
+            Assert.Contains(
+                "falling back to pip install without dependency resolution artifacts",
+                text);
+            Assert.True(
+                text.IndexOf(
+                    "install_via_uv \\\n" +
+                    "        \"$python_cmd\" \\\n" +
+                    "        \"$dependency_resolution_file\"",
+                    StringComparison.Ordinal) <
+                text.IndexOf(
+                    "if publish_dependency_resolution",
+                    StringComparison.Ordinal));
+            Assert.DoesNotContain("pip install --dry-run", text);
+            Assert.DoesNotContain("dependency_resolution_manager", text);
             Assert.DoesNotContain("oryx-secure-build-checker", text);
             Assert.DoesNotContain("security-assessment.json", text);
             Assert.DoesNotContain("secure-build-constraints.txt", text);
