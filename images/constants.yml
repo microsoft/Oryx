@@ -86,9 +86,9 @@ variables:
   php85Version_SHA: 6a8bebaa4d5a979a38db29a9373e9851f60c6b11f72172c585947e78f3081957
   phpComposerVersion: 2.6.2
   python39Version: 3.9.24
-  python310Version: 3.10.20
-  python311Version: 3.11.15
-  python312Version: 3.12.13
+  python310Version: 3.10.21
+  python311Version: 3.11.16
+  python312Version: 3.12.14
   python313Version: 3.13.15
   python314Version: 3.14.7
   python315Version: 3.15.0b3
