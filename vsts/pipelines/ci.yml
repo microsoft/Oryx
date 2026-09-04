@@ -245,6 +245,22 @@ stages:
         parameters:
             imageType: bookworm
 
+    - job: Job_Embr_Python_Resolute_RuntimeImages
+      displayName: Build and Test Embr Python Resolute Runtime Images
+      condition: succeeded()
+      timeoutInMinutes: 180
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        skipComponentGovernanceDetection: true
+      steps:
+      - template: templates/_setReleaseTag.yml
+      - template: templates/_embrPythonRuntimeImagesStepTemplate.yml
+        parameters:
+          pushImages: true
+
     - template: templates/_integrationJobTemplate.yml
       parameters:
           storageAccountUrl: ${{ parameters.storageAccountUrl }}

@@ -1,0 +1,63 @@
+parameters:
+- name: pushImages
+  type: boolean
+  default: false
+- name: acrName
+  type: string
+  default: oryxdevmcr.azurecr.io
+- name: ascName
+  type: string
+  default: oryx-new-service-connection
+
+steps:
+- checkout: self
+  clean: true
+
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: Component Detection - OSS Compliance
+  inputs:
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
+- ${{ if eq(parameters.pushImages, true) }}:
+  - task: Docker@1
+    displayName: Login to Oryx development ACR
+    inputs:
+      command: login
+      azureSubscriptionEndpoint: ${{ parameters.ascName }}
+      azureContainerRegistry: ${{ parameters.acrName }}
+
+- task: Bash@3
+  displayName: Build Embr Python Resolute runtime images
+  inputs:
+    targetType: filePath
+    filePath: ./build/buildEmbrPythonRuntimeImages.sh
+
+- task: Bash@3
+  displayName: Test Embr Python Resolute runtime images
+  inputs:
+    targetType: filePath
+    filePath: ./build/testEmbrPythonRuntimeImages.sh
+    arguments: '$(Build.ArtifactStagingDirectory)/images/embr-python-runtime-images-acr.resolute.txt'
+
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: Generate Software Bill of Materials (SBOM)
+  inputs:
+    BuildDropPath: '$(Build.ArtifactStagingDirectory)'
+
+- ${{ if eq(parameters.pushImages, true) }}:
+  - task: Docker@1
+    displayName: Push Embr Python runtime images to development ACR
+    inputs:
+      azureSubscriptionEndpoint: ${{ parameters.ascName }}
+      azureContainerRegistry: ${{ parameters.acrName }}
+      command: Push an image
+      pushMultipleImages: true
+      imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/embr-python-runtime-images-acr.resolute.txt'
+      includeLatestTag: false
+      enforceDockerNamingConvention: false
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Embr Python runtime image metadata
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: drop
