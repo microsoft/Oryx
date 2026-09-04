@@ -93,6 +93,13 @@ steps:
     scriptPath: ./vsts/scripts/tagRunTimeImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
+- task: Bash@3
+  displayName: 'Pull and create release tags for Embr Python runtime images'
+  inputs:
+    targetType: filePath
+    filePath: ./vsts/scripts/tagEmbrPythonRuntimeImagesForRelease.sh
+  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
+
 - task: Shellpp@0
   displayName: 'Pull and create release tags for CLI images'
   inputs:
