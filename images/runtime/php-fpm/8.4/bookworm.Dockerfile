@@ -60,7 +60,7 @@ ENV GPG_KEYS AFD8691FDAEDF03BDF6E460563F15A9B715376CA 9D7F99A0CB8F05C8A6958D6256
 ARG PHP_VERSION
 ARG PHP_SHA256
 ENV PHP_VERSION ${PHP_VERSION}
-ENV PHP_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror" PHP_MD5=""
+ENV PHP_URL="https://www.php.net/distributions/php-${PHP_VERSION}.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-${PHP_VERSION}.tar.xz.asc" PHP_MD5=""
 ENV PHP_SHA256 ${PHP_SHA256}
 
 RUN set -eux; \
