@@ -108,7 +108,11 @@ RUN test -n "${PYTHON_FULL_VERSION}" \
         --without-ensurepip \
         ${configure_args} \
     && make -j "$(nproc)" \
-    && make install
+    && make install \
+    && find "/opt/python/${PYTHON_FULL_VERSION}" -depth \
+        \( -type d \( -name test -o -name tests -o -name idle_test \) \
+        -o -type f \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
+        -exec rm -rf '{}' +
 
 FROM embrbase AS main
 
@@ -144,11 +148,7 @@ RUN cd /opt/python \
     && ln -s python3-config python-config \
     && printf '/opt/python/%s/lib\n' "${PYTHON_MAJOR_VERSION}" \
         > /etc/ld.so.conf.d/python.conf \
-    && ldconfig \
-    && find "/opt/python/${PYTHON_FULL_VERSION}" -depth \
-        \( -type d \( -name test -o -name tests -o -name idle_test \) \
-        -o -type f \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
-        -exec rm -rf '{}' +
+    && ldconfig
 
 ENV PATH="/opt/python/${PYTHON_MAJOR_VERSION}/bin:${PATH}" \
     PYTHON_VERSION=${PYTHON_FULL_VERSION}
