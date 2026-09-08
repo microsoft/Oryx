@@ -25,6 +25,19 @@ yaml_value() {
 mkdir -p "$(dirname "$IMAGE_LIST")"
 : > "$IMAGE_LIST"
 
+gunicorn_version="$(yaml_value "gunicornVersion")"
+gunicorn_url="$(yaml_value "gunicornSourceUrl")"
+gunicorn_sha256="$(yaml_value "gunicornSource_SHA256")"
+packaging_version="$(yaml_value "packagingVersion")"
+packaging_url="$(yaml_value "packagingSourceUrl")"
+packaging_sha256="$(yaml_value "packagingSource_SHA256")"
+
+if [[ -z "$gunicorn_version" || -z "$gunicorn_url" || -z "$gunicorn_sha256" \
+    || -z "$packaging_version" || -z "$packaging_url" || -z "$packaging_sha256" ]]; then
+    echo "Missing Gunicorn or packaging source metadata in $CONSTANTS_FILE." >&2
+    exit 1
+fi
+
 for minor_version in $PYTHON_VERSIONS; do
     compact_version="${minor_version//./}"
     full_version="$(yaml_value "python${compact_version}Version")"
@@ -42,6 +55,12 @@ for minor_version in $PYTHON_VERSIONS; do
         --build-arg "PYTHON_FULL_VERSION=$full_version" \
         --build-arg "PYTHON_VERSION=$minor_version" \
         --build-arg "PYTHON_SHA256=$sha256" \
+        --build-arg "GUNICORN_VERSION=$gunicorn_version" \
+        --build-arg "GUNICORN_URL=$gunicorn_url" \
+        --build-arg "GUNICORN_SHA256=$gunicorn_sha256" \
+        --build-arg "PACKAGING_VERSION=$packaging_version" \
+        --build-arg "PACKAGING_URL=$packaging_url" \
+        --build-arg "PACKAGING_SHA256=$packaging_sha256" \
         --build-arg "BUILD_NUMBER=${BUILD_BUILDNUMBER:-local}" \
         --build-arg "GIT_COMMIT=${BUILD_SOURCEVERSION:-unspecified}" \
         --build-arg "RELEASE_TAG_NAME=$RELEASE_TAG_NAME" \
