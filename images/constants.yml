@@ -13,7 +13,7 @@ variables:
   node22osFlavors: bullseye,bookworm
   node24osFlavors: noble
   node26osFlavors: resolute
-  python310osFlavors: bullseye
+  python310osFlavors: bullseye,bookworm
   python311osFlavors: bullseye,bookworm
   python312osFlavors: bullseye,bookworm
   python313osFlavors: bullseye,bookworm
@@ -24,7 +24,7 @@ variables:
   dotnet100osFlavors: noble
   dotnet110osFlavors: resolute
   php81osFlavors: bullseye
-  php82osFlavors: bullseye
+  php82osFlavors: bullseye,bookworm
   php83osFlavors: bullseye,bookworm
   php84osFlavors: bullseye,bookworm
   php85osFlavors: noble
