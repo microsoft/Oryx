@@ -98,7 +98,8 @@ RUN set -eux; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
 
 COPY images/runtime/php-fpm/8.2/docker-php-source /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-php-source
+RUN sed -i 's/\r$//' /usr/local/bin/docker-php-source \
+	&& chmod +x /usr/local/bin/docker-php-source
 
 RUN set -eux; \
 	\
@@ -124,11 +125,7 @@ RUN set -eux; \
 		CPPFLAGS="$PHP_CPPFLAGS" \
 		LDFLAGS="$PHP_LDFLAGS" \
 	; \
-	#which docker-php-source; \
-	awk '{ sub("\r$", ""); print }' /usr/local/bin/docker-php-source > /usr/local/bin/docker-php-source_new; \
-	cat /usr/local/bin/docker-php-source_new; \
-	chmod +x /usr/local/bin/docker-php-source_new ; \
-	docker-php-source_new extract; \
+	docker-php-source extract; \
 	ls -l /usr/src/; \
 	cd /usr/src/php; \
 	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
@@ -187,11 +184,13 @@ RUN set -eux; \
 	cp -v php.ini-* "$PHP_INI_DIR/"; \
 	\
 	cd /; \
-	docker-php-source_new delete; \
+	docker-php-source delete; \
 	\
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+# PHP links to libargon2, but the dependency scan does not retain it on Bookworm.
 	apt-mark auto '.*' > /dev/null; \
 	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+	apt-mark manual libargon2-1; \
 	find /usr/local -type f -executable -exec ldd '{}' ';' \
 		| awk '/=>/ { print $(NF-1) }' \
 		| sort -u \
@@ -209,8 +208,8 @@ RUN set -eux; \
 	php --version
 
 COPY images/runtime/php-fpm/8.2/docker-php-ext-* images/runtime/php-fpm/8.2/docker-php-entrypoint /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-php-ext-*
-RUN chmod +x /usr/local/bin/docker-php-entrypoint
+RUN sed -i 's/\r$//' /usr/local/bin/docker-php-ext-* /usr/local/bin/docker-php-entrypoint \
+	&& chmod +x /usr/local/bin/docker-php-ext-* /usr/local/bin/docker-php-entrypoint
 
 # sodium was built as a shared module (so that it can be replaced later if so desired), so let's enable it too (https://github.com/docker-library/php/issues/598)
 RUN docker-php-ext-enable sodium
