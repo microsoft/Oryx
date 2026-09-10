@@ -28,7 +28,7 @@ variables:
   php83osFlavors: bullseye,bookworm
   php84osFlavors: bullseye,bookworm
   php85osFlavors: noble
-  osFlavors: bullseye,bookworm,noble
+  osFlavors: bookworm,noble
   dotnetosFlavors: bookworm,bullseye,noble,resolute
   nodejsosFlavors: bookworm,bullseye,noble,resolute
   phposFlavors: bookworm,bullseye,noble
