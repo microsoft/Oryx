@@ -9,9 +9,3 @@ variables:
   python314_SHA256: 3b48dac8fb59f62eaa67ac83c1eb12bda1b7a08406dd286e252c11a66be27f81
   python315Version: 3.15.0b3
   python315_SHA256: 6a935ae234a67e6549894373b0cfeb8361182d03b21442328ae9598ab7422127
-  gunicornVersion: 24.1.1
-  gunicornSourceUrl: https://codeload.github.com/benoitc/gunicorn/tar.gz/refs/tags/24.1.1
-  gunicornSource_SHA256: 8522dbd3d8ae27f0568939e88e35effe43ed6077eb2c2cbd1ab084d37cf3d9f0
-  packagingVersion: 26.0
-  packagingSourceUrl: https://codeload.github.com/pypa/packaging/tar.gz/refs/tags/26.0
-  packagingSource_SHA256: 7b1995333d1d9a2d857ba85c493df323055e64248a45c2af32ebe9ae8dce663b

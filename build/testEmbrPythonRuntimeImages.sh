@@ -29,7 +29,7 @@ while IFS= read -r image; do
         test -n "$(find /usr/local/share/ca-certificates -name "azl_*.crt" -print -quit)"
         test ! -x /usr/bin/gcc
         test ! -x /usr/bin/g++
-        python -c "import importlib.util; assert importlib.util.find_spec(\"pip\") is None"
+        python -m pip --version
         python -c "import importlib.util; assert importlib.util.find_spec(\"_tkinter\") is None"
         gunicorn --version | grep -q "^gunicorn (version "
         python -c "import importlib.util; assert importlib.util.find_spec(\"uvicorn\") is None"

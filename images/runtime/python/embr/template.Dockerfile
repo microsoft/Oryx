@@ -127,57 +127,21 @@ RUN test -n "${PYTHON_FULL_VERSION}" \
         -o -type f \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
         -exec rm -rf '{}' +
 
-FROM pythonbuildbase AS pythonwheels
-
-ARG GUNICORN_VERSION
-ARG GUNICORN_URL
-ARG GUNICORN_SHA256
-ARG PACKAGING_VERSION
-ARG PACKAGING_URL
-ARG PACKAGING_SHA256
-
-RUN test -n "${GUNICORN_VERSION}${GUNICORN_URL}${GUNICORN_SHA256}" \
-    && test -n "${PACKAGING_VERSION}${PACKAGING_URL}${PACKAGING_SHA256}" \
-    && apt-get -o Acquire::Retries=5 update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        flit \
-        python3-pip \
-        python3-setuptools \
-        python3-wheel \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl --fail --location --retry 5 --retry-all-errors \
-        "${GUNICORN_URL}" \
-        --output /tmp/gunicorn.tar.gz \
-    && echo "${GUNICORN_SHA256}  /tmp/gunicorn.tar.gz" | sha256sum -c - \
-    && curl --fail --location --retry 5 --retry-all-errors \
-        "${PACKAGING_URL}" \
-        --output /tmp/packaging.tar.gz \
-    && echo "${PACKAGING_SHA256}  /tmp/packaging.tar.gz" | sha256sum -c - \
-    && mkdir -p /tmp/gunicorn-source /tmp/packaging-source /tmp/wheels \
-    && tar -xzf /tmp/gunicorn.tar.gz --strip-components=1 -C /tmp/gunicorn-source \
-    && tar -xzf /tmp/packaging.tar.gz --strip-components=1 -C /tmp/packaging-source \
-    && python3 -m pip wheel --no-deps --no-build-isolation \
-        --wheel-dir /tmp/wheels \
-        /tmp/packaging-source \
-        /tmp/gunicorn-source
-
 FROM pythonbuilder AS pythonruntime
 
 ARG PYTHON_FULL_VERSION
 
-COPY --from=pythonwheels /tmp/wheels/*.whl /tmp/
-RUN LD_LIBRARY_PATH="/opt/python/${PYTHON_FULL_VERSION}/lib" \
-        "/opt/python/${PYTHON_FULL_VERSION}/bin/python3" -c \
-        'import pathlib, sys, zipfile; target = pathlib.Path(sys.argv[1]); [zipfile.ZipFile(wheel).extractall(target) for wheel in sys.argv[2:]]' \
-        "/opt/python/${PYTHON_FULL_VERSION}/lib/python${PYTHON_FULL_VERSION%.*}/site-packages" \
-        /tmp/packaging-*.whl \
-        /tmp/gunicorn-*.whl \
-    && printf '%s\n' \
-        '#!/bin/sh' \
-        'exec "$(dirname "$0")/python3" -c "from gunicorn.app.wsgiapp import run; run(prog=\"gunicorn\")" "$@"' \
-        > "/opt/python/${PYTHON_FULL_VERSION}/bin/gunicorn" \
-    && chmod +x "/opt/python/${PYTHON_FULL_VERSION}/bin/gunicorn" \
-    && rm -f /tmp/gunicorn-*.whl /tmp/packaging-*.whl
+RUN wget "https://bootstrap.pypa.io/get-pip.py" -O /tmp/get-pip.py \
+    && LD_LIBRARY_PATH="/opt/python/${PYTHON_FULL_VERSION}/lib" \
+        "/opt/python/${PYTHON_FULL_VERSION}/bin/python3" \
+        /tmp/get-pip.py \
+        --trusted-host pypi.python.org \
+        --trusted-host pypi.org \
+        --trusted-host files.pythonhosted.org \
+        --disable-pip-version-check \
+        --no-cache-dir \
+        --no-warn-script-location \
+    && rm -f /tmp/get-pip.py
 
 FROM embrbase AS main
 
@@ -223,3 +187,8 @@ RUN cd /opt/python \
 
 ENV PATH="/opt/python/${PYTHON_MAJOR_VERSION}/bin:${PATH}" \
     PYTHON_VERSION=${PYTHON_FULL_VERSION}
+
+RUN --mount=type=secret,id=pip_index_url,target=/run/secrets/pip_index_url \
+    pip install --index-url "$(cat /run/secrets/pip_index_url)" --upgrade pip \
+    && pip install --index-url "$(cat /run/secrets/pip_index_url)" gunicorn \
+    && rm -rf /var/lib/apt/lists/*
