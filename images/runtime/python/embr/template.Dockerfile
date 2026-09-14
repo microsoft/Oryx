@@ -27,17 +27,16 @@ RUN chmod +x build.sh && ./build.sh python /opt/startupcmdgen/startupcmdgen
 FROM ${BASE_IMAGE} AS pythonRuntimeBinariesBuilder
 ARG OS_FLAVOR
 ARG PYTHON_FULL_VERSION
+ARG PYTHON_SHA256
 ENV OS_FLAVOR=${OS_FLAVOR}
 ENV PYTHON_VERSION=${PYTHON_FULL_VERSION}
 
 COPY platforms/python/prereqs/build.sh /tmp/build.sh
-COPY platforms/python/versions/${OS_FLAVOR}/versionsToBuild.txt /tmp/versionsToBuild.txt
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh /tmp/receiveGpgKeys.sh \
     && mkdir -p /usr/src/python && cd /usr/src/python \
-    && VERSION_LINE=$(grep "^${PYTHON_VERSION}," /tmp/versionsToBuild.txt) \
-    && export GPG_KEY=$(echo "$VERSION_LINE" | cut -d',' -f2 | tr -d ' ') \
-    && export PYTHON_SHA256=$(echo "$VERSION_LINE" | cut -d',' -f3 | tr -d ' ') \
+    && export GPG_KEY="" \
+    && export PYTHON_SHA256="${PYTHON_SHA256}" \
     && export OS_FLAVOR=${OS_FLAVOR} \
     && /tmp/build.sh
 

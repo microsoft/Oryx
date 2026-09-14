@@ -49,6 +49,7 @@ for minor_version in $PYTHON_VERSIONS; do
         --build-arg "PYTHON_FULL_VERSION=$full_version" \
         --build-arg "PYTHON_VERSION=$minor_version" \
         --build-arg "PYTHON_MAJOR_VERSION=3" \
+        --build-arg "PYTHON_SHA256=$sha256" \
         --build-arg "BUILD_NUMBER=${BUILD_BUILDNUMBER:-local}" \
         --build-arg "GIT_COMMIT=${BUILD_SOURCEVERSION:-unspecified}" \
         --build-arg "RELEASE_TAG_NAME=$RELEASE_TAG_NAME" \
