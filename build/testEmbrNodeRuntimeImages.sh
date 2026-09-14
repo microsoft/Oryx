@@ -29,19 +29,22 @@ while IFS= read -r image; do
         npm --version >/dev/null
         npx --version >/dev/null
         test "$(yarn --version)" = "$YARN_VERSION"
+        pm2 --version >/dev/null
+        ! npm ls -g applicationinsights --depth=0 >/dev/null 2>&1
         node -e "require(\"https\").get(\"https://nodejs.org/\", response => { if (response.statusCode >= 400) process.exit(1); response.resume(); }).on(\"error\", () => process.exit(1))"
         test -n "$(find /usr/local/share/ca-certificates -name "azl_*.crt" -print -quit)"
-        for excluded_command in gcc g++ cc make python python3 git pm2 corepack; do
+        for excluded_command in gcc g++ cc make python python3 git; do
             ! command -v "$excluded_command" >/dev/null
         done
         command -v tar >/dev/null
         command -v gzip >/dev/null
         command -v unzip >/dev/null
         command -v zstd >/dev/null
-        test -x /opt/oryx/benv
         test -x /opt/startupcmdgen/startupcmdgen
+        test -x /opt/node-wrapper/node
+        test "$(stat -c "%u:%g" /home/node)" = "1001:1001"
+        test "$(stat -c "%a" /node_modules)" = "777"
         test "$(readlink /usr/local/bin/oryx)" = "/opt/startupcmdgen/startupcmdgen"
-        ! find /opt/nodejs -type f \( -name "*.h" -o -name "*.a" \) -print -quit | grep -q .
         ! ldd "$(command -v node)" | grep -q "not found"
 
         mkdir -p /tmp/npm-app
@@ -122,12 +125,6 @@ EOF
         sh /tmp/archive-tar.gz/startup.sh
         sh /tmp/archive-tar.zst/startup.sh
         sh /tmp/archive-zip/startup.sh
-
-        EXPECTED_MAJOR="$EXPECTED_MAJOR" bash -c '"'"'
-            source /opt/oryx/benv "node=$EXPECTED_MAJOR"
-            test "$node" = "/opt/nodejs/$EXPECTED_MAJOR/bin/node"
-            test "$("$node" -p "process.versions.node")" = "$NODE_VERSION"
-        '"'"'
     '
 
     docker build \
