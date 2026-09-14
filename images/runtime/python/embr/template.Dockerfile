@@ -148,6 +148,7 @@ FROM embrbase AS main
 ARG PYTHON_FULL_VERSION
 ARG PYTHON_VERSION
 ARG PYTHON_MAJOR_VERSION=3
+ARG PIP_INDEX_URL=https://pypi.org/simple
 ARG BUILD_NUMBER=unspecified
 ARG GIT_COMMIT=unspecified
 ARG RELEASE_TAG_NAME=unspecified
@@ -188,7 +189,6 @@ RUN cd /opt/python \
 ENV PATH="/opt/python/${PYTHON_MAJOR_VERSION}/bin:${PATH}" \
     PYTHON_VERSION=${PYTHON_FULL_VERSION}
 
-RUN --mount=type=secret,id=pip_index_url,target=/run/secrets/pip_index_url \
-    pip install --index-url "$(cat /run/secrets/pip_index_url)" --upgrade pip \
-    && pip install --index-url "$(cat /run/secrets/pip_index_url)" gunicorn \
+RUN pip install --index-url "${PIP_INDEX_URL}" --upgrade pip \
+    && pip install --index-url "${PIP_INDEX_URL}" gunicorn \
     && rm -rf /var/lib/apt/lists/*

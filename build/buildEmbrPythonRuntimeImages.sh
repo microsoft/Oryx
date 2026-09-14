@@ -36,11 +36,10 @@ for minor_version in $PYTHON_VERSIONS; do
     fi
 
     image="$ACR_NAME/$ACR_REPOSITORY:embr-$minor_version-ubuntu-resolute-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-    PIP_INDEX_URL="${PIP_INDEX_URL:-https://pypi.org/simple}" \
     docker build \
         --file "$DOCKERFILE" \
         --tag "$image" \
-        --secret id=pip_index_url,env=PIP_INDEX_URL \
+        --build-arg "PIP_INDEX_URL=${PIP_INDEX_URL:-https://pypi.org/simple}" \
         --build-arg "PYTHON_FULL_VERSION=$full_version" \
         --build-arg "PYTHON_VERSION=$minor_version" \
         --build-arg "PYTHON_SHA256=$sha256" \
