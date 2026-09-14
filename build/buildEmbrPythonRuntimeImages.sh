@@ -16,6 +16,10 @@ readonly BUILD_DEFINITIONNAME="${BUILD_DEFINITIONNAME:-local}"
 readonly ARTIFACTS_DIR="${BUILD_ARTIFACTSTAGINGDIRECTORY:-$REPO_DIR/artifacts}"
 readonly IMAGE_LIST="$ARTIFACTS_DIR/images/embr-python-runtime-images-acr.resolute.txt"
 readonly PYTHON_VERSIONS="${EMBR_PYTHON_VERSIONS:-3.13 3.14 3.15}"
+readonly OS_FLAVOR="resolute"
+readonly BASE_IMAGE="${BASE_IMAGE:-mcr.microsoft.com/mirror/docker/library/ubuntu:resolute}"
+readonly PIP_INDEX_URL="${PIP_INDEX_URL:-https://pypi.org/simple}"
+export PIP_INDEX_URL
 
 yaml_value() {
     local key="$1"
@@ -39,10 +43,12 @@ for minor_version in $PYTHON_VERSIONS; do
     docker build \
         --file "$DOCKERFILE" \
         --tag "$image" \
-        --build-arg "PIP_INDEX_URL=${PIP_INDEX_URL:-https://pypi.org/simple}" \
+        --secret id=pip_index_url,env=PIP_INDEX_URL \
+        --build-arg "OS_FLAVOR=$OS_FLAVOR" \
+        --build-arg "BASE_IMAGE=$BASE_IMAGE" \
         --build-arg "PYTHON_FULL_VERSION=$full_version" \
         --build-arg "PYTHON_VERSION=$minor_version" \
-        --build-arg "PYTHON_SHA256=$sha256" \
+        --build-arg "PYTHON_MAJOR_VERSION=3" \
         --build-arg "BUILD_NUMBER=${BUILD_BUILDNUMBER:-local}" \
         --build-arg "GIT_COMMIT=${BUILD_SOURCEVERSION:-unspecified}" \
         --build-arg "RELEASE_TAG_NAME=$RELEASE_TAG_NAME" \
