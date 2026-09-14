@@ -1,128 +1,91 @@
-# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE
 
-ARG UBUNTU_BASE_IMAGE=mcr.microsoft.com/mirror/docker/library/ubuntu:resolute
-ARG AZURE_LINUX_BASE_IMAGE=mcr.microsoft.com/azurelinux/base/core:3.0
-
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bookworm AS startupcmdgen
+# Build the Oryx startup-script generator (the `oryx` CLI).
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bookworm AS startupCmdGen
 
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT} \
-    BUILD_NUMBER=${BUILD_NUMBER} \
-    RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
-RUN chmod +x build.sh \
-    && ./build.sh node /opt/startupcmdgen/startupcmdgen
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM ${AZURE_LINUX_BASE_IMAGE} AS azurelinuxcertificates
 
-RUN tdnf makecache \
-    && tdnf install -y ca-certificates \
-    && update-ca-trust extract \
-    && tdnf clean all
+# Download Node.js directly from official source and verify SHA256.
+FROM ${BASE_IMAGE} AS nodeDownloader
+ARG NODE_FULL_VERSION
+WORKDIR /tmp/node-download
+RUN curl -fsSLO "https://nodejs.org/dist/v${NODE_FULL_VERSION}/node-v${NODE_FULL_VERSION}-linux-x64.tar.xz" \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE_FULL_VERSION}/SHASUMS256.txt.asc" -o SHASUMS256.txt.asc \
+    && curl -fsSL "https://github.com/nodejs/release-keys/raw/HEAD/gpg/pubring.kbx" -o nodejs-keyring.kbx \
+    && gpg --no-default-keyring --keyring="/tmp/node-download/nodejs-keyring.kbx" --decrypt SHASUMS256.txt.asc > SHASUMS256.txt \
+    && grep "node-v${NODE_FULL_VERSION}-linux-x64.tar.xz" SHASUMS256.txt > node.sha256 \
+    && [ -s node.sha256 ] \
+    && sha256sum -c node.sha256 \
+    && mkdir -p /opt/nodejs \
+    && tar -xJf "node-v${NODE_FULL_VERSION}-linux-x64.tar.xz" -C /opt/nodejs --strip-components=1 \
+    && rm -rf /tmp/node-download
 
-FROM ${UBUNTU_BASE_IMAGE} AS embrbase
 
-RUN apt-get -o Acquire::Retries=5 update \
-    && apt-get upgrade -y \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        netbase \
-        openssl \
-        unzip \
-        zstd \
-    && rm -rf /var/lib/apt/lists/*
+FROM ${BASE_IMAGE}
 
-COPY --from=azurelinuxcertificates \
-    /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem \
-    /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
-COPY images/runtime/scripts/install-azurelinux-certs.sh /tmp/install-azurelinux-certs.sh
-RUN chmod +x /tmp/install-azurelinux-certs.sh \
-    && /tmp/install-azurelinux-certs.sh \
-        /tmp/azurelinux-ca-certs \
-        /tmp/azurelinux-ca-certs/tls-ca-bundle.pem \
-    && rm -f /tmp/install-azurelinux-certs.sh
-
-FROM embrbase AS runtimearchives
+RUN groupadd --gid 1001 node \
+  && useradd --uid 1001 --gid node --shell /bin/bash --create-home node
 
 ARG NODE_FULL_VERSION
-ARG NODE_SHA256
-ARG YARN_VERSION
-ARG YARN_URL
-ARG YARN_SHA256
+ENV NODE_VERSION=${NODE_FULL_VERSION}
+ENV NPM_CONFIG_LOGLEVEL=info
 
-RUN test -n "${NODE_FULL_VERSION}${NODE_SHA256}" \
-    && test -n "${YARN_VERSION}${YARN_URL}${YARN_SHA256}" \
-    && apt-get -o Acquire::Retries=5 update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xz-utils \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl --fail --location --retry 5 --retry-all-errors \
-        "https://nodejs.org/dist/v${NODE_FULL_VERSION}/node-v${NODE_FULL_VERSION}-linux-x64.tar.xz" \
-        --output /tmp/node.tar.xz \
-    && echo "${NODE_SHA256}  /tmp/node.tar.xz" | sha256sum -c - \
-    && mkdir -p "/opt/nodejs/${NODE_FULL_VERSION}" \
-    && tar -xJf /tmp/node.tar.xz \
-        --strip-components=1 \
-        -C "/opt/nodejs/${NODE_FULL_VERSION}" \
-    && rm -rf "/opt/nodejs/${NODE_FULL_VERSION}/include" \
-        "/opt/nodejs/${NODE_FULL_VERSION}/lib/node_modules/corepack" \
-        "/opt/nodejs/${NODE_FULL_VERSION}/bin/corepack" \
-    && curl --fail --location --retry 5 --retry-all-errors \
-        "${YARN_URL}" \
-        --output /tmp/yarn.tar.gz \
-    && echo "${YARN_SHA256}  /tmp/yarn.tar.gz" | sha256sum -c - \
-    && mkdir -p "/opt/yarn/${YARN_VERSION}" \
-    && tar -xzf /tmp/yarn.tar.gz \
-        --strip-components=1 \
-        -C "/opt/yarn/${YARN_VERSION}" \
-    && rm -f /tmp/node.tar.xz /tmp/yarn.tar.gz
+COPY --from=nodeDownloader /opt/nodejs/ /usr/local/
+RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-FROM embrbase AS main
+COPY images/runtime/node/installDependencies.sh /tmp/installDependencies.sh
 
-ARG NODE_FULL_VERSION
-ARG NODE_VERSION
-ARG NODE_MAJOR_VERSION
-ARG YARN_VERSION
-ARG BUILD_NUMBER=unspecified
-ARG GIT_COMMIT=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-ENV LANG=C.UTF-8 \
-    LC_ALL=C.UTF-8 \
-    NODE_VERSION=${NODE_FULL_VERSION} \
-    YARN_VERSION=${YARN_VERSION} \
-    SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-LABEL com.microsoft.oryx.build-number="${BUILD_NUMBER}" \
-    com.microsoft.oryx.git-commit="${GIT_COMMIT}" \
-    com.microsoft.oryx.release-tag-name="${RELEASE_TAG_NAME}"
+ARG NPM_VERSION
+ARG PM2_VERSION
 
-RUN test -n "${NODE_FULL_VERSION}" \
-    && test -n "${NODE_VERSION}" \
-    && test -n "${NODE_MAJOR_VERSION}" \
-    && test -n "${YARN_VERSION}"
+RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
+    if [ -f /run/secrets/npmrc ]; then \
+        FEED_ACCESSTOKEN=$(cat /run/secrets/npmrc) && \
+        echo "registry=https://pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/" > /root/.npmrc && \
+        echo "always-auth=true" >> /root/.npmrc && \
+        echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc && \
+        echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc; \
+    fi && \
+    chmod +x /tmp/installDependencies.sh && \
+    NPM_VERSION=${NPM_VERSION} PM2_VERSION=${PM2_VERSION} /tmp/installDependencies.sh && \
+    npm cache clean --force && \
+    find /tmp -mindepth 1 -delete && \
+    rm -rf /root/.npmrc
 
-COPY --from=runtimearchives \
-    /opt/nodejs/${NODE_FULL_VERSION} \
-    /opt/nodejs/${NODE_FULL_VERSION}
-COPY --from=runtimearchives \
-    /opt/yarn/${YARN_VERSION} \
-    /opt/yarn/${YARN_VERSION}
-COPY --from=startupcmdgen \
-    /opt/startupcmdgen/startupcmdgen \
-    /opt/startupcmdgen/startupcmdgen
-COPY images/build/benv.sh /opt/oryx/benv
+# Install Yarn.
+ARG YARN_VERSION=1.22.22
+ENV YARN_VERSION=${YARN_VERSION}
+RUN npm install --global "yarn@${YARN_VERSION}" \
+  && yarn --version
 
-RUN cd /opt/nodejs \
-    && ln -s "${NODE_FULL_VERSION}" "${NODE_VERSION}" \
-    && ln -s "${NODE_VERSION}" "${NODE_MAJOR_VERSION}" \
-    && chmod +x /opt/oryx/benv \
-    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
-    && ln -s "/opt/nodejs/${NODE_VERSION}/bin/node" /usr/local/bin/node \
-    && ln -s "/opt/nodejs/${NODE_VERSION}/bin/npm" /usr/local/bin/npm \
-    && ln -s "/opt/nodejs/${NODE_VERSION}/bin/npx" /usr/local/bin/npx \
-    && ln -s "/opt/yarn/${YARN_VERSION}/bin/yarn" /usr/local/bin/yarn \
-    && ln -s "/opt/yarn/${YARN_VERSION}/bin/yarn" /usr/local/bin/yarnpkg
 
-ENV PATH="/opt/nodejs/${NODE_VERSION}/bin:${PATH}"
+# Bake Application Insights key from pipeline variable into final image.
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
+# Bake in client certificate path into image to avoid downloading it.
+ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
+# Oryx++ Builder variables.
+ENV CNB_STACK_ID="oryx.stacks.skeleton"
+LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
+
+COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+
+# Node wrapper is used to debug apps when node is executed indirectly, e.g. by npm.
+COPY src/startupscriptgenerator/src/node/wrapper/node /opt/node-wrapper/
+RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
+    && chmod a+x /opt/node-wrapper/node
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"
+
+CMD [ "node" ]
