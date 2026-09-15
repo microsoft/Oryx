@@ -47,7 +47,7 @@ django-reversion==3.0.8
 django-six==1.0.5
 django-storages==1.11.1
 django-two-factor-auth==1.13
-djangorestframework==3.12.4
+djangorestframework==3.17.2
 et-xmlfile==1.1.0
 factory-boy==3.2.1
 Faker==15.3.2
