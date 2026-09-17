@@ -26,8 +26,6 @@ while IFS= read -r image; do
         python -c "import bz2, ctypes, curses, dbm.gnu, lzma, readline, sqlite3, ssl, uuid"
         python -c "import urllib.request; urllib.request.urlopen(\"https://www.python.org/\", timeout=30).close()"
         python -c "import ctypes; ctypes.CDLL(\"libpq.so.5\"); ctypes.CDLL(\"libmysqlclient.so.24\"); ctypes.CDLL(\"libodbc.so.2\")"
-        odbcinst -q -d | grep -q "ODBC Driver 18 for SQL Server"
-        test -x /opt/mssql-tools18/bin/sqlcmd
         pg_config --version
         mysql_config --version
         test -n "$(find /usr/local/share/ca-certificates -name "azl_*.crt" -print -quit)"

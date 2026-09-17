@@ -61,17 +61,6 @@ RUN chmod +x /tmp/install-dependencies.sh \
     && bash /tmp/install-dependencies.sh \
     && rm -f /tmp/install-dependencies.sh
 
-RUN export ACCEPT_EULA=Y \
-    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-        | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
-    && curl -fsSL https://packages.microsoft.com/config/ubuntu/26.04/prod.list \
-        > /etc/apt/sources.list.d/mssql-release.list \
-    && apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        msodbcsql18=18.7.1.1-1 \
-        mssql-tools18=18.7.1.1-1 \
-    && rm -rf /var/lib/apt/lists/*
-
 ARG PYTHON_FULL_VERSION
 ARG PYTHON_VERSION
 ARG PYTHON_MAJOR_VERSION
