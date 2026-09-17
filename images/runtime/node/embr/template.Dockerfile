@@ -55,6 +55,9 @@ RUN --mount=type=secret,id=npmrc,target=/run/secrets/npmrc \
         echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc && \
         echo "//pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/:_authToken=${FEED_ACCESSTOKEN}" >> /root/.npmrc; \
     fi && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libatomic1 && \
+    rm -rf /var/lib/apt/lists/* && \
     chmod +x /tmp/installDependencies.sh && \
     NPM_VERSION=${NPM_VERSION} PM2_VERSION=${PM2_VERSION} /tmp/installDependencies.sh && \
     npm cache clean --force && \
