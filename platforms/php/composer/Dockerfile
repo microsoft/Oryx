@@ -4,6 +4,14 @@ ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
 ARG VERSIONS_TO_BUILD_OVERRIDE=""
 ENV VERSIONS_TO_BUILD_OVERRIDE=$VERSIONS_TO_BUILD_OVERRIDE
+
+COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
+RUN if [ "${OS_FLAVOR}" = "bullseye" ]; then \
+        chmod +x /usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+        /usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+    fi \
+    && rm /usr/local/bin/configure-debian-bullseye-snapshot.sh
+
 COPY platforms/php/prereqs /php
 # COPY build/__phpVersions.sh /php/
 COPY platforms/php/prereqs/build.sh /tmp/
