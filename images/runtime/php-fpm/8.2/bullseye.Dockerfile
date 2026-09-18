@@ -18,6 +18,11 @@ RUN chmod +x build.sh && ./build.sh php /opt/startupcmdgen/startupcmdgen
 FROM ${BASE_IMAGE}
 ARG IMAGES_DIR=/tmp/oryx/images
 
+COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/configure-debian-bullseye-snapshot.sh \
+	&& /usr/local/bin/configure-debian-bullseye-snapshot.sh \
+	&& rm /usr/local/bin/configure-debian-bullseye-snapshot.sh
+
 # do NOT merge this content with above line because the 
 # above line is shared across all php images
 # Install the Microsoft SQL Server PDO driver on supported versions only.

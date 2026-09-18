@@ -18,6 +18,13 @@ FROM mcr.microsoft.com/mirror/docker/library/${OS_TYPE}:${OS_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ARG INCLUDE_AZURELINUX_CERTS
+ARG OS_FLAVOR
+
+COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
+RUN if [ "${OS_FLAVOR}" = "bullseye" ]; then \
+		chmod +x /usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+		/usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+	fi
 
 RUN apt-get update \
 	&& apt-get upgrade -y \
@@ -29,12 +36,12 @@ RUN apt-get update \
 		netbase \
 		wget
 
-ARG OS_FLAVOR
 RUN if [ "${OS_FLAVOR}" = "bookworm" ] ; then \
     apt-get update && apt-get install -y --no-install-recommends sq ; \
     fi
 
-RUN  rm -rf /var/lib/apt/lists/*
+RUN rm -f /usr/local/bin/configure-debian-bullseye-snapshot.sh \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Copy Azure linux certs to a temporary location
 RUN mkdir -p /tmp/azurelinux-ca-certs && \
