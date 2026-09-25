@@ -18,6 +18,7 @@ echo "Running custom build command '{{ CustomBuildCommand }}'..."
 echo "Note: the custom build command must output to \$DESTINATION_DIR (e.g., dotnet publish -c Release -o \$DESTINATION_DIR)."
 echo
 START_TIME=$SECONDS
+$ORYX_PROGRESS_PHASE_COMMAND "build.execute"
 {{ CustomBuildCommand }}
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "Custom build command done in $ELAPSED_TIME sec(s)."
@@ -29,6 +30,7 @@ msg="${suggestion} | ${doc}"
 {{ # .NET Core 1.1 based projects require restore to be run before publish }}
 echo "Restoring..."
 START_TIME=$SECONDS
+$ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
 cmd="dotnet restore \"{{ ProjectFile }}\""
 LogErrorWithTryCatch "$cmd" "$msg"
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -38,6 +40,7 @@ if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
 then
     echo "Publishing..."
     START_TIME=$SECONDS
+    $ORYX_PROGRESS_PHASE_COMMAND "build.execute"
     cmd="dotnet publish \"{{ ProjectFile }}\" -c {{ Configuration }}"
     LogErrorWithTryCatch "$cmd" "$msg"
     ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -47,6 +50,7 @@ else
     echo "Publishing to directory $DESTINATION_DIR..."
     echo    
     START_TIME=$SECONDS
+    $ORYX_PROGRESS_PHASE_COMMAND "build.execute"
     cmd="dotnet publish \"{{ ProjectFile }}\" -c {{ Configuration }} -o $DESTINATION_DIR"
     LogErrorWithTryCatch "$cmd" "$msg"
     ELAPSED_TIME=$(($SECONDS - $START_TIME))
