@@ -1,0 +1,11 @@
+variables:
+  python313osFlavors: resolute
+  python314osFlavors: resolute
+  python315osFlavors: resolute
+  pythonosFlavors: resolute
+  python313Version: 3.13.15
+  python313_SHA256: 1e66a7945a48390ee4c2a4268a0e4185884059a13c4aab6d148aa208deea4a76
+  python314Version: 3.14.7
+  python314_SHA256: 3b48dac8fb59f62eaa67ac83c1eb12bda1b7a08406dd286e252c11a66be27f81
+  python315Version: 3.15.0b3
+  python315_SHA256: 6a935ae234a67e6549894373b0cfeb8361182d03b21442328ae9598ab7422127
