@@ -115,6 +115,7 @@ const [
 ] = process.argv.slice(2);
 const packagesByKey = new Map();
 
+// Flatten the npm dependency tree into unique name/version pairs and omit all other npm metadata.
 JSON.parse(fs.readFileSync(sourcePath, 'utf8'), (fallbackName, dependency) => {
   if (fallbackName && typeof dependency?.version === 'string') {
     const name =
@@ -142,6 +143,7 @@ packages.sort(
       : left.name < right.name ? -1 : 1);
 
 writeJson(stagedResolutionPath, { schemaVersion: 1, packages });
+// Publish metadata last so readers only discover a complete resolution artifact.
 writeJson(stagedMetadataPath, {
   schemaVersion: 1,
   manager: 'npm',
