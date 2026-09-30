@@ -62,6 +62,110 @@ HasProdDependencies={{ HasProdDependencies }}
 HasDevDependencies={{ HasDevDependencies }}
 packageDirName={{ PackageDirectory }}
 
+{{ if DependencyResolutionRequired }}
+clear_dependency_resolution_artifacts() {
+	local output_dir=$1
+
+	if [ -z "$output_dir" ]; then
+		return
+	fi
+
+	rm -f -- \
+		"$output_dir/dependency-resolution-metadata.json" \
+		"$output_dir/dependency-resolution.json" \
+		"$output_dir/dependency-resolution.txt"
+}
+
+publish_dependency_resolution() {
+	local output_dir=$1
+	local resolution_file_name="dependency-resolution.json"
+
+	if ! mkdir -p -- "$output_dir"; then
+		return 1
+	fi
+
+	(
+		local metadata_file_name="dependency-resolution-metadata.json"
+		local staging_suffix=".$$.${RANDOM}.tmp"
+		local raw_npm_tree
+		local staged_resolution_file="$output_dir/$resolution_file_name$staging_suffix"
+		local staged_metadata_file="$output_dir/$metadata_file_name$staging_suffix"
+		local resolution_file="$output_dir/$resolution_file_name"
+		local metadata_file="$output_dir/$metadata_file_name"
+
+		raw_npm_tree=$(mktemp 2> /dev/null) || exit 1
+		trap 'rm -f -- "$raw_npm_tree" "$staged_resolution_file" "$staged_metadata_file"' EXIT
+
+		# npm --production excludes development-only packages while retaining the
+		# actual installed tree, including nested duplicate package versions.
+		npm ls --all --production --json > "$raw_npm_tree" 2> /dev/null || exit 1
+
+		node - \
+			"$raw_npm_tree" \
+			"$staged_resolution_file" \
+			"$staged_metadata_file" \
+			"$resolution_file" <<'NODE' || exit 1
+const fs = require('fs');
+
+const [
+  sourcePath,
+  stagedResolutionPath,
+  stagedMetadataPath,
+  resolutionPath,
+] = process.argv.slice(2);
+const packagesByKey = new Map();
+
+JSON.parse(fs.readFileSync(sourcePath, 'utf8'), (fallbackName, dependency) => {
+  if (fallbackName && typeof dependency?.version === 'string') {
+    const name =
+      typeof dependency.name === 'string' ? dependency.name : fallbackName;
+    packagesByKey.set(
+      JSON.stringify([name, dependency.version]),
+      { name, version: dependency.version });
+  }
+
+  return dependency;
+});
+
+function writeJson(path, value) {
+  fs.writeFileSync(
+    path,
+    `${JSON.stringify(value, null, 2)}\n`,
+    { encoding: 'utf8', mode: 0o600 });
+}
+
+const packages = [...packagesByKey.values()];
+packages.sort(
+  (left, right) =>
+    left.name === right.name
+      ? left.version < right.version ? -1 : left.version > right.version ? 1 : 0
+      : left.name < right.name ? -1 : 1);
+
+writeJson(stagedResolutionPath, { schemaVersion: 1, packages });
+writeJson(stagedMetadataPath, {
+  schemaVersion: 1,
+  manager: 'npm',
+  dependencyResolutionFilePath: resolutionPath,
+});
+NODE
+
+		rm -f -- "$metadata_file"
+		mv -f -- "$staged_resolution_file" "$resolution_file" || exit 1
+		mv -f -- "$staged_metadata_file" "$metadata_file" || {
+			rm -f -- "$resolution_file"
+			exit 1
+		}
+
+		rm -f -- "$output_dir/dependency-resolution.txt"
+	)
+}
+
+dependencyResolutionOutputDir={{ DependencyResolutionOutputDirBashValue }}
+if ! clear_dependency_resolution_artifacts "$dependencyResolutionOutputDir"; then
+	echo "Oryx dependency resolution artifacts could not be cleared from '$dependencyResolutionOutputDir'; deployment will continue."
+fi
+{{ end }}
+
 # if node modules exist separately for dev & prod (like from an earlier build),
 # rename the folders back appropriately for the current build
 if [ -d "$allModulesDirName" ]
@@ -300,6 +404,14 @@ then
 		rm -rf "node_modules/"
 	fi
 fi
+
+{{ if DependencyResolutionRequired }}
+if publish_dependency_resolution "$dependencyResolutionOutputDir"; then
+	echo "Oryx dependency resolution artifacts written to '$dependencyResolutionOutputDir'."
+else
+	echo "Oryx dependency resolution artifacts could not be written to '$dependencyResolutionOutputDir'; deployment will continue."
+fi
+{{ end }}
 
 {{ if CompressNodeModulesCommand | IsNotBlank }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
