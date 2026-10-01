@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DeploymentProgress;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -20,6 +21,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal static async Task<int> Main(string[] args)
         {
+            if (args.Length == 1 &&
+                string.Equals(
+                    args[0],
+                    DeploymentProgressWriterProcessFactory.DeploymentProgressWriteCommandName,
+                    StringComparison.Ordinal))
+            {
+                return DeploymentProgressWriteCommand.OnExecute();
+            }
+
             var console = new SystemConsole();
             var rootCommand = new RootCommand();
             rootCommand.Name = "oryx";
@@ -30,6 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             rootCommand.AddCommand(BuildScriptCommand.Export(console));
             rootCommand.AddCommand(BuildpackBuildCommand.Export(console));
             rootCommand.AddCommand(BuildpackDetectCommand.Export(console));
+            rootCommand.AddCommand(CapabilitiesCommand.Export(console));
             rootCommand.AddCommand(DetectCommand.Export(console));
             rootCommand.AddCommand(DockerfileCommand.Export(console));
             rootCommand.AddCommand(ExecCommand.Export(console));
