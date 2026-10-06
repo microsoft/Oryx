@@ -67,6 +67,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
+        public void Reporter_EmitsOnlyProducerOwnedFields()
+        {
+            var records = new List<byte[]>();
+            var reporter = CreateReporter(GetEndpoint(), "operation-1", records.Add);
+
+            reporter.ReportBuildStarted();
+            reporter.ReportPhaseStarted("dependencies.restore");
+            reporter.ReportBuildCompleted("succeeded");
+
+            Assert.Collection(
+                records,
+                record => AssertPropertyNames(
+                    record,
+                    "schemaVersion",
+                    "eventType",
+                    "operationId",
+                    "timestampUtc"),
+                record => AssertPropertyNames(
+                    record,
+                    "schemaVersion",
+                    "eventType",
+                    "operationId",
+                    "timestampUtc",
+                    "phase"),
+                record => AssertPropertyNames(
+                    record,
+                    "schemaVersion",
+                    "eventType",
+                    "operationId",
+                    "timestampUtc",
+                    "outcome"));
+        }
+
+        [Fact]
         public void Reporter_SuppressesDuplicateAndOutOfOrderTransitions()
         {
             var records = new List<byte[]>();
@@ -265,6 +299,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             {
                 $"{{\"schemaVersion\":2,{common}}}\n",
                 $"{{\"schemaVersion\":1,{common},\"extra\":1}}\n",
+                $"{{\"schemaVersion\":1,{common},\"attemptId\":\"attempt-1\"}}\n",
                 $"{{\"schemaVersion\":1,{common},\"eventType\":\"build_started\"}}\n",
                 "{\"schemaVersion\":1,\"eventType\":\"unknown\",\"operationId\":\"operation-1\"," +
                     "\"timestampUtc\":\"2026-01-02T03:04:05.123Z\"}\n",
@@ -498,6 +533,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 {
                     Assert.Equal(phase, root.GetProperty("phase").GetString());
                 }
+            }
+        }
+
+        private static void AssertPropertyNames(byte[] record, params string[] expectedNames)
+        {
+            using (var document = JsonDocument.Parse(record))
+            {
+                var actualNames = new List<string>();
+                foreach (var property in document.RootElement.EnumerateObject())
+                {
+                    actualNames.Add(property.Name);
+                }
+
+                Assert.Equal(expectedNames, actualNames);
             }
         }
 
