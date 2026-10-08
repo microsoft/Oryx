@@ -6,6 +6,58 @@ SOURCE_DIR="$1"
 DESTINATION_DIR="$2"
 INTERMEDIATE_DIR="$3"
 
+ORYX_PROGRESS_RESTORE_XTRACE=false
+case "$-" in
+	*x*)
+		{ set +x; } 2>/dev/null
+		ORYX_PROGRESS_RESTORE_XTRACE=true
+		;;
+esac
+ORYX_PROGRESS_ENDPOINT_VALUE="${ORYX_PROGRESS_ENDPOINT:-}"
+ORYX_PROGRESS_OPERATION_ID_VALUE="${ORYX_PROGRESS_OPERATION_ID:-}"
+unset ORYX_PROGRESS_ENDPOINT ORYX_PROGRESS_OPERATION_ID
+if [ -n "$ORYX_PROGRESS_ENDPOINT_VALUE" ] && [ -n "$ORYX_PROGRESS_OPERATION_ID_VALUE" ]; then
+	ORYX_PROGRESS_DISABLED=false
+else
+	ORYX_PROGRESS_DISABLED=true
+fi
+if [ "$ORYX_PROGRESS_RESTORE_XTRACE" = "true" ]; then
+	set -x
+fi
+unset ORYX_PROGRESS_RESTORE_XTRACE
+
+oryx_report_phase() {
+	local phase="$1"
+	local restoreXtrace=false
+	case "$-" in
+		*x*)
+			{ set +x; } 2>/dev/null
+			restoreXtrace=true
+			;;
+	esac
+
+	if [ "$ORYX_PROGRESS_DISABLED" != "true" ]; then
+		if ! command -v oryx >/dev/null 2>&1 ||
+			! command -v timeout >/dev/null 2>&1; then
+			ORYX_PROGRESS_DISABLED=true
+		else
+			local oryxCommand
+			oryxCommand=$(command -v oryx)
+			if ! ORYX_PROGRESS_ENDPOINT="$ORYX_PROGRESS_ENDPOINT_VALUE" \
+				ORYX_PROGRESS_OPERATION_ID="$ORYX_PROGRESS_OPERATION_ID_VALUE" \
+				timeout --signal=KILL 2s "$oryxCommand" deployment-progress-write --phase "$phase" \
+					>/dev/null 2>&1; then
+				ORYX_PROGRESS_DISABLED=true
+			fi
+		fi
+	fi
+
+	if [ "$restoreXtrace" = "true" ]; then
+		set -x
+	fi
+	return 0
+}
+
 if [ -f {{ LoggerPath }} ]; then
 	source {{ LoggerPath }}
 fi
@@ -110,6 +162,7 @@ mkdir -p "$DESTINATION_DIR"
 cd "$SOURCE_DIR"
 echo "{{ PreBuildCommandPrologue }}"
 BASE_START_TIME=$SECONDS
+oryx_report_phase "pre_build"
 {{ PreBuildCommand }}
 ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "{{ PreBuildCommandEpilogue }}"
@@ -118,6 +171,7 @@ echo "Pre-build command done in $ELAPSED_TIME sec(s)."
 
 echo "Running build script snippets..."
 BASE_START_TIME=$SECONDS
+oryx_report_phase "build.execute"
 {{ for Snippet in BuildScriptSnippets }}
 {{ # Makes sure every snippet starts in the context of the source directory. }}
 cd "$SOURCE_DIR"
@@ -132,6 +186,7 @@ cd $SOURCE_DIR
 echo
 echo "{{ PostBuildCommandPrologue }}"
 BASE_START_TIME=$SECONDS
+oryx_report_phase "post_build"
 {{ PostBuildCommand }}
 ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "{{ PostBuildCommandEpilogue }}"
@@ -141,6 +196,7 @@ echo "Post-build command done in $ELAPSED_TIME sec(s)."
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	echo "Preparing output..."
+	oryx_report_phase "output.prepare"
 
 	{{ ## Determine if direct tar compression can be used based on build configuration ## }}
 	CAN_USE_DIRECT_COMPRESSION_TO_DEST=false
@@ -150,6 +206,7 @@ then
 
 	{{ ## Check if optimized direct tar compression is enabled ## }}
 	if [ "$CAN_USE_DIRECT_COMPRESSION_TO_DEST" = "true" ] && [ "$ENABLE_ORYX_DIRECT_TAR_COMPRESSION" = "true" ]; then
+		oryx_report_phase "output.compress"
 		{{ ## Optimized path: Create tar directly from source to destination without intermediate copy ## }}
 		echo "Compressing source directory directly to destination (optimized path)..."
 		BASE_START_TIME=$SECONDS
@@ -271,6 +328,7 @@ then
 
 		{{ if CompressDestinationDir }}
 		DESTINATION_DIR="$OLD_DESTINATION_DIR"
+		oryx_report_phase "output.compress"
 		echo "Compressing content of directory '$preCompressedDestinationDir'..."
 		BASE_START_TIME=$SECONDS
 		cd "$preCompressedDestinationDir"
@@ -310,6 +368,9 @@ then
 fi
 
 {{ if ManifestFileName | IsNotBlank }}
+{{ if BuildProperties != empty }}
+oryx_report_phase "manifest.write"
+{{ end }}
 MANIFEST_FILE={{ ManifestFileName }}
 
 MANIFEST_DIR={{ ManifestDir }}

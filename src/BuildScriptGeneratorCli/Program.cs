@@ -37,6 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             rootCommand.AddCommand(PrepareEnvironmentCommand.Export(console));
             rootCommand.AddCommand(RunScriptCommand.Export(console));
             rootCommand.AddCommand(TelemetryCommand.Export(console));
+            rootCommand.AddCommand(DeploymentProgressWriteCommand.Export());
             rootCommand.AddOption(infoOption);
 
             rootCommand.SetHandler(
