@@ -76,14 +76,14 @@ variables:
   node26Version: 26.8.1
   php81Version: 8.1.34
   php81Version_SHA: ffa9e0982e82eeaea848f57687b425ed173aa278fe563001310ae2638db5c251
-  php82Version: 8.2.33
-  php82Version_SHA: fbdeace9b38220436a4c8fd79b900df92878151db145e641750743a283b514c1
-  php83Version: 8.3.33
-  php83Version_SHA: e293ed620cec74651bb4a071317892a478aa6840fab22db45c72d77cd42f9676
-  php84Version: 8.4.25
-  php84Version_SHA: dc1ad8b4109898d9db49744450403874858c23efc685b1032a50bd1e83906848
-  php85Version: 8.5.10
-  php85Version_SHA: 6a8bebaa4d5a979a38db29a9373e9851f60c6b11f72172c585947e78f3081957
+  php82Version: 8.2.34
+  php82Version_SHA: 5351330c54de240f54f7527c26ef292e239749e6fe11db0330acb5317e02bb39
+  php83Version: 8.3.35
+  php83Version_SHA: ff4630fbbbd94359134b7d3c223db59329905bdc4f5a9ef93d257b48e358619a
+  php84Version: 8.4.26
+  php84Version_SHA: 32a2de53862ad44ed4a5005244ce4f1b50c271e74dced215449a4443b40569f1
+  php85Version: 8.5.11
+  php85Version_SHA: d9be75c08e8c316f4c8f4194d8fbe1750a15f6a6d9d4e3fe72082abeeb800360
   phpComposerVersion: 2.6.2
   python39Version: 3.9.24
   python310Version: 3.10.21
