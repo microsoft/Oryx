@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DeploymentProgress;
 using Microsoft.Oryx.Detector;
 using Polly;
 using Polly.Extensions.Http;
@@ -34,6 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AddScriptGeneratorServicesForJava();
 
             services.AddSingleton<IBuildScriptGenerator, DefaultBuildScriptGenerator>();
+            services.AddSingleton<IDeploymentProgressReporter, DeploymentProgressReporter>();
             services.AddSingleton<ICompatiblePlatformDetector, DefaultCompatiblePlatformDetector>();
             services.AddSingleton<IDockerfileGenerator, DefaultDockerfileGenerator>();
             services.AddSingleton<IEnvironment, DefaultEnvironment>();
