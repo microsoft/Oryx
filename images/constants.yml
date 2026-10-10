@@ -88,7 +88,7 @@ variables:
   python39Version: 3.9.24
   python310Version: 3.10.21
   python311Version: 3.11.16
-  python312Version: 3.12.14
+  python312Version: 3.12.15
   python313Version: 3.13.15
   python314Version: 3.14.7
   python315Version: 3.15.0b3
