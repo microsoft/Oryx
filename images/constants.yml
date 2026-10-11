@@ -86,8 +86,8 @@ variables:
   php84Version_SHA: 7cf5d8ab12c3b2016875bcfaec71bef1ef0b07bed6148f2c447577074431f984
   php85Version: 8.5.6
   php85Version_SHA: 826c600b7c6f956bd335558ca3bdbcab23b22126c1cc8d9348be2280a2204bb7
-  php86Version: 8.6.0beta1
-  php86Version_SHA: e44571d75b368b36a2d6db6878705e5512af5d2a78e31463c49796a94018d282
+  php86Version: 8.6.0RC3
+  php86Version_SHA: 131f87a206bdd90c178d8e44e80243ae0c333c4cee8531f63d1caa9acdd8696a
   phpComposerVersion: 2.6.2
   python39Version: 3.9.24
   python310Version: 3.10.20
