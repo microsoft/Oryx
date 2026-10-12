@@ -1,0 +1,14 @@
+--- a/init.cpp
++++ b/init.cpp
+@@ -656,4 +656,4 @@
+-    SQLSRV_G( warnings_return_as_errors ) = INI_BOOL( warnings_as_errors );
+-    SQLSRV_G( log_severity ) = INI_INT( severity );
+-    SQLSRV_G( log_subsystems ) = INI_INT( subsystems );
+-    SQLSRV_G( buffered_query_limit ) = INI_INT( buffered_limit );
++    SQLSRV_G( warnings_return_as_errors ) = (bool) zend_ini_long( warnings_as_errors, strlen(warnings_as_errors), false );
++    SQLSRV_G( log_severity ) = zend_ini_long( severity, strlen(severity), false );
++    SQLSRV_G( log_subsystems ) = zend_ini_long( subsystems, strlen(subsystems), false );
++    SQLSRV_G( buffered_query_limit ) = zend_ini_long( buffered_limit, strlen(buffered_limit), false );
+@@ -663 +663 @@
+-    SQLSRV_G(set_locale_info) = INI_INT(set_locale_info);
++    SQLSRV_G(set_locale_info) = zend_ini_long(set_locale_info, strlen(set_locale_info), false);

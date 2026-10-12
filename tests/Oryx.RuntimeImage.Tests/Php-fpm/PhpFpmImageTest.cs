@@ -541,5 +541,83 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             },
             result.GetDebugInfo());
         }
+
+        [Fact]
+        [Trait("category", "runtime-resolute")]
+        public void SqlServerDrivers_ReadIniSettings_For_Resolute()
+        {
+            var result = _dockerCli.Run(
+                _imageHelper.GetRuntimeImage("php", "8.6-fpm", ImageTestHelperConstants.OsTypeUbuntuResolute),
+                "php",
+                new[]
+                {
+                    "-d", "sqlsrv.WarningsReturnAsErrors=0",
+                    "-d", "sqlsrv.LogSeverity=4",
+                    "-d", "sqlsrv.LogSubsystems=2",
+                    "-d", "sqlsrv.ClientBufferMaxKBSize=2048",
+                    "-r",
+                    "echo json_encode([" +
+                    "'drivers' => PDO::getAvailableDrivers()," +
+                    "'warnings' => sqlsrv_get_config('WarningsReturnAsErrors')," +
+                    "'severity' => sqlsrv_get_config('LogSeverity')," +
+                    "'subsystems' => sqlsrv_get_config('LogSubsystems')," +
+                    "'buffer' => sqlsrv_get_config('ClientBufferMaxKBSize')]);",
+                });
+
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                var settings = JObject.Parse(result.StdOut);
+                Assert.Contains("sqlsrv", settings["drivers"].ToObject<string[]>());
+                Assert.False((bool)settings["warnings"]);
+                Assert.Equal(4, (int)settings["severity"]);
+                Assert.Equal(2, (int)settings["subsystems"]);
+                Assert.Equal(2048, (int)settings["buffer"]);
+            }, result.GetDebugInfo());
+        }
+
+        [Fact]
+        [Trait("category", "runtime-resolute")]
+        public void OptionalImap_ParsesMail_For_Resolute()
+        {
+            var result = _dockerCli.Run(
+                _imageHelper.GetRuntimeImage("php", "8.6-fpm", ImageTestHelperConstants.OsTypeUbuntuResolute),
+                "php",
+                new[]
+                {
+                    "-d", "extension=imap",
+                    "-r",
+                    "echo json_encode([" +
+                    "'subject' => imap_utf8('=?UTF-8?B?T3J5eA==?=')," +
+                    "'mailbox' => imap_rfc822_parse_adrlist('Oryx <oryx@example.test>', 'example.test')[0]->mailbox]);",
+                });
+
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                var mail = JObject.Parse(result.StdOut);
+                Assert.Equal("Oryx", (string)mail["subject"]);
+                Assert.Equal("oryx", (string)mail["mailbox"]);
+            }, result.GetDebugInfo());
+        }
+
+        [Theory]
+        [Trait("category", "runtime-resolute")]
+        [InlineData("pear", "version", "PEAR Version:")]
+        [InlineData("pecl", "version", "PEAR Version:")]
+        [InlineData("phpdbg", "--version", "phpdbg")]
+        public void DevelopmentTools_AreAvailable_For_Resolute(string command, string argument, string expectedOutput)
+        {
+            var result = _dockerCli.Run(
+                _imageHelper.GetRuntimeImage("php", "8.6-fpm", ImageTestHelperConstants.OsTypeUbuntuResolute),
+                command,
+                new[] { argument });
+
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains(expectedOutput, result.StdOut);
+            }, result.GetDebugInfo());
+        }
     }
 }

@@ -1,0 +1,9 @@
+--- a/shared/core_stream.cpp
++++ b/shared/core_stream.cpp
+@@ -258 +258 @@
+-                                         _In_opt_ int options, _In_ zend_string **, php_stream_context* STREAMS_DC )
++                                         _In_opt_ int options, _In_ zend_string **, php_stream_context* context STREAMS_DC )
+@@ -280 +280,2 @@
+-        php_stream_wrapper_log_error(wrapper, options, "Invalid option: no options except REPORT_ERRORS may be specified with a sqlsrv stream");
++        php_stream_wrapper_log_error(wrapper, context, options, E_WARNING, true, PHP_STREAM_EC(InvalidParam),
++            "Invalid option: no options except REPORT_ERRORS may be specified with a sqlsrv stream");

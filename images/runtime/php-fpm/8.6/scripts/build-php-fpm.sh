@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Compiles PHP-FPM from the previously verified source archive using the PHP 8.6 upstream
-# configuration baseline. It retains only libraries required by installed PHP binaries and
-# removes compilers, headers, extracted sources, and other transient build dependencies.
+# configuration baseline and the PHP 8.5 runtime's extension and tooling contract. Extracted
+# sources are removed while development tools and headers remain available for custom extensions.
 
 set -euxo pipefail
 
@@ -33,6 +33,9 @@ test "$PHP_INI_DIR" != "${PHP_INI_DIR%/php}"
     --enable-option-checking=fatal \
     --with-mhash \
     --enable-pic \
+    --enable-ftp \
+    --with-ftp-ssl \
+    --enable-mbstring \
     --enable-mysqlnd \
     --with-password-argon2 \
     --with-sodium=shared \
@@ -41,9 +44,9 @@ test "$PHP_INI_DIR" != "${PHP_INI_DIR%/php}"
     --with-curl \
     --with-iconv \
     --with-openssl \
-    --with-readline \
+    --with-libedit \
     --with-zlib \
-    --disable-phpdbg \
+    --with-pear \
     --with-libdir="lib/$debMultiarch" \
     --disable-cgi \
     --enable-fpm \
@@ -78,3 +81,6 @@ apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
 rm -rf /var/lib/apt/lists/*
 
 php --version
+pear version
+pecl version
+phpdbg --version
