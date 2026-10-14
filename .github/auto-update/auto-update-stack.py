@@ -111,7 +111,7 @@ def check_node(dry_run):
     releases = fetch_json("https://nodejs.org/dist/index.json")
 
     tracked = {}
-    for major in ['18', '20', '22', '24']:
+    for major in ['18', '20', '22', '24', '26']:
         tracked[major] = get_current_version(content, f'node{major}Version')
 
     updates = {}
@@ -179,7 +179,7 @@ def check_python(dry_run):
     releases = fetch_json("https://www.python.org/api/v2/downloads/release/")
 
     tracked = {}
-    for minor in ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']:
+    for minor in ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14', '3.15']:
         key = f'python{minor.replace(".", "")}Version'
         tracked[minor] = get_current_version(content, key)
 
@@ -279,7 +279,7 @@ def check_dotnet(dry_run):
     index = fetch_json("https://builds.dotnet.microsoft.com/dotnet/release-metadata/releases-index.json")
 
     tracked = {}
-    for channel in ['8.0', '9.0', '10.0']:
+    for channel in ['8.0', '9.0', '10.0', '11.0']:
         key = channel.replace('.', '')
         tracked[channel] = {
             'sdk': get_current_version(content, f'DOTNET_SDK_{key}'),

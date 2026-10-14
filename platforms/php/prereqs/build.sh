@@ -21,12 +21,14 @@ PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 PHP_CPPFLAGS="$PHP_CFLAGS"
 PHP_LDFLAGS="-Wl,-O1 -pie"
 
-PHP_URL="https://secure.php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror"
-PHP_ASC_URL="" # "https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror"
+PHP_URL="https://secure.php.net/distributions/php-$PHP_VERSION.tar.xz"
+PHP_ASC_URL="" # "https://secure.php.net/distributions/php-$PHP_VERSION.tar.xz.asc"
+
 if [[ "$PHP_VERSION" =~ [a-zA-Z] ]]; then
 	PHP_URL="https://downloads.php.net/~svpernova09/php-$PHP_VERSION.tar.xz"
 	PHP_ASC_URL="$PHP_URL.asc"
 fi
+
 GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
 

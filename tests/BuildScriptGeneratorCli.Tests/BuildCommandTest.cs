@@ -62,6 +62,29 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void Options_NormalizesDependencyResolutionOutputDirectory()
+        {
+            // Arrange
+            var relativePath = Path.Combine("artifacts", "dependency-resolution");
+            var buildCommand = new BuildCommand
+            {
+                DependencyResolutionOutputDir = relativePath,
+            };
+            var testConsole = new TestConsole();
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
+
+            // Act
+            var options = serviceProvider
+                .GetRequiredService<IOptions<BuildScriptGeneratorOptions>>()
+                .Value;
+
+            // Assert
+            Assert.Equal(
+                Path.GetFullPath(relativePath),
+                options.DependencyResolutionOutputDir);
+        }
+
+        [Fact]
         public void IsValidInput_IsTrue_EvenIfDestinationDirDoesNotExist()
         {
             // Arrange

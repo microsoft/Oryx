@@ -1,7 +1,7 @@
 ARG BASE_IMAGE
 
 # build the Oryx startup-script generator (the `oryx` CLI).
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26.5-2-bookworm as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bookworm as startupCmdGen
 
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .

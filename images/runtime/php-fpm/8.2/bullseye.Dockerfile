@@ -18,6 +18,11 @@ RUN chmod +x build.sh && ./build.sh php /opt/startupcmdgen/startupcmdgen
 FROM ${BASE_IMAGE}
 ARG IMAGES_DIR=/tmp/oryx/images
 
+COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/configure-debian-bullseye-snapshot.sh \
+	&& /usr/local/bin/configure-debian-bullseye-snapshot.sh \
+	&& rm /usr/local/bin/configure-debian-bullseye-snapshot.sh
+
 # do NOT merge this content with above line because the 
 # above line is shared across all php images
 # Install the Microsoft SQL Server PDO driver on supported versions only.
@@ -62,7 +67,7 @@ ENV GPG_KEYS 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9
 ARG PHP_VERSION
 ARG PHP_SHA256
 ENV PHP_VERSION ${PHP_VERSION}
-ENV PHP_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror" PHP_MD5=""
+ENV PHP_URL="https://www.php.net/distributions/php-${PHP_VERSION}.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-${PHP_VERSION}.tar.xz.asc" PHP_MD5=""
 ENV PHP_SHA256 ${PHP_SHA256}
 
 RUN set -eux; \

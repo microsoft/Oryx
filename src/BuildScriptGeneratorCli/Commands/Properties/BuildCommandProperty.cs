@@ -46,5 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
         public string DestinationDir { get; set; }
 
         public string ManifestDir { get; set; }
+
+        public string DependencyResolutionOutputDir { get; set; }
     }
 }

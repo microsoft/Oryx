@@ -16,6 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<string> intermediateDir,
             Option<string> destinationDir,
             Option<string> manifestDir,
+            Option<string> dependencyResolutionOutputDir,
             Argument<string> sourceDir,
             Option<string> platform,
             Option<string> platformVersion,
@@ -49,6 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             this.IntermediateDir = intermediateDir;
             this.DestinationDir = destinationDir;
             this.ManifestDir = manifestDir;
+            this.DependencyResolutionOutputDir = dependencyResolutionOutputDir;
         }
 
         private Option<string> LanguageName { get; set; }
@@ -61,6 +63,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 
         private Option<string> ManifestDir { get; set; }
 
+        private Option<string> DependencyResolutionOutputDir { get; set; }
+
         protected override BuildCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new BuildCommandProperty
             {
@@ -69,6 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
                 IntermediateDir = bindingContext.ParseResult.GetValueForOption(this.IntermediateDir),
                 DestinationDir = bindingContext.ParseResult.GetValueForOption(this.DestinationDir),
                 ManifestDir = bindingContext.ParseResult.GetValueForOption(this.ManifestDir),
+                DependencyResolutionOutputDir = bindingContext.ParseResult.GetValueForOption(this.DependencyResolutionOutputDir),
                 SourceDir = bindingContext.ParseResult.GetValueForArgument(this.SourceDir),
                 Platform = bindingContext.ParseResult.GetValueForOption(this.Platform),
                 PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.PlatformVersion),

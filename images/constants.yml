@@ -13,7 +13,7 @@ variables:
   node22osFlavors: bullseye,bookworm
   node24osFlavors: noble
   node26osFlavors: resolute
-  python310osFlavors: bullseye
+  python310osFlavors: bullseye,bookworm
   python311osFlavors: bullseye,bookworm
   python312osFlavors: bullseye,bookworm
   python313osFlavors: bullseye,bookworm
@@ -24,7 +24,7 @@ variables:
   dotnet100osFlavors: noble
   dotnet110osFlavors: resolute
   php81osFlavors: bullseye
-  php82osFlavors: bullseye
+  php82osFlavors: bullseye,bookworm
   php83osFlavors: bullseye,bookworm
   php84osFlavors: bullseye,bookworm
   php85osFlavors: noble
@@ -55,44 +55,44 @@ variables:
   python314_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
   python315_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
   python39_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
-  ASPNET_CORE_APP_80: 8.0.30
-  ASPNET_CORE_APP_80_SHA: 415f79420e9fc465467ccab237f18b609710a715ebe43cd3c05c69af975d474fddcbe37eb831164472de60739874216c451ebbfb5f1fb040b41e90e41dc77206
-  ASPNET_CORE_APP_90: 9.0.19
-  ASPNET_CORE_APP_90_SHA: 579f37c2af8dbe8f7e3ef294c02fcf6ce2649fc34aba8f8ead087a9bd794403a8852079fc0f1c5cbe5baba337e6b999478667fed0f05fbe0fb8fba70661f7608
-  ASPNET_CORE_APP_100: 10.0.11
-  ASPNET_CORE_APP_110: 11.0.0-preview.6.26359.118
-  NET_CORE_APP_80: 8.0.30
-  NET_CORE_APP_80_SHA: 64d921a7a79c32c5a3f45f5473e8b56d41180c4ea41204bf0efd1f1b9249c2e509ee219341617138fa34ff79a7f6ca8523c4a73a29a5b6616ddea2e43204d62c
-  NET_CORE_APP_90: 9.0.19
-  NET_CORE_APP_90_SHA: e7fca9c5a7efa2e7dad6ba601509c684ef46727e3ab1f0a51a375d0dff26fa06f001eec882033dd34a6a10497af30f00ff00066c165e00b1e13d7da2dcf5d441
-  NET_CORE_APP_100: 10.0.11
-  NET_CORE_APP_110: 11.0.0-preview.6.26359.118
-  DOTNET_SDK_80: 8.0.424
-  DOTNET_SDK_90: 9.0.317
-  DOTNET_SDK_100: 10.0.400
-  DOTNET_SDK_110: 11.0.100-preview.6.26359.118
+  ASPNET_CORE_APP_80: 8.0.31
+  ASPNET_CORE_APP_80_SHA: d870c948d54609939886725e29d8b9c235277e9d63b2d77adefcf38563b66932c480f1b980f1f183e2b2ac1c09fc066730ea080adf1148efdd654b1503e69ec0
+  ASPNET_CORE_APP_90: 9.0.20
+  ASPNET_CORE_APP_90_SHA: 11dce50ec5a1c9dab216daa8d754cc14a3ab1f50ba0e7ea0cf3095c43745f5f2c22319d6e97eae973abf0b9f2e2a26232959b84c48149a0f6106e4af7073de2e
+  ASPNET_CORE_APP_100: 10.0.12
+  ASPNET_CORE_APP_110: 11.0.0-rc.1.26425.128
+  NET_CORE_APP_80: 8.0.31
+  NET_CORE_APP_80_SHA: f336bdec58d54bf50d74a1b38efa82f7290d976bd2ed98b845ebcbac42cf0d8cef504684fc088d4b05f98737b996bf3302e52bd9c23005deae7c60780b2652fb
+  NET_CORE_APP_90: 9.0.20
+  NET_CORE_APP_90_SHA: aaa63e9156fcc9d1c51e15fb38e3c5388a7721ef1b64065c8865b03133906e9de967ae33903c198c6acb9aa8bbae373e9001405074009c2ef2a0bb6e54b509a5
+  NET_CORE_APP_100: 10.0.12
+  NET_CORE_APP_110: 11.0.0-rc.1.26425.128
+  DOTNET_SDK_80: 8.0.425
+  DOTNET_SDK_90: 9.0.318
+  DOTNET_SDK_100: 10.0.401
+  DOTNET_SDK_110: 11.0.100-rc.1.26425.128
   node18Version: 18.20.8
   node20Version: 20.20.2
   node22Version: 22.23.2
-  node24Version: 24.19.0
-  node26Version: 26.5.0
+  node24Version: 24.20.0
+  node26Version: 26.8.1
   php81Version: 8.1.34
-  php81Version_SHA: ffa9e0982e82eeaea848f57687b425ed173aa278fe563001310ae2638db5c251
-  php82Version: 8.2.31
-  php82Version_SHA: 95eae411d594fe6f6e5678b76645dc13ae47d3c0a5325c1d969b58dea56ee45a
-  php83Version: 8.3.31
-  php83Version_SHA: 66410cee07f4b2baeb0843140bb2a2b52ef930b5cf9b3d6e6d158b33aae8fa37
-  php84Version: 8.4.21
-  php84Version_SHA: 7cf5d8ab12c3b2016875bcfaec71bef1ef0b07bed6148f2c447577074431f984
-  php85Version: 8.5.6
-  php85Version_SHA: 826c600b7c6f956bd335558ca3bdbcab23b22126c1cc8d9348be2280a2204bb7
+  php81Version_SHA: ffa9e0982e82eeaea848f57687b425ed173aa278fe563001310ae2638db5c251  
+  php82Version: 8.2.34
+  php82Version_SHA: 5351330c54de240f54f7527c26ef292e239749e6fe11db0330acb5317e02bb39
+  php83Version: 8.3.35
+  php83Version_SHA: ff4630fbbbd94359134b7d3c223db59329905bdc4f5a9ef93d257b48e358619a
+  php84Version: 8.4.26
+  php84Version_SHA: 32a2de53862ad44ed4a5005244ce4f1b50c271e74dced215449a4443b40569f1
+  php85Version: 8.5.11
+  php85Version_SHA: d9be75c08e8c316f4c8f4194d8fbe1750a15f6a6d9d4e3fe72082abeeb800360
   php86Version: 8.6.0RC3
   php86Version_SHA: 131f87a206bdd90c178d8e44e80243ae0c333c4cee8531f63d1caa9acdd8696a
   phpComposerVersion: 2.8.8
   python39Version: 3.9.24
-  python310Version: 3.10.20
-  python311Version: 3.11.15
-  python312Version: 3.12.13
-  python313Version: 3.13.15
-  python314Version: 3.14.7
-  python315Version: 3.15.0b3
+  python310Version: 3.10.22
+  python311Version: 3.11.17
+  python312Version: 3.12.15
+  python313Version: 3.13.16
+  python314Version: 3.14.8
+  python315Version: 3.15.0
