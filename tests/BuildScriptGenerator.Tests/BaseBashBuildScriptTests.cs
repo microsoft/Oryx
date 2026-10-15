@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void DeploymentProgressShell_DisablesPermanentlyAfterWriterFailure()
+        public void DeploymentProgressShell_IsBoundedPrivateAndPermanentlyFailOpen()
         {
             var bash = GetBashPath();
             if (bash == null)
@@ -148,7 +148,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 var reporterScript = renderedScript.Substring(0, reporterEnd) +
                     Environment.NewLine +
                     "testRoot=\"$(cd \"$(dirname \"$0\")\" && pwd)\"" + Environment.NewLine +
-                    "PATH=\"$testRoot/bin:$PATH\"" + Environment.NewLine +
                     "oryx_report_phase \"build.execute\"" + Environment.NewLine +
                     "oryx_report_phase \"post_build\"" + Environment.NewLine;
 

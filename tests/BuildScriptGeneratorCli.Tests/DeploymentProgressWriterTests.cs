@@ -7,7 +7,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -45,13 +44,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 "\"operationId\":\"operation-123\",\"phase\":\"build.execute\"," +
                 "\"timestampUtc\":\"2026-10-09T01:02:03.4567000Z\"}\n",
                 File.ReadAllText(endpointPath));
-
-            using (var document = JsonDocument.Parse(File.ReadAllText(endpointPath)))
-            {
-                Assert.Equal(
-                    new[] { "schemaVersion", "eventType", "operationId", "phase", "timestampUtc" },
-                    document.RootElement.EnumerateObject().Select(property => property.Name));
-            }
         }
 
         [Fact]
@@ -151,31 +143,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         [Fact]
         public void TryAppendPhase_FailsOpenForDirectoryEndpoint()
         {
-            // Arrange
             var directoryPath = this.testDir.CreateChildDir();
-            var result = true;
 
-            // Act
-            var exception = Record.Exception(() =>
-                result = DeploymentProgressWriter.TryAppendPhase(
-                    ToEndpoint(directoryPath),
-                    "operation-123",
-                    "build.execute",
-                    DateTimeOffset.UtcNow));
-
-            // Assert
-            Assert.Null(exception);
-            Assert.False(result);
+            Assert.False(DeploymentProgressWriter.TryAppendPhase(
+                ToEndpoint(directoryPath),
+                "operation-123",
+                "build.execute",
+                DateTimeOffset.UtcNow));
         }
 
-        [Fact]
+        [EnableOnPlatform("LINUX")]
         public void TryAppendPhase_RejectsUnixDeviceEndpoint()
         {
-            if (!OperatingSystem.IsLinux())
-            {
-                return;
-            }
-
             Assert.False(DeploymentProgressWriter.TryAppendPhase(
                 "file:/dev/null",
                 "operation-123",
@@ -183,17 +162,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 DateTimeOffset.UtcNow));
         }
 
-        [Fact]
+        [EnableOnPlatform("LINUX")]
         public void TryAppendPhase_RejectsUnixHardLinkEndpoint()
         {
-            if (!OperatingSystem.IsLinux())
-            {
-                return;
-            }
-
             var targetPath = this.CreateEndpoint();
             var hardLinkPath = this.testDir.GenerateRandomChildDirPath();
-            Assert.Equal(0, CreateHardLink(targetPath, hardLinkPath));
+            Assert.Equal(0, Link(targetPath, hardLinkPath));
 
             Assert.False(DeploymentProgressWriter.TryAppendPhase(
                 ToEndpoint(hardLinkPath),
@@ -204,7 +178,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [DllImport("libc", EntryPoint = "link", SetLastError = true)]
-        private static extern int CreateHardLink(
+        private static extern int Link(
             [MarshalAs(UnmanagedType.LPUTF8Str)] string targetPath,
             [MarshalAs(UnmanagedType.LPUTF8Str)] string linkPath);
 

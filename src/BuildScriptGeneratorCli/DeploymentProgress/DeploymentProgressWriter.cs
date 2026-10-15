@@ -20,11 +20,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress
     {
         internal const int MaxFileBytes = 32 * 1024;
         internal const int MaxRecordBytes = 1024;
-        internal const string EndpointEnvironmentVariable = "ORYX_PROGRESS_ENDPOINT";
-        internal const string OperationIdEnvironmentVariable = "ORYX_PROGRESS_OPERATION_ID";
 
         private const int SchemaVersion = 1;
         private const int MaxOperationIdBytes = 256;
+        private const string EndpointEnvironmentVariable = "ORYX_PROGRESS_ENDPOINT";
+        private const string OperationIdEnvironmentVariable = "ORYX_PROGRESS_OPERATION_ID";
         private const string FileEndpointPrefix = "file:";
         private const int LinuxOpenWriteOnly = 0x1;
         private const int LinuxOpenNonBlocking = 0x800;
@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress
         private const int LinuxOpenPath = 0x200000;
         private const int LinuxStatxNoFollowSymlink = 0x100;
         private const int LinuxStatxEmptyPath = 0x1000;
-        private const uint LinuxStatxIdentity = 0x105;
+        private const uint LinuxStatxBasicStats = 0x7ff;
         private const ushort LinuxFileTypeMask = 0xF000;
         private const ushort LinuxRegularFile = 0x8000;
 
@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress
             "^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        private static readonly ISet<string> Phases = new HashSet<string>(StringComparer.Ordinal)
+        private static readonly ISet<string> AllowedPhases = new HashSet<string>(StringComparer.Ordinal)
         {
             "pre_build",
             "build.execute",
@@ -71,12 +71,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress
             {
                 if (!TryGetEndpointPath(endpoint, out var endpointPath) ||
                     !IsValidOperationId(operationId) ||
-                    !Phases.Contains(phase))
+                    !AllowedPhases.Contains(phase))
                 {
                     return false;
                 }
 
-                var record = SerializeRecord(operationId, phase, timestampUtc);
+                var record = SerializePhaseStartedRecord(operationId, phase, timestampUtc);
                 if (record.Length > MaxRecordBytes)
                 {
                     return false;
@@ -90,7 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress
             }
         }
 
-        private static byte[] SerializeRecord(
+        private static byte[] SerializePhaseStartedRecord(
             string operationId,
             string phase,
             DateTimeOffset timestampUtc)
@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress
                 return TryOpenLinuxEndpoint(path);
             }
 
-            if (!IsSafeExistingFile(path))
+            if (!OperatingSystem.IsWindows() || !IsSafeWindowsEndpoint(path))
             {
                 return null;
             }
@@ -296,7 +296,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress
             return false;
         }
 
-        private static bool IsSafeExistingFile(string path)
+        private static bool IsSafeWindowsEndpoint(string path)
         {
             var file = new FileInfo(path);
             file.Refresh();
@@ -330,13 +330,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress
                     fileDescriptor,
                     string.Empty,
                     LinuxStatxEmptyPath,
-                    LinuxStatxIdentity,
+                    LinuxStatxBasicStats,
                     out var openedFileStatus) != 0 ||
                 Statx(
                     directoryFileDescriptor,
                     fileName,
                     LinuxStatxNoFollowSymlink,
-                    LinuxStatxIdentity,
+                    LinuxStatxBasicStats,
                     out var pathStatus) != 0)
             {
                 return false;
