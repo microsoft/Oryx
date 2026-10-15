@@ -6,37 +6,43 @@ SOURCE_DIR="$1"
 DESTINATION_DIR="$2"
 INTERMEDIATE_DIR="$3"
 
-ORYX_PROGRESS_ENDPOINT_VALUE="${ORYX_PROGRESS_ENDPOINT:-}"
-ORYX_PROGRESS_OPERATION_ID_VALUE="${ORYX_PROGRESS_OPERATION_ID:-}"
-unset ORYX_PROGRESS_ENDPOINT ORYX_PROGRESS_OPERATION_ID
-ORYX_PROGRESS_FILE_VALUE=
-case "$ORYX_PROGRESS_ENDPOINT_VALUE" in
-	file:/*)
-		ORYX_PROGRESS_FILE_VALUE="${ORYX_PROGRESS_ENDPOINT_VALUE#file:}"
+ORYX_PROGRESS_FILE_VALUE="${ORYX_PROGRESS_FILE:-}"
+unset ORYX_PROGRESS_FILE
+case "$ORYX_PROGRESS_FILE_VALUE" in
+	/*)
+		if [ -f "$ORYX_PROGRESS_FILE_VALUE" ] &&
+			[ ! -L "$ORYX_PROGRESS_FILE_VALUE" ]; then
+			ORYX_PROGRESS_REPORTING_ENABLED=true
+		else
+			ORYX_PROGRESS_REPORTING_ENABLED=false
+		fi
+		;;
+	*)
+		ORYX_PROGRESS_REPORTING_ENABLED=false
 		;;
 esac
-if [ -n "$ORYX_PROGRESS_OPERATION_ID_VALUE" ] &&
-	[ -f "$ORYX_PROGRESS_FILE_VALUE" ] &&
-	[ ! -L "$ORYX_PROGRESS_FILE_VALUE" ] &&
-	[ -x /opt/oryx/oryx ] &&
-	[ -x /usr/bin/timeout ]; then
-	ORYX_PROGRESS_REPORTING_ENABLED=true
-else
-	ORYX_PROGRESS_REPORTING_ENABLED=false
-fi
 oryx_report_phase() {
 	local phase="$1"
+	local timestampUtc
 
 	if [ "$ORYX_PROGRESS_REPORTING_ENABLED" = "true" ]; then
+		case "$phase" in
+			pre_build|build.execute|post_build|output.prepare|output.compress|manifest.write)
+				;;
+			*)
+				return 0
+				;;
+		esac
+
 		if [ ! -f "$ORYX_PROGRESS_FILE_VALUE" ] ||
 			[ -L "$ORYX_PROGRESS_FILE_VALUE" ]; then
 			ORYX_PROGRESS_REPORTING_ENABLED=false
+		elif ! timestampUtc=$(/usr/bin/date -u +"%Y-%m-%dT%H:%M:%S.%7NZ" 2>/dev/null); then
+			ORYX_PROGRESS_REPORTING_ENABLED=false
 		elif ! {
-			ORYX_PROGRESS_ENDPOINT="$ORYX_PROGRESS_ENDPOINT_VALUE" \
-				ORYX_PROGRESS_OPERATION_ID="$ORYX_PROGRESS_OPERATION_ID_VALUE" \
-				/usr/bin/timeout --signal=KILL 2s \
-					/opt/oryx/oryx deployment-progress-write --phase "$phase"
-		} >/dev/null 2>&1; then
+			printf '{"schemaVersion":1,"eventType":"phase_started","phase":"%s","timestampUtc":"%s"}\n' \
+				"$phase" "$timestampUtc" >> "$ORYX_PROGRESS_FILE_VALUE"
+		} 2>/dev/null; then
 			ORYX_PROGRESS_REPORTING_ENABLED=false
 		fi
 	fi
@@ -354,9 +360,6 @@ then
 fi
 
 {{ if ManifestFileName | IsNotBlank }}
-{{ if BuildProperties != empty }}
-oryx_report_phase "manifest.write"
-{{ end }}
 MANIFEST_FILE={{ ManifestFileName }}
 
 MANIFEST_DIR={{ ManifestDir }}
@@ -369,6 +372,7 @@ echo
 echo "Removing existing manifest file"
 rm -f "$MANIFEST_DIR/$MANIFEST_FILE"
 {{ if BuildProperties != empty }}
+oryx_report_phase "manifest.write"
 echo "Creating a manifest file..."
 {{ for prop in BuildProperties }}
 echo "{{ prop.Key }}=\"{{ prop.Value }}\"" >> "$MANIFEST_DIR/$MANIFEST_FILE"

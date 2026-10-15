@@ -5,7 +5,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Xunit;
 
@@ -84,6 +86,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             AssertPhasePrecedes(script, "post_build", "post-build-command");
             AssertPhasePrecedes(script, "output.prepare", "Using standard output preparation");
             AssertPhasePrecedes(script, "manifest.write", "Creating a manifest file");
+            Assert.True(
+                script.IndexOf("Removing existing manifest file", StringComparison.Ordinal) <
+                script.IndexOf("oryx_report_phase \"manifest.write\"", StringComparison.Ordinal));
             Assert.Equal(2, CountOccurrences(script, "oryx_report_phase \"output.compress\""));
             AssertPhasesAreOrdered(
                 script,
@@ -94,37 +99,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 "output.compress",
                 "manifest.write");
 
-            Assert.DoesNotContain("oryx_report_phase \"script.generate\"", script);
-            Assert.DoesNotContain("oryx_report_phase \"dependencies.restore\"", script);
-            Assert.DoesNotContain("build_started", script);
-            Assert.DoesNotContain("build_completed", script);
-            Assert.Contains("/usr/bin/timeout --signal=KILL 2s", script);
-            Assert.Contains("/opt/oryx/oryx", script);
-            Assert.DoesNotContain("command -v oryx", script);
+            var minimalScript = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.BaseBashScript,
+                new BaseBashBuildScriptProperties
+                {
+                    BuildScriptSnippets = new[] { "build-snippet" },
+                    BuildProperties = new Dictionary<string, string>(),
+                });
+            Assert.Contains("oryx_report_phase \"build.execute\"", minimalScript);
+            Assert.DoesNotContain("oryx_report_phase \"pre_build\"", minimalScript);
+            Assert.DoesNotContain("oryx_report_phase \"post_build\"", minimalScript);
+            Assert.DoesNotContain("oryx_report_phase \"manifest.write\"", minimalScript);
         }
 
         [Fact]
-        public void DeploymentProgressPhases_AreOmittedWhenOptionalBoundariesAreAbsent()
-        {
-            // Arrange
-            var scriptProps = new BaseBashBuildScriptProperties
-            {
-                BuildScriptSnippets = new[] { "build-snippet" },
-                BuildProperties = new Dictionary<string, string>(),
-            };
-
-            // Act
-            var script = TemplateHelper.Render(TemplateHelper.TemplateResource.BaseBashScript, scriptProps);
-
-            // Assert
-            Assert.Contains("oryx_report_phase \"build.execute\"", script);
-            Assert.DoesNotContain("oryx_report_phase \"pre_build\"", script);
-            Assert.DoesNotContain("oryx_report_phase \"post_build\"", script);
-            Assert.DoesNotContain("oryx_report_phase \"manifest.write\"", script);
-        }
-
-        [Fact]
-        public void DeploymentProgressShell_IsBoundedSilentAndPermanentlyFailOpen()
+        public void DeploymentProgressShell_WritesExactRecordsAndFailsOpen()
         {
             var bash = GetBashPath();
             if (bash == null)
@@ -133,105 +122,85 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             }
 
             var testRoot = Path.Combine(Path.GetTempPath(), "oryx-progress-tests", Guid.NewGuid().ToString());
-            var binDir = Path.Combine(testRoot, "bin");
-            Directory.CreateDirectory(binDir);
+            Directory.CreateDirectory(testRoot);
             try
             {
-                var renderedScript = TemplateHelper.Render(
-                    TemplateHelper.TemplateResource.BaseBashScript,
-                    new BaseBashBuildScriptProperties
-                    {
-                        BuildScriptSnippets = new[] { "true" },
-                    })
-                    .Replace("/opt/oryx/oryx", "./bin/oryx");
-                var reporterEnd = renderedScript.IndexOf("if [ -f ", StringComparison.Ordinal);
-                var reporterScript = renderedScript.Substring(0, reporterEnd) +
-                    Environment.NewLine +
-                    "testRoot=\"$(cd \"$(dirname \"$0\")\" && pwd)\"" + Environment.NewLine +
-                    "test -z \"${ORYX_PROGRESS_ENDPOINT+x}\"" + Environment.NewLine +
-                    "test -z \"${ORYX_PROGRESS_OPERATION_ID+x}\"" + Environment.NewLine +
-                    "oryx_report_phase \"build.execute\"" + Environment.NewLine +
-                    "oryx_report_phase \"post_build\"" + Environment.NewLine;
-
                 var scriptPath = Path.Combine(testRoot, "test.sh");
-                var countPath = Path.Combine(testRoot, "count");
-                File.WriteAllText(scriptPath, reporterScript);
-                File.WriteAllText(countPath, "0");
-                File.WriteAllText(
-                    Path.Combine(binDir, "oryx"),
-                    "#!/bin/bash\n" +
-                    "countFile=\"$(cd \"$(dirname \"$0\")/..\" && pwd)/count\"\n" +
-                    "count=$(cat \"$countFile\")\n" +
-                    "printf '%s' \"$((count + 1))\" > \"$countFile\"\n" +
-                    "if [ -f \"$(dirname \"$countFile\")/sleep\" ]; then exec sleep 10; fi\n" +
-                    "exit 1\n");
-
-                var chmodResult = ProcessHelper.RunProcess(
+                var progressPath = Path.Combine(testRoot, "progress spaces ; [literal].jsonl");
+                WriteProgressScript(
+                    scriptPath,
+                    "test -z \"${ORYX_PROGRESS_FILE+x}\"",
+                    "oryx_report_phase \"pre_build\"",
+                    "oryx_report_phase \"build.execute\"",
+                    "oryx_report_phase \"post_build\"",
+                    "oryx_report_phase \"output.prepare\"",
+                    "oryx_report_phase \"output.compress\"",
+                    "oryx_report_phase \"manifest.write\"",
+                    "oryx_report_phase \"unknown\"");
+                File.WriteAllBytes(progressPath, Array.Empty<byte>());
+                RunBashAndAssertBuildUnaffected(
                     bash,
-                    new[] { "-c", "chmod +x test.sh bin/oryx" },
                     testRoot,
-                    TimeSpan.FromSeconds(10));
-                Assert.True(chmodResult.ExitCode == 0, chmodResult.Error);
+                    "-c",
+                    "progressFile=\"$PWD/progress spaces ; [literal].jsonl\"; " +
+                    "ORYX_PROGRESS_FILE=\"$progressFile\" bash ./test.sh");
 
-                var result = ProcessHelper.RunProcess(
+                var expectedPhases = new[]
+                {
+                    "pre_build",
+                    "build.execute",
+                    "post_build",
+                    "output.prepare",
+                    "output.compress",
+                    "manifest.write",
+                };
+                AssertProgressRecords(progressPath, expectedPhases);
+
+                WriteProgressScript(
+                    scriptPath,
+                    "oryx_report_phase \"build.execute\"",
+                    "oryx_report_phase \"post_build\"");
+
+                RunBashAndAssertBuildUnaffected(bash, testRoot, scriptPath);
+
+                var missingPath = Path.Combine(testRoot, "missing.jsonl");
+                RunBashAndAssertBuildUnaffected(
                     bash,
-                    new[] { scriptPath },
                     testRoot,
-                    TimeSpan.FromSeconds(10));
+                    "-c",
+                    "ORYX_PROGRESS_FILE=\"$PWD/missing.jsonl\" bash ./test.sh");
+                Assert.False(File.Exists(missingPath));
 
-                Assert.Equal(0, result.ExitCode);
-                Assert.True(string.IsNullOrWhiteSpace(result.Output));
-                Assert.True(string.IsNullOrWhiteSpace(result.Error));
-                Assert.Equal("0", File.ReadAllText(countPath));
-
-                result = ProcessHelper.RunProcess(
+                var relativePath = Path.Combine(testRoot, "relative.jsonl");
+                File.WriteAllBytes(relativePath, Array.Empty<byte>());
+                RunBashAndAssertBuildUnaffected(
                     bash,
-                    new[]
-                    {
-                        "-c",
-                        "progressFile=\"$PWD/progress spaces ; [literal].jsonl\"; " +
-                        ": > \"$progressFile\"; " +
-                        "ORYX_PROGRESS_ENDPOINT=file:$progressFile " +
-                        "ORYX_PROGRESS_OPERATION_ID=operation-123 ./test.sh; " +
-                        "rm -f \"$progressFile\"",
-                    },
                     testRoot,
-                    TimeSpan.FromSeconds(10));
+                    "-c",
+                    "ORYX_PROGRESS_FILE=relative.jsonl bash ./test.sh");
+                Assert.Empty(File.ReadAllBytes(relativePath));
 
-                Assert.Equal(0, result.ExitCode);
-                Assert.True(string.IsNullOrWhiteSpace(result.Output));
-                Assert.True(string.IsNullOrWhiteSpace(result.Error));
-                Assert.Equal("1", File.ReadAllText(countPath));
-
-                File.WriteAllText(countPath, "0");
-                File.WriteAllText(Path.Combine(testRoot, "sleep"), string.Empty);
-                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                result = ProcessHelper.RunProcess(
+                progressPath = Path.Combine(testRoot, "progress.jsonl");
+                File.WriteAllBytes(progressPath, Array.Empty<byte>());
+                WriteProgressScript(
+                    scriptPath,
+                    "rm -f \"$ORYX_PROGRESS_FILE_VALUE\"",
+                    "oryx_report_phase \"build.execute\"",
+                    ": > \"$ORYX_PROGRESS_FILE_VALUE\"",
+                    "oryx_report_phase \"post_build\"");
+                RunBashAndAssertBuildUnaffected(
                     bash,
-                    new[]
-                    {
-                        "-c",
-                        "progressFile=$(mktemp); " +
-                        "ORYX_PROGRESS_ENDPOINT=file:$progressFile " +
-                        "ORYX_PROGRESS_OPERATION_ID=operation-123 ./test.sh; " +
-                        "rm -f \"$progressFile\"",
-                    },
                     testRoot,
-                    TimeSpan.FromSeconds(10));
-                stopwatch.Stop();
-
-                Assert.Equal(0, result.ExitCode);
-                Assert.True(string.IsNullOrWhiteSpace(result.Output), result.Output);
-                Assert.True(string.IsNullOrWhiteSpace(result.Error), result.Error);
-                Assert.Equal("1", File.ReadAllText(countPath));
-                Assert.InRange(stopwatch.Elapsed, TimeSpan.FromSeconds(1.5), TimeSpan.FromSeconds(8));
-                File.Delete(Path.Combine(testRoot, "sleep"));
+                    "-c",
+                    "ORYX_PROGRESS_FILE=\"$PWD/progress.jsonl\" bash ./test.sh");
+                Assert.Empty(File.ReadAllBytes(progressPath));
             }
             finally
             {
                 Directory.Delete(testRoot, recursive: true);
             }
         }
+
 
         [Fact]
         public void GeneratedBuildScript_HasValidBashSyntax()
@@ -270,6 +239,64 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             {
                 File.Delete(path);
             }
+        }
+
+        private static string RenderProgressReporterScript(params string[] commands)
+        {
+            var renderedScript = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.BaseBashScript,
+                new BaseBashBuildScriptProperties
+                {
+                    BuildScriptSnippets = new[] { "true" },
+                });
+            var functionStart = renderedScript.IndexOf("oryx_report_phase() {", StringComparison.Ordinal);
+            var functionEnd = renderedScript.IndexOf("\n}\n", functionStart, StringComparison.Ordinal);
+            Assert.True(functionStart >= 0);
+            Assert.True(functionEnd >= 0);
+
+            return renderedScript.Substring(0, functionEnd + 3) +
+                string.Join(Environment.NewLine, commands) +
+                Environment.NewLine;
+        }
+
+        private static void WriteProgressScript(string path, params string[] commands)
+        {
+            File.WriteAllText(path, RenderProgressReporterScript(commands));
+        }
+
+        private static void AssertProgressRecords(string path, string[] expectedPhases)
+        {
+            var records = File.ReadAllLines(path);
+            Assert.Equal(expectedPhases.Length, records.Length);
+            for (var index = 0; index < records.Length; index++)
+            {
+                var match = Regex.Match(
+                    records[index],
+                    "^\\{\"schemaVersion\":1,\"eventType\":\"phase_started\",\"phase\":\"" +
+                    Regex.Escape(expectedPhases[index]) +
+                    "\",\"timestampUtc\":\"(?<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{7}Z)\"\\}$");
+                Assert.True(match.Success, records[index]);
+                Assert.True(DateTimeOffset.TryParse(
+                    match.Groups["timestamp"].Value,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind,
+                    out _));
+            }
+        }
+
+        private static void RunBashAndAssertBuildUnaffected(
+            string bash,
+            string testRoot,
+            params string[] arguments)
+        {
+            var result = ProcessHelper.RunProcess(
+                bash,
+                arguments,
+                testRoot,
+                TimeSpan.FromSeconds(10));
+            Assert.Equal(0, result.ExitCode);
+            Assert.True(string.IsNullOrWhiteSpace(result.Output), result.Output);
+            Assert.True(string.IsNullOrWhiteSpace(result.Error), result.Error);
         }
 
         private static void AssertPhasePrecedes(string script, string phase, string boundary)
