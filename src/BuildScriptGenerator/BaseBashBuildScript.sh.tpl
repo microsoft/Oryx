@@ -6,11 +6,6 @@ SOURCE_DIR="$1"
 DESTINATION_DIR="$2"
 INTERMEDIATE_DIR="$3"
 
-ORYX_PROGRESS_RESTORE_XTRACE=false
-if [[ "$-" == *x* ]]; then
-	{ set +x; } 2>/dev/null
-	ORYX_PROGRESS_RESTORE_XTRACE=true
-fi
 ORYX_PROGRESS_ENDPOINT_VALUE="${ORYX_PROGRESS_ENDPOINT:-}"
 ORYX_PROGRESS_OPERATION_ID_VALUE="${ORYX_PROGRESS_OPERATION_ID:-}"
 unset ORYX_PROGRESS_ENDPOINT ORYX_PROGRESS_OPERATION_ID
@@ -29,18 +24,8 @@ if [ -n "$ORYX_PROGRESS_OPERATION_ID_VALUE" ] &&
 else
 	ORYX_PROGRESS_REPORTING_ENABLED=false
 fi
-if [ "$ORYX_PROGRESS_RESTORE_XTRACE" = "true" ]; then
-	set -x
-fi
-unset ORYX_PROGRESS_RESTORE_XTRACE
-
 oryx_report_phase() {
 	local phase="$1"
-	local restoreXtrace=false
-	if [[ "$-" == *x* ]]; then
-		{ set +x; } 2>/dev/null
-		restoreXtrace=true
-	fi
 
 	if [ "$ORYX_PROGRESS_REPORTING_ENABLED" = "true" ]; then
 		if [ ! -f "$ORYX_PROGRESS_FILE_VALUE" ] ||
@@ -60,9 +45,6 @@ oryx_report_phase() {
 		fi
 	fi
 
-	if [ "$restoreXtrace" = "true" ]; then
-		set -x
-	fi
 	return 0
 }
 

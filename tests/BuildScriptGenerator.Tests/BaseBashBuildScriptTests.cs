@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void DeploymentProgressShell_IsBoundedPrivateAndPermanentlyFailOpen()
+        public void DeploymentProgressShell_IsBoundedSilentAndPermanentlyFailOpen()
         {
             var bash = GetBashPath();
             if (bash == null)
@@ -148,6 +148,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 var reporterScript = renderedScript.Substring(0, reporterEnd) +
                     Environment.NewLine +
                     "testRoot=\"$(cd \"$(dirname \"$0\")\" && pwd)\"" + Environment.NewLine +
+                    "test -z \"${ORYX_PROGRESS_ENDPOINT+x}\"" + Environment.NewLine +
+                    "test -z \"${ORYX_PROGRESS_OPERATION_ID+x}\"" + Environment.NewLine +
                     "oryx_report_phase \"build.execute\"" + Environment.NewLine +
                     "oryx_report_phase \"post_build\"" + Environment.NewLine;
 
@@ -224,26 +226,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 Assert.Equal("1", File.ReadAllText(countPath));
                 Assert.InRange(stopwatch.Elapsed, TimeSpan.FromSeconds(1.5), TimeSpan.FromSeconds(8));
                 File.Delete(Path.Combine(testRoot, "sleep"));
-
-                File.WriteAllText(countPath, "0");
-                const string PrivateOperationId = "private-operation-123";
-                result = ProcessHelper.RunProcess(
-                    bash,
-                    new[]
-                    {
-                        "-c",
-                        "progressFile=$(mktemp); " +
-                        $"ORYX_PROGRESS_ENDPOINT=file:$progressFile " +
-                        $"ORYX_PROGRESS_OPERATION_ID={PrivateOperationId} bash -x ./test.sh; " +
-                        "rm -f \"$progressFile\"",
-                    },
-                    testRoot,
-                    TimeSpan.FromSeconds(10));
-
-                Assert.True(result.ExitCode == 0, result.Error);
-                Assert.DoesNotContain("ORYX_PROGRESS_ENDPOINT=file:", result.Error);
-                Assert.DoesNotContain(PrivateOperationId, result.Error);
-                Assert.Equal("1", File.ReadAllText(countPath));
             }
             finally
             {
