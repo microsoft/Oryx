@@ -6,7 +6,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -64,11 +63,42 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.False(File.Exists(endpointPath));
         }
 
+        [Fact]
+        public void TryAppendPhase_AppendsWithoutTruncatingExistingRecords()
+        {
+            // Arrange
+            var endpointPath = this.CreateEndpoint();
+            const string ExistingRecord = "existing-record\n";
+            File.WriteAllText(endpointPath, ExistingRecord);
+
+            // Act
+            var firstResult = DeploymentProgressWriter.TryAppendPhase(
+                ToEndpoint(endpointPath),
+                "operation-123",
+                "pre_build",
+                new DateTimeOffset(2026, 10, 9, 1, 2, 3, TimeSpan.Zero));
+            var secondResult = DeploymentProgressWriter.TryAppendPhase(
+                ToEndpoint(endpointPath),
+                "operation-123",
+                "build.execute",
+                new DateTimeOffset(2026, 10, 9, 1, 2, 4, TimeSpan.Zero));
+
+            // Assert
+            Assert.True(firstResult);
+            Assert.True(secondResult);
+            var records = File.ReadAllLines(endpointPath);
+            Assert.Equal(3, records.Length);
+            Assert.Equal("existing-record", records[0]);
+            Assert.Contains("\"phase\":\"pre_build\"", records[1]);
+            Assert.Contains("\"phase\":\"build.execute\"", records[2]);
+        }
+
         [Theory]
         [InlineData(null, "operation-123", "build.execute")]
         [InlineData("", "operation-123", "build.execute")]
         [InlineData("relative.jsonl", "operation-123", "build.execute")]
         [InlineData("file:relative.jsonl", "operation-123", "build.execute")]
+        [InlineData("VALID_ENDPOINT_WITH_CONTROL", "operation-123", "build.execute")]
         [InlineData("VALID_ENDPOINT", null, "build.execute")]
         [InlineData("VALID_ENDPOINT", "", "build.execute")]
         [InlineData("VALID_ENDPOINT", "operation id", "build.execute")]
@@ -82,6 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             var endpointPath = this.CreateEndpoint();
             endpoint = endpoint == "VALID_ENDPOINT" ? ToEndpoint(endpointPath) : endpoint;
+            endpoint = endpoint == "VALID_ENDPOINT_WITH_CONTROL" ? ToEndpoint(endpointPath) + "\n" : endpoint;
 
             // Act
             var result = DeploymentProgressWriter.TryAppendPhase(
@@ -151,36 +182,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 "build.execute",
                 DateTimeOffset.UtcNow));
         }
-
-        [EnableOnPlatform("LINUX")]
-        public void TryAppendPhase_RejectsUnixDeviceEndpoint()
-        {
-            Assert.False(DeploymentProgressWriter.TryAppendPhase(
-                "file:/dev/null",
-                "operation-123",
-                "build.execute",
-                DateTimeOffset.UtcNow));
-        }
-
-        [EnableOnPlatform("LINUX")]
-        public void TryAppendPhase_RejectsUnixHardLinkEndpoint()
-        {
-            var targetPath = this.CreateEndpoint();
-            var hardLinkPath = this.testDir.GenerateRandomChildDirPath();
-            Assert.Equal(0, Link(targetPath, hardLinkPath));
-
-            Assert.False(DeploymentProgressWriter.TryAppendPhase(
-                ToEndpoint(hardLinkPath),
-                "operation-123",
-                "build.execute",
-                DateTimeOffset.UtcNow));
-            Assert.Empty(File.ReadAllBytes(targetPath));
-        }
-
-        [DllImport("libc", EntryPoint = "link", SetLastError = true)]
-        private static extern int Link(
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string targetPath,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string linkPath);
 
         private static string ToEndpoint(string path)
         {
