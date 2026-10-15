@@ -31,17 +31,13 @@ oryx_report_phase() {
 		if [ ! -f "$ORYX_PROGRESS_FILE_VALUE" ] ||
 			[ -L "$ORYX_PROGRESS_FILE_VALUE" ]; then
 			ORYX_PROGRESS_REPORTING_ENABLED=false
-		else
-			if ! (
-				set +e
-				ORYX_PROGRESS_ENDPOINT="$ORYX_PROGRESS_ENDPOINT_VALUE" \
-					ORYX_PROGRESS_OPERATION_ID="$ORYX_PROGRESS_OPERATION_ID_VALUE" \
-					/usr/bin/timeout --signal=KILL 2s \
-						/opt/oryx/oryx deployment-progress-write --phase "$phase"
-				exit $?
-			) >/dev/null 2>&1; then
-				ORYX_PROGRESS_REPORTING_ENABLED=false
-			fi
+		elif ! {
+			ORYX_PROGRESS_ENDPOINT="$ORYX_PROGRESS_ENDPOINT_VALUE" \
+				ORYX_PROGRESS_OPERATION_ID="$ORYX_PROGRESS_OPERATION_ID_VALUE" \
+				/usr/bin/timeout --signal=KILL 2s \
+					/opt/oryx/oryx deployment-progress-write --phase "$phase"
+		} >/dev/null 2>&1; then
+			ORYX_PROGRESS_REPORTING_ENABLED=false
 		fi
 	fi
 
