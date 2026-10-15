@@ -98,6 +98,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.DoesNotContain("oryx_report_phase \"dependencies.restore\"", script);
             Assert.DoesNotContain("build_started", script);
             Assert.DoesNotContain("build_completed", script);
+            Assert.Contains("/usr/bin/timeout --signal=KILL 2s", script);
+            Assert.Contains("/opt/oryx/oryx", script);
+            Assert.DoesNotContain("command -v oryx", script);
         }
 
         [Fact]
@@ -139,7 +142,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                     new BaseBashBuildScriptProperties
                     {
                         BuildScriptSnippets = new[] { "true" },
-                    });
+                    })
+                    .Replace("/opt/oryx/oryx", "./bin/oryx");
                 var reporterEnd = renderedScript.IndexOf("if [ -f ", StringComparison.Ordinal);
                 var reporterScript = renderedScript.Substring(0, reporterEnd) +
                     Environment.NewLine +
@@ -153,22 +157,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 File.WriteAllText(scriptPath, reporterScript);
                 File.WriteAllText(countPath, "0");
                 File.WriteAllText(
-                    Path.Combine(binDir, "timeout"),
-                    "#!/bin/bash\nshift 2\nexec \"$@\"\n");
-                File.WriteAllText(
                     Path.Combine(binDir, "oryx"),
                     "#!/bin/bash\n" +
                     "countFile=\"$(cd \"$(dirname \"$0\")/..\" && pwd)/count\"\n" +
                     "count=$(cat \"$countFile\")\n" +
                     "printf '%s' \"$((count + 1))\" > \"$countFile\"\n" +
+                    "if [ -f \"$(dirname \"$countFile\")/sleep\" ]; then exec sleep 10; fi\n" +
                     "exit 1\n");
 
                 var chmodResult = ProcessHelper.RunProcess(
                     bash,
-                    new[] { "-c", "chmod +x test.sh bin/timeout bin/oryx" },
+                    new[] { "-c", "chmod +x test.sh bin/oryx" },
                     testRoot,
                     TimeSpan.FromSeconds(10));
-                Assert.Equal(0, chmodResult.ExitCode);
+                Assert.True(chmodResult.ExitCode == 0, chmodResult.Error);
 
                 var result = ProcessHelper.RunProcess(
                     bash,
@@ -186,8 +188,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                     new[]
                     {
                         "-c",
-                        "ORYX_PROGRESS_ENDPOINT=file:/tmp/progress.json " +
-                        "ORYX_PROGRESS_OPERATION_ID=operation-123 ./test.sh",
+                        "progressFile=\"$PWD/progress spaces ; [literal].jsonl\"; " +
+                        ": > \"$progressFile\"; " +
+                        "ORYX_PROGRESS_ENDPOINT=file:$progressFile " +
+                        "ORYX_PROGRESS_OPERATION_ID=operation-123 ./test.sh; " +
+                        "rm -f \"$progressFile\"",
                     },
                     testRoot,
                     TimeSpan.FromSeconds(10));
@@ -198,21 +203,46 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 Assert.Equal("1", File.ReadAllText(countPath));
 
                 File.WriteAllText(countPath, "0");
-                const string PrivateEndpoint = "file:/tmp/private-progress.json";
+                File.WriteAllText(Path.Combine(testRoot, "sleep"), string.Empty);
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                result = ProcessHelper.RunProcess(
+                    bash,
+                    new[]
+                    {
+                        "-c",
+                        "progressFile=$(mktemp); " +
+                        "ORYX_PROGRESS_ENDPOINT=file:$progressFile " +
+                        "ORYX_PROGRESS_OPERATION_ID=operation-123 ./test.sh; " +
+                        "rm -f \"$progressFile\"",
+                    },
+                    testRoot,
+                    TimeSpan.FromSeconds(10));
+                stopwatch.Stop();
+
+                Assert.Equal(0, result.ExitCode);
+                Assert.True(string.IsNullOrWhiteSpace(result.Output), result.Output);
+                Assert.True(string.IsNullOrWhiteSpace(result.Error), result.Error);
+                Assert.Equal("1", File.ReadAllText(countPath));
+                Assert.InRange(stopwatch.Elapsed, TimeSpan.FromSeconds(1.5), TimeSpan.FromSeconds(8));
+                File.Delete(Path.Combine(testRoot, "sleep"));
+
+                File.WriteAllText(countPath, "0");
                 const string PrivateOperationId = "private-operation-123";
                 result = ProcessHelper.RunProcess(
                     bash,
                     new[]
                     {
                         "-c",
-                        $"ORYX_PROGRESS_ENDPOINT={PrivateEndpoint} " +
-                        $"ORYX_PROGRESS_OPERATION_ID={PrivateOperationId} bash -x ./test.sh",
+                        "progressFile=$(mktemp); " +
+                        $"ORYX_PROGRESS_ENDPOINT=file:$progressFile " +
+                        $"ORYX_PROGRESS_OPERATION_ID={PrivateOperationId} bash -x ./test.sh; " +
+                        "rm -f \"$progressFile\"",
                     },
                     testRoot,
                     TimeSpan.FromSeconds(10));
 
-                Assert.Equal(0, result.ExitCode);
-                Assert.DoesNotContain(PrivateEndpoint, result.Error);
+                Assert.True(result.ExitCode == 0, result.Error);
+                Assert.DoesNotContain("ORYX_PROGRESS_ENDPOINT=file:", result.Error);
                 Assert.DoesNotContain(PrivateOperationId, result.Error);
                 Assert.Equal("1", File.ReadAllText(countPath));
             }
@@ -252,7 +282,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                     workingDirectory: null,
                     waitTimeForExit: TimeSpan.FromSeconds(10));
 
-                Assert.Equal(0, result.ExitCode);
+                Assert.True(result.ExitCode == 0, result.Error);
                 Assert.True(string.IsNullOrWhiteSpace(result.Error));
             }
             finally

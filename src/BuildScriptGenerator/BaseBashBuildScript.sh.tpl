@@ -16,7 +16,17 @@ esac
 ORYX_PROGRESS_ENDPOINT_VALUE="${ORYX_PROGRESS_ENDPOINT:-}"
 ORYX_PROGRESS_OPERATION_ID_VALUE="${ORYX_PROGRESS_OPERATION_ID:-}"
 unset ORYX_PROGRESS_ENDPOINT ORYX_PROGRESS_OPERATION_ID
-if [ -n "$ORYX_PROGRESS_ENDPOINT_VALUE" ] && [ -n "$ORYX_PROGRESS_OPERATION_ID_VALUE" ]; then
+ORYX_PROGRESS_FILE_VALUE=
+case "$ORYX_PROGRESS_ENDPOINT_VALUE" in
+	file:/*)
+		ORYX_PROGRESS_FILE_VALUE="${ORYX_PROGRESS_ENDPOINT_VALUE#file:}"
+		;;
+esac
+if [ -n "$ORYX_PROGRESS_OPERATION_ID_VALUE" ] &&
+	[ -f "$ORYX_PROGRESS_FILE_VALUE" ] &&
+	[ ! -L "$ORYX_PROGRESS_FILE_VALUE" ] &&
+	[ -x /opt/oryx/oryx ] &&
+	[ -x /usr/bin/timeout ]; then
 	ORYX_PROGRESS_DISABLED=false
 else
 	ORYX_PROGRESS_DISABLED=true
@@ -37,16 +47,18 @@ oryx_report_phase() {
 	esac
 
 	if [ "$ORYX_PROGRESS_DISABLED" != "true" ]; then
-		if ! command -v oryx >/dev/null 2>&1 ||
-			! command -v timeout >/dev/null 2>&1; then
+		if [ ! -f "$ORYX_PROGRESS_FILE_VALUE" ] ||
+			[ -L "$ORYX_PROGRESS_FILE_VALUE" ]; then
 			ORYX_PROGRESS_DISABLED=true
 		else
-			local oryxCommand
-			oryxCommand=$(command -v oryx)
-			if ! ORYX_PROGRESS_ENDPOINT="$ORYX_PROGRESS_ENDPOINT_VALUE" \
-				ORYX_PROGRESS_OPERATION_ID="$ORYX_PROGRESS_OPERATION_ID_VALUE" \
-				timeout --signal=KILL 2s "$oryxCommand" deployment-progress-write --phase "$phase" \
-					>/dev/null 2>&1; then
+			if ! (
+				set +e
+				ORYX_PROGRESS_ENDPOINT="$ORYX_PROGRESS_ENDPOINT_VALUE" \
+					ORYX_PROGRESS_OPERATION_ID="$ORYX_PROGRESS_OPERATION_ID_VALUE" \
+					/usr/bin/timeout --signal=KILL 2s \
+						/opt/oryx/oryx deployment-progress-write --phase "$phase"
+				exit $?
+			) >/dev/null 2>&1; then
 				ORYX_PROGRESS_DISABLED=true
 			fi
 		fi

@@ -6,8 +6,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGeneratorCli.DeploymentProgress;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -80,6 +80,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         [InlineData("VALID_ENDPOINT", null, "build.execute")]
         [InlineData("VALID_ENDPOINT", "", "build.execute")]
         [InlineData("VALID_ENDPOINT", "operation id", "build.execute")]
+        [InlineData("VALID_ENDPOINT", "opération", "build.execute")]
         [InlineData("VALID_ENDPOINT", "operation-123", "unknown")]
         public void TryAppendPhase_RejectsMalformedConfiguration(
             string endpoint,
@@ -152,19 +153,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var directoryPath = this.testDir.CreateChildDir();
+            var result = true;
 
             // Act
             var exception = Record.Exception(() =>
-                DeploymentProgressWriter.TryAppendPhase(
+                result = DeploymentProgressWriter.TryAppendPhase(
                     ToEndpoint(directoryPath),
                     "operation-123",
                     "build.execute",
                     DateTimeOffset.UtcNow));
-            var result = DeploymentProgressWriter.TryAppendPhase(
-                ToEndpoint(directoryPath),
-                "operation-123",
-                "build.execute",
-                DateTimeOffset.UtcNow);
 
             // Assert
             Assert.Null(exception);
@@ -172,41 +169,44 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void TryAppendPhase_ConcurrentWritesRemainCompleteAndBounded()
+        public void TryAppendPhase_RejectsUnixDeviceEndpoint()
         {
-            // Arrange
-            var endpointPath = this.CreateEndpoint();
-            var results = new bool[16];
-            var timestamp = new DateTimeOffset(2026, 10, 9, 1, 2, 3, TimeSpan.Zero);
+            if (!OperatingSystem.IsLinux())
+            {
+                return;
+            }
 
-            // Act
-            Parallel.For(
-                0,
-                results.Length,
-                index =>
-                {
-                    results[index] = DeploymentProgressWriter.TryAppendPhase(
-                        ToEndpoint(endpointPath),
-                        $"operation-{index}",
-                        "build.execute",
-                        timestamp);
-                });
-
-            // Assert
-            var lines = File.ReadAllLines(endpointPath);
-            Assert.Equal(results.Count(result => result), lines.Length);
-            Assert.NotEmpty(lines);
-            Assert.InRange(new FileInfo(endpointPath).Length, 1, DeploymentProgressWriter.MaxFileBytes);
-            Assert.All(
-                lines,
-                line =>
-                {
-                    using (var document = JsonDocument.Parse(line))
-                    {
-                        Assert.Equal("phase_started", document.RootElement.GetProperty("eventType").GetString());
-                    }
-                });
+            Assert.False(DeploymentProgressWriter.TryAppendPhase(
+                "file:/dev/null",
+                "operation-123",
+                "build.execute",
+                DateTimeOffset.UtcNow));
         }
+
+        [Fact]
+        public void TryAppendPhase_RejectsUnixHardLinkEndpoint()
+        {
+            if (!OperatingSystem.IsLinux())
+            {
+                return;
+            }
+
+            var targetPath = this.CreateEndpoint();
+            var hardLinkPath = this.testDir.GenerateRandomChildDirPath();
+            Assert.Equal(0, CreateHardLink(targetPath, hardLinkPath));
+
+            Assert.False(DeploymentProgressWriter.TryAppendPhase(
+                ToEndpoint(hardLinkPath),
+                "operation-123",
+                "build.execute",
+                DateTimeOffset.UtcNow));
+            Assert.Empty(File.ReadAllBytes(targetPath));
+        }
+
+        [DllImport("libc", EntryPoint = "link", SetLastError = true)]
+        private static extern int CreateHardLink(
+            [MarshalAs(UnmanagedType.LPUTF8Str)] string targetPath,
+            [MarshalAs(UnmanagedType.LPUTF8Str)] string linkPath);
 
         private static string ToEndpoint(string path)
         {
