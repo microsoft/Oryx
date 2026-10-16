@@ -5,6 +5,233 @@ TOTAL_EXECUTION_START_TIME=$SECONDS
 SOURCE_DIR="$1"
 DESTINATION_DIR="$2"
 INTERMEDIATE_DIR="$3"
+ORYX_PROGRESS_RESTORE_XTRACE=false
+case "$-" in
+	*x*)
+		{ set +x; } 2>/dev/null
+		ORYX_PROGRESS_RESTORE_XTRACE=true
+		;;
+esac
+ORYX_PROGRESS_OWNER="${4:-standalone}"
+ORYX_PROGRESS_ENDPOINT_VALUE=
+ORYX_PROGRESS_OPERATION_ID_VALUE=
+if [ "$ORYX_PROGRESS_OWNER" = "oryx-cli" ]; then
+	ORYX_PROGRESS_ENDPOINT_VALUE="${ORYX_PROGRESS_ENDPOINT:-}"
+	ORYX_PROGRESS_OPERATION_ID_VALUE="${ORYX_PROGRESS_OPERATION_ID:-}"
+	unset ORYX_PROGRESS_ENDPOINT ORYX_PROGRESS_OPERATION_ID
+fi
+
+ORYX_PROGRESS_ENABLED=false
+ORYX_PROGRESS_EVENT_COUNT=0
+ORYX_PROGRESS_LAST_PHASE_RANK=1
+ORYX_PROGRESS_MAX_EVENTS=32
+ORYX_PROGRESS_MAX_RECORD_BYTES=1024
+ORYX_PROGRESS_MAX_FILE_BYTES=32768
+ORYX_PROGRESS_PHASE_COMMAND=:
+ORYX_PROGRESS_TERMINAL_COMMAND=:
+
+if [ "$ORYX_PROGRESS_OWNER" = "oryx-cli" ]; then
+	case "$ORYX_PROGRESS_ENDPOINT_VALUE" in
+		file:/*)
+			ORYX_PROGRESS_FILE="${ORYX_PROGRESS_ENDPOINT_VALUE#file:}"
+			;;
+	esac
+
+	if [ -n "${ORYX_PROGRESS_FILE:-}" ] &&
+		[[ "$ORYX_PROGRESS_OPERATION_ID_VALUE" =~ ^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$ ]] &&
+		! builtin printf '%s' "$ORYX_PROGRESS_FILE" | LC_ALL=C /usr/bin/grep -q '[[:cntrl:]]'; then
+		ORYX_PROGRESS_ENABLED=true
+	fi
+fi
+
+if [ "$ORYX_PROGRESS_ENABLED" = "true" ] &&
+	! declare -F oryx_progress_transition >/dev/null &&
+	! declare -F oryx_progress_phase_started >/dev/null &&
+	! declare -F oryx_progress_build_completed >/dev/null; then
+oryx_progress_transition() {
+	if [ "$ORYX_PROGRESS_ENABLED" != "true" ]; then
+		return 0
+	fi
+
+	local eventType="$1"
+	local value="$2"
+	local rank
+	case "$eventType:$value" in
+		phase_started:script.generate) rank=1 ;;
+		phase_started:pre_build) rank=2 ;;
+		phase_started:dependencies.restore) rank=3 ;;
+		phase_started:build.execute) rank=4 ;;
+		phase_started:post_build) rank=5 ;;
+		phase_started:output.prepare) rank=6 ;;
+		phase_started:output.compress) rank=7 ;;
+		phase_started:manifest.write) rank=8 ;;
+		build_completed:succeeded) rank=9 ;;
+		*) return 0 ;;
+	esac
+	if [ "$rank" -le "$ORYX_PROGRESS_LAST_PHASE_RANK" ]; then
+		return 0
+	fi
+
+	local timestamp
+	if ! timestamp=$(/usr/bin/date -u +"%Y-%m-%dT%H:%M:%S.%3NZ"); then
+		ORYX_PROGRESS_ENABLED=false
+		return 0
+	fi
+
+	local record
+	if [ "$eventType" = "phase_started" ]; then
+		builtin printf -v record \
+			'{"schemaVersion":1,"eventType":"phase_started","operationId":"%s","timestampUtc":"%s","phase":"%s"}' \
+			"$ORYX_PROGRESS_OPERATION_ID_VALUE" \
+			"$timestamp" \
+			"$value"
+	else
+		builtin printf -v record \
+			'{"schemaVersion":1,"eventType":"build_completed","operationId":"%s","timestampUtc":"%s","outcome":"succeeded"}' \
+			"$ORYX_PROGRESS_OPERATION_ID_VALUE" \
+			"$timestamp"
+	fi
+
+	if [ "$ORYX_PROGRESS_EVENT_COUNT" -ge "$ORYX_PROGRESS_MAX_EVENTS" ]; then
+		ORYX_PROGRESS_ENABLED=false
+		return 0
+	fi
+
+	local recordBytes=$((${#record} + 1))
+	if [ "$recordBytes" -gt "$ORYX_PROGRESS_MAX_RECORD_BYTES" ]; then
+		ORYX_PROGRESS_ENABLED=false
+		return 0
+	fi
+
+	{{ ## The endpoint must be a pre-created local regular file. The bounded child revalidates the
+	     descriptor immediately before the single-record append. ## }}
+	local restoreMonitorMode=false
+	case "$-" in
+		*m*)
+			set +m
+			restoreMonitorMode=true
+			;;
+	esac
+	/usr/bin/setsid /usr/bin/env -u BASH_ENV /bin/bash -c '
+		endpointFile=$(/usr/bin/realpath -m -s -- "$1") || exit 1
+		record="$2"
+		maxFileBytes="$3"
+		recordBytes="$4"
+
+		[ -f "$endpointFile" ] && [ ! -L "$endpointFile" ] || exit 1
+		parent="${endpointFile%/*}"
+		[ -n "$parent" ] || parent="/"
+		current="$parent"
+		while [ "$current" != "/" ]; do
+			[ -L "$current" ] && exit 1
+			next="${current%/*}"
+			[ -n "$next" ] || next="/"
+			[ "$next" != "$current" ] || exit 1
+			current="$next"
+		done
+
+		case "$(/usr/bin/stat -f -c %T -- "$parent")" in
+			ext2/ext3|ext4|xfs|btrfs|tmpfs|overlay|overlayfs|ramfs|zfs|aufs) ;;
+			*) exit 1 ;;
+		esac
+
+		fileBytes=$(/usr/bin/stat -c %s -- "$endpointFile") || exit 1
+		[ "$((fileBytes + recordBytes))" -le "$maxFileBytes" ] || exit 1
+
+		exec 3>>"$endpointFile" || exit 1
+		[ -f "/proc/$$/fd/3" ] &&
+			[ "$endpointFile" -ef "/proc/$$/fd/3" ] ||
+			exit 1
+		builtin printf "%s\n" "$record" >&3 || exit 1
+		exec 3>&-
+		/bin/sync -f -- "$endpointFile"
+	' oryx-progress-writer \
+		"$ORYX_PROGRESS_FILE" \
+		"$record" \
+		"$ORYX_PROGRESS_MAX_FILE_BYTES" \
+		"$recordBytes" \
+		>/dev/null 2>&1 &
+	local writerPid=$!
+	if [ "$restoreMonitorMode" = "true" ]; then
+		set -m
+	fi
+	local writerFinished=false
+	local writerAttempt
+	for writerAttempt in {1..10}; do
+		local writerState=
+		if [ ! -r "/proc/$writerPid/status" ]; then
+			writerFinished=true
+			break
+		fi
+		if ! while IFS=$'\t' read -r key value remainder; do
+			if [ "$key" = "State:" ]; then
+				writerState="${value%% *}"
+				break
+			fi
+		done < "/proc/$writerPid/status"; then
+			writerFinished=true
+			break
+		fi
+		if [ "$writerState" = "Z" ]; then
+			writerFinished=true
+			break
+		fi
+		/bin/sleep 0.1
+	done
+
+	if [ "$writerFinished" != "true" ]; then
+		builtin kill -KILL -- "-$writerPid" 2>/dev/null || true
+		disown "$writerPid" 2>/dev/null || true
+		ORYX_PROGRESS_ENABLED=false
+		return 0
+	fi
+	if ! wait "$writerPid"; then
+		ORYX_PROGRESS_ENABLED=false
+		return 0
+	fi
+
+	ORYX_PROGRESS_EVENT_COUNT=$((ORYX_PROGRESS_EVENT_COUNT + 1))
+	ORYX_PROGRESS_LAST_PHASE_RANK="$rank"
+	if [ "$eventType" = "build_completed" ]; then
+		ORYX_PROGRESS_ENABLED=false
+	fi
+}
+oryx_progress_phase_started() {
+	local restoreXtrace=false
+	case "$-" in
+		*x*)
+			{ set +x; } 2>/dev/null
+			restoreXtrace=true
+			;;
+	esac
+	oryx_progress_transition phase_started "$1"
+	if [ "$restoreXtrace" = "true" ]; then
+		set -x
+	fi
+}
+oryx_progress_build_completed() {
+	local restoreXtrace=false
+	case "$-" in
+		*x*)
+			{ set +x; } 2>/dev/null
+			restoreXtrace=true
+			;;
+	esac
+	oryx_progress_transition build_completed succeeded
+	if [ "$restoreXtrace" = "true" ]; then
+		set -x
+	fi
+}
+ORYX_PROGRESS_PHASE_COMMAND=oryx_progress_phase_started
+ORYX_PROGRESS_TERMINAL_COMMAND=oryx_progress_build_completed
+else
+	ORYX_PROGRESS_ENABLED=false
+fi
+
+if [ "$ORYX_PROGRESS_RESTORE_XTRACE" = "true" ]; then
+	set -x
+fi
+unset ORYX_PROGRESS_RESTORE_XTRACE
 
 if [ -f {{ LoggerPath }} ]; then
 	source {{ LoggerPath }}
@@ -110,6 +337,7 @@ mkdir -p "$DESTINATION_DIR"
 cd "$SOURCE_DIR"
 echo "{{ PreBuildCommandPrologue }}"
 BASE_START_TIME=$SECONDS
+$ORYX_PROGRESS_PHASE_COMMAND "pre_build"
 {{ PreBuildCommand }}
 ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "{{ PreBuildCommandEpilogue }}"
@@ -132,6 +360,7 @@ cd $SOURCE_DIR
 echo
 echo "{{ PostBuildCommandPrologue }}"
 BASE_START_TIME=$SECONDS
+$ORYX_PROGRESS_PHASE_COMMAND "post_build"
 {{ PostBuildCommand }}
 ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "{{ PostBuildCommandEpilogue }}"
@@ -150,6 +379,7 @@ then
 
 	{{ ## Check if optimized direct tar compression is enabled ## }}
 	if [ "$CAN_USE_DIRECT_COMPRESSION_TO_DEST" = "true" ] && [ "$ENABLE_ORYX_DIRECT_TAR_COMPRESSION" = "true" ]; then
+		$ORYX_PROGRESS_PHASE_COMMAND "output.compress"
 		{{ ## Optimized path: Create tar directly from source to destination without intermediate copy ## }}
 		echo "Compressing source directory directly to destination (optimized path)..."
 		BASE_START_TIME=$SECONDS
@@ -192,6 +422,7 @@ then
 		fi
 	else
 		echo "Using standard output preparation..."
+		$ORYX_PROGRESS_PHASE_COMMAND "output.prepare"
 		{{ ## When compressing destination directory is chosen, we want to copy the source content to a temporary 
 		destination directory first, compress the content there and then copy that content to the final destination 
 		directory ## }}
@@ -270,6 +501,7 @@ then
 		{{ end }}
 
 		{{ if CompressDestinationDir }}
+		$ORYX_PROGRESS_PHASE_COMMAND "output.compress"
 		DESTINATION_DIR="$OLD_DESTINATION_DIR"
 		echo "Compressing content of directory '$preCompressedDestinationDir'..."
 		BASE_START_TIME=$SECONDS
@@ -310,6 +542,7 @@ then
 fi
 
 {{ if ManifestFileName | IsNotBlank }}
+$ORYX_PROGRESS_PHASE_COMMAND "manifest.write"
 MANIFEST_FILE={{ ManifestFileName }}
 
 MANIFEST_DIR={{ ManifestDir }}
@@ -346,7 +579,7 @@ else
 	echo "No OS flavor environment variable set and /opt/oryx/.ostype does not exist. Cannot generate .ostype." 1>&2
 	exit 1
 fi
-
 TOTAL_EXECUTION_ELAPSED_TIME=$(($SECONDS - $TOTAL_EXECUTION_START_TIME))
 echo
 echo "Total execution done in $TOTAL_EXECUTION_ELAPSED_TIME sec(s)."
+$ORYX_PROGRESS_TERMINAL_COMMAND

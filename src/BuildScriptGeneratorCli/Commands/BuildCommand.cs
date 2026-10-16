@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
+using Microsoft.Oryx.BuildScriptGenerator.DeploymentProgress;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 
@@ -43,6 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 Oryx.BuildScriptGenerator.Constants.PostBuildCommandEpilogue),
         };
 
+        private bool generatedScriptOwnsProgress;
         private bool languageVersionWasSet;
         private bool languageWasSet;
 
@@ -229,6 +231,43 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
+            this.generatedScriptOwnsProgress = false;
+            var progressReporter = serviceProvider.GetRequiredService<IDeploymentProgressReporter>();
+            progressReporter.ReportBuildStarted();
+
+            try
+            {
+                var exitCode = this.ExecuteBuild(serviceProvider, console);
+                if (!this.generatedScriptOwnsProgress)
+                {
+                    progressReporter.ReportBuildCompleted(this.GetProgressOutcome(exitCode));
+                }
+
+                return exitCode;
+            }
+            catch
+            {
+                if (!this.generatedScriptOwnsProgress)
+                {
+                    progressReporter.ReportBuildCompleted("failed");
+                }
+
+                throw;
+            }
+        }
+
+        internal string GetProgressOutcome(int exitCode)
+        {
+            if (exitCode == ProcessConstants.ExitSuccess)
+            {
+                return "succeeded";
+            }
+
+            return exitCode == 130 || exitCode == 143 ? "canceled" : "failed";
+        }
+
+        internal int ExecuteBuild(IServiceProvider serviceProvider, IConsole console)
+        {
             var environment = serviceProvider.GetRequiredService<IEnvironment>();
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
             var telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
@@ -281,6 +320,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Generate build script
             string scriptContent;
             Exception exception;
+            var progressReporter = serviceProvider.GetRequiredService<IDeploymentProgressReporter>();
+            progressReporter.ReportPhaseStarted("script.generate");
             using (var stopwatch = telemetryClient.LogTimedEvent("GenerateBuildScript"))
             {
                 var checkerMessages = new List<ICheckerMessage>();
@@ -387,14 +428,21 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             using (var timedEvent = telemetryClient.LogTimedEvent("RunBuildScript", buildEventProps))
             {
                 console.WriteLine(string.Empty);
+                var scriptArguments = new List<string>
+                {
+                    sourceRepo.RootPath,
+                    options.DestinationDir ?? string.Empty,
+                    options.IntermediateDir ?? string.Empty,
+                };
+                if (progressReporter.IsEnabled)
+                {
+                    scriptArguments.Add("oryx-cli");
+                    this.generatedScriptOwnsProgress = true;
+                }
+
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     buildScriptPath,
-                    new[]
-                    {
-                        sourceRepo.RootPath,
-                        options.DestinationDir ?? string.Empty,
-                        options.IntermediateDir ?? string.Empty,
-                    },
+                    scriptArguments.ToArray(),
                     workingDirectory: sourceRepo.RootPath,
                     stdOutBaseHandler,
                     stdErrBaseHandler);

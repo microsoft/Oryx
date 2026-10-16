@@ -56,6 +56,7 @@ install_via_uv() {
     fi
 
     START_TIME=$SECONDS
+    $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
     local python_cmd=$1
     local requirements_file=$2
     local target_dir=$3
@@ -100,6 +101,7 @@ install_via_uv() {
 # Function to install packages via pip
 install_via_pip() {
     START_TIME=$SECONDS
+    $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
     local python_cmd=$1
     local requirements_file=$2
     local target_dir=$3
@@ -286,7 +288,6 @@ install_with_dependency_resolution() {
     log_dependency_resolution_elapsed \
         "Oryx dependency resolution" \
         "$resolution_start_time"
-
     # If we fail to resolve the dependencies (non-zero exit code), then we fall back to 
     # pip install or uv pip install.
     if [[ $resolve_exit_code != 0 ]]; then
@@ -419,6 +420,7 @@ install_python_packages() {
         echo
         echo "Running custom build command '{{ CustomBuildCommand }}'..."
         echo
+        $ORYX_PROGRESS_PHASE_COMMAND "build.execute"
         {{ CustomBuildCommand }}
     {{ else }}
         if [ -e "$REQUIREMENTS_TXT_FILE" ]
@@ -456,6 +458,7 @@ install_python_packages() {
                 set +e
                 echo "Running pip install..."
                 START_TIME=$SECONDS
+                $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
                 InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE"
 
                 # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
@@ -482,6 +485,7 @@ install_python_packages() {
         elif [ -e "setup.py" ]
         then
             set +e
+            $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
             echo "Running pip install setuptools..."
             START_TIME=$SECONDS
             InstallSetuptoolsPipCommand="pip install setuptools"
@@ -512,6 +516,7 @@ install_python_packages() {
                 set +e
                 echo "Detected uv.lock. Installing dependencies with uv..."
                 START_TIME=$SECONDS
+                $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
                 InstallUvCommand="uv sync --active --link-mode copy"
                 printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
                 output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
@@ -527,6 +532,7 @@ install_python_packages() {
             else
                 # Fallback to poetry
 
+                $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
                 set +e
                 echo "Running pip install poetry..."
                 START_TIME=$SECONDS
@@ -577,6 +583,7 @@ install_python_packages() {
         echo
         echo "Running custom build command '{{ CustomBuildCommand }}'..."
         echo
+        $ORYX_PROGRESS_PHASE_COMMAND "build.execute"
         {{ CustomBuildCommand }}
     {{ else }}
         if [ -e "$REQUIREMENTS_TXT_FILE" ]
@@ -615,6 +622,7 @@ install_python_packages() {
                 echo
                 echo Running pip install...
                 START_TIME=$SECONDS
+                $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
                 InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" {{ PipUpgradeFlag }}"
 
                 # Add find-links if PYTHON_PRELOADED_WHEELS_DIR is set
@@ -641,6 +649,7 @@ install_python_packages() {
         elif [ -e "setup.py" ]
         then
             echo
+            $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
             START_TIME=$SECONDS
             UpgradeCommand="pip install --upgrade pip"
             printf %s " , $UpgradeCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -678,6 +687,7 @@ install_python_packages() {
                 # Install using uv
                 echo "Detected uv.lock. Installing dependencies with uv..."
                 START_TIME=$SECONDS
+                $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
                 echo "Installing uv..."
                 InstallUv="python -m pip install uv"
                 printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
@@ -705,6 +715,7 @@ install_python_packages() {
             else
                 # Fallback to poetry
 
+                $ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
                 set +e
                 echo "Running pip install poetry..."
                 START_TIME=$SECONDS

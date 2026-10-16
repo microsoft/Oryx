@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DeploymentProgress;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
@@ -59,6 +60,66 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(Directory.GetCurrentDirectory(), options.SourceDir);
+        }
+
+        [Theory]
+        [InlineData(0, "succeeded")]
+        [InlineData(1, "failed")]
+        [InlineData(130, "canceled")]
+        [InlineData(143, "canceled")]
+        public void GetProgressOutcome_MapsBuildExitCode(int exitCode, string expectedOutcome)
+        {
+            var buildCommand = new BuildCommand();
+
+            var outcome = buildCommand.GetProgressOutcome(exitCode);
+
+            Assert.Equal(expectedOutcome, outcome);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(17)]
+        [InlineData(130)]
+        public void Execute_TransfersProgressToGeneratedScript_AndPreservesExitCode(int scriptExitCode)
+        {
+            var reporter = new TestDeploymentProgressReporter(isEnabled: true);
+            var scriptExecutor = new TestScriptExecutor(scriptExitCode);
+            var serviceProvider = CreateServiceProvider(
+                CreateTestProgrammingPlatform(),
+                scriptOnly: false,
+                createOsTypeFile: true,
+                reporter,
+                scriptExecutor);
+
+            var exitCode = new BuildCommand().Execute(serviceProvider, new TestConsole());
+
+            Assert.Equal(scriptExitCode, exitCode);
+            Assert.Equal(
+                new[]
+                {
+                    "build_started",
+                    "phase_started:script.generate",
+                },
+                reporter.Events);
+            Assert.Equal("oryx-cli", scriptExecutor.Args[3]);
+        }
+
+        [Fact]
+        public void Execute_DoesNotEnableGeneratedScriptReporter_WhenNativeReporterIsDisabled()
+        {
+            var reporter = new TestDeploymentProgressReporter(isEnabled: false);
+            var scriptExecutor = new TestScriptExecutor(returnExitCode: 0);
+            var serviceProvider = CreateServiceProvider(
+                CreateTestProgrammingPlatform(),
+                scriptOnly: false,
+                createOsTypeFile: true,
+                reporter,
+                scriptExecutor);
+
+            var exitCode = new BuildCommand().Execute(serviceProvider, new TestConsole());
+
+            Assert.Equal(0, exitCode);
+            Assert.Equal(3, scriptExecutor.Args.Length);
         }
 
         [Fact]
@@ -329,6 +390,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             var stringToPrint = "Hello World";
             var script = $"#!/bin/bash\necho {stringToPrint}\n";
+            var originalOsTypeFile = RemoveOsTypeFile();
+            var originalDebianFlavor = Environment.GetEnvironmentVariable("DEBIAN_FLAVOR");
             Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", "bookworm");
             try
             {
@@ -354,7 +417,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             }
             finally
             {
-                Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", null);
+                Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", originalDebianFlavor);
+                RestoreOsTypeFile(originalOsTypeFile);
             }
         }
 
@@ -364,6 +428,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             var stringToPrint = "Hello World";
             var script = $"#!/bin/bash\necho {stringToPrint}\n";
+            var originalOsTypeFile = RemoveOsTypeFile();
             var originalDebianFlavor = Environment.GetEnvironmentVariable("DEBIAN_FLAVOR");
             Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", null);
             try
@@ -391,6 +456,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             finally
             {
                 Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", originalDebianFlavor);
+                RestoreOsTypeFile(originalOsTypeFile);
             }
         }
 
@@ -820,7 +886,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.False(options.EnableHugoBuild);
         }
 
-        private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly, bool createOsTypeFile)
+        private IServiceProvider CreateServiceProvider(
+            TestProgrammingPlatform generator,
+            bool scriptOnly,
+            bool createOsTypeFile,
+            IDeploymentProgressReporter progressReporter = null,
+            IScriptExecutor scriptExecutor = null)
         {
             var sourceCodeFolder = Path.Combine(_testDirPath, "src");
             Directory.CreateDirectory(sourceCodeFolder);
@@ -850,6 +921,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                         new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
                     var configuration = new ConfigurationBuilder().Build();
                     services.AddSingleton<IConfiguration>(configuration);
+                    if (progressReporter != null)
+                    {
+                        services.RemoveAll<IDeploymentProgressReporter>();
+                        services.AddSingleton(progressReporter);
+                    }
+
+                    if (scriptExecutor != null)
+                    {
+                        services.RemoveAll<IScriptExecutor>();
+                        services.AddSingleton(scriptExecutor);
+                    }
                 })
                 .ConfigureScriptGenerationOptions(o =>
                 {
@@ -858,6 +940,42 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     o.ScriptOnly = scriptOnly;
                 });
             return servicesBuilder.Build();
+        }
+
+        private static byte[] RemoveOsTypeFile()
+        {
+            if (!File.Exists(OS_TYPE_FILE_PATH))
+            {
+                return null;
+            }
+
+            var contents = File.ReadAllBytes(OS_TYPE_FILE_PATH);
+            File.Delete(OS_TYPE_FILE_PATH);
+            return contents;
+        }
+
+        private static void RestoreOsTypeFile(byte[] contents)
+        {
+            if (contents == null)
+            {
+                File.Delete(OS_TYPE_FILE_PATH);
+                return;
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(OS_TYPE_FILE_PATH));
+            File.WriteAllBytes(OS_TYPE_FILE_PATH, contents);
+        }
+
+        private static TestProgrammingPlatform CreateTestProgrammingPlatform()
+        {
+            return new TestProgrammingPlatform(
+                platformName: "test",
+                platformVersions: new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "#!/bin/bash\nexit 0\n",
+                detector: new TestPlatformDetectorUsingPlatformName(
+                    detectedPlatformName: "test",
+                    detectedPlatformVersion: "1.0.0"));
         }
 
         private class CustomBuildCommand : BuildCommand
@@ -908,6 +1026,33 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 Args = args;
                 ExecuteScriptCalled = true;
                 return ReturnExitCode;
+            }
+        }
+
+        private sealed class TestDeploymentProgressReporter : IDeploymentProgressReporter
+        {
+            public TestDeploymentProgressReporter(bool isEnabled)
+            {
+                IsEnabled = isEnabled;
+            }
+
+            public bool IsEnabled { get; }
+
+            public IList<string> Events { get; } = new List<string>();
+
+            public void ReportBuildStarted()
+            {
+                Events.Add("build_started");
+            }
+
+            public void ReportPhaseStarted(string phase)
+            {
+                Events.Add($"phase_started:{phase}");
+            }
+
+            public void ReportBuildCompleted(string outcome)
+            {
+                Events.Add($"build_completed:{outcome}");
             }
         }
     }

@@ -15,6 +15,7 @@ echo "Node Build Command Manifest file created."
 {{ end }}
 {{ end }}
 
+
 doc="https://docs.microsoft.com/en-us/azure/app-service/configure-language-nodejs?pivots=platform-linux#troubleshooting"
 
 
@@ -123,6 +124,7 @@ then
 	echo
 	printf %s ", {{ ProductionOnlyPackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
 	{{ ProductionOnlyPackageInstallCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Installing production dependencies done in $ELAPSED_TIME sec(s)."
@@ -154,6 +156,7 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ CustomBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "build.execute"
 	{{ CustomBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Custom build command done in $ELAPSED_TIME sec(s)."
@@ -163,12 +166,14 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
 	{{ PackageInstallCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Package install done in $ELAPSED_TIME sec(s)."
 	echo
 	printf %s ", {{ CustomRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "build.execute"
 	{{ CustomRunBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Custom run build command done in $ELAPSED_TIME sec(s)."
@@ -182,6 +187,7 @@ cd "$SOURCE_DIR"
 	echo "Running '{{ LernaInitCommand }} & {{ LernaBootstrapCommand }}':"
 	printf %s ", {{ LernaInitCommand }}', '{{ LernaBootstrapCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
 	{{ LernaInitCommand }}
 	{{ LernaBootstrapCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -192,6 +198,7 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ LernaRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "build.execute"
 	{{ LernaRunBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Lerna run build command done in $ELAPSED_TIME sec(s)."
@@ -200,6 +207,7 @@ cd "$SOURCE_DIR"
 	echo "Running ' {{ InstallLageCommand }} ':"
 	printf %s ", {{ InstallLageCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
 	{{ InstallLageCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Installing Lage done in $ELAPSED_TIME sec(s)."
@@ -209,6 +217,7 @@ cd "$SOURCE_DIR"
 	printf %s ", {{ LageRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "build.execute"
 	{{ LageRunBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Lage run build command done in $ELAPSED_TIME sec(s)."
@@ -218,6 +227,7 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "dependencies.restore"
 	{{ PackageInstallCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Package install done in $ELAPSED_TIME sec(s)."
@@ -227,6 +237,7 @@ cd "$SOURCE_DIR"
 	printf %s ", {{ NpmRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "build.execute"
 	{{ NpmRunBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "npm run build done in $ELAPSED_TIME sec(s)."
@@ -237,6 +248,7 @@ cd "$SOURCE_DIR"
 	printf %s ", {{ NpmRunBuildAzureCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	START_TIME=$SECONDS
+	$ORYX_PROGRESS_PHASE_COMMAND "build.execute"
 	{{ NpmRunBuildAzureCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "npm run build (Azure) done in $ELAPSED_TIME sec(s)."
@@ -266,6 +278,7 @@ echo "Running 'npm pack'..."
 echo
 printf %s ", npm pack" >> "$COMMAND_MANIFEST_FILE"
 START_TIME=$SECONDS
+$ORYX_PROGRESS_PHASE_COMMAND "build.execute"
 npm pack
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "npm pack done in $ELAPSED_TIME sec(s)."
