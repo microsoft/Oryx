@@ -50,6 +50,11 @@ Oryx's run images build on Docker's runtime-specific images for [Node.js][]
 specific runtimes are described in their documentation.
 The runtime image can be built locally using the [`buildRunTimeImage.sh`](../build/buildRunTimeImage.sh) script.
 
+The [.NET 8 Bullseye runtime image](../images/runtime/dotnetcore/8.0/bullseye.Dockerfile)
+uses Debian's archive for `bullseye-security` packages, which are no longer
+available from the live security mirror. The archive preserves existing packages;
+it does not provide ongoing security updates.
+
 Runtimes and versions supported by Oryx are listed in [the main
 README](../README.md#supported-platforms).
 

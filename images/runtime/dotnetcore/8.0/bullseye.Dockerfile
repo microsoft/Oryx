@@ -54,7 +54,9 @@ ARG BUILD_DIR=/tmp/oryx/build
 ARG INCLUDE_AZURELINUX_CERTS
 ADD build ${BUILD_DIR}
 
-RUN apt-get update \
+# Bullseye security packages have moved to the Debian archive.
+RUN sed -i 's|http://deb.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         # .NET Core dependencies
         libc6 \
