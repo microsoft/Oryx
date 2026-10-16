@@ -21,18 +21,36 @@ case "$ORYX_PROGRESS_FILE_VALUE" in
 		ORYX_PROGRESS_REPORTING_ENABLED=false
 		;;
 esac
+
+# V1 deployment progress phase contract.
+readonly -a ORYX_PROGRESS_PHASES=(
+	"pre_build"
+	"build.execute"
+	"post_build"
+	"output.prepare"
+	"output.compress"
+	"manifest.write"
+)
+oryx_is_supported_progress_phase() {
+	local phase="$1"
+	local supportedPhase
+
+	for supportedPhase in "${ORYX_PROGRESS_PHASES[@]}"; do
+		if [ "$phase" = "$supportedPhase" ]; then
+			return 0
+		fi
+	done
+
+	return 1
+}
 oryx_report_phase() {
 	local phase="$1"
 	local timestampUtc
 
 	if [ "$ORYX_PROGRESS_REPORTING_ENABLED" = "true" ]; then
-		case "$phase" in
-			pre_build|build.execute|post_build|output.prepare|output.compress|manifest.write)
-				;;
-			*)
-				return 0
-				;;
-		esac
+		if ! oryx_is_supported_progress_phase "$phase"; then
+			return 0
+		fi
 
 		if [ ! -f "$ORYX_PROGRESS_FILE_VALUE" ] ||
 			[ -L "$ORYX_PROGRESS_FILE_VALUE" ]; then
