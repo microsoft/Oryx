@@ -6,6 +6,68 @@ SOURCE_DIR="$1"
 DESTINATION_DIR="$2"
 INTERMEDIATE_DIR="$3"
 
+ORYX_PROGRESS_FILE_VALUE="${ORYX_PROGRESS_FILE:-}"
+unset ORYX_PROGRESS_FILE
+case "$ORYX_PROGRESS_FILE_VALUE" in
+	/*)
+		if [ -f "$ORYX_PROGRESS_FILE_VALUE" ] &&
+			[ ! -L "$ORYX_PROGRESS_FILE_VALUE" ]; then
+			ORYX_PROGRESS_REPORTING_ENABLED=true
+		else
+			ORYX_PROGRESS_REPORTING_ENABLED=false
+		fi
+		;;
+	*)
+		ORYX_PROGRESS_REPORTING_ENABLED=false
+		;;
+esac
+
+# V1 deployment progress phase contract.
+readonly -a ORYX_PROGRESS_PHASES=(
+	"pre_build"
+	"build.execute"
+	"post_build"
+	"output.prepare"
+	"output.compress"
+	"manifest.write"
+)
+oryx_is_supported_progress_phase() {
+	local phase="$1"
+	local supportedPhase
+
+	for supportedPhase in "${ORYX_PROGRESS_PHASES[@]}"; do
+		if [ "$phase" = "$supportedPhase" ]; then
+			return 0
+		fi
+	done
+
+	return 1
+}
+oryx_report_phase() {
+	local phase="$1"
+	local timestampUtc
+
+	if [ "$ORYX_PROGRESS_REPORTING_ENABLED" = "true" ]; then
+		if ! oryx_is_supported_progress_phase "$phase"; then
+			return 0
+		fi
+
+		if [ ! -f "$ORYX_PROGRESS_FILE_VALUE" ] ||
+			[ -L "$ORYX_PROGRESS_FILE_VALUE" ]; then
+			ORYX_PROGRESS_REPORTING_ENABLED=false
+		elif ! timestampUtc=$(/usr/bin/date -u +"%Y-%m-%dT%H:%M:%S.%7NZ" 2>/dev/null); then
+			ORYX_PROGRESS_REPORTING_ENABLED=false
+		elif ! {
+			printf '{"schemaVersion":1,"eventType":"phase_started","phase":"%s","timestampUtc":"%s"}\n' \
+				"$phase" "$timestampUtc" >> "$ORYX_PROGRESS_FILE_VALUE"
+		} 2>/dev/null; then
+			ORYX_PROGRESS_REPORTING_ENABLED=false
+		fi
+	fi
+
+	return 0
+}
+
 if [ -f {{ LoggerPath }} ]; then
 	source {{ LoggerPath }}
 fi
@@ -110,6 +172,7 @@ mkdir -p "$DESTINATION_DIR"
 cd "$SOURCE_DIR"
 echo "{{ PreBuildCommandPrologue }}"
 BASE_START_TIME=$SECONDS
+oryx_report_phase "pre_build"
 {{ PreBuildCommand }}
 ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "{{ PreBuildCommandEpilogue }}"
@@ -118,6 +181,7 @@ echo "Pre-build command done in $ELAPSED_TIME sec(s)."
 
 echo "Running build script snippets..."
 BASE_START_TIME=$SECONDS
+oryx_report_phase "build.execute"
 {{ for Snippet in BuildScriptSnippets }}
 {{ # Makes sure every snippet starts in the context of the source directory. }}
 cd "$SOURCE_DIR"
@@ -132,6 +196,7 @@ cd $SOURCE_DIR
 echo
 echo "{{ PostBuildCommandPrologue }}"
 BASE_START_TIME=$SECONDS
+oryx_report_phase "post_build"
 {{ PostBuildCommand }}
 ELAPSED_TIME=$(($SECONDS - $BASE_START_TIME))
 echo "{{ PostBuildCommandEpilogue }}"
@@ -141,6 +206,7 @@ echo "Post-build command done in $ELAPSED_TIME sec(s)."
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	echo "Preparing output..."
+	oryx_report_phase "output.prepare"
 
 	{{ ## Determine if direct tar compression can be used based on build configuration ## }}
 	CAN_USE_DIRECT_COMPRESSION_TO_DEST=false
@@ -150,6 +216,7 @@ then
 
 	{{ ## Check if optimized direct tar compression is enabled ## }}
 	if [ "$CAN_USE_DIRECT_COMPRESSION_TO_DEST" = "true" ] && [ "$ENABLE_ORYX_DIRECT_TAR_COMPRESSION" = "true" ]; then
+		oryx_report_phase "output.compress"
 		{{ ## Optimized path: Create tar directly from source to destination without intermediate copy ## }}
 		echo "Compressing source directory directly to destination (optimized path)..."
 		BASE_START_TIME=$SECONDS
@@ -271,6 +338,7 @@ then
 
 		{{ if CompressDestinationDir }}
 		DESTINATION_DIR="$OLD_DESTINATION_DIR"
+		oryx_report_phase "output.compress"
 		echo "Compressing content of directory '$preCompressedDestinationDir'..."
 		BASE_START_TIME=$SECONDS
 		cd "$preCompressedDestinationDir"
@@ -322,6 +390,7 @@ echo
 echo "Removing existing manifest file"
 rm -f "$MANIFEST_DIR/$MANIFEST_FILE"
 {{ if BuildProperties != empty }}
+oryx_report_phase "manifest.write"
 echo "Creating a manifest file..."
 {{ for prop in BuildProperties }}
 echo "{{ prop.Key }}=\"{{ prop.Value }}\"" >> "$MANIFEST_DIR/$MANIFEST_FILE"
