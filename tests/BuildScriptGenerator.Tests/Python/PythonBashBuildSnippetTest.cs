@@ -142,6 +142,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("Running custom build command 'custom build command'...", text);
             Assert.Contains("custom build command", text);
             Assert.DoesNotContain("InstallUvCommand=\"uv sync --active --link-mode copy\"", text);
+            Assert.DoesNotContain("oryx_report_phase \"python.dependencies.install\"", text);
+            Assert.Contains("oryx_report_phase \"python.application.build\"", text);
+            Assert.True(
+                text.IndexOf("oryx_report_phase \"python.application.build\"") <
+                text.LastIndexOf("custom build command"));
         }
 
         [Fact]
@@ -168,6 +173,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("Running custom build command 'custom build command'...", text);
             Assert.Contains("custom build command", text);
             Assert.DoesNotContain("UpgradeCommand=\"pip install --upgrade pip\"", text);
+            Assert.DoesNotContain("oryx_report_phase \"python.dependencies.install\"", text);
+            Assert.Contains("oryx_report_phase \"python.application.build\"", text);
+            Assert.True(
+                text.IndexOf("oryx_report_phase \"python.application.build\"") <
+                text.LastIndexOf("custom build command"));
         }
 
         [Fact]
@@ -243,6 +253,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.Contains("pip install", text);
             Assert.DoesNotContain("Running custom build command", text);
+            Assert.Contains("oryx_report_phase \"python.dependencies.install\"", text);
+            Assert.True(
+                text.IndexOf("if [ -e \"$REQUIREMENTS_TXT_FILE\" ] || [ -e \"setup.py\" ] || [ -e \"pyproject.toml\" ]") <
+                text.IndexOf("oryx_report_phase \"python.dependencies.install\""));
+            Assert.DoesNotContain("oryx_report_phase \"python.application.build\"", text);
         }
 
         [Fact]
@@ -267,6 +282,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.Contains("pip install", text);
             Assert.DoesNotContain("Running custom build command", text);
+            Assert.Contains("oryx_report_phase \"python.dependencies.install\"", text);
+            Assert.True(
+                text.IndexOf("if [ -e \"$REQUIREMENTS_TXT_FILE\" ] || [ -e \"setup.py\" ] || [ -e \"pyproject.toml\" ]") <
+                text.IndexOf("oryx_report_phase \"python.dependencies.install\""));
+            Assert.DoesNotContain("oryx_report_phase \"python.application.build\"", text);
         }
 
 

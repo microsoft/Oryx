@@ -17,7 +17,20 @@ echo "Node Build Command Manifest file created."
 
 doc="https://docs.microsoft.com/en-us/azure/app-service/configure-language-nodejs?pivots=platform-linux#troubleshooting"
 
-
+oryx_nodejs_dependencies_phase_reported=false
+oryx_report_nodejs_dependencies_once() {
+	if [ "$oryx_nodejs_dependencies_phase_reported" = "false" ]; then
+		oryx_report_phase "nodejs.dependencies.install"
+		oryx_nodejs_dependencies_phase_reported=true
+	fi
+}
+oryx_nodejs_application_phase_reported=false
+oryx_report_nodejs_application_once() {
+	if [ "$oryx_nodejs_application_phase_reported" = "false" ]; then
+		oryx_report_phase "nodejs.application.build"
+		oryx_nodejs_application_phase_reported=true
+	fi
+}
 
 {{ if YarnVersionSpec | IsNotBlank }}
 echo
@@ -123,6 +136,7 @@ then
 	echo
 	printf %s ", {{ ProductionOnlyPackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	oryx_report_nodejs_dependencies_once
 	{{ ProductionOnlyPackageInstallCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Installing production dependencies done in $ELAPSED_TIME sec(s)."
@@ -154,6 +168,7 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ CustomBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	oryx_report_nodejs_application_once
 	{{ CustomBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Custom build command done in $ELAPSED_TIME sec(s)."
@@ -163,12 +178,14 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	oryx_report_nodejs_dependencies_once
 	{{ PackageInstallCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Package install done in $ELAPSED_TIME sec(s)."
 	echo
 	printf %s ", {{ CustomRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	oryx_report_nodejs_application_once
 	{{ CustomRunBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Custom run build command done in $ELAPSED_TIME sec(s)."
@@ -182,6 +199,7 @@ cd "$SOURCE_DIR"
 	echo "Running '{{ LernaInitCommand }} & {{ LernaBootstrapCommand }}':"
 	printf %s ", {{ LernaInitCommand }}', '{{ LernaBootstrapCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	oryx_report_nodejs_dependencies_once
 	{{ LernaInitCommand }}
 	{{ LernaBootstrapCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -192,6 +210,7 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ LernaRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	oryx_report_nodejs_application_once
 	{{ LernaRunBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Lerna run build command done in $ELAPSED_TIME sec(s)."
@@ -209,6 +228,7 @@ cd "$SOURCE_DIR"
 	printf %s ", {{ LageRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	START_TIME=$SECONDS
+	oryx_report_nodejs_application_once
 	{{ LageRunBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Lage run build command done in $ELAPSED_TIME sec(s)."
@@ -218,6 +238,7 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
+	oryx_report_nodejs_dependencies_once
 	{{ PackageInstallCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Package install done in $ELAPSED_TIME sec(s)."
@@ -227,6 +248,7 @@ cd "$SOURCE_DIR"
 	printf %s ", {{ NpmRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	START_TIME=$SECONDS
+	oryx_report_nodejs_application_once
 	{{ NpmRunBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "npm run build done in $ELAPSED_TIME sec(s)."
@@ -237,6 +259,7 @@ cd "$SOURCE_DIR"
 	printf %s ", {{ NpmRunBuildAzureCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	START_TIME=$SECONDS
+	oryx_report_nodejs_application_once
 	{{ NpmRunBuildAzureCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "npm run build (Azure) done in $ELAPSED_TIME sec(s)."

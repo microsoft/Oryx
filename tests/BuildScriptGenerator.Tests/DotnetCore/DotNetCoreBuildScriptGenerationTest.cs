@@ -89,6 +89,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Contains("custom build command", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("cmd=\"dotnet restore", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("cmd=\"dotnet publish", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("oryx_report_phase \"dotnet.dependencies.restore\"", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("oryx_report_phase \"dotnet.application.build\"", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.True(
+                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("oryx_report_phase \"dotnet.application.build\"") <
+                buildScriptSnippet.BashBuildScriptSnippet.LastIndexOf("custom build command"));
             // .NET always requires custom command to output to $DESTINATION_DIR directly
             Assert.False(buildScriptSnippet.CopySourceDirectoryContentToDestinationDirectory);
         }
@@ -170,6 +175,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Contains("cmd=\"dotnet restore", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.Contains("cmd=\"dotnet publish", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("Running custom build command", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("oryx_report_phase \"dotnet.dependencies.restore\"", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("oryx_report_phase \"dotnet.application.build\"", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.True(
+                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("oryx_report_phase \"dotnet.dependencies.restore\"") <
+                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("cmd=\"dotnet restore"));
+            Assert.True(
+                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("oryx_report_phase \"dotnet.application.build\"") <
+                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("cmd=\"dotnet publish"));
+            Assert.Equal(
+                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("oryx_report_phase \"dotnet.application.build\""),
+                buildScriptSnippet.BashBuildScriptSnippet.LastIndexOf("oryx_report_phase \"dotnet.application.build\""));
         }
 
         [Fact]

@@ -30,6 +30,14 @@ readonly -a ORYX_PROGRESS_PHASES=(
 	"output.prepare"
 	"output.compress"
 	"manifest.write"
+	"dotnet.dependencies.restore"
+	"dotnet.application.build"
+	"nodejs.dependencies.install"
+	"nodejs.application.build"
+	"python.dependencies.install"
+	"python.application.build"
+	"php.dependencies.install"
+	"php.application.build"
 )
 oryx_is_supported_progress_phase() {
 	local phase="$1"

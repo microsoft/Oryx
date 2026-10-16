@@ -419,8 +419,12 @@ install_python_packages() {
         echo
         echo "Running custom build command '{{ CustomBuildCommand }}'..."
         echo
+        oryx_report_phase "python.application.build"
         {{ CustomBuildCommand }}
     {{ else }}
+        if [ -e "$REQUIREMENTS_TXT_FILE" ] || [ -e "setup.py" ] || [ -e "pyproject.toml" ]; then
+            oryx_report_phase "python.dependencies.install"
+        fi
         if [ -e "$REQUIREMENTS_TXT_FILE" ]
         then
             {{ if DependencyResolutionRequired }}
@@ -577,8 +581,12 @@ install_python_packages() {
         echo
         echo "Running custom build command '{{ CustomBuildCommand }}'..."
         echo
+        oryx_report_phase "python.application.build"
         {{ CustomBuildCommand }}
     {{ else }}
+        if [ -e "$REQUIREMENTS_TXT_FILE" ] || [ -e "setup.py" ] || [ -e "pyproject.toml" ]; then
+            oryx_report_phase "python.dependencies.install"
+        fi
         if [ -e "$REQUIREMENTS_TXT_FILE" ]
         then
             {{ if DependencyResolutionRequired }}

@@ -6,6 +6,7 @@ echo
 echo "Running custom build command '{{ CustomBuildCommand }}'..."
 echo
 START_TIME=$SECONDS
+oryx_report_phase "php.application.build"
 {{ CustomBuildCommand }}
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "Custom build command done in $ELAPSED_TIME sec(s)."
@@ -17,10 +18,10 @@ echo
 # an extension is missing from the build image (it could exist in the
 # runtime image regardless)
 START_TIME=$SECONDS
+oryx_report_phase "php.dependencies.install"
 php $composer install --ignore-platform-reqs --no-interaction
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "composer install done in $ELAPSED_TIME sec(s)."
 {{ else }}
 echo "No 'composer.json' file found; not running 'composer install'."
 {{ end }}
-
