@@ -29,6 +29,7 @@ type PythonStartupScriptGenerator struct {
 	BindPort                 string
 	VirtualEnvName           string
 	PackageDirectory         string
+	StartupEnvironmentScript string
 	SkipVirtualEnvExtraction bool
 	Manifest                 common.BuildManifest
 	Configuration            Configuration
@@ -91,7 +92,9 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.getAppPath()))
 	}
 
-	common.SetupPreRunScript(&scriptBuilder, gen.getAppPath(), gen.Configuration.PreRunCommand)
+	if gen.StartupEnvironmentScript == "" {
+		common.SetupPreRunScript(&scriptBuilder, gen.getAppPath(), gen.Configuration.PreRunCommand)
+	}
 
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.getAppPath() + "\n\n")
@@ -104,6 +107,12 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	packageSetupBlock := gen.getPackageSetupCommand()
 	scriptBuilder.WriteString(packageSetupBlock)
+
+	if gen.StartupEnvironmentScript != "" {
+		scriptBuilder.WriteString("echo 'Running the startup environment script...'\n")
+		scriptBuilder.WriteString(". '" + strings.ReplaceAll(gen.StartupEnvironmentScript, "'", "'\\''") + "' || exit \"$?\"\n")
+		common.SetupPreRunScript(&scriptBuilder, gen.getAppPath(), gen.Configuration.PreRunCommand)
+	}
 
 	appType := ""         // "Django", "Flask", etc.
 	appDebugAdapter := "" // Used debugger adapter
@@ -189,7 +198,6 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 
 		scriptBuilder.WriteString(
 			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", virtualEnvPath))
-		
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
@@ -250,7 +258,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 		packageDir := filepath.Join(gen.getAppPath(), packageDirName)
 		if common.PathExists(packageDir) {
 			scriptBuilder.WriteString("echo Using package directory '" + packageDir + "'\n")
-			scriptBuilder.WriteString("SITE_PACKAGE_PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n")
+			scriptBuilder.WriteString("SITE_PACKAGE_PYTHON_VERSION=$(" + gen.getPythonVersionCommand() + ")\n")
 			scriptBuilder.WriteString("SITE_PACKAGES_PATH=$HOME\"/.local/lib/python\"$SITE_PACKAGE_PYTHON_VERSION\"/site-packages\"\n")
 			scriptBuilder.WriteString("mkdir -p $SITE_PACKAGES_PATH\n")
 			scriptBuilder.WriteString("echo \"" + packageDir + "\" > $SITE_PACKAGES_PATH\"/oryx.pth\"\n")
@@ -271,9 +279,7 @@ func (gen *PythonStartupScriptGenerator) getVenvHandlingScript(virtualEnvName st
 	// We install 'gunicorn' and 'ptvsd' when building the runtime images. Since they get installed in 'global' scope
 	// here we are trying to update the python path so that 'gunicorn' and 'ptvsd' know about the site packages which
 	// are part of virtual environment of the app too.
-	scriptBuilder.WriteString(
-		"PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) " +
-			"+ '.' + str(sys.version_info.minor))\")\n")
+	scriptBuilder.WriteString("PYTHON_VERSION=$(" + gen.getPythonVersionCommand() + ")\n")
 	scriptBuilder.WriteString(
 		"echo Using packages from virtual environment '" + virtualEnvName + "' located at '" + virtualEnvDir + "'.\n")
 	virtualEnvSitePackagesDir := "\"" + virtualEnvDir + "/lib/python$PYTHON_VERSION/site-packages\""
@@ -300,6 +306,15 @@ func (gen *PythonStartupScriptGenerator) getVenvHandlingScript(virtualEnvName st
 	}
 
 	return scriptBuilder.String()
+}
+
+func (gen *PythonStartupScriptGenerator) getPythonVersionCommand() string {
+	pythonCommand := "python"
+	if gen.StartupEnvironmentScript != "" {
+		// Do not load site customization while discovering metadata before the hook.
+		pythonCommand += " -I -S"
+	}
+	return pythonCommand + " -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\""
 }
 
 // Produces the gunicorn command to run the app.
@@ -425,6 +440,6 @@ func (gen *PythonStartupScriptGenerator) getHandleVenvPresentInRootScript(virtua
 	scriptBuilder.WriteString("    ln -sfn " + virtualEnvDir + " ./" + virtualEnvironmentName + "\n")
 	scriptBuilder.WriteString("fi\n\n")
 	scriptBuilder.WriteString("echo \"Done.\"\n")
-	
+
 	return scriptBuilder.String()
 }

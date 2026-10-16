@@ -12,6 +12,7 @@ details on components and configuration of build and run images too.
   - [Build Conda environment and Python JupyterNotebook](#build-conda-environment-and-python-jupyternotebook)
   - [Package manager](#package-manager)
 - [Run](#run)
+    - [Startup environment script](#startup-environment-script)
     - [Gunicorn multiple workers support](#gunicorn-multiple-workers-support)
 - [Version support](#version-support)
 
@@ -97,6 +98,39 @@ The following process is applied to determine how to start an app.
         * `app.py`
         * `index.py`
         * `server.py`
+
+### Startup environment script
+
+A host can optionally pass `-startupEnvironmentScript /absolute/path/setup.sh`
+to the Python startup generator's `oryx create-script` command. The path must
+be an absolute POSIX path. It is treated literally, including spaces, quotes,
+and shell metacharacters, and need not exist when the startup script is
+generated.
+
+When this option is set, the generated `/bin/sh` script prepares `APP_PATH`,
+`PATH`, and the Python package or virtual environment, then sources the supplied
+script in the current shell before the configured `PRE_RUN_COMMAND` and the
+application command. This applies to default, custom, and debug startup commands.
+Exports from the setup script are available to both subsequent commands. The
+setup script must be readable at runtime and compatible with POSIX `sh`; it does
+not need to be executable. A missing or unreadable script stops startup. A
+nonzero status returned by the script stops startup with that status, before
+the pre-run or application command runs. The script should report any setup
+failure and return a nonzero status itself.
+
+Only pass a trusted setup script: sourcing it gives it the same privileges as
+the startup shell. This hook is an environment-setup ordering point, not a
+boundary before all application-supplied code. Existing dynamic installation
+and virtual environment activation still precede it and must also be trusted.
+Compressed application output is extracted during script generation; compressed
+virtual environments are extracted by the generated script as before. Python
+version probes use `-I -S` when the option is set so that they do not load
+`sitecustomize`, `usercustomize`, or site-package `.pth` files before the hook.
+The selected Python interpreter itself must be trusted.
+
+If the option is omitted or empty, generated startup scripts retain their
+existing behavior, including the original placement of `PRE_RUN_COMMAND`
+before Python package setup.
 
 ### Gunicorn multiple workers support
 
