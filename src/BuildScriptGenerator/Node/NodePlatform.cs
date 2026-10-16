@@ -418,6 +418,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeBuildCommandsFile = nodeBuildCommandsFile,
                 NpmVersionSpec = npmVersionSpec,
                 YarnVersionSpec = yarnVersionSpec,
+                DependencyResolutionOutputDir = this.commonOptions.DependencyResolutionOutputDir,
+                DependencyResolutionOutputDirBashValue =
+                    ToBashSingleQuotedString(this.commonOptions.DependencyResolutionOutputDir),
+                DependencyResolutionRequired =
+                    string.Equals(
+                        packageManagerCmd,
+                        NodeConstants.NpmCommand,
+                        StringComparison.OrdinalIgnoreCase) &&
+                    !string.IsNullOrEmpty(this.commonOptions.DependencyResolutionOutputDir),
             };
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.NodeBuildSnippet,
@@ -607,6 +616,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return packageJson;
+        }
+
+        private static string ToBashSingleQuotedString(string value)
+        {
+            return value == null
+                ? "''"
+                : $"'{value.Replace("'", "'\"'\"'")}'";
         }
 
         private static bool ShouldPruneDevDependencies(BuildScriptGeneratorContext context)
