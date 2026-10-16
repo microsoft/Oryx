@@ -11,6 +11,7 @@ apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         libexpat1 \
+        ca-certificates \
         curl \
         xz-utils \
         zstd \
