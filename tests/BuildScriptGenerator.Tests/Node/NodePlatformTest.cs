@@ -185,6 +185,43 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void GeneratedBuildSnippet_HasLageBuildProgress_IfLageConfigFileExists()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null, EnableNodeMonorepoBuild = true },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.LageConfigJSFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+                HasLageConfigJSFile = true,
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            var script = buildScriptSnippet.BashBuildScriptSnippet;
+            Assert.Contains(NodeConstants.InstallLageCommand, script);
+            Assert.Contains(NodeConstants.NpmRunLageBuildCommand, script);
+            Assert.NotEqual(
+                script.IndexOf("oryx_report_nodejs_application_once"),
+                script.LastIndexOf("oryx_report_nodejs_application_once"));
+            Assert.True(script.LastIndexOf(NodeConstants.InstallLageCommand) < script.LastIndexOf("oryx_report_nodejs_application_once"));
+            Assert.True(script.LastIndexOf("oryx_report_nodejs_application_once") < script.LastIndexOf(NodeConstants.NpmRunLageBuildCommand));
+        }
+
+        [Fact]
         public void GeneratedBuildSnippet_ThrowsException_IfBothLernaAndLageFileExists()
         {
             // Arrange
@@ -250,11 +287,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var script = buildScriptSnippet.BashBuildScriptSnippet;
             Assert.Contains("custom build command", script);
             Assert.DoesNotContain("custom run command", script);
-            Assert.NotEqual(
+            Assert.Equal(
                 script.IndexOf("oryx_report_nodejs_application_once"),
                 script.LastIndexOf("oryx_report_nodejs_application_once"));
-            Assert.True(script.LastIndexOf("oryx_report_nodejs_dependencies_once") < script.LastIndexOf("oryx_report_nodejs_application_once"));
-            Assert.True(script.LastIndexOf("oryx_report_nodejs_application_once") < script.LastIndexOf("custom build command"));
         }
 
         [Fact]
@@ -296,11 +331,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.NotEqual(
                 script.IndexOf("oryx_report_nodejs_dependencies_once"),
                 script.LastIndexOf("oryx_report_nodejs_dependencies_once"));
-            Assert.NotEqual(
+            Assert.Equal(
                 script.IndexOf("oryx_report_nodejs_application_once"),
                 script.LastIndexOf("oryx_report_nodejs_application_once"));
-            Assert.True(script.LastIndexOf("oryx_report_nodejs_dependencies_once") < script.LastIndexOf("oryx_report_nodejs_application_once"));
-            Assert.True(script.LastIndexOf("oryx_report_nodejs_application_once") < script.LastIndexOf("custom command here"));
+            Assert.True(script.LastIndexOf("oryx_report_nodejs_dependencies_once") < script.LastIndexOf("custom command here"));
         }
 
         [Fact]

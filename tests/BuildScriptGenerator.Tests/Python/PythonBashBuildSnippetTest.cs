@@ -143,10 +143,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("custom build command", text);
             Assert.DoesNotContain("InstallUvCommand=\"uv sync --active --link-mode copy\"", text);
             Assert.DoesNotContain("oryx_report_phase \"python.dependencies.install\"", text);
-            Assert.Contains("oryx_report_phase \"python.application.build\"", text);
-            Assert.True(
-                text.IndexOf("oryx_report_phase \"python.application.build\"") <
-                text.LastIndexOf("custom build command"));
+            Assert.DoesNotContain("oryx_report_phase \"python.application.build\"", text);
         }
 
         [Fact]
@@ -174,10 +171,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("custom build command", text);
             Assert.DoesNotContain("UpgradeCommand=\"pip install --upgrade pip\"", text);
             Assert.DoesNotContain("oryx_report_phase \"python.dependencies.install\"", text);
-            Assert.Contains("oryx_report_phase \"python.application.build\"", text);
-            Assert.True(
-                text.IndexOf("oryx_report_phase \"python.application.build\"") <
-                text.LastIndexOf("custom build command"));
+            Assert.DoesNotContain("oryx_report_phase \"python.application.build\"", text);
         }
 
         [Fact]

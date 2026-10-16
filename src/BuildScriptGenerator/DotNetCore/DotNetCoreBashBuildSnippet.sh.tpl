@@ -18,7 +18,6 @@ echo "Running custom build command '{{ CustomBuildCommand }}'..."
 echo "Note: the custom build command must output to \$DESTINATION_DIR (e.g., dotnet publish -c Release -o \$DESTINATION_DIR)."
 echo
 START_TIME=$SECONDS
-oryx_report_phase "dotnet.application.build"
 {{ CustomBuildCommand }}
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "Custom build command done in $ELAPSED_TIME sec(s)."

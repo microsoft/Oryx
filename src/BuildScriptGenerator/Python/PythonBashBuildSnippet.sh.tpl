@@ -419,7 +419,6 @@ install_python_packages() {
         echo
         echo "Running custom build command '{{ CustomBuildCommand }}'..."
         echo
-        oryx_report_phase "python.application.build"
         {{ CustomBuildCommand }}
     {{ else }}
         if [ -e "$REQUIREMENTS_TXT_FILE" ] || [ -e "setup.py" ] || [ -e "pyproject.toml" ]; then
@@ -581,7 +580,6 @@ install_python_packages() {
         echo
         echo "Running custom build command '{{ CustomBuildCommand }}'..."
         echo
-        oryx_report_phase "python.application.build"
         {{ CustomBuildCommand }}
     {{ else }}
         if [ -e "$REQUIREMENTS_TXT_FILE" ] || [ -e "setup.py" ] || [ -e "pyproject.toml" ]; then

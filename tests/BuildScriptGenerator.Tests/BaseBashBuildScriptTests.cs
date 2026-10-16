@@ -105,9 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 "nodejs.dependencies.install",
                 "nodejs.application.build",
                 "python.dependencies.install",
-                "python.application.build",
                 "php.dependencies.install",
-                "php.application.build",
             })
             {
                 Assert.Contains($"\"{phase}\"", script);

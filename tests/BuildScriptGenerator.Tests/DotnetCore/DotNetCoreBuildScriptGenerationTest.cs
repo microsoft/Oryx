@@ -90,10 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.DoesNotContain("cmd=\"dotnet restore", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("cmd=\"dotnet publish", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("oryx_report_phase \"dotnet.dependencies.restore\"", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.Contains("oryx_report_phase \"dotnet.application.build\"", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.True(
-                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("oryx_report_phase \"dotnet.application.build\"") <
-                buildScriptSnippet.BashBuildScriptSnippet.LastIndexOf("custom build command"));
+            Assert.DoesNotContain("oryx_report_phase \"dotnet.application.build\"", buildScriptSnippet.BashBuildScriptSnippet);
             // .NET always requires custom command to output to $DESTINATION_DIR directly
             Assert.False(buildScriptSnippet.CopySourceDirectoryContentToDestinationDirectory);
         }

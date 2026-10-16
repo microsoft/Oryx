@@ -168,7 +168,6 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ CustomBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
-	oryx_report_nodejs_application_once
 	{{ CustomBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Custom build command done in $ELAPSED_TIME sec(s)."
@@ -185,7 +184,6 @@ cd "$SOURCE_DIR"
 	echo
 	printf %s ", {{ CustomRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	START_TIME=$SECONDS
-	oryx_report_nodejs_application_once
 	{{ CustomRunBuildCommand }}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Custom run build command done in $ELAPSED_TIME sec(s)."

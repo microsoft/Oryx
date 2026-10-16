@@ -1095,10 +1095,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.Contains("make build", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("composer install", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("oryx_report_phase \"php.dependencies.install\"", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.Contains("oryx_report_phase \"php.application.build\"", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.True(
-                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("oryx_report_phase \"php.application.build\"") <
-                buildScriptSnippet.BashBuildScriptSnippet.LastIndexOf("make build"));
+            Assert.DoesNotContain("oryx_report_phase \"php.application.build\"", buildScriptSnippet.BashBuildScriptSnippet);
         }
 
         [Fact]
