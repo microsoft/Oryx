@@ -56,6 +56,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IDictionary<string, string> BuildProperties { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether the build includes a .NET Core build snippet.
+        /// </summary>
+        public bool IsDotNetCoreBuild => this.BuildProperties?.ContainsKey(ManifestFilePropertyKeys.DotNetCoreSdkVersion) == true;
+
+        /// <summary>
         /// Gets or sets the name of the manifest file.
         /// </summary>
         public string ManifestFileName { get; set; }

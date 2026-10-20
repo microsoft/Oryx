@@ -105,6 +105,28 @@ export DESTINATION_DIR
 access the destination directory ## }}
 mkdir -p "$DESTINATION_DIR"
 
+{{ if IsDotNetCoreBuild }}
+# NuGet named mutexes require private storage owned by the build user, not the shared /home mount.
+oryxDotnetUserId=$(id -u)
+if [ -z "$XDG_RUNTIME_DIR" ]; then
+    XDG_RUNTIME_DIR="/tmp/oryx-dotnet-runtime-$oryxDotnetUserId"
+    if ! mkdir -m 0700 "$XDG_RUNTIME_DIR" 2>/dev/null && [ ! -d "$XDG_RUNTIME_DIR" ]; then
+        echo "Failed to create .NET runtime directory '$XDG_RUNTIME_DIR'." >&2
+        exit 1
+    fi
+fi
+
+if [ "${XDG_RUNTIME_DIR:0:1}" != "/" ] || [ ! -d "$XDG_RUNTIME_DIR" ] || [ -L "$XDG_RUNTIME_DIR" ] ||
+    [ "$(stat -c %u "$XDG_RUNTIME_DIR")" != "$oryxDotnetUserId" ] ||
+    [ "$(stat -c %a "$XDG_RUNTIME_DIR")" != "700" ] ||
+    [ ! -w "$XDG_RUNTIME_DIR" ] || [ ! -x "$XDG_RUNTIME_DIR" ]; then
+    echo "Invalid .NET runtime directory '$XDG_RUNTIME_DIR': expected an absolute, non-symlink directory owned by UID $oryxDotnetUserId with permissions 0700 and write/execute access." >&2
+    exit 1
+fi
+
+export XDG_RUNTIME_DIR
+{{ end }}
+
 {{ if PreBuildCommand | IsNotBlank }}
 {{ # Make sure to cd to the source directory so that the pre-build script runs from there }}
 cd "$SOURCE_DIR"
