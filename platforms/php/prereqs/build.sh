@@ -21,8 +21,15 @@ PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 PHP_CPPFLAGS="$PHP_CFLAGS"
 PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-PHP_SOURCE_BASE_URL="${PHP_SOURCE_BASE_URL:-https://secure.php.net/distributions}"
-PHP_URL="${PHP_SOURCE_BASE_URL%/}/php-$PHP_VERSION.tar.xz"
+PHP_URL="https://secure.php.net/distributions/php-$PHP_VERSION.tar.xz"
+
+case "$PHP_VERSION" in
+	8.2.*|8.3.*|8.4.*|8.5.*)
+		if [ -n "${PHP_SOURCE_BASE_URL:-}" ]; then
+			PHP_URL="${PHP_SOURCE_BASE_URL%/}/php-$PHP_VERSION.tar.xz"
+		fi
+		;;
+esac
 PHP_ASC_URL="" # "https://secure.php.net/distributions/php-$PHP_VERSION.tar.xz.asc"
 GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
