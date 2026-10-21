@@ -59,9 +59,11 @@ ENV GPG_KEYS="1198C0117593497A5EC5C199286AF1F9897469DC 49D9AF6BC72A80D6691719C8A
 
 ARG PHP_VERSION
 ARG PHP_SHA256
+ARG PHP_SOURCE_BASE_URL=""
 ENV PHP_VERSION=${PHP_VERSION}
 ENV PHP_URL="https://www.php.net/distributions/php-${PHP_VERSION}.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-${PHP_VERSION}.tar.xz.asc" PHP_MD5=""
 ENV PHP_SHA256=${PHP_SHA256}
+ENV PHP_SOURCE_BASE_URL=${PHP_SOURCE_BASE_URL}
 
 RUN set -eux; \
 	\
@@ -73,10 +75,18 @@ RUN set -eux; \
 	mkdir -p /usr/src; \
 	cd /usr/src; \
 	\
+	if [ -n "$PHP_SOURCE_BASE_URL" ]; then \
+		PHP_URL="${PHP_SOURCE_BASE_URL%/}/php-${PHP_VERSION}.tar.xz"; \
+		PHP_ASC_URL=""; \
+	fi; \
+	\
 	curl -fsSL --retry 5 --retry-delay 5 --retry-max-time 120 -o php.tar.xz "$PHP_URL"; \
 	\
 	if [ -n "$PHP_SHA256" ]; then \
 		echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
+	else \
+		echo "No expected PHP SHA256 was provided. Downloaded PHP source SHA256:"; \
+		sha256sum php.tar.xz; \
 	fi; \
 	if [ -n "$PHP_MD5" ]; then \
 		echo "$PHP_MD5 *php.tar.xz" | md5sum -c -; \

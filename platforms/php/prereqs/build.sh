@@ -22,6 +22,14 @@ PHP_CPPFLAGS="$PHP_CFLAGS"
 PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 PHP_URL="https://secure.php.net/distributions/php-$PHP_VERSION.tar.xz"
+
+case "$PHP_VERSION" in
+	8.2.*|8.3.*|8.4.*|8.5.*)
+		if [ -n "${PHP_SOURCE_BASE_URL:-}" ]; then
+			PHP_URL="${PHP_SOURCE_BASE_URL%/}/php-$PHP_VERSION.tar.xz"
+		fi
+		;;
+esac
 PHP_ASC_URL="" # "https://secure.php.net/distributions/php-$PHP_VERSION.tar.xz.asc"
 GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
@@ -63,6 +71,9 @@ wget -O php.tar.xz "$PHP_URL"
 
 if [ -n "$PHP_SHA256" ]; then
 	echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -;
+else
+	echo "No expected PHP SHA256 was provided. Downloaded PHP source SHA256:"
+	sha256sum php.tar.xz
 fi;
 if [ -n "$PHP_MD5" ]; then
 	echo "$PHP_MD5 *php.tar.xz" | md5sum -c -;
