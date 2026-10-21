@@ -1,0 +1,66 @@
+#!/bin/sh
+set -e
+
+extDir="$(php -d 'display_errors=stderr' -r 'echo ini_get("extension_dir");')"
+cd "$extDir"
+
+usage() {
+	echo "usage: $0 [options] module-name [module-name ...]"
+	echo "   ie: $0 gd mysqli"
+	echo "       $0 pdo pdo_mysql"
+	echo "       $0 --ini-name 0-apc.ini apcu apc"
+}
+
+opts="$(getopt -o 'h?' --long 'help,ini-name:' -- "$@" || { usage >&2 && false; })"
+eval set -- "$opts"
+
+iniName=
+while true; do
+	flag="$1"
+	shift
+	case "$flag" in
+		--help|-h|'-?') usage && exit 0 ;;
+		--ini-name) iniName="$1" && shift ;;
+		--) break ;;
+		*) echo >&2 "error: unknown flag: $flag"; usage >&2; exit 1 ;;
+	esac
+done
+
+modules=
+for module; do
+	[ -n "$module" ] || continue
+	if ! [ -f "$module" ] && ! [ -f "$module.so" ]; then
+		echo >&2 "error: '$module' does not exist"
+		exit 1
+	fi
+	modules="$modules $module"
+done
+
+[ -n "$modules" ] || { usage >&2; exit 1; }
+
+for module in $modules; do
+	moduleFile="$module"
+	if [ -f "$module.so" ] && ! [ -f "$module" ]; then
+		moduleFile="$module.so"
+	fi
+	if readelf --wide --syms "$moduleFile" | grep -q ' zend_extension_entry$'; then
+		line="zend_extension=$module"
+	else
+		line="extension=$module"
+	fi
+
+	ext="$(basename "$module")"
+	ext="${ext%.*}"
+	if php -d 'display_errors=stderr' -r 'exit(extension_loaded("'"$ext"'") ? 0 : 1);'; then
+		echo >&2 "warning: $ext ($module) is already loaded!"
+		continue
+	fi
+
+	case "$iniName" in
+		/*) ini="$iniName" ;;
+		*) ini="$PHP_INI_DIR/conf.d/${iniName:-"docker-php-ext-$ext.ini"}" ;;
+	esac
+	if ! grep -qFx -e "$line" -e "$line.so" "$ini" 2>/dev/null; then
+		echo "$line" >> "$ini"
+	fi
+done

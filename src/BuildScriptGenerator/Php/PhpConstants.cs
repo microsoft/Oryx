@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             { "buster", "8.0" },
             { "focal-scm", "8.0" },
             { "noble", "8.5" },
+            { "resolute", "8.6" },
             { "stretch", "8.0" },
         };
 
@@ -41,6 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             { "buster", "2" },
             { "focal-scm", "2" },
             { "noble", "2" },
+            { "resolute", "2" },
             { "stretch", "2" },
         };
     }

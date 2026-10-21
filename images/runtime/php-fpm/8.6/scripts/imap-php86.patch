@@ -1,0 +1,11 @@
+--- a/php_imap.c
++++ b/php_imap.c
+@@ -463 +463 @@
+-	imap_object_handlers.offset = XtOffsetOf(php_imap_object, std);
++	imap_object_handlers.offset = offsetof(php_imap_object, std);
+@@ -3825 +3825 @@
+-	if (!INI_STR("sendmail_path")) {
++	if (!zend_ini_string_literal("sendmail_path")) {
+@@ -3828 +3828 @@
+-	sendmail = popen(INI_STR("sendmail_path"), "w");
++	sendmail = popen(zend_ini_string_literal("sendmail_path"), "w");

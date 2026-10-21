@@ -81,12 +81,12 @@ validated=0
 # Extract PHP versions and SHAs from constants.yml
 while IFS= read -r line; do
     # Match lines like:   php85Version: 8.5.1 (with optional leading spaces)
-    if [[ "$line" =~ ^[[:space:]]*php([0-9]+)Version:[[:space:]]*([0-9.]+)$ ]]; then
+    if [[ "$line" =~ ^[[:space:]]*php([0-9]+)Version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+([a-zA-Z]+[0-9]+)?)$ ]]; then
         php_key="php${BASH_REMATCH[1]}"
         version="${BASH_REMATCH[2]}"
         
         # Security: Validate version format strictly (only digits and dots, reasonable length)
-        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || [[ ${#version} -gt 20 ]]; then
+        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z]+[0-9]+)?$ ]] || [[ ${#version} -gt 20 ]]; then
             echo "Warning: Skipping invalid version format: $version" >&2
             continue
         fi
@@ -97,20 +97,33 @@ while IFS= read -r line; do
             local_sha="${BASH_REMATCH[1]}"
             
             # Security: Sanitize output to prevent log injection
-            safe_version="${version//[^0-9.]/}"
+            safe_version="${version//[^0-9.a-zA-Z]/}"
             echo -n "PHP $safe_version: "
             
             # Fetch official SHA from php.net with retry (URL-encode version just in case)
             encoded_version=$(printf '%s' "$version" | jq -sRr @uri)
-            response=$(fetch_with_retry "https://www.php.net/releases/?json&version=${encoded_version}")
-            
-            # Validate JSON response before parsing
-            if [[ -n "$response" ]] && ! echo "$response" | jq empty 2>/dev/null; then
-                echo -e "${YELLOW}WARNING - Invalid JSON response from php.net${NC}"
-                continue
+            if [[ "$version" =~ [a-zA-Z] ]]; then
+                preview_tarball="$(mktemp)"
+                if curl -fsSL --retry 3 --retry-delay 2 --max-time 120 \
+                    --proto '=https' --tlsv1.2 \
+                    -o "$preview_tarball" \
+                    "https://downloads.php.net/~svpernova09/php-${encoded_version}.tar.xz"; then
+                    official=$(sha256sum "$preview_tarball" | cut -d' ' -f1)
+                else
+                    official=""
+                fi
+                rm -f "$preview_tarball"
+            else
+                response=$(fetch_with_retry "https://www.php.net/releases/?json&version=${encoded_version}")
+
+                # Validate JSON response before parsing
+                if [[ -n "$response" ]] && ! echo "$response" | jq empty 2>/dev/null; then
+                    echo -e "${YELLOW}WARNING - Invalid JSON response from php.net${NC}"
+                    continue
+                fi
+
+                official=$(echo "$response" | jq -r '.source[] | select(.filename | endswith(".tar.xz")) | .sha256 // empty' 2>/dev/null || echo "")
             fi
-            
-            official=$(echo "$response" | jq -r '.source[] | select(.filename | endswith(".tar.xz")) | .sha256 // empty' 2>/dev/null || echo "")
             
             # Security: Validate response is a valid SHA256 (64 hex chars)
             if [[ -n "$official" ]] && [[ ! "$official" =~ ^[a-f0-9]{64}$ ]]; then
@@ -131,7 +144,7 @@ while IFS= read -r line; do
             fi
         else
             # Version found but no SHA - this is likely a configuration error
-            safe_version="${version//[^0-9.]/}"
+            safe_version="${version//[^0-9.a-zA-Z]/}"
             echo -e "PHP $safe_version: ${YELLOW}WARNING - Version found but ${php_key}Version_SHA is missing${NC}"
         fi
     fi
