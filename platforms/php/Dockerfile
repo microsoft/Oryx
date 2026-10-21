@@ -4,6 +4,8 @@ ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
 ARG VERSIONS_TO_BUILD_OVERRIDE=""
 ENV VERSIONS_TO_BUILD_OVERRIDE=$VERSIONS_TO_BUILD_OVERRIDE
+ARG PHP_SOURCE_BASE_URL=""
+ENV PHP_SOURCE_BASE_URL=$PHP_SOURCE_BASE_URL
 
 COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
 RUN if [ "${OS_FLAVOR}" = "bullseye" ]; then \
