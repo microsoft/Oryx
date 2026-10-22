@@ -23,6 +23,8 @@ Bookworm. They use `images/runtime/commonbase/phpRuntimeBase.Dockerfile` on top
 of the generic Oryx runtime base, followed by
 `images/runtime/php/{version}/{osFlavor}.Dockerfile`. Publishing names the
 intermediate base `php-run-base-{osFlavor}`. FPM images remain separate.
+The Apache Dockerfiles and their per-version helpers retain the structure
+removed in #2593, with updates for current builds rather than shared build scripts.
 
 From the repository root on a Linux Docker host with Mike Farah's `yq` v4:
 
@@ -121,7 +123,7 @@ The following process is applied to determine how to start an app:
 Apache listens on `APACHE_PORT` (default `8080`) and serves
 `APACHE_DOCUMENT_ROOT` (default `/home/site/wwwroot`). `.htaccess` overrides
 and rewrite are enabled. The Oryx startup generator sets these values for the
-application; `PHP_ORIGIN=php` keeps it on the Apache startup path. Logs are
+application; leaving `PHP_ORIGIN` unset keeps it on the Apache startup path. Logs are
 directed to stdout/stderr and graceful shutdown uses `SIGWINCH`.
 
 [Composer]: https://getcomposer.org/
