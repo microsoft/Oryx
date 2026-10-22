@@ -19,7 +19,7 @@ ARG INCLUDE_AZURELINUX_CERTS
 
 RUN apt-get update \
 	&& apt-get upgrade -y \
-	&& apt-get install -y --no-install-recommends \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		xz-utils \
 		ca-certificates \
 		curl \
