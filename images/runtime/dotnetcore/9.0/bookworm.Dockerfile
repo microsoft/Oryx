@@ -73,6 +73,11 @@ RUN apt-get update \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
 
+COPY images/runtime/scripts/install-debian-tzdata-2026e.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-debian-tzdata-2026e.sh \
+    && /usr/local/bin/install-debian-tzdata-2026e.sh \
+    && rm -f /usr/local/bin/install-debian-tzdata-2026e.sh
+
 # Configure web servers to bind to port 80 when present
 ENV ASPNETCORE_URLS=http://+:80 \
     # Enable detection of running in a container

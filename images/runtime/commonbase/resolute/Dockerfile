@@ -30,6 +30,7 @@ RUN apt-get update \
 		zstd \
 		# Not shipped in Resolute, but will be required by Node runtime. It is tiny, would save from unexpected runtime failures in other frameworks too
 		libatomic1 \
+		tzdata \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Copy Azure linux certs to a temporary location

@@ -67,6 +67,7 @@ RUN apt-get update \
         curl \
         file \
         libgdiplus \
+        tzdata \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
 
