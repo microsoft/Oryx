@@ -11,14 +11,6 @@ cleanup() {
 }
 trap cleanup EXIT
 
-timezone="$(readlink /etc/localtime 2>/dev/null || cat /etc/timezone 2>/dev/null || printf '%s\n' 'Etc/UTC')"
-timezone="${timezone#/usr/share/zoneinfo/}"
-timezone="${timezone#../usr/share/zoneinfo/}"
-if [ -z "${timezone}" ] || [[ "${timezone}" = /* ]] || [[ "${timezone}" = *".."* ]]; then
-    echo "Unable to preserve the currently configured timezone: ${timezone}" >&2
-    exit 1
-fi
-
 cat > "${source_file}" <<'EOF'
 Types: deb
 URIs: http://deb.debian.org/debian
@@ -41,6 +33,3 @@ apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     tzdata=2026e-1 \
     tzdata-legacy=2026e-1
-
-ln -snf "/usr/share/zoneinfo/${timezone}" /etc/localtime
-printf '%s\n' "${timezone}" > /etc/timezone
