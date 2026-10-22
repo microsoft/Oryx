@@ -57,7 +57,7 @@ ADD build ${BUILD_DIR}
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         # .NET Core dependencies
         libc6 \
         libgcc-s1 \
@@ -70,6 +70,7 @@ RUN apt-get update \
         curl \
         file \
         libgdiplus \
+        tzdata \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
 

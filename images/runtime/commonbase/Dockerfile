@@ -21,6 +21,8 @@ ARG INCLUDE_AZURELINUX_CERTS
 ARG OS_FLAVOR
 
 COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
+# TODO: Remove this once Debian Bullseye and Bookworm provide tzdata 2026e-1 or newer.
+COPY images/runtime/scripts/install-debian-tzdata-2026e.sh /usr/local/bin/
 RUN if [ "${OS_FLAVOR}" = "bullseye" ]; then \
 		chmod +x /usr/local/bin/configure-debian-bullseye-snapshot.sh; \
 		/usr/local/bin/configure-debian-bullseye-snapshot.sh; \
@@ -36,11 +38,19 @@ RUN apt-get update \
 		netbase \
 		wget
 
+RUN if [ "${OS_FLAVOR}" = "bullseye" ] || [ "${OS_FLAVOR}" = "bookworm" ]; then \
+		chmod +x /usr/local/bin/install-debian-tzdata-2026e.sh; \
+		/usr/local/bin/install-debian-tzdata-2026e.sh; \
+	elif [ "${OS_FLAVOR}" = "noble" ] || [ "${OS_FLAVOR}" = "resolute" ]; then \
+		apt-get update; \
+		DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata; \
+	fi
+
 RUN if [ "${OS_FLAVOR}" = "bookworm" ] ; then \
     apt-get update && apt-get install -y --no-install-recommends sq ; \
     fi
 
-RUN rm -f /usr/local/bin/configure-debian-bullseye-snapshot.sh \
+RUN rm -f /usr/local/bin/configure-debian-bullseye-snapshot.sh /usr/local/bin/install-debian-tzdata-2026e.sh \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Copy Azure linux certs to a temporary location
