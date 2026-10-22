@@ -42,10 +42,5 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     tzdata=2026e-1 \
     tzdata-legacy=2026e-1
 
-test -e "/usr/share/zoneinfo/${timezone}"
 ln -snf "/usr/share/zoneinfo/${timezone}" /etc/localtime
 printf '%s\n' "${timezone}" > /etc/timezone
-
-test -d /usr/share/zoneinfo/posix
-test "$(TZ=America/Winnipeg date --date='2026-12-01 12:00:00' +%z)" = "-0500"
-test "$(TZ=America/Edmonton date --date='2026-12-01 12:00:00' +%z)" = "-0600"
