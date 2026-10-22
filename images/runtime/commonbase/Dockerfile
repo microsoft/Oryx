@@ -21,6 +21,7 @@ ARG INCLUDE_AZURELINUX_CERTS
 ARG OS_FLAVOR
 
 COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
+# TODO: Remove this once Debian Bullseye and Bookworm provide tzdata 2026e-1 or newer.
 COPY images/runtime/scripts/install-debian-tzdata-2026e.sh /usr/local/bin/
 RUN if [ "${OS_FLAVOR}" = "bullseye" ]; then \
 		chmod +x /usr/local/bin/configure-debian-bullseye-snapshot.sh; \
