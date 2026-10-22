@@ -41,7 +41,7 @@ RUN apt-get update \
 RUN if [ "${OS_FLAVOR}" = "bullseye" ] || [ "${OS_FLAVOR}" = "bookworm" ]; then \
 		chmod +x /usr/local/bin/install-debian-tzdata-2026e.sh; \
 		/usr/local/bin/install-debian-tzdata-2026e.sh; \
-	elif [ "${OS_FLAVOR}" = "noble" ]; then \
+	elif [ "${OS_FLAVOR}" = "noble" ] || [ "${OS_FLAVOR}" = "resolute" ]; then \
 		apt-get update; \
 		DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata; \
 	fi
