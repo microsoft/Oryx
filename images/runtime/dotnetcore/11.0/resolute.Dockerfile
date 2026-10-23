@@ -40,6 +40,7 @@ RUN chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 # Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
 FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
 ARG INCLUDE_AZURELINUX_CERTS
+COPY images/runtime/certs/blocklist/ /etc/pki/ca-trust/source/blacklist/
 RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
 		set -eux; \
 		tdnf makecache; \
@@ -54,7 +55,7 @@ ARG INCLUDE_AZURELINUX_CERTS
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         # .NET Core dependencies
         libc6 \
         libgcc-s1 \
@@ -67,6 +68,7 @@ RUN apt-get update \
         curl \
         file \
         libgdiplus \
+        tzdata \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
 

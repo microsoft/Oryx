@@ -6,6 +6,7 @@ ARG INCLUDE_AZURELINUX_CERTS=true
 # Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
 FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
 ARG INCLUDE_AZURELINUX_CERTS
+COPY images/runtime/certs/blocklist/ /etc/pki/ca-trust/source/blacklist/
 RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
 		set -eux; \
 		tdnf makecache; \
@@ -19,7 +20,7 @@ ARG INCLUDE_AZURELINUX_CERTS
 
 RUN apt-get update \
 	&& apt-get upgrade -y \
-	&& apt-get install -y --no-install-recommends \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		xz-utils \
 		ca-certificates \
 		curl \
@@ -30,6 +31,7 @@ RUN apt-get update \
 		zstd \
 		# Not shipped in Resolute, but will be required by Node runtime. It is tiny, would save from unexpected runtime failures in other frameworks too
 		libatomic1 \
+		tzdata \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Copy Azure linux certs to a temporary location

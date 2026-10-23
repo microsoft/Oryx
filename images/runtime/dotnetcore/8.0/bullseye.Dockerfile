@@ -41,6 +41,7 @@ RUN chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 # Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
 FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
 ARG INCLUDE_AZURELINUX_CERTS
+COPY images/runtime/certs/blocklist/ /etc/pki/ca-trust/source/blacklist/
 RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
 		set -eux; \
 		tdnf makecache; \
@@ -70,6 +71,11 @@ RUN apt-get update \
         libgdiplus \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
+
+COPY images/runtime/scripts/install-debian-tzdata-2026e.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-debian-tzdata-2026e.sh \
+    && /usr/local/bin/install-debian-tzdata-2026e.sh \
+    && rm -f /usr/local/bin/install-debian-tzdata-2026e.sh
 
 # Configure web servers to bind to port 80 when present
 ENV ASPNETCORE_URLS=http://+:80 \
