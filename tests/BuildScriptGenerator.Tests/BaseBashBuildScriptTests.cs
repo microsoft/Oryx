@@ -30,10 +30,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Equal(expected, scriptProps.IsDotNetCoreBuild);
             if (expected)
             {
-                Assert.Contains("XDG_RUNTIME_DIR=\"/tmp/oryx-dotnet-runtime-$oryxDotnetUserId\"", script);
-                Assert.Contains("mkdir -m 0700 \"$XDG_RUNTIME_DIR\"", script);
-                Assert.Contains("export XDG_RUNTIME_DIR", script);
+                Assert.Contains("oryxDotnetRuntimeDir=\"${XDG_RUNTIME_DIR:-/tmp/oryx-dotnet-runtime-$oryxDotnetUserId}\"", script);
+                Assert.Contains("mkdir -m 0700 \"$oryxDotnetRuntimeDir\"", script);
+                Assert.Contains("export XDG_RUNTIME_DIR=\"$oryxDotnetRuntimeDir\"", script);
                 Assert.Contains("Invalid .NET runtime directory", script);
+                Assert.Contains("if ! configure_oryx_dotnet_runtime_directory; then", script);
+                Assert.Contains("Warning: continuing build without changing XDG_RUNTIME_DIR", script);
+
+                var setupStart = script.IndexOf("configure_oryx_dotnet_runtime_directory() {", StringComparison.Ordinal);
+                var setupEnd = script.IndexOf("unset -f configure_oryx_dotnet_runtime_directory", StringComparison.Ordinal);
+                Assert.DoesNotContain("exit ", script.Substring(setupStart, setupEnd - setupStart));
             }
             else
             {
