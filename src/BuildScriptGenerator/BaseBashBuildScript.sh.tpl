@@ -105,6 +105,36 @@ export DESTINATION_DIR
 access the destination directory ## }}
 mkdir -p "$DESTINATION_DIR"
 
+{{ if IsDotNetCoreBuild }}
+# NuGet named mutexes require private storage owned by the build user, not the shared /home mount.
+configure_oryx_dotnet_runtime_directory() {
+    local oryxDotnetUserId oryxDotnetRuntimeDir
+    oryxDotnetUserId=$(id -u) || return 1
+    oryxDotnetRuntimeDir="${XDG_RUNTIME_DIR:-/tmp/oryx-dotnet-runtime-$oryxDotnetUserId}"
+    if [ -z "$XDG_RUNTIME_DIR" ]; then
+        if ! mkdir -m 0700 "$oryxDotnetRuntimeDir" 2>/dev/null && [ ! -d "$oryxDotnetRuntimeDir" ]; then
+            echo "Failed to create .NET runtime directory '$oryxDotnetRuntimeDir'." >&2
+            return 1
+        fi
+    fi
+
+    if [ "${oryxDotnetRuntimeDir:0:1}" != "/" ] || [ ! -d "$oryxDotnetRuntimeDir" ] || [ -L "$oryxDotnetRuntimeDir" ] ||
+        [ "$(stat -c %u "$oryxDotnetRuntimeDir")" != "$oryxDotnetUserId" ] ||
+        [ "$(stat -c %a "$oryxDotnetRuntimeDir")" != "700" ] ||
+        [ ! -w "$oryxDotnetRuntimeDir" ] || [ ! -x "$oryxDotnetRuntimeDir" ]; then
+        echo "Invalid .NET runtime directory '$oryxDotnetRuntimeDir': expected an absolute, non-symlink directory owned by UID $oryxDotnetUserId with permissions 0700 and write/execute access." >&2
+        return 1
+    fi
+
+    export XDG_RUNTIME_DIR="$oryxDotnetRuntimeDir"
+}
+
+if ! configure_oryx_dotnet_runtime_directory; then
+    echo "Warning: continuing build without changing XDG_RUNTIME_DIR; .NET named mutex creation may fail." >&2
+fi
+unset -f configure_oryx_dotnet_runtime_directory
+{{ end }}
+
 {{ if PreBuildCommand | IsNotBlank }}
 {{ # Make sure to cd to the source directory so that the pre-build script runs from there }}
 cd "$SOURCE_DIR"
