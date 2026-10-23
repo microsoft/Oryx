@@ -21,21 +21,28 @@ RUN chmod +x build.sh && ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 # -----------------------------------------------------------------------------
 # Stage 2: compile CPython from source (disposable builder)
-#   build.sh now parses versionsToBuild.txt itself (gpg key + sha256).
+#   The build script supplies shared release verification metadata.
 #   Inputs are passed as ENV (ARGs are not visible to scripts).
 # -----------------------------------------------------------------------------
 FROM ${BASE_IMAGE} AS pythonRuntimeBinariesBuilder
 ARG OS_FLAVOR
 ARG PYTHON_FULL_VERSION
 ARG PYTHON_SHA256
+ARG PYTHON_GPG_KEYS
 ENV OS_FLAVOR=${OS_FLAVOR}
 ENV PYTHON_VERSION=${PYTHON_FULL_VERSION}
 
 COPY platforms/python/prereqs/build.sh /tmp/build.sh
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
-RUN chmod +x /tmp/build.sh /tmp/receiveGpgKeys.sh \
+RUN if [ -z "$PYTHON_SHA256" ] && [ -z "$PYTHON_GPG_KEYS" ]; then \
+        echo "Python source verification requires SHA256 or GPG keys." >&2; \
+        exit 1; \
+    fi \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates gnupg wget xz-utils \
+    && chmod +x /tmp/build.sh /tmp/receiveGpgKeys.sh \
     && mkdir -p /usr/src/python && cd /usr/src/python \
-    && export GPG_KEY="" \
+    && export GPG_KEY="${PYTHON_GPG_KEYS}" \
     && export PYTHON_SHA256="${PYTHON_SHA256}" \
     && export OS_FLAVOR=${OS_FLAVOR} \
     && /tmp/build.sh
