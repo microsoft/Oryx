@@ -10,6 +10,8 @@ import (
 	"common/consts"
 	"flag"
 	"fmt"
+	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -29,6 +31,8 @@ func main() {
 			"it is assumed to be under the directory specified by 'appPath'.")
 	userStartupCommandPtr := scriptCommand.String("userStartupCommand", "", "[Optional] Command that will be executed "+
 		"to start the application up.")
+	startupEnvironmentScriptPtr := scriptCommand.String("startupEnvironmentScript", "", "[Optional] Absolute POSIX path to a trusted "+
+		"script sourced after Python environment setup and before the pre-run and application commands.")
 	defaultAppFilePathPtr := scriptCommand.String("defaultApp", "", "[Optional] Path to a default file that will be "+
 		"executed if the entrypoint is not found. Ex: '/opt/defaultsite'")
 	defaultAppModulePtr := scriptCommand.String("defaultAppModule", "application:app", "Module of the default application,"+
@@ -58,6 +62,11 @@ func main() {
 	common.ValidateCommands(commands)
 
 	if scriptCommand.Parsed() {
+		if *startupEnvironmentScriptPtr != "" && !path.IsAbs(*startupEnvironmentScriptPtr) {
+			fmt.Fprintln(os.Stderr, "Error: -startupEnvironmentScript must be an absolute POSIX path.")
+			os.Exit(consts.FAILURE_EXIT_CODE)
+		}
+
 		fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 		defaultAppFullPath := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 
@@ -72,6 +81,7 @@ func main() {
 		entrypointGenerator := PythonStartupScriptGenerator{
 			AppPath:                  fullAppPath,
 			UserStartupCommand:       *userStartupCommandPtr,
+			StartupEnvironmentScript: *startupEnvironmentScriptPtr,
 			VirtualEnvName:           *virtualEnvNamePtr,
 			BindPort:                 *bindPortPtr,
 			DefaultAppPath:           defaultAppFullPath,
