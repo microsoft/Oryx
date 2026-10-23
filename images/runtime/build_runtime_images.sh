@@ -28,6 +28,13 @@ stack_name=$1;
 stack_version=$2;
 os_flavor=$3;
 
+if [ "$stack_name" = "php" ]; then
+    case "$stack_version:$os_flavor" in
+        8.2:bullseye|8.3:bookworm) ;;
+        *) echo "Apache PHP supports only 8.2/bullseye and 8.3/bookworm." >&2; exit 1 ;;
+    esac
+fi
+
 if [ "$os_flavor" == "noble" ]; then
     os_type="ubuntu"
 else
@@ -100,6 +107,24 @@ case $stack_name in
         esac
     ;;
 
+    "php")
+        php_version_key="php${stack_version//./}Version"
+        php_sha_key="${php_version_key}_SHA"
+        docker build -f ./images/runtime/commonbase/phpRuntimeBase.Dockerfile \
+            -t "oryx_php_run_base_$os_flavor" \
+            --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$os_flavor" . || exit $?
+        docker build -f "./images/runtime/php/$stack_version/$os_flavor.Dockerfile" \
+            -t "php${stack_version//./}_image_$os_flavor" \
+            --build-arg PHP_VERSION="${!php_version_key}" \
+            --build-arg PHP_SHA256="${!php_sha_key}" \
+            --build-arg PHP_SOURCE_BASE_URL="${PHP_SOURCE_BASE_URL:-}" \
+            --build-arg BASE_IMAGE="docker.io/library/oryx_php_run_base_$os_flavor" \
+            --build-arg GIT_COMMIT="${GIT_COMMIT:-$(git rev-parse HEAD)}" \
+            --build-arg BUILD_NUMBER="${BUILD_NUMBER:-unspecified}" \
+            --build-arg RELEASE_TAG_NAME="${RELEASE_TAG_NAME:-unspecified}" \
+            --build-arg AI_CONNECTION_STRING="$AI_CONNECTION_STRING" . || exit $?
+    ;;
+
     "php-fpm")
         docker build -f ./images/runtime/commonbase/phpFpmRuntimeBase.Dockerfile -t oryx_php_fpm_run_base_$os_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$os_flavor" .
         case $stack_version in
@@ -162,5 +187,4 @@ esac
 
 
                 
-
 
