@@ -82,12 +82,16 @@ jobs:
               body += `\n<details><summary>.NET Validation Output</summary>\n\n\`\`\`\n${dotnetOutput}\n\`\`\`\n</details>\n`;
             }
             
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body
-            });
+            await core.summary.addRaw(body).write();
+
+            if (context.payload.pull_request.head.repo.full_name === context.payload.repository.full_name) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }
             
             // Fail the job if any validation failed
             if (phpStatus === 'failure' || dotnetStatus === 'failure') {
