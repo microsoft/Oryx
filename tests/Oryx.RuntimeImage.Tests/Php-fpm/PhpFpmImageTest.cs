@@ -49,6 +49,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class PhpFpmImageTest : PhpTestBase
     {
+        private const string ExpectedTimezoneDatabaseVersion = "2026.5";
+
         public PhpFpmImageTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output, testTempDirTestFixture)
         {
         }
@@ -138,6 +140,30 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static IEnumerable<object[]> PhpFpmTimezoneTestData => new[]
+        {
+            new object[] { "8.2-fpm" },
+            new object[] { "8.3-fpm" },
+        };
+
+        [Theory]
+        [Trait("category", "runtime-bullseye")]
+        [MemberData(nameof(PhpFpmTimezoneTestData))]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void PhpFpmBullseyeRuntimeImage_UsesUpdatedPhpTimezoneDatabase(string version)
+        {
+            VerifyPhpTimezoneDatabase(version, ImageTestHelperConstants.OsTypeDebianBullseye);
+        }
+
+        [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [MemberData(nameof(PhpFpmTimezoneTestData))]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void PhpFpmBookwormRuntimeImage_UsesUpdatedPhpTimezoneDatabase(string version)
+        {
+            VerifyPhpTimezoneDatabase(version, ImageTestHelperConstants.OsTypeDebianBookworm);
+        }
+
         [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("8.1-fpm")]
@@ -204,6 +230,29 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
             Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
         }        
+
+        private void VerifyPhpTimezoneDatabase(string version, string osType)
+        {
+            var phpAssertions =
+                "echo timezone_version_get()," +
+                "'|',(new DateTimeImmutable('2026-12-01 12:00:00',new DateTimeZone('America/Winnipeg')))->format('O')," +
+                "'|',(new DateTimeImmutable('2026-12-01 12:00:00',new DateTimeZone('America/Edmonton')))->format('O');";
+
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", version, osType),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-r", phpAssertions }
+            });
+
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal($"{ExpectedTimezoneDatabaseVersion}|-0500|-0600", result.StdOut.Trim());
+                },
+                result.GetDebugInfo());
+        }
 
         [SkippableTheory]
         [Trait("category", "runtime-bullseye")]

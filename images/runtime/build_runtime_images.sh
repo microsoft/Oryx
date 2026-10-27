@@ -133,11 +133,11 @@ case $stack_name in
             ;;
 
             "8.2")
-                docker build -f ./images/runtime/php-fpm/8.2/$os_flavor.Dockerfile -t phpfpm82_image_$os_flavor --build-arg PHP_VERSION=$php82Version --build-arg PHP_SHA256=$php82Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$os_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+                docker build -f ./images/runtime/php-fpm/8.2/$os_flavor.Dockerfile -t phpfpm82_image_$os_flavor --build-arg PHP_VERSION=$php82Version --build-arg PHP_SHA256=$php82Version_SHA --build-arg PHP_TIMEZONEDB_VERSION=$phpTimezoneDbVersion --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$os_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
             ;;
 
             "8.3")
-                docker build -f ./images/runtime/php-fpm/8.3/$os_flavor.Dockerfile -t phpfpm83_image_$os_flavor --build-arg PHP_VERSION=$php83Version --build-arg PHP_SHA256=$php83Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$os_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+                docker build -f ./images/runtime/php-fpm/8.3/$os_flavor.Dockerfile -t phpfpm83_image_$os_flavor --build-arg PHP_VERSION=$php83Version --build-arg PHP_SHA256=$php83Version_SHA --build-arg PHP_TIMEZONEDB_VERSION=$phpTimezoneDbVersion --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$os_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
             ;;
 
             "8.4")
@@ -187,4 +187,3 @@ esac
 
 
                 
-
