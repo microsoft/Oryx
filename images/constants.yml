@@ -80,6 +80,7 @@ variables:
   php82Version_SHA: 5737b98601fe5ab1b8c5db0c82ed3158acb9283ed3081ffe2faffb9ac81455e6
   php83Version: 8.3.36
   php83Version_SHA: dd54693aa334c5c4d72e9aee96b082c2473750a18a6c1d105789c93a3b1692fd
+  phpTimezoneDbVersion: 2026.5
   php84Version: 8.4.27
   php84Version_SHA: dcf93923b0e38e0d5252b25b796520b5a47761a08b3488b6d0b5d1115764d3f0
   php85Version: 8.5.12

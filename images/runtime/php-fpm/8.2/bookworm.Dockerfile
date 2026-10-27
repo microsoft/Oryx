@@ -17,6 +17,7 @@ RUN chmod +x build.sh && ./build.sh php /opt/startupcmdgen/startupcmdgen
 # From https://github.com/docker-library/php.git
 FROM ${BASE_IMAGE}
 ARG IMAGES_DIR=/tmp/oryx/images
+ARG PHP_TIMEZONEDB_VERSION
 
 # do NOT merge this content with above line because the 
 # above line is shared across all php images
@@ -380,7 +381,13 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 # deprecated from 7.4, so should be avoided in general template for all php versions
 #        xmlrpc \
         xsl
-RUN pecl install redis && docker-php-ext-enable redis
+RUN set -eux; \
+    pecl install "timezonedb-${PHP_TIMEZONEDB_VERSION}" redis \
+    && docker-php-ext-enable timezonedb redis \
+    && rm -rf /tmp/pear ~/.pearrc \
+    && test "$(php -r 'echo timezone_version_get();')" = "${PHP_TIMEZONEDB_VERSION}" \
+    && test "$(php -r '$date = new DateTimeImmutable("2026-12-01 12:00:00", new DateTimeZone("America/Winnipeg")); echo $date->format("O");')" = "-0500" \
+    && test "$(php -r '$date = new DateTimeImmutable("2026-12-01 12:00:00", new DateTimeZone("America/Edmonton")); echo $date->format("O");')" = "-0600"
 
 # https://github.com/Imagick/imagick/issues/331
 # https://github.com/ihneo/php/pull/24/files
