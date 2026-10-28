@@ -25,7 +25,7 @@ mkdir -p "$(dirname "$IMAGE_LIST")"
 
 for minor_version in $PYTHON_VERSIONS; do
     metadata="$(bash "$REPO_DIR/build/getEmbrPythonVersionMetadata.sh" "$minor_version")"
-    IFS='|' read -r full_version gpg_keys sha256 <<< "$metadata"
+    IFS='|' read -r full_version _ <<< "$metadata"
 
     image="$ACR_NAME/$ACR_REPOSITORY:embr-$minor_version-ubuntu-resolute-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
     docker build \
@@ -37,8 +37,6 @@ for minor_version in $PYTHON_VERSIONS; do
         --build-arg "PYTHON_FULL_VERSION=$full_version" \
         --build-arg "PYTHON_VERSION=$minor_version" \
         --build-arg "PYTHON_MAJOR_VERSION=3" \
-        --build-arg "PYTHON_SHA256=$sha256" \
-        --build-arg "PYTHON_GPG_KEYS=$gpg_keys" \
         --build-arg "BUILD_NUMBER=${BUILD_BUILDNUMBER:-local}" \
         --build-arg "GIT_COMMIT=${BUILD_SOURCEVERSION:-unspecified}" \
         --build-arg "RELEASE_TAG_NAME=$RELEASE_TAG_NAME" \

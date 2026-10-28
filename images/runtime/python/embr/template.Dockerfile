@@ -21,24 +21,33 @@ RUN chmod +x build.sh && ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 # -----------------------------------------------------------------------------
 # Stage 2: compile CPython from source (disposable builder)
-#   The build script supplies shared release verification metadata.
-#   Inputs are passed as ENV (ARGs are not visible to scripts).
+#   Resolve shared source verification metadata inside the builder.
 # -----------------------------------------------------------------------------
 FROM ${BASE_IMAGE} AS pythonRuntimeBinariesBuilder
 ARG OS_FLAVOR
 ARG PYTHON_FULL_VERSION
-ARG PYTHON_SHA256
-ARG PYTHON_GPG_KEYS
+ARG PYTHON_VERSION
 ENV OS_FLAVOR=${OS_FLAVOR}
-ENV PYTHON_VERSION=${PYTHON_FULL_VERSION}
 
+COPY build/getEmbrPythonVersionMetadata.sh /tmp/oryx/build/getEmbrPythonVersionMetadata.sh
+COPY images/constants.yml /tmp/oryx/images/constants.yml
+COPY platforms/python/versions /tmp/oryx/platforms/python/versions
 COPY platforms/python/prereqs/build.sh /tmp/build.sh
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
-RUN chmod +x /tmp/build.sh /tmp/receiveGpgKeys.sh \
+RUN metadata="$(bash /tmp/oryx/build/getEmbrPythonVersionMetadata.sh "${PYTHON_VERSION}")" \
+    && resolved_version="${metadata%%|*}" \
+    && if [ "${resolved_version}" != "${PYTHON_FULL_VERSION}" ]; then \
+        echo "Shared Python version ${resolved_version} does not match PYTHON_FULL_VERSION=${PYTHON_FULL_VERSION}." >&2; \
+        exit 1; \
+    fi \
+    && verification_metadata="${metadata#*|}" \
+    && export GPG_KEY="${verification_metadata%%|*}" \
+    && export PYTHON_SHA256="${verification_metadata#*|}" \
+    && export PYTHON_VERSION="${resolved_version}" \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates wget gnupg dirmngr xz-utils \
+    && chmod +x /tmp/build.sh /tmp/receiveGpgKeys.sh \
     && mkdir -p /usr/src/python && cd /usr/src/python \
-    && export GPG_KEY="${PYTHON_GPG_KEYS}" \
-    && export PYTHON_SHA256="${PYTHON_SHA256}" \
-    && export OS_FLAVOR=${OS_FLAVOR} \
     && /tmp/build.sh
 
 
