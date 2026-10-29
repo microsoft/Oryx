@@ -1,14 +1,13 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
 ARG OS_FLAVOR=resolute
-# Preserve the shared SDK pipeline's base-image override for Resolute.
-ARG BASE_IMAGE_OS=${OS_FLAVOR}
-FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${BASE_IMAGE_OS}
-ARG OS_FLAVOR
 ENV OS_FLAVOR=${OS_FLAVOR}
 ARG VERSIONS_TO_BUILD_OVERRIDE=""
 ENV VERSIONS_TO_BUILD_OVERRIDE=${VERSIONS_TO_BUILD_OVERRIDE}
 
-RUN if [ "${OS_FLAVOR}" != "resolute" ]; then \
-        echo "Embr Python SDK builds require OS_FLAVOR=resolute." >&2; \
+RUN . /etc/os-release; \
+    if [ "${OS_FLAVOR}" != "resolute" ] || [ "${ID}" != "ubuntu" ] || [ "${VERSION_CODENAME}" != "resolute" ]; then \
+        echo "Embr Python SDK builds require an Ubuntu Resolute base and OS_FLAVOR=resolute." >&2; \
         exit 1; \
     fi
 
@@ -17,6 +16,11 @@ COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh /tmp/receiveGpgKeys.sh \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        ca-certificates \
+        wget \
+        gnupg \
+        dirmngr \
+        xz-utils \
         build-essential \
         tk-dev \
         uuid-dev \
