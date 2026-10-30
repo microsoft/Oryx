@@ -31,8 +31,7 @@ The Hugo project defines this [release schedule][]. Oryx bundles the following d
 - Debian Bullseye: `0.148.2`, retained for compatibility.
 - Other OS images: `0.169.0`.
 
-Explicitly configured Hugo versions continue to override these defaults. The Bullseye
-compatibility pin does not resolve vulnerabilities in that older Hugo release.
+Explicitly configured Hugo versions continue to override these defaults.
 
 We will update the `patch` version of a release at least once every 3 months,
 replacing the previous `patch` version for that release.
