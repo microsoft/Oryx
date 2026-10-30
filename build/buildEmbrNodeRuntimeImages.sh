@@ -52,10 +52,10 @@ docker build \
     "$REPO_DIR"
 
 for major_version in $NODE_VERSIONS; do
-    full_version="$(embr_yaml_value "node${major_version}Version")"
+    full_version="$(default_yaml_value "node${major_version}Version")"
 
     if [[ -z "$full_version" ]]; then
-        echo "Missing version for Node $major_version in $CONSTANTS_FILE." >&2
+        echo "Missing version for Node $major_version in $DEFAULT_CONSTANTS_FILE." >&2
         exit 1
     fi
 
