@@ -9,6 +9,10 @@ set -e
 __CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$__CURRENT_DIR/../../build/__hugoConstants.sh"
 
+if [ "${DEBIAN_FLAVOR:-}" = "bullseye" ]; then
+    VERSION="$BULLSEYE_VERSION"
+fi
+
 fileName=$(echo $TAR_FILE_NAME_FORMAT | sed "s/#VERSION#/$VERSION/g")
 url=$(echo $INSTALLATION_URL_FORMAT | sed "s/#VERSION#/$VERSION/g")
 url=$(echo $url | sed "s/#TAR_FILE#/$fileName/g")
@@ -20,5 +24,4 @@ mkdir -p "$installationDir"
 tar -xzf "$fileName" -C "$installationDir"
 rm "$fileName"
 ln -s "$installationDir" "$INSTALLED_HUGO_VERSIONS_DIR/lts"
-
 
