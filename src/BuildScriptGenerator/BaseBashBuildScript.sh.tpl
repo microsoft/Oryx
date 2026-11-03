@@ -127,7 +127,7 @@ configure_oryx_dotnet_runtime_directory() {
     export XDG_RUNTIME_DIR="$oryxDotnetRuntimeDir"
 }
 
-if ! configure_oryx_dotnet_runtime_directory; then
+if [ "${ORYX_ENABLE_DOTNET_MUTEX_STORAGE:-false}" = "true" ] && ! configure_oryx_dotnet_runtime_directory; then
     echo "Warning: continuing build without changing XDG_RUNTIME_DIR; .NET named mutex creation may fail." >&2
 fi
 unset -f configure_oryx_dotnet_runtime_directory
