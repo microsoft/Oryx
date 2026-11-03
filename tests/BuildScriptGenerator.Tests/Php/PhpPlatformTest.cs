@@ -1094,6 +1094,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.NotNull(buildScriptSnippet);
             Assert.Contains("make build", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("composer install", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("oryx_report_phase \"php.dependencies.install\"", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("oryx_report_phase \"php.application.build\"", buildScriptSnippet.BashBuildScriptSnippet);
         }
 
         [Fact]
@@ -1145,6 +1147,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.NotNull(buildScriptSnippet);
             Assert.Contains("composer install", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("Running custom build command", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("oryx_report_phase \"php.application.build\"", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("oryx_report_phase \"php.dependencies.install\"", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.True(
+                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("oryx_report_phase \"php.dependencies.install\"") <
+                buildScriptSnippet.BashBuildScriptSnippet.IndexOf("php $composer install"));
         }
 
         [Fact]

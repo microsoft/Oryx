@@ -59,13 +59,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void GeneratedBuildSnippet_HasNpmRunBuildCommand()
+        public void GeneratedBuildSnippet_HasNpmRunBuildCommands()
         {
             // Arrange
             const string packageJson = @"{
               ""main"": ""server.js"",
               ""scripts"": {
                 ""build"": ""build-node"",
+                ""build:azure"": ""build-azure-node"",
               },
             }";
             var commonOptions = new BuildScriptGeneratorOptions();
@@ -89,8 +90,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(buildScriptSnippet);
-            Assert.DoesNotContain("npm run build:azure", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.Contains("npm run build", buildScriptSnippet.BashBuildScriptSnippet);
+            var script = buildScriptSnippet.BashBuildScriptSnippet;
+            Assert.Contains("npm run build", script);
+            Assert.Contains("npm run build:azure", script);
+            Assert.NotEqual(
+                script.IndexOf("oryx_report_nodejs_dependencies_once"),
+                script.LastIndexOf("oryx_report_nodejs_dependencies_once"));
+            Assert.NotEqual(
+                script.IndexOf("oryx_report_nodejs_application_once"),
+                script.LastIndexOf("oryx_report_nodejs_application_once"));
+            Assert.True(script.LastIndexOf("oryx_report_nodejs_dependencies_once") < script.LastIndexOf("npm install"));
+            Assert.True(script.LastIndexOf("oryx_report_nodejs_application_once") < script.LastIndexOf("npm run build"));
+            Assert.Equal(
+                script.IndexOf("oryx_report_phase \"nodejs.application.build\""),
+                script.LastIndexOf("oryx_report_phase \"nodejs.application.build\""));
         }
 
         [Fact]
@@ -158,8 +171,54 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(buildScriptSnippet);
-            Assert.Contains("lerna bootstrap", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.Contains("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
+            var script = buildScriptSnippet.BashBuildScriptSnippet;
+            Assert.Contains("lerna bootstrap", script);
+            Assert.Contains("lerna run build", script);
+            Assert.NotEqual(
+                script.IndexOf("oryx_report_nodejs_dependencies_once"),
+                script.LastIndexOf("oryx_report_nodejs_dependencies_once"));
+            Assert.NotEqual(
+                script.IndexOf("oryx_report_nodejs_application_once"),
+                script.LastIndexOf("oryx_report_nodejs_application_once"));
+            Assert.True(script.LastIndexOf("oryx_report_nodejs_dependencies_once") < script.LastIndexOf("lerna bootstrap"));
+            Assert.True(script.LastIndexOf("oryx_report_nodejs_application_once") < script.LastIndexOf("lerna run build"));
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_HasLageBuildProgress_IfLageConfigFileExists()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null, EnableNodeMonorepoBuild = true },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.LageConfigJSFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+                HasLageConfigJSFile = true,
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            var script = buildScriptSnippet.BashBuildScriptSnippet;
+            Assert.Contains(NodeConstants.InstallLageCommand, script);
+            Assert.Contains(NodeConstants.NpmRunLageBuildCommand, script);
+            Assert.NotEqual(
+                script.IndexOf("oryx_report_nodejs_application_once"),
+                script.LastIndexOf("oryx_report_nodejs_application_once"));
+            Assert.True(script.LastIndexOf(NodeConstants.InstallLageCommand) < script.LastIndexOf("oryx_report_nodejs_application_once"));
+            Assert.True(script.LastIndexOf("oryx_report_nodejs_application_once") < script.LastIndexOf(NodeConstants.NpmRunLageBuildCommand));
         }
 
         [Fact]
@@ -207,7 +266,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var commonOptions = new BuildScriptGeneratorOptions();
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
-                new NodeScriptGeneratorOptions { CustomBuildCommand = "custom build command", CustomRunBuildCommand = "custom run command"},
+                new NodeScriptGeneratorOptions { CustomBuildCommand = "custom build command", CustomRunBuildCommand = "custom run command" },
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
                     NullLoggerFactory.Instance));
@@ -225,8 +284,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(buildScriptSnippet);
-            Assert.Contains("custom build command", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.DoesNotContain("custom run command", buildScriptSnippet.BashBuildScriptSnippet);
+            var script = buildScriptSnippet.BashBuildScriptSnippet;
+            Assert.Contains("custom build command", script);
+            Assert.DoesNotContain("custom run command", script);
+            Assert.Equal(
+                script.IndexOf("oryx_report_nodejs_application_once"),
+                script.LastIndexOf("oryx_report_nodejs_application_once"));
         }
 
         [Fact]
@@ -262,8 +325,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(buildScriptSnippet);
-            Assert.Contains("custom command here", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.DoesNotContain("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
+            var script = buildScriptSnippet.BashBuildScriptSnippet;
+            Assert.Contains("custom command here", script);
+            Assert.DoesNotContain("lerna run build", script);
+            Assert.NotEqual(
+                script.IndexOf("oryx_report_nodejs_dependencies_once"),
+                script.LastIndexOf("oryx_report_nodejs_dependencies_once"));
+            Assert.Equal(
+                script.IndexOf("oryx_report_nodejs_application_once"),
+                script.LastIndexOf("oryx_report_nodejs_application_once"));
+            Assert.True(script.LastIndexOf("oryx_report_nodejs_dependencies_once") < script.LastIndexOf("custom command here"));
         }
 
         [Fact]

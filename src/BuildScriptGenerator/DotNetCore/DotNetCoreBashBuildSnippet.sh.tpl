@@ -29,11 +29,13 @@ msg="${suggestion} | ${doc}"
 {{ # .NET Core 1.1 based projects require restore to be run before publish }}
 echo "Restoring..."
 START_TIME=$SECONDS
+oryx_report_phase "dotnet.dependencies.restore"
 cmd="dotnet restore \"{{ ProjectFile }}\""
 LogErrorWithTryCatch "$cmd" "$msg"
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "dotnet restore done in $ELAPSED_TIME sec(s)."
 
+oryx_report_phase "dotnet.application.build"
 if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
 then
     echo "Publishing..."
