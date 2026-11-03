@@ -9,8 +9,10 @@ Application frameworks, application servers, database clients, compilers,
 profilers, and the Oryx startup-script generator are intentionally excluded.
 Applications must package those dependencies in their build output.
 
-The Oryx pipelines build Python 3.13, 3.14, and 3.15 from the versions and
-SHA256 checksums in `images/embrconstants.yml`. Candidate images are published
+EMBR Node and Python builds use the shared patch versions in
+`images/constants.yml`, not duplicate pins in `images/embrconstants.yml`.
+
+Candidate images are published
 to `oryxdevmcr.azurecr.io/public/oryx/python`; release images use the existing
 MCR repository:
 

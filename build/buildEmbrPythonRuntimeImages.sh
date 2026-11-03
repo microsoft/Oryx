@@ -7,7 +7,6 @@
 set -euo pipefail
 
 readonly REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-readonly CONSTANTS_FILE="$REPO_DIR/images/embrconstants.yml"
 readonly DOCKERFILE="$REPO_DIR/images/runtime/python/embr/template.Dockerfile"
 readonly ACR_NAME="${ACR_NAME:-oryxdevmcr.azurecr.io}"
 readonly ACR_REPOSITORY="${ACR_REPOSITORY:-public/oryx/python}"
@@ -21,23 +20,12 @@ readonly BASE_IMAGE="${BASE_IMAGE:-mcr.microsoft.com/mirror/docker/library/ubunt
 readonly PIP_INDEX_URL="${PIP_INDEX_URL:-https://pypi.org/simple}"
 export PIP_INDEX_URL
 
-yaml_value() {
-    local key="$1"
-    sed -n "s/^  ${key}:[[:space:]]*//p" "$CONSTANTS_FILE"
-}
-
 mkdir -p "$(dirname "$IMAGE_LIST")"
 : > "$IMAGE_LIST"
 
 for minor_version in $PYTHON_VERSIONS; do
-    compact_version="${minor_version//./}"
-    full_version="$(yaml_value "python${compact_version}Version")"
-    sha256="$(yaml_value "python${compact_version}_SHA256")"
-
-    if [[ -z "$full_version" || -z "$sha256" ]]; then
-        echo "Missing version or SHA256 for Python $minor_version in $CONSTANTS_FILE." >&2
-        exit 1
-    fi
+    metadata="$(bash "$REPO_DIR/build/getEmbrPythonVersionMetadata.sh" "$minor_version")"
+    IFS='|' read -r full_version _ <<< "$metadata"
 
     image="$ACR_NAME/$ACR_REPOSITORY:embr-$minor_version-ubuntu-resolute-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
     docker build \
@@ -49,7 +37,6 @@ for minor_version in $PYTHON_VERSIONS; do
         --build-arg "PYTHON_FULL_VERSION=$full_version" \
         --build-arg "PYTHON_VERSION=$minor_version" \
         --build-arg "PYTHON_MAJOR_VERSION=3" \
-        --build-arg "PYTHON_SHA256=$sha256" \
         --build-arg "BUILD_NUMBER=${BUILD_BUILDNUMBER:-local}" \
         --build-arg "GIT_COMMIT=${BUILD_SOURCEVERSION:-unspecified}" \
         --build-arg "RELEASE_TAG_NAME=$RELEASE_TAG_NAME" \
