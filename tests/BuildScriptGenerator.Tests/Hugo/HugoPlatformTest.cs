@@ -31,8 +31,53 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
             Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
-        [Fact]
-        public void Detect_ReturnsVersionFromOptions()
+        [Theory]
+        [InlineData("bullseye", "0.148.2")]
+        [InlineData("bookworm", "0.169.0")]
+        [InlineData(null, "0.169.0")]
+        public void Detect_UsesOsSpecificDefaultVersion(string debianFlavor, string expectedVersion)
+        {
+            var platform = CreatePlatform(
+                CreateDetector(detectedVersion: null),
+                buildScriptGeneratorOptions: new BuildScriptGeneratorOptions
+                {
+                    DebianFlavor = debianFlavor,
+                });
+
+            var result = platform.Detect(CreateContext());
+
+            Assert.NotNull(result);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
+            Assert.Equal(expectedVersion, Assert.Single(platform.SupportedVersions));
+        }
+
+        [Theory]
+        [InlineData("bullseye")]
+        [InlineData("bookworm")]
+        public void Detect_ReturnsConfiguredDefaultVersion(string debianFlavor)
+        {
+            var expectedVersion = "1.2.3";
+            var platform = CreatePlatform(
+                CreateDetector(detectedVersion: null),
+                buildScriptGeneratorOptions: new BuildScriptGeneratorOptions
+                {
+                    DebianFlavor = debianFlavor,
+                },
+                hugoScriptGeneratorOptions: new HugoScriptGeneratorOptions
+                {
+                    DefaultVersion = expectedVersion,
+                });
+
+            var result = platform.Detect(CreateContext());
+
+            Assert.NotNull(result);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
+        }
+
+        [Theory]
+        [InlineData("bullseye")]
+        [InlineData("bookworm")]
+        public void Detect_ReturnsVersionFromOptions(string debianFlavor)
         {
             // Arrange
             var expectedVersion = "1.2.3";
@@ -44,6 +89,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
             var detector = CreateDetector(detectedVersion: detectedVersion);
             var platform = CreatePlatform(
                 detector,
+                buildScriptGeneratorOptions: new BuildScriptGeneratorOptions
+                {
+                    DebianFlavor = debianFlavor,
+                },
                 hugoScriptGeneratorOptions: hugoScriptGeneratorOptions);
             var context = CreateContext();
 
