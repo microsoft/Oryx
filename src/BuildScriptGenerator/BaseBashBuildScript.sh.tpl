@@ -111,16 +111,14 @@ configure_oryx_dotnet_runtime_directory() {
     local oryxDotnetUserId oryxDotnetRuntimeDir
     oryxDotnetUserId=$(id -u) || return 1
     oryxDotnetRuntimeDir="${XDG_RUNTIME_DIR:-/tmp/oryx-dotnet-runtime-$oryxDotnetUserId}"
-    if [ -z "$XDG_RUNTIME_DIR" ]; then
-        if ! mkdir -m 0700 "$oryxDotnetRuntimeDir" 2>/dev/null && [ ! -d "$oryxDotnetRuntimeDir" ]; then
-            echo "Failed to create .NET runtime directory '$oryxDotnetRuntimeDir'." >&2
-            return 1
-        fi
+    if [ -z "$XDG_RUNTIME_DIR" ] &&
+        ! mkdir -m 0700 "$oryxDotnetRuntimeDir" 2>/dev/null && [ ! -d "$oryxDotnetRuntimeDir" ]; then
+        echo "Failed to create .NET runtime directory '$oryxDotnetRuntimeDir'." >&2
+        return 1
     fi
 
     if [ "${oryxDotnetRuntimeDir:0:1}" != "/" ] || [ ! -d "$oryxDotnetRuntimeDir" ] || [ -L "$oryxDotnetRuntimeDir" ] ||
-        [ "$(stat -c %u "$oryxDotnetRuntimeDir")" != "$oryxDotnetUserId" ] ||
-        [ "$(stat -c %a "$oryxDotnetRuntimeDir")" != "700" ] ||
+        [ "$(stat -c %u:%a "$oryxDotnetRuntimeDir")" != "$oryxDotnetUserId:700" ] ||
         [ ! -w "$oryxDotnetRuntimeDir" ] || [ ! -x "$oryxDotnetRuntimeDir" ]; then
         echo "Invalid .NET runtime directory '$oryxDotnetRuntimeDir': expected an absolute, non-symlink directory owned by UID $oryxDotnetUserId with permissions 0700 and write/execute access." >&2
         return 1
