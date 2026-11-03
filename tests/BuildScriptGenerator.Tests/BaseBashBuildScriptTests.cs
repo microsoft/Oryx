@@ -34,7 +34,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 Assert.Contains("mkdir -m 0700 \"$oryxDotnetRuntimeDir\"", script);
                 Assert.Contains("export XDG_RUNTIME_DIR=\"$oryxDotnetRuntimeDir\"", script);
                 Assert.Contains("Invalid .NET runtime directory", script);
-                Assert.Contains("if [ \"${ORYX_ENABLE_DOTNET_MUTEX_STORAGE:-false}\" = \"true\" ] && ! configure_oryx_dotnet_runtime_directory; then", script);
+                Assert.Contains("if [[ \"${ORYX_ENABLE_DOTNET_MUTEX_STORAGE:-false}\" == \"true\" ]]; then", script);
+                Assert.Contains("if ! configure_oryx_dotnet_runtime_directory; then", script);
                 Assert.Contains("Warning: continuing build without changing XDG_RUNTIME_DIR", script);
 
                 var setupStart = script.IndexOf("configure_oryx_dotnet_runtime_directory() {", StringComparison.Ordinal);
