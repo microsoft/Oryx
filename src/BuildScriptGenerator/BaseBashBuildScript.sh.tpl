@@ -105,6 +105,59 @@ export DESTINATION_DIR
 access the destination directory ## }}
 mkdir -p "$DESTINATION_DIR"
 
+{{ if IsDotNetCoreBuild }}
+# NuGet named mutexes require private storage owned by the build user, not the shared /home mount.
+configure_oryx_dotnet_runtime_directory() {
+    local oryxDotnetUserId oryxDotnetRuntimeDir directoryOwner directoryPermissions
+
+    oryxDotnetUserId=$(id -u) || return 1
+    oryxDotnetRuntimeDir="${XDG_RUNTIME_DIR:-/tmp/oryx-dotnet-runtime-$oryxDotnetUserId}"
+    if [[ -z "${XDG_RUNTIME_DIR:-}" ]]; then
+        if ! mkdir -m 0700 "$oryxDotnetRuntimeDir" 2>/dev/null &&
+            [[ ! -d "$oryxDotnetRuntimeDir" ]]; then
+            echo "Failed to create .NET runtime directory '$oryxDotnetRuntimeDir'." >&2
+            return 1
+        fi
+    fi
+
+    if [[ "$oryxDotnetRuntimeDir" != /* ]]; then
+        echo "Invalid .NET runtime directory '$oryxDotnetRuntimeDir': must be an absolute path." >&2
+        return 1
+    fi
+
+    if [[ ! -d "$oryxDotnetRuntimeDir" || -L "$oryxDotnetRuntimeDir" ]]; then
+        echo "Invalid .NET runtime directory '$oryxDotnetRuntimeDir': must exist and must not be a symlink." >&2
+        return 1
+    fi
+
+    directoryOwner=$(stat -c %u "$oryxDotnetRuntimeDir") || return 1
+    if [[ "$directoryOwner" != "$oryxDotnetUserId" ]]; then
+        echo "Invalid .NET runtime directory '$oryxDotnetRuntimeDir': must belong to UID $oryxDotnetUserId." >&2
+        return 1
+    fi
+
+    directoryPermissions=$(stat -c %a "$oryxDotnetRuntimeDir") || return 1
+    if [[ "$directoryPermissions" != "700" ]]; then
+        echo "Invalid .NET runtime directory '$oryxDotnetRuntimeDir': must have permissions 0700." >&2
+        return 1
+    fi
+
+    if [[ ! -w "$oryxDotnetRuntimeDir" || ! -x "$oryxDotnetRuntimeDir" ]]; then
+        echo "Invalid .NET runtime directory '$oryxDotnetRuntimeDir': must allow writing and traversal." >&2
+        return 1
+    fi
+
+    export XDG_RUNTIME_DIR="$oryxDotnetRuntimeDir"
+}
+
+if [[ "${ORYX_ENABLE_DOTNET_MUTEX_STORAGE:-false}" == "true" ]]; then
+    if ! configure_oryx_dotnet_runtime_directory; then
+        echo "Warning: continuing build without changing XDG_RUNTIME_DIR; .NET named mutex creation may fail." >&2
+    fi
+fi
+unset -f configure_oryx_dotnet_runtime_directory
+{{ end }}
+
 {{ if PreBuildCommand | IsNotBlank }}
 {{ # Make sure to cd to the source directory so that the pre-build script runs from there }}
 cd "$SOURCE_DIR"
