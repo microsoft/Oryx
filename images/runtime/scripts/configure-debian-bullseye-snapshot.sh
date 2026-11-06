@@ -2,9 +2,8 @@
 
 set -euo pipefail
 
-snapshot_timestamp="20260831T211305Z"
-debian_snapshot_url="http://snapshot.debian.org/archive/debian/${snapshot_timestamp}/"
-security_snapshot_url="http://snapshot.debian.org/archive/debian-security/${snapshot_timestamp}/"
+debian_archive_url="http://archive.debian.org/debian"
+security_archive_url="http://archive.debian.org/debian-security"
 
 mapfile -d '' apt_source_files < <(find /etc/apt -type f \( -name '*.list' -o -name '*.sources' \) -print0)
 if [ "${#apt_source_files[@]}" -eq 0 ]; then
@@ -13,18 +12,21 @@ if [ "${#apt_source_files[@]}" -eq 0 ]; then
 fi
 
 sed -i \
-    -e "s|https\\?://deb.debian.org/debian-security|${security_snapshot_url}|g" \
-    -e "s|https\\?://security.debian.org/debian-security|${security_snapshot_url}|g" \
-    -e "s|https\\?://deb.debian.org/debian|${debian_snapshot_url}|g" \
+    -e '/^[[:space:]]*deb\(-src\)\?[[:space:]]/ { /[[:space:]]bullseye\(-updates\|-security\)\?[[:space:]]/!b; }' \
+    -e "s|https\\?://snapshot.debian.org/archive/debian-security/20260831T211305Z|${security_archive_url}|g" \
+    -e "s|https\\?://snapshot.debian.org/archive/debian/20260831T211305Z|${debian_archive_url}|g" \
+    -e "s|https\\?://deb.debian.org/debian-security|${security_archive_url}|g" \
+    -e "s|https\\?://security.debian.org/debian-security|${security_archive_url}|g" \
+    -e "s|https\\?://deb.debian.org/debian|${debian_archive_url}|g" \
     "${apt_source_files[@]}"
 
-if ! grep -Fq "${debian_snapshot_url}" "${apt_source_files[@]}"; then
-    echo "The Debian APT source was not updated to the snapshot." >&2
+if ! grep -Eq "${debian_archive_url}(/|[[:space:]]|$)" "${apt_source_files[@]}"; then
+    echo "The Debian APT source was not updated to the archive." >&2
     exit 1
 fi
 
-if ! grep -Fq "${security_snapshot_url}" "${apt_source_files[@]}"; then
-    echo "The Debian Security APT source was not updated to the snapshot." >&2
+if ! grep -Fq "${security_archive_url}" "${apt_source_files[@]}"; then
+    echo "The Debian Security APT source was not updated to the archive." >&2
     exit 1
 fi
 
