@@ -26,6 +26,7 @@ ARG DEBIAN_FLAVOR
 ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+ENV ORYX_ENABLE_DOTNET_MUTEX_STORAGE=true
 
 # stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
 RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \

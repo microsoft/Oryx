@@ -5,6 +5,7 @@ ARG BASE_IMAGE
 FROM ${BASE_IMAGE} AS main
 ARG OS_FLAVOR
 ENV OS_FLAVOR=$OS_FLAVOR
+ENV ORYX_ENABLE_DOTNET_MUTEX_STORAGE=true
 
 COPY binaries /opt/buildscriptgen/
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript /opt/buildscriptgen/Microsoft.Oryx.BuildServer
