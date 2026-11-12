@@ -156,6 +156,10 @@ Dockerfiles were already self-contained. Python's shared Debian recipe still
 selects its OS using `DEBIAN_FLAVOR`, and disposable compiler stages remain
 part of the runtime build.
 
+The .NET 8 Bullseye runtime uses the official Debian archive because Bullseye
+packages have moved off the live mirrors. APT signature, checksum, and metadata
+expiry verification remain enabled.
+
 # Testing Locally
 ## startup script generator
 `build/testStartupScriptGenerators.sh` will perform tests on all startup script generators written in go.

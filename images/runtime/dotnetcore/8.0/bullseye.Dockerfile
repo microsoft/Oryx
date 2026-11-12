@@ -55,7 +55,9 @@ ARG BUILD_DIR=/tmp/oryx/build
 ARG INCLUDE_AZURELINUX_CERTS
 ADD build ${BUILD_DIR}
 
-RUN apt-get update \
+# Bullseye packages have moved from the live mirrors to the signed Debian archive.
+RUN sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         # .NET Core dependencies
         libc6 \
