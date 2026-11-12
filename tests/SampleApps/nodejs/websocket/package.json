@@ -8,7 +8,7 @@
   "license": "BSD",
   "dependencies": {
     "express": "4.13.4",
-	"socket.io": "1.3.5"
+	"socket.io": "2.5.1"
   },
   "scripts": {
     "start": "node index.js"
