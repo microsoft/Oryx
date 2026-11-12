@@ -503,7 +503,7 @@ RUN set -eux; \
 #33 2.797 bcmath bz2 calendar ctype curl dba dl_test dom enchant exif ffi fileinfo filter ftp gd gettext gmp hash iconv intl json ldap mbstring mysqli odbc opcache pcntl pdo pdo_dblib pdo_firebird pdo_mysql pdo_odbc pdo_pgsql pdo_sqlite pgsql phar posix random readline reflection session shmop simplexml snmp soap sockets sodium spl standard sysvmsg sysvsem sysvshm tidy tokenizer xml xmlreader xmlwriter xsl zend_test zip
 
 RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && docker-php-ext-install gd \
+    && docker-php-ext-install -j "$(nproc)" gd \
         mysqli \
         pdo \
         pdo_mysql \
@@ -572,7 +572,7 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
-    && docker-php-ext-install odbc \
+    && docker-php-ext-install -j "$(nproc)" odbc \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LANG="C.UTF-8" \

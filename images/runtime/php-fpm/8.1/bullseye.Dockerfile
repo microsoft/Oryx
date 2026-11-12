@@ -498,7 +498,7 @@ RUN set -eux; \
     fi
 
 RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && docker-php-ext-install gd \
+    && docker-php-ext-install -j "$(nproc)" gd \
         mysqli \
         opcache \
         pdo \
@@ -585,7 +585,7 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
-    && docker-php-ext-install odbc \
+    && docker-php-ext-install -j "$(nproc)" odbc \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LANG="C.UTF-8" \

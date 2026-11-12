@@ -7,7 +7,6 @@
 set -ex
 
 pythonVersion=$PYTHON_VERSION 
-osFlavor=$OS_FLAVOR
 python_sha=$PYTHON_SHA256
 gpgKey=$GPG_KEY
 
@@ -57,7 +56,6 @@ fi
 PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 
 PIP_VERSION="21.2.4"
-pythonSdkFileName=python-$osFlavor-$PYTHON_VERSION.tar.gz
 
 tar -xJf /python.tar.xz --strip-components=1 -C .
 
@@ -180,8 +178,3 @@ pipReqSetPath=`find $INSTALLATION_PREFIX/lib -path "*site-packages/pip/_internal
 if [ -n "$pipReqSetPath" ]; then
     sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\.\.\.'\'')|' "$pipReqSetPath"
 fi
-
-compressedSdkDir="/tmp/compressedSdk/python"
-mkdir -p $compressedSdkDir
-cd "$INSTALLATION_PREFIX"
-tar -zcf $compressedSdkDir/$pythonSdkFileName .
