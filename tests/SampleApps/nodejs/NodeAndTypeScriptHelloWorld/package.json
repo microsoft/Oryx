@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "4.21.2",
+    "express": "4.22.2",
     "nodemon": "3.1.9",
     "shelljs": "^0.8.5"
   },
