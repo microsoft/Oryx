@@ -148,6 +148,14 @@ docker run --detach --rm \
 Oryx consists of a build image, a collection of runtime images, a build script generator, and a collection of
 startup script generators. For more details, refer to our [architecture](./doc/architecture.md) page.
 
+The active Node, Python, and PHP runtime Dockerfiles include the common and
+platform-specific bases as stages in the same file. Build them directly from
+the repository root with exact version inputs from `images/constants.yml`;
+separately built `BASE_IMAGE` inputs are no longer required. The .NET runtime
+Dockerfiles were already self-contained. Python's shared Debian recipe still
+selects its OS using `DEBIAN_FLAVOR`, and disposable compiler stages remain
+part of the runtime build.
+
 # Testing Locally
 ## startup script generator
 `build/testStartupScriptGenerators.sh` will perform tests on all startup script generators written in go.

@@ -1,24 +1,21 @@
-# Node images
+# Node runtime images
 
-The Dockerfiles for our Node images are either produced by a template, which derives from the official image, or
-created manually from the `buildpack-deps` base.
+The active runtime Dockerfiles are checked in under each major version and OS:
+20 and 22 use Bullseye/Bookworm, 24 uses Noble, and 26 uses Resolute.
+Their common base and Node-specific base are stages in the same Dockerfile.
+No separate base build, external `BASE_IMAGE`, or Dockerfile generator is required.
 
-# Images derived from `buildpack-deps`
+Build using the repository root as the Docker context. Supply exact Node and
+tooling versions from `images/constants.yml`, and provide the configured package
+feed credential using the `npmrc` BuildKit secret.
 
-The reason we do rebuild some old images instead of relying on the official ones is security: since
-the official images for older versions were made using the version of `buildpack-deps` available at the time, which
-contained vulnerabilities, we rebuild them using the current version of that base image. The portion of our
-Dockerfiles that install Node (which we always have in its own stage called `node-original-image`) are identical to the
-ones used in the official Node image for each particular version.
+The runtime retains signed Node download verification and the Go startup
+generator. The Resolute profile has its own dependencies and Yarn installation;
+it does not inherit the classic Node base.
 
-# Generate images from template
+## Adding a major version
 
-Since our node images are identical except for the base image, which determines the node version,
-our final node images are generated from a template file, `./template.Dockerfile`, which contains the placeholder
-for the base image name. 
-
-To generate the dockerfiles for all the images, run `./generateDockerfiles.sh`.
-
-## Adding new versions of Node
-
-To add a new Node version, add a new directory with the version name, and a base Dockerfile named `./base.Dockerfile`, that should contain the node binaries. The script `./generateDockerfiles.sh` will then produce the Dockerfile for the final image using the `./base.Dockerfile` image as its base.
+Declare its exact version and supported OS list in `images/constants.yml`, add
+the corresponding runtime Dockerfile, and select it in the runtime pipeline.
+Reuse the matching multi-stage profile where behavior is unchanged; preserve
+intentional OS, startup-tooling, and user-ID differences.

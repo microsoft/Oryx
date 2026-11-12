@@ -1,4 +1,152 @@
-ARG BASE_IMAGE
+ARG OS_TYPE=debian
+ARG OS_FLAVOR=bookworm
+ARG INCLUDE_AZURELINUX_CERTS=true
+
+# Stage: (optional) pull Azure Linux CA certificates so we can merge them into BaseOS trust store
+# Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
+FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
+ARG INCLUDE_AZURELINUX_CERTS
+COPY images/runtime/certs/blocklist/ /etc/pki/ca-trust/source/blacklist/
+RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+		set -eux; \
+		tdnf makecache; \
+		tdnf install -y ca-certificates; \
+		update-ca-trust extract; \
+		tdnf clean all; \
+	fi
+
+FROM mcr.microsoft.com/mirror/docker/library/${OS_TYPE}:${OS_FLAVOR} AS oryx_run_base
+ARG IMAGES_DIR=/tmp/oryx/images
+ARG BUILD_DIR=/tmp/oryx/build
+ARG INCLUDE_AZURELINUX_CERTS
+ARG OS_FLAVOR
+
+COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
+# TODO: Remove this once Debian Bullseye and Bookworm provide tzdata 2026e-1 or newer.
+COPY images/runtime/scripts/install-debian-tzdata-2026e.sh /usr/local/bin/
+RUN if [ "${OS_FLAVOR}" = "bullseye" ]; then \
+		chmod +x /usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+		/usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+	fi
+
+RUN apt-get update \
+	&& apt-get upgrade -y \
+	&& apt-get install -y --no-install-recommends \
+		xz-utils \
+		ca-certificates \
+		curl \
+		gnupg \
+		netbase \
+		wget
+
+RUN if [ "${OS_FLAVOR}" = "bullseye" ] || [ "${OS_FLAVOR}" = "bookworm" ]; then \
+		chmod +x /usr/local/bin/install-debian-tzdata-2026e.sh; \
+		/usr/local/bin/install-debian-tzdata-2026e.sh; \
+	elif [ "${OS_FLAVOR}" = "noble" ] || [ "${OS_FLAVOR}" = "resolute" ]; then \
+		apt-get update; \
+		DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata; \
+	fi
+
+RUN if [ "${OS_FLAVOR}" = "bookworm" ] ; then \
+    apt-get update && apt-get install -y --no-install-recommends sq ; \
+    fi
+
+RUN rm -f /usr/local/bin/configure-debian-bullseye-snapshot.sh /usr/local/bin/install-debian-tzdata-2026e.sh \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Copy Azure linux certs to a temporary location
+RUN mkdir -p /tmp/azurelinux-ca-certs && \
+	chmod 755 /tmp/azurelinux-ca-certs;
+COPY --from=azurelinux-core /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
+
+COPY images/runtime/scripts/install-azurelinux-certs.sh /usr/local/bin/install-azurelinux-certs.sh
+
+# Add Azure Linux certs to Debian's CA store if the flag is set to true
+RUN set -e; \
+    if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+        chmod +x /usr/local/bin/install-azurelinux-certs.sh; \
+        /usr/local/bin/install-azurelinux-certs.sh /tmp/azurelinux-ca-certs /tmp/azurelinux-ca-certs/tls-ca-bundle.pem; \
+    fi;
+
+# Cleanup script and temporary files
+RUN	rm -f /usr/local/bin/install-azurelinux-certs.sh; \
+	rm -rf /tmp/azurelinux-ca-certs;
+
+ADD images ${IMAGES_DIR}
+ADD build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+
+FROM oryx_run_base AS oryx_runtime_base
+
+# prevent Debian's PHP packages from being installed
+# https://github.com/docker-library/php/pull/542
+RUN set -eux; \
+	{ \
+		echo 'Package: php*'; \
+		echo 'Pin: release *'; \
+		echo 'Pin-Priority: -1'; \
+	} > /etc/apt/preferences.d/no-debian-php
+
+# dependencies required for running "phpize"
+# (see persistent deps below)
+ENV PHPIZE_DEPS \
+		autoconf \
+		dpkg-dev \
+		file \
+		g++ \
+		gcc \
+		libc-dev \
+		make \
+		pkg-config \
+		re2c
+
+# persistent / runtime deps
+RUN set -eux; \
+	apt-get update; \
+	apt-get upgrade -y \
+	&& apt-get install -y --no-install-recommends \
+		$PHPIZE_DEPS \
+		ca-certificates \
+		curl \
+		xz-utils \
+		libzip-dev \
+		libpng-dev \
+		libjpeg-dev \
+		libpq-dev \
+		libldap2-dev \
+		libldb-dev \
+		libicu-dev \
+		libgmp-dev \
+		libmagickwand-dev \
+		libc-client-dev \
+		libtidy-dev \
+		libkrb5-dev \
+		libxslt-dev \
+		openssh-server \
+		vim \
+		wget \
+		tcptraceroute \
+		mariadb-client \
+		openssl \
+		libedit-dev \
+		libsodium-dev \
+		libfreetype6-dev \
+		libjpeg62-turbo-dev \
+		libonig-dev \
+		libcurl4-openssl-dev \
+		libldap2-dev \
+		zlib1g-dev \
+		apache2-dev \
+		libsqlite3-dev \
+	; \
+	rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+    && ACCEPT_EULA=Y \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get upgrade --assume-yes \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bookworm as startupCmdGen
@@ -15,7 +163,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod +x build.sh && ./build.sh php /opt/startupcmdgen/startupcmdgen
 
 # From https://github.com/docker-library/php.git
-FROM ${BASE_IMAGE}
+FROM oryx_runtime_base
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.

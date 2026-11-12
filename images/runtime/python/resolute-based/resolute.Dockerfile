@@ -1,5 +1,56 @@
-ARG OS_FLAVOR
-ARG BASE_IMAGE
+ARG OS_TYPE=ubuntu
+ARG OS_FLAVOR=resolute
+ARG INCLUDE_AZURELINUX_CERTS=true
+
+# Stage: (optional) pull Azure Linux CA certificates so we can merge them into BaseOS trust store
+# Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
+FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
+ARG INCLUDE_AZURELINUX_CERTS
+COPY images/runtime/certs/blocklist/ /etc/pki/ca-trust/source/blacklist/
+RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+		set -eux; \
+		tdnf makecache; \
+		tdnf install -y ca-certificates; \
+		update-ca-trust extract; \
+		tdnf clean all; \
+	fi
+
+FROM mcr.microsoft.com/mirror/docker/library/${OS_TYPE}:${OS_FLAVOR} AS oryx_runtime_base
+ARG INCLUDE_AZURELINUX_CERTS
+
+RUN apt-get update \
+	&& apt-get upgrade -y \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		xz-utils \
+		ca-certificates \
+		curl \
+		gnupg \
+		netbase \
+		wget \
+        unzip \
+		zstd \
+		# Not shipped in Resolute, but will be required by Node runtime. It is tiny, would save from unexpected runtime failures in other frameworks too
+		libatomic1 \
+		tzdata \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Copy Azure linux certs to a temporary location
+RUN mkdir -p /tmp/azurelinux-ca-certs && \
+	chmod 755 /tmp/azurelinux-ca-certs;
+COPY --from=azurelinux-core /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
+
+COPY images/runtime/scripts/install-azurelinux-certs.sh /usr/local/bin/install-azurelinux-certs.sh
+
+# Add Azure Linux certs to Debian's CA store if the flag is set to true
+RUN set -e; \
+    if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+        chmod +x /usr/local/bin/install-azurelinux-certs.sh; \
+        /usr/local/bin/install-azurelinux-certs.sh /tmp/azurelinux-ca-certs /tmp/azurelinux-ca-certs/tls-ca-bundle.pem; \
+    fi;
+
+# Cleanup script and temporary files
+RUN	rm -f /usr/local/bin/install-azurelinux-certs.sh; \
+	rm -rf /tmp/azurelinux-ca-certs;
 
 # -----------------------------------------------------------------------------
 # Stage 1: build the Oryx startup-script generator (the `oryx` CLI)
@@ -24,7 +75,7 @@ RUN chmod +x build.sh && ./build.sh python /opt/startupcmdgen/startupcmdgen
 #   build.sh now parses versionsToBuild.txt itself (gpg key + sha256).
 #   Inputs are passed as ENV (ARGs are not visible to scripts).
 # -----------------------------------------------------------------------------
-FROM ${BASE_IMAGE} AS pythonRuntimeBinariesBuilder
+FROM oryx_runtime_base AS pythonRuntimeBinariesBuilder
 ARG OS_FLAVOR
 ARG PYTHON_FULL_VERSION
 ENV OS_FLAVOR=${OS_FLAVOR}
@@ -53,7 +104,7 @@ RUN chmod +x /tmp/build.sh /tmp/receiveGpgKeys.sh \
 #     5. COPY oryx CLI      (per-build, tiny -> last)
 # -----------------------------------------------------------------------------
 
-FROM ${BASE_IMAGE} as main
+FROM oryx_runtime_base AS main
 ARG OS_FLAVOR
 ENV OS_FLAVOR=${OS_FLAVOR}
 
