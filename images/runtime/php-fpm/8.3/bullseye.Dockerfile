@@ -535,26 +535,26 @@ RUN set -eux; \
         -- "$(( ($(nproc) + 3) / 4 ))" \
     && docker-php-ext-install -j "$(nproc)" "$@" \
     && docker-php-source delete
-RUN MAKEFLAGS="-j$(nproc)" pecl install redis && docker-php-ext-enable redis
+RUN MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" redis && docker-php-ext-enable redis
 
 # https://github.com/Imagick/imagick/issues/331
 # https://github.com/ihneo/php/pull/24/files
 RUN set -eux; \	
     if [[ $PHP_VERSION != 8.3.* ]]; then \
-        MAKEFLAGS="-j$(nproc)" pecl install imagick && docker-php-ext-enable imagick; \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" imagick && docker-php-ext-enable imagick; \
     fi
         
 # deprecated from 5.*, so should be avoided 	
 RUN set -eux; \	
     if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \	
-        MAKEFLAGS="-j$(nproc)" pecl install mongodb && docker-php-ext-enable mongodb; \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" mongodb && docker-php-ext-enable mongodb; \
     fi	
 
 # https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
         echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
-        MAKEFLAGS="-j$(nproc)" pecl install mysqlnd_azure \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" mysqlnd_azure \
         && docker-php-ext-enable mysqlnd_azure; \
     fi
 
@@ -564,7 +564,7 @@ RUN set -eux; \
 # For php|8.0, latest stable version of pecl/sqlsrv, pecl/pdo_sqlsrv is 5.11.0
 RUN set -eux; \
     if [[ $PHP_VERSION == 8.0.* ]]; then \
-        MAKEFLAGS="-j$(nproc)" pecl install sqlsrv-5.11.0 pdo_sqlsrv-5.11.0 \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" sqlsrv-5.11.0 pdo_sqlsrv-5.11.0 \
         && echo extension=pdo_sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||")/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||")/20-sqlsrv.ini; \
     fi
@@ -572,7 +572,7 @@ RUN set -eux; \
 # Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.1.0)
 RUN set -eux; \
     if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* ]]; then \
-        MAKEFLAGS="-j$(nproc)" pecl install sqlsrv pdo_sqlsrv \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
     fi

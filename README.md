@@ -165,6 +165,9 @@ concurrently, splitting make jobs between them. The existing extension installer
 then installs and enables the results serially to avoid shared-header races.
 PECL receives command-scoped `MAKEFLAGS`, leaving the running
 image's environment and extension selection unchanged.
+PECL downloads retry up to three times in isolated temporary directories;
+compilation and installation failures are not retried. The same package requests,
+including pinned SQL Server driver versions, still go through PECL's installer.
 Extension configuration, compilation, and source cleanup share a layer so
 extracted PHP build sources are not retained in the runtime image. The original
 source archive remains available to `docker-php-source extract`.
