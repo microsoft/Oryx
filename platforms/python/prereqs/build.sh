@@ -80,8 +80,10 @@ fi
     --without-ensurepip \
     "${configureArgs[@]}"
 
-# GCC otherwise links LTO partitions serially despite make -j.
-make -j "$(nproc)" LDFLAGS_NODIST="-flto=auto"
+# Older CPython disables LTO partitioning; retain the full PGO workload in parallel.
+make -j "$(nproc)" \
+    LDFLAGS_NODIST="-flto=auto -flto-partition=balanced" \
+    PROFILE_TASK="-m test --pgo --timeout=\$(TESTTIMEOUT) -j$(nproc)"
 
 make install
 

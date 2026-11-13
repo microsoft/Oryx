@@ -166,9 +166,12 @@ image's environment and extension selection unchanged.
 Extension configuration, compilation, and source cleanup share a layer so
 extracted PHP build sources are not retained in the runtime image. The original
 source archive remains available to `docker-php-source extract`.
-Python keeps PGO/LTO enabled and parallelizes GCC's LTO links. Only the SDK build
-driver compresses an SDK archive; runtime builds copy the installed interpreter
-directly.
+Python keeps PGO/LTO enabled and runs the unchanged default PGO training suite
+across the available CPUs. GCC's LTO links use balanced parallel partitions,
+including on older CPython versions that otherwise disable partitioning (see
+[CPython's upstream change](https://github.com/python/cpython/pull/132258)).
+Only the SDK build driver compresses an SDK archive; runtime builds copy the
+installed interpreter directly.
 
 # Testing Locally
 ## startup script generator
