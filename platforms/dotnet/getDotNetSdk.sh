@@ -74,6 +74,16 @@ getDotNetCoreSdk() {
 echo
 echo "Getting .NET Core Sdks..."
 echo
+if [ "$debianFlavor" == "resolute" ]; then
+	# Share .NET 10 release metadata without changing Noble builds or Resolute's .NET 11 manifest.
+	dotnet10Versions="$(awk -F, '$1 ~ /^[[:space:]]*10[.]/ { print }' "$dotNetPlatformDir/versions/noble/versionsToBuild.txt")"
+	if [ -z "$dotnet10Versions" ]; then
+		echo "No .NET 10 SDK versions found in the Noble manifest." >&2
+		exit 1
+	fi
+	buildPlatform <(printf '%s\n' "$dotnet10Versions") getDotNetCoreSdk
+fi
+
 buildPlatform "$dotNetPlatformDir/versions/$debianFlavor/versionsToBuild.txt" getDotNetCoreSdk
 
 cp "$dotNetPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
