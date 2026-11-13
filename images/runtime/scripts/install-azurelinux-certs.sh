@@ -62,20 +62,27 @@ sanitize_filename() {
 }
 
 fingerprint_sha256() {
-    openssl x509 -in "$1" -noout -fingerprint -sha256 | cut -d= -f2
+    local fingerprint
+    fingerprint=$(openssl x509 -in "$1" -noout -fingerprint -sha256) || return 1
+    printf '%s\n' "${fingerprint#*=}"
 }
 
 process_certificate() {
     local azlCert="$1" dest_dir="$2" idx="$3"
+    local metadata fp="" subject="" line
 
-    # Validate the cert
-    if ! openssl x509 -in "$azlCert" -noout -subject >/dev/null 2>&1; then
+    # Validate and read both fields in one OpenSSL invocation.
+    if ! metadata=$(openssl x509 -in "$azlCert" -noout -subject -nameopt RFC2253 -fingerprint -sha256 2>/dev/null); then
         err "Invalid cert: $azlCert"
         return 1
     fi
+    while IFS= read -r line; do
+        case "$line" in
+            subject=*) subject="$line" ;;
+            *Fingerprint=*) fp="${line#*=}" ;;
+        esac
+    done <<< "$metadata"
 
-    local fp
-    fp=$(fingerprint_sha256 "$azlCert") || true
     [ -n "$fp" ] || { err "Could not compute fingerprint for $azlCert"; return 1; }
 
     # Duplicate in already installed store?
@@ -92,8 +99,7 @@ process_certificate() {
     printf '%s\n' "$fp" >> "$TMP_CERTS_DIR/imported-azl-fingerprints.txt"
 
     # Derive name
-    local subject cn
-    subject=$(openssl x509 -in "$azlCert" -noout -subject -nameopt RFC2253)
+    local cn
     cn=$(printf '%s' "$subject" | sed -n 's/.*CN=\([^,]*\).*/\1/p')
 
     # If CN extraction failed, fallback to full subject or fingerprint

@@ -183,6 +183,8 @@ installed before copying the compiled interpreter so BuildKit can overlap their
 installation with compilation.
 Only the SDK build driver compresses an SDK archive; runtime builds copy the
 installed interpreter directly.
+Azure Linux CA imports read each certificate's subject and SHA256 fingerprint
+in one OpenSSL invocation, retaining the existing validation and trust-store deduplication.
 
 # Testing Locally
 ## startup script generator
