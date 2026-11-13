@@ -166,6 +166,8 @@ image's environment and extension selection unchanged.
 Extension configuration, compilation, and source cleanup share a layer so
 extracted PHP build sources are not retained in the runtime image. The original
 source archive remains available to `docker-php-source extract`.
+GPG key retrieval stops after the first successful retry and fails explicitly
+when all attempts are exhausted. Key fingerprints and signature checks are unchanged.
 Python keeps PGO/LTO enabled and runs the unchanged default PGO training suite
 across the available CPUs. GCC's LTO links use balanced parallel partitions,
 including on older CPython versions that otherwise disable partitioning (see
