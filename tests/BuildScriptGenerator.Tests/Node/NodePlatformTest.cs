@@ -94,6 +94,90 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void GeneratedBuildSnippet_CapturesDependencyResolutionForNpm()
+        {
+            const string outputDir = "/home/site/deployments/deployment'id/dependency-resolution";
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                DependencyResolutionOutputDir = outputDir,
+            };
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions(),
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(@"{ ""dependencies"": { ""express"": ""4.21.2"" } }", NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "22.14",
+            };
+
+            var snippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            Assert.Contains("publish_dependency_resolution()", snippet.BashBuildScriptSnippet);
+            Assert.Contains(
+                "dependencyResolutionOutputDir=" +
+                "'/home/site/deployments/deployment'\"'\"'id/dependency-resolution'",
+                snippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_DoesNotCaptureDependencyResolutionWithoutOutputDirectory()
+        {
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions(),
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(@"{ ""dependencies"": { ""express"": ""4.21.2"" } }", NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "22.14",
+            };
+
+            var snippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            Assert.DoesNotContain("publish_dependency_resolution()", snippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_DoesNotCaptureDependencyResolutionForYarn()
+        {
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                DependencyResolutionOutputDir = "/tmp/dependency-resolution",
+            };
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions(),
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(@"{ ""dependencies"": { ""express"": ""4.21.2"" } }", NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.YarnLockFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "22.14",
+            };
+
+            var snippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            Assert.DoesNotContain("publish_dependency_resolution()", snippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
         public void GeneratedBuildSnippet_HasNpmRunBuildAzureCommand()
         {
             // Arrange
