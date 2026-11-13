@@ -160,8 +160,10 @@ The .NET 8 Bullseye runtime uses the official Debian archive because Bullseye
 packages have moved off the live mirrors. APT signature, checksum, and metadata
 expiry verification remain enabled.
 
-PHP runtime builds use the available CPUs when compiling bundled and PECL
-extensions. PECL receives command-scoped `MAKEFLAGS`, leaving the running
+PHP runtime builds configure and compile two independent bundled extensions
+concurrently, splitting make jobs between them. The existing extension installer
+then installs and enables the results serially to avoid shared-header races.
+PECL receives command-scoped `MAKEFLAGS`, leaving the running
 image's environment and extension selection unchanged.
 Extension configuration, compilation, and source cleanup share a layer so
 extracted PHP build sources are not retained in the runtime image. The original

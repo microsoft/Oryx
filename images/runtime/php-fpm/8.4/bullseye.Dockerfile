@@ -504,7 +504,7 @@ RUN set -eux; \
     && MAKEFLAGS="-j$(nproc)" pecl install imap \
 
     && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && docker-php-ext-install -j "$(nproc)" gd \
+    && set -- gd \
         mysqli \
         opcache \
         pdo \
@@ -532,6 +532,10 @@ RUN set -eux; \
 # deprecated from 7.4, so should be avoided in general template for all php versions
 #        xmlrpc \
         xsl \
+    && printf '%s\n' "$@" | xargs -r -n1 -P2 sh -ec \
+        'cd "/usr/src/php/ext/$2"; [ -e Makefile ] || docker-php-ext-configure "$2"; make -j"$1"' \
+        -- "$(( ($(nproc) + 1) / 2 ))" \
+    && docker-php-ext-install -j "$(nproc)" "$@" \
     && docker-php-source delete
 RUN MAKEFLAGS="-j$(nproc)" pecl install redis && docker-php-ext-enable redis
 
