@@ -515,9 +515,9 @@ RUN set -eux; \
 #       wddx \
 #       xmlrpc \
         xsl \
-    && printf '%s\n' "$@" | xargs -r -n1 -P2 sh -ec \
+    && printf '%s\n' "$@" | xargs -r -n1 -P4 sh -ec \
         'cd "/usr/src/php/ext/$2"; [ -e Makefile ] || docker-php-ext-configure "$2"; make -j"$1"' \
-        -- "$(( ($(nproc) + 1) / 2 ))" \
+        -- "$(( ($(nproc) + 3) / 4 ))" \
     && docker-php-ext-install -j "$(nproc)" "$@" \
     && docker-php-source delete
 

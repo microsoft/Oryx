@@ -160,7 +160,7 @@ The .NET 8 Bullseye runtime uses the official Debian archive because Bullseye
 packages have moved off the live mirrors. APT signature, checksum, and metadata
 expiry verification remain enabled.
 
-PHP runtime builds configure and compile two independent bundled extensions
+PHP runtime builds configure and compile four independent bundled extensions
 concurrently, splitting make jobs between them. The existing extension installer
 then installs and enables the results serially to avoid shared-header races.
 PECL receives command-scoped `MAKEFLAGS`, leaving the running
@@ -174,6 +174,10 @@ Python keeps PGO/LTO enabled and runs the unchanged default PGO training suite
 across the available CPUs. GCC's LTO links use balanced parallel partitions,
 including on older CPython versions that otherwise disable partitioning (see
 [CPython's upstream change](https://github.com/python/cpython/pull/132258)).
+Only the disposable training interpreter skips LTO; the installed interpreter
+keeps full optimization, PGO, and fat LTO objects. Runtime OS dependencies are
+installed before copying the compiled interpreter so BuildKit can overlap their
+installation with compilation.
 Only the SDK build driver compresses an SDK archive; runtime builds copy the
 installed interpreter directly.
 

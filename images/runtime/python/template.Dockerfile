@@ -131,6 +131,8 @@ RUN apt-get update \
 ADD images ${IMAGES_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
+RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
+
 ARG PYTHON_FULL_VERSION
 ARG PYTHON_VERSION
 ARG PYTHON_MAJOR_VERSION
@@ -163,7 +165,6 @@ ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 ENV CNB_STACK_ID="oryx.stacks.skeleton"
 LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 
-RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN --mount=type=secret,id=pip_index_url,target=/run/secrets/pip_index_url \
     pip install --index-url $(cat /run/secrets/pip_index_url) --upgrade pip && \
     pip install --index-url $(cat /run/secrets/pip_index_url) gunicorn debugpy viztracer==0.15.6 vizplugins==0.1.3 && \

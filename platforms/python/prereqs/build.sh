@@ -80,8 +80,10 @@ fi
     --without-ensurepip \
     "${configureArgs[@]}"
 
-# Older CPython disables LTO partitioning; retain the full PGO workload in parallel.
+# Skip LTO only for the disposable training interpreter.
+# Older CPython needs explicit balanced partitions for the final LTO links.
 make -j "$(nproc)" \
+    PGO_PROF_GEN_FLAG="-fprofile-generate -fno-lto" \
     LDFLAGS_NODIST="-flto=auto -flto-partition=balanced" \
     PROFILE_TASK="-m test --pgo --timeout=\$(TESTTIMEOUT) -j$(nproc)"
 
