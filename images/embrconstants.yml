@@ -10,3 +10,4 @@ variables:
   python314osFlavors: resolute
   python315osFlavors: resolute
   pythonosFlavors: resolute
+  dotnet100osFlavors: resolute
