@@ -163,8 +163,12 @@ expiry verification remain enabled.
 PHP runtime builds use the available CPUs when compiling bundled and PECL
 extensions. PECL receives command-scoped `MAKEFLAGS`, leaving the running
 image's environment and extension selection unchanged.
-Python keeps PGO/LTO enabled, but only the SDK build driver compresses an SDK
-archive; runtime builds copy the installed interpreter directly.
+Extension configuration, compilation, and source cleanup share a layer so
+extracted PHP build sources are not retained in the runtime image. The original
+source archive remains available to `docker-php-source extract`.
+Python keeps PGO/LTO enabled and parallelizes GCC's LTO links. Only the SDK build
+driver compresses an SDK archive; runtime builds copy the installed interpreter
+directly.
 
 # Testing Locally
 ## startup script generator

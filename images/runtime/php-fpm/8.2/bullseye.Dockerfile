@@ -505,9 +505,8 @@ RUN set -eux; \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends apache2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl
-
-RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+    && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
+    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install -j "$(nproc)" gd \
         mysqli \
         opcache \
@@ -536,7 +535,8 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         pdo_odbc \
 # deprecated from 7.4, so should be avoided in general template for all php versions
 #        xmlrpc \
-        xsl
+        xsl \
+    && docker-php-source delete
 RUN MAKEFLAGS="-j$(nproc)" pecl install redis && docker-php-ext-enable redis
 
 # https://github.com/Imagick/imagick/issues/331
@@ -596,6 +596,8 @@ RUN set -x \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install -j "$(nproc)" odbc \
+    && cd / \
+    && docker-php-source delete \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LANG="C.UTF-8" \

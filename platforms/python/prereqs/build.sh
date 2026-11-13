@@ -80,7 +80,8 @@ fi
     --without-ensurepip \
     "${configureArgs[@]}"
 
-make -j $(nproc)
+# GCC otherwise links LTO partitions serially despite make -j.
+make -j "$(nproc)" LDFLAGS_NODIST="-flto=auto"
 
 make install
 

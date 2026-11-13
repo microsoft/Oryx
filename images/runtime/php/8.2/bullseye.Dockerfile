@@ -483,9 +483,8 @@ RUN set -eux; \
     else \
 		docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
         && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
-    fi
-
-RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+    fi \
+    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install -j "$(nproc)" gd \
         mysqli \
         opcache \
@@ -515,7 +514,8 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 # deprecated from 7.4, so should be avoided in general template for all php versions
 #       wddx \
 #       xmlrpc \
-        xsl
+        xsl \
+    && docker-php-source delete
 
 RUN set -eux; \
     if [[ $PHP_VERSION != 5.* ]]; then \
@@ -589,6 +589,8 @@ RUN set -x \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install -j "$(nproc)" odbc \
+    && cd / \
+    && docker-php-source delete \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf /tmp/oryx
