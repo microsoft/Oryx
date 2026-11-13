@@ -160,7 +160,9 @@ The .NET 8 Bullseye runtime uses the official Debian archive because Bullseye
 packages have moved off the live mirrors. APT signature, checksum, and metadata
 expiry verification remain enabled.
 
-PHP runtime builds use the available CPUs when compiling bundled extensions.
+PHP runtime builds use the available CPUs when compiling bundled and PECL
+extensions. PECL receives command-scoped `MAKEFLAGS`, leaving the running
+image's environment and extension selection unchanged.
 Python keeps PGO/LTO enabled, but only the SDK build driver compresses an SDK
 archive; runtime builds copy the installed interpreter directly.
 

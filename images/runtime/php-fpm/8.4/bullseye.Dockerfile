@@ -501,7 +501,7 @@ RUN set -eux; \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     # From php 8.4 version imap is removed from php core and moved to pecl
     # && PHP_OPENSSL=yes \docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
-    && pecl install imap
+    && MAKEFLAGS="-j$(nproc)" pecl install imap
 
 RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install -j "$(nproc)" gd \
@@ -532,7 +532,7 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 # deprecated from 7.4, so should be avoided in general template for all php versions
 #        xmlrpc \
         xsl
-RUN pecl install redis && docker-php-ext-enable redis
+RUN MAKEFLAGS="-j$(nproc)" pecl install redis && docker-php-ext-enable redis
 
 # https://github.com/Imagick/imagick/issues/331
 # https://github.com/ihneo/php/pull/24/files
@@ -542,11 +542,11 @@ RUN pecl install redis && docker-php-ext-enable redis
         
 # deprecated from 5.*, so should be avoided 	
 RUN set -eux; \	
-    pecl install mongodb && docker-php-ext-enable mongodb
+    MAKEFLAGS="-j$(nproc)" pecl install mongodb && docker-php-ext-enable mongodb
 
 # Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.3.0)
 RUN set -eux; \
-    pecl install sqlsrv pdo_sqlsrv \
+    MAKEFLAGS="-j$(nproc)" pecl install sqlsrv pdo_sqlsrv \
     && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
     && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini
 

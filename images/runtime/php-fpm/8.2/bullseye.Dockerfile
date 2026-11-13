@@ -537,26 +537,26 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 # deprecated from 7.4, so should be avoided in general template for all php versions
 #        xmlrpc \
         xsl
-RUN pecl install redis && docker-php-ext-enable redis
+RUN MAKEFLAGS="-j$(nproc)" pecl install redis && docker-php-ext-enable redis
 
 # https://github.com/Imagick/imagick/issues/331
 # https://github.com/ihneo/php/pull/24/files
 RUN set -eux; \	
     if [[ $PHP_VERSION != 8.3.* ]]; then \
-        pecl install imagick && docker-php-ext-enable imagick; \
+        MAKEFLAGS="-j$(nproc)" pecl install imagick && docker-php-ext-enable imagick; \
     fi
         
 # deprecated from 5.*, so should be avoided 	
 RUN set -eux; \	
     if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \	
-        pecl install mongodb && docker-php-ext-enable mongodb; \	
+        MAKEFLAGS="-j$(nproc)" pecl install mongodb && docker-php-ext-enable mongodb; \
     fi	
 
 # https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
         echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
-        pecl install mysqlnd_azure \
+        MAKEFLAGS="-j$(nproc)" pecl install mysqlnd_azure \
         && docker-php-ext-enable mysqlnd_azure; \
     fi
 
@@ -565,7 +565,7 @@ RUN set -eux; \
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 # For php|8.2, latest stable version of pecl/sqlsrv, pecl/pdo_sqlsrv is 5.12.0
 RUN set -eux; \
-    pecl install sqlsrv-5.12.0 pdo_sqlsrv-5.12.0 \
+    MAKEFLAGS="-j$(nproc)" pecl install sqlsrv-5.12.0 pdo_sqlsrv-5.12.0 \
     && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
     && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini
 
