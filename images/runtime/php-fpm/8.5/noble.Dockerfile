@@ -334,6 +334,15 @@ RUN set -eux; \
 		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
 		--with-libdir="lib/$debMultiarch" \
 		\
+		--enable-gd=shared --with-freetype --with-jpeg \
+		--with-mysqli=shared --with-pdo-pgsql=shared --with-pgsql=shared \
+		--with-ldap=shared --enable-intl=shared --with-gmp=shared \
+		--with-zip=shared --enable-bcmath=shared --enable-pcntl=shared \
+		--enable-calendar=shared --enable-exif=shared --with-gettext=shared \
+		--with-tidy=shared --enable-shmop=shared --enable-soap=shared \
+		--enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared \
+		--with-pdo-odbc=shared,unixODBC,/usr --with-xsl=shared \
+		\
 		${PHP_EXTRA_CONFIGURE_ARGS:-} \
 	; \
 	make -j "$(nproc)"; \
@@ -495,45 +504,20 @@ RUN set -eux; \
     apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends apache2-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    # From php 8.4 version imap is removed from php core and moved to pecl
-    # && PHP_OPENSSL=yes \docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
+    # IMAP is external from PHP 8.4 onward.
     && MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" imap \
-
-#33 2.797 bcmath bz2 calendar ctype curl dba dl_test dom enchant exif ffi fileinfo filter ftp gd gettext gmp hash iconv intl json ldap mbstring mysqli odbc opcache pcntl pdo pdo_dblib pdo_firebird pdo_mysql pdo_odbc pdo_pgsql pdo_sqlite pgsql phar posix random readline reflection session shmop simplexml snmp soap sockets sodium spl standard sysvmsg sysvsem sysvshm tidy tokenizer xml xmlreader xmlwriter xsl zend_test zip
-
-    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && set -- gd \
-        mysqli \
-        pdo \
+    && docker-php-source extract \
+    && set -- pdo \
         pdo_mysql \
-        pdo_pgsql \
-        pgsql \
-        ldap \
-        intl \
-        gmp \
-        zip \
-        bcmath \
-        pcntl \
-        calendar \
-        exif \
-        gettext \
-        tidy \
-        shmop \
-        soap \
         sockets \
-        sysvmsg \
-        sysvsem \
-        sysvshm \
-        pdo_odbc \
-# deprecated from 7.4, so should be avoided in general template for all php versions
-#        xmlrpc \
-        xsl \
     && printf '%s\n' "$@" | xargs -r -n1 -P4 sh -ec \
         'cd "/usr/src/php/ext/$2"; [ -e Makefile ] || docker-php-ext-configure "$2"; make -j"$1"' \
         -- "$(( ($(nproc) + 3) / 4 ))" \
     && docker-php-ext-install -j "$(nproc)" "$@" \
-    && docker-php-source delete
+    && docker-php-source delete \
+    && docker-php-ext-enable gd mysqli pdo_pgsql pgsql ldap intl gmp zip \
+        bcmath pcntl calendar exif gettext tidy shmop soap sysvmsg sysvsem \
+        sysvshm pdo_odbc xsl
 RUN MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" redis && docker-php-ext-enable redis
 
 # https://github.com/Imagick/imagick/issues/331

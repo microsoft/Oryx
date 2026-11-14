@@ -168,6 +168,9 @@ repeated configure work. PDO, mbstring, IMAP, PDO_MYSQL, and sockets retain thei
 standalone build profiles; merging those profiles can change library detection,
 default socket settings, or exposed constants. The jointly built modules are
 stripped and enabled with the existing helpers, preserving the module inventory.
+PHP 8.5 FPM builds compile 21 bundled shared modules with the interpreter.
+PDO, PDO_MYSQL, and sockets retain their standalone profiles; built-in OPcache,
+external PECL IMAP, and the separate ODBC build remain unchanged.
 PECL receives command-scoped `MAKEFLAGS`, leaving the running
 image's environment and extension selection unchanged.
 PECL downloads retry up to three times in isolated temporary directories;
