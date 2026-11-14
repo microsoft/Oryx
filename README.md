@@ -160,6 +160,10 @@ The .NET 8 Bullseye runtime uses the official Debian archive because Bullseye
 packages have moved off the live mirrors. APT signature, checksum, and metadata
 expiry verification remain enabled.
 
+Azure Linux certificate-package retrieval retries only connection failures,
+up to three attempts with bounded delays. Other errors and exhausted retries
+remain fatal; repository signatures and certificate verification are unchanged.
+
 PHP runtime builds configure and compile four independent bundled extensions
 concurrently, splitting make jobs between them. The existing extension installer
 then installs and enables the results serially to avoid shared-header races.
