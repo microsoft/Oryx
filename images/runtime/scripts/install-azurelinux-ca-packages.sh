@@ -19,7 +19,7 @@ retry_tdnf() {
     done
 }
 
-retry_tdnf makecache
-retry_tdnf install -y ca-certificates
+retry_tdnf makecache '--disablerepo=*' --enablerepo=azurelinux-official-base
+retry_tdnf install -y ca-certificates '--disablerepo=*' --enablerepo=azurelinux-official-base
 update-ca-trust extract
 tdnf clean all

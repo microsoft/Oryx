@@ -163,6 +163,8 @@ expiry verification remain enabled.
 Azure Linux certificate-package retrieval retries only connection failures,
 up to three attempts with bounded delays. Other errors and exhausted retries
 remain fatal; repository signatures and certificate verification are unchanged.
+Acquisition uses the existing official base repository that supplies these
+packages, avoiding metadata downloads for unrelated Azure Linux repositories.
 
 PHP runtime builds configure and compile four independent bundled extensions
 concurrently, splitting make jobs between them. The existing extension installer
@@ -177,6 +179,9 @@ the interpreter. PDO, PDO_MYSQL, mbstring, and sockets retain their standalone
 profiles; PHP 8.3 also builds bundled IMAP separately, while PHP 8.4 retains
 external PECL IMAP. Their module enablement and non-stripping behavior remain
 unchanged, as does the separate ODBC build.
+The Bookworm PHP 8.3 Apache and PHP 8.3/8.4 FPM recipes use the same shared-module
+partition while preserving their existing SAPI flags, standalone profiles,
+module enablement, and non-stripping behavior.
 PHP 8.5 FPM builds compile 21 bundled shared modules with the interpreter.
 PDO, PDO_MYSQL, and sockets retain their standalone profiles; built-in OPcache,
 external PECL IMAP, and the separate ODBC build remain unchanged.
