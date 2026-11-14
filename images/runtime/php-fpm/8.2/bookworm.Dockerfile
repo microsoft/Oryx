@@ -143,13 +143,8 @@ RUN set -eux; \
 		apache2-dev \
 		libsqlite3-dev \
 	; \
+	ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get upgrade --assume-yes; \
 	rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update \
-    && ACCEPT_EULA=Y \
-    DEBIAN_FRONTEND=noninteractive \
-    apt-get upgrade --assume-yes \
-	&& rm -rf /var/lib/apt/lists/*
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bookworm as startupCmdGen
@@ -448,16 +443,15 @@ ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 # Install NGINX version from official nginx.org repository
-RUN apt-get update
-RUN apt install curl gnupg2 nano -y
-RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg \
-    && gpg --no-default-keyring \
+RUN set -euxo pipefail; \
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg; \
+    gpg --no-default-keyring \
            --keyring /usr/share/keyrings/nginx-archive-keyring.gpg \
            --list-keys 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62 \
-    || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; } \
-    && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian bookworm nginx" > /etc/apt/sources.list.d/nginx.list
-RUN apt-get update
-RUN yes '' | apt-get install nginx -y
+    || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; }; \
+    echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian bookworm nginx" > /etc/apt/sources.list.d/nginx.list; \
+    apt-get update; \
+    apt-get install -y curl gnupg2 nano nginx
 RUN rm -f /etc/nginx/conf.d/default.conf \
     && mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
@@ -505,10 +499,7 @@ RUN apt-mark hold msodbcsql17 msodbcsql18 odbcinst1debian2 odbcinst unixodbc uni
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends apache2-dev \
-    && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
+    PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && set -- pdo \
         pdo_mysql \
         mbstring \

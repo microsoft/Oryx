@@ -143,13 +143,8 @@ RUN set -eux; \
 		apache2-dev \
 		libsqlite3-dev \
 	; \
+	ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get upgrade --assume-yes; \
 	rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update \
-    && ACCEPT_EULA=Y \
-    DEBIAN_FRONTEND=noninteractive \
-    apt-get upgrade --assume-yes \
-	&& rm -rf /var/lib/apt/lists/*
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bullseye as startupCmdGen
@@ -336,6 +331,16 @@ RUN set -eux; \
 		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
 		--with-libdir="lib/$debMultiarch" \
 		\
+		--enable-gd=shared --with-freetype --with-jpeg \
+		--with-mysqli=shared --enable-opcache=shared \
+		--with-pdo-pgsql=shared --with-pgsql=shared \
+		--with-ldap=shared --enable-intl=shared --with-gmp=shared \
+		--with-zip=shared --enable-bcmath=shared --enable-pcntl=shared \
+		--enable-calendar=shared --enable-exif=shared --with-gettext=shared \
+		--with-tidy=shared --enable-shmop=shared --enable-soap=shared \
+		--enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared \
+		--with-pdo-odbc=shared,unixODBC,/usr --with-xsl=shared \
+		\
 		${PHP_EXTRA_CONFIGURE_ARGS:-} \
 	; \
 	make -j "$(nproc)"; \
@@ -438,16 +443,15 @@ ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 # Install NGINX version from official nginx.org repository
-RUN apt-get update
-RUN apt install curl gnupg2 nano -y
-RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg \
-    && gpg --no-default-keyring \
+RUN set -euxo pipefail; \
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg; \
+    gpg --no-default-keyring \
            --keyring /usr/share/keyrings/nginx-archive-keyring.gpg \
            --list-keys 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62 \
-    || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; } \
-    && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian bullseye nginx" > /etc/apt/sources.list.d/nginx.list
-RUN apt-get update
-RUN yes '' | apt-get install nginx -y
+    || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; }; \
+    echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian bullseye nginx" > /etc/apt/sources.list.d/nginx.list; \
+    apt-get update; \
+    apt-get install -y curl gnupg2 nano nginx
 RUN rm -f /etc/nginx/conf.d/default.conf \
     && mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
@@ -495,48 +499,20 @@ RUN apt-mark hold msodbcsql17 msodbcsql18 odbcinst1debian2 odbcinst unixodbc uni
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends apache2-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     # From php 8.4 version imap is removed from php core and moved to pecl
-    # && PHP_OPENSSL=yes \docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
-    && MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" imap \
-
-    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && set -- gd \
-        mysqli \
-        opcache \
-        pdo \
+    MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" imap \
+    && docker-php-source extract \
+    && set -- pdo \
         pdo_mysql \
-        pdo_pgsql \
-        pgsql \
-        ldap \
-        intl \
-        gmp \
-        zip \
-        bcmath \
         mbstring \
-        pcntl \
-        calendar \
-        exif \
-        gettext \
-        tidy \
-        shmop \
-        soap \
         sockets \
-        sysvmsg \
-        sysvsem \
-        sysvshm \
-        pdo_odbc \
-# deprecated from 7.4, so should be avoided in general template for all php versions
-#        xmlrpc \
-        xsl \
     && printf '%s\n' "$@" | xargs -r -n1 -P4 sh -ec \
         'cd "/usr/src/php/ext/$2"; [ -e Makefile ] || docker-php-ext-configure "$2"; make -j"$1"' \
         -- "$(( ($(nproc) + 3) / 4 ))" \
     && docker-php-ext-install -j "$(nproc)" "$@" \
-    && docker-php-source delete
+    && docker-php-source delete \
+    && docker-php-ext-enable gd mysqli opcache pdo_pgsql pgsql ldap intl gmp zip bcmath \
+        pcntl calendar exif gettext tidy shmop soap sysvmsg sysvsem sysvshm pdo_odbc xsl
 RUN MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" redis && docker-php-ext-enable redis
 
 # https://github.com/Imagick/imagick/issues/331
