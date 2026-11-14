@@ -163,6 +163,11 @@ expiry verification remain enabled.
 PHP runtime builds configure and compile four independent bundled extensions
 concurrently, splitting make jobs between them. The existing extension installer
 then installs and enables the results serially to avoid shared-header races.
+PHP 8.2 FPM builds compile 22 bundled shared modules with the interpreter, avoiding
+repeated configure work. PDO, mbstring, IMAP, PDO_MYSQL, and sockets retain their
+standalone build profiles; merging those profiles can change library detection,
+default socket settings, or exposed constants. The jointly built modules are
+stripped and enabled with the existing helpers, preserving the module inventory.
 PECL receives command-scoped `MAKEFLAGS`, leaving the running
 image's environment and extension selection unchanged.
 PECL downloads retry up to three times in isolated temporary directories;
