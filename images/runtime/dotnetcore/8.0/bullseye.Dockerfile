@@ -42,12 +42,10 @@ RUN chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
 ARG INCLUDE_AZURELINUX_CERTS
 COPY images/runtime/certs/blocklist/ /etc/pki/ca-trust/source/blacklist/
+COPY images/runtime/scripts/install-azurelinux-ca-packages.sh /usr/local/bin/
 RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
 		set -eux; \
-		tdnf makecache; \
-		tdnf install -y ca-certificates; \
-		update-ca-trust extract; \
-		tdnf clean all; \
+		sh /usr/local/bin/install-azurelinux-ca-packages.sh; \
 	fi
 
 FROM mcr.microsoft.com/mirror/docker/library/debian:bullseye-slim
@@ -55,7 +53,9 @@ ARG BUILD_DIR=/tmp/oryx/build
 ARG INCLUDE_AZURELINUX_CERTS
 ADD build ${BUILD_DIR}
 
-RUN apt-get update \
+# Bullseye packages have moved from the live mirrors to the signed Debian archive.
+RUN sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         # .NET Core dependencies
         libc6 \

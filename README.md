@@ -148,6 +148,85 @@ docker run --detach --rm \
 Oryx consists of a build image, a collection of runtime images, a build script generator, and a collection of
 startup script generators. For more details, refer to our [architecture](./doc/architecture.md) page.
 
+The active Node, Python, and PHP runtime Dockerfiles include the common and
+platform-specific bases as stages in the same file. Build them directly from
+the repository root with exact version inputs from `images/constants.yml`;
+separately built `BASE_IMAGE` inputs are no longer required. The .NET runtime
+Dockerfiles were already self-contained. Python's shared Debian recipe still
+selects its OS using `DEBIAN_FLAVOR`, and disposable compiler stages remain
+part of the runtime build.
+
+The .NET 8 Bullseye runtime uses the official Debian archive because Bullseye
+packages have moved off the live mirrors. APT signature, checksum, and metadata
+expiry verification remain enabled.
+
+Azure Linux certificate-package retrieval retries only connection failures,
+up to three attempts with bounded delays. Other errors and exhausted retries
+remain fatal; repository signatures and certificate verification are unchanged.
+Acquisition uses the existing official base repository that supplies these
+packages, avoiding metadata downloads for unrelated Azure Linux repositories.
+OpenSSL certificate metadata inspection uses at most four workers; deduplication,
+filename selection, installation, and import diagnostics retain their original
+order. The final trust-store refresh is unchanged.
+
+PHP runtime builds configure and compile four independent bundled extensions
+concurrently, splitting make jobs between them. The existing extension installer
+then installs and enables the results serially to avoid shared-header races.
+Core compilation starts the Zend executor and configured JIT translation units
+early in the same make dependency graph, retaining the complete `all` target,
+compiler flags, and job limit.
+The core installation uses native Linux `install` instead of PHP's portable
+shell installer, preserving file contents and permissions without changing compilation.
+PHP 8.1 FPM Bullseye and PHP 8.2 FPM builds compile 22 bundled shared modules with
+the interpreter, avoiding repeated configure work. PDO, mbstring, IMAP, PDO_MYSQL,
+and sockets retain their standalone build profiles; merging those profiles can
+change library detection, default socket settings, or exposed constants. The
+jointly built modules retain PHP 8.1's non-stripping and PHP 8.2's stripping
+behavior and use the existing enablement helpers, preserving the module inventory.
+PHP 8.3 and 8.4 FPM Bullseye builds also compile 22 bundled shared modules with
+the interpreter. PDO, PDO_MYSQL, mbstring, and sockets retain their standalone
+profiles; PHP 8.3 also builds bundled IMAP separately, while PHP 8.4 retains
+external PECL IMAP. Their module enablement and non-stripping behavior remain
+unchanged, as does the separate ODBC build.
+The Bookworm PHP 8.3 Apache and PHP 8.3/8.4 FPM recipes use the same shared-module
+partition while preserving their existing SAPI flags, standalone profiles,
+module enablement, and non-stripping behavior.
+PHP 8.5 FPM builds compile 21 bundled shared modules with the interpreter.
+PDO, PDO_MYSQL, and sockets retain their standalone profiles; built-in OPcache,
+external PECL IMAP, and the separate ODBC build remain unchanged.
+Its Noble recipe installs core headers with the persistent dependencies and
+cleans APT indexes before committing package layers, retaining package marks
+and ODBC holds while avoiding redundant metadata refreshes and deleted index blobs.
+PHP 8.2 FPM Bookworm, PHP 8.3/8.4 FPM Bullseye and Bookworm, and PHP 8.3 Apache
+Bookworm, along with PHP 8.5 FPM Noble, reuse fresh APT indexes for the
+persistent-dependency upgrade.
+These FPM recipes also group Nginx repository setup and package installation.
+PHP 8.2 FPM Bookworm, PHP 8.3/8.4 FPM Bullseye, and PHP 8.5 FPM Noble avoid the
+adjacent duplicate extension-phase upgrade;
+package upgrades, ODBC holds, and Nginx signing-key verification remain enabled.
+PECL receives command-scoped `MAKEFLAGS`, leaving the running
+image's environment and extension selection unchanged.
+PECL downloads retry up to three times in isolated temporary directories;
+compilation and installation failures are not retried. The same package requests,
+including pinned SQL Server driver versions, still go through PECL's installer.
+Extension configuration, compilation, and source cleanup share a layer so
+extracted PHP build sources are not retained in the runtime image. The original
+source archive remains available to `docker-php-source extract`.
+GPG key retrieval stops after the first successful retry and fails explicitly
+when all attempts are exhausted. Key fingerprints and signature checks are unchanged.
+Python keeps PGO/LTO enabled and runs the unchanged default PGO training suite
+across the available CPUs. GCC's LTO links use balanced parallel partitions,
+including on older CPython versions that otherwise disable partitioning (see
+[CPython's upstream change](https://github.com/python/cpython/pull/132258)).
+Only the disposable training interpreter skips LTO; the installed interpreter
+keeps full optimization, PGO, and fat LTO objects. Runtime OS dependencies are
+installed before copying the compiled interpreter so BuildKit can overlap their
+installation with compilation.
+Only the SDK build driver compresses an SDK archive; runtime builds copy the
+installed interpreter directly.
+Azure Linux CA imports read each certificate's subject and SHA256 fingerprint
+in one OpenSSL invocation, retaining the existing validation and trust-store deduplication.
+
 # Testing Locally
 ## startup script generator
 `build/testStartupScriptGenerators.sh` will perform tests on all startup script generators written in go.

@@ -1,4 +1,150 @@
-ARG BASE_IMAGE
+ARG OS_TYPE=debian
+ARG OS_FLAVOR=bullseye
+ARG INCLUDE_AZURELINUX_CERTS=true
+
+# Stage: (optional) pull Azure Linux CA certificates so we can merge them into BaseOS trust store
+# Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
+FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
+ARG INCLUDE_AZURELINUX_CERTS
+COPY images/runtime/certs/blocklist/ /etc/pki/ca-trust/source/blacklist/
+COPY images/runtime/scripts/install-azurelinux-ca-packages.sh /usr/local/bin/
+RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+		set -eux; \
+		sh /usr/local/bin/install-azurelinux-ca-packages.sh; \
+	fi
+
+FROM mcr.microsoft.com/mirror/docker/library/${OS_TYPE}:${OS_FLAVOR} AS oryx_run_base
+ARG IMAGES_DIR=/tmp/oryx/images
+ARG BUILD_DIR=/tmp/oryx/build
+ARG INCLUDE_AZURELINUX_CERTS
+ARG OS_FLAVOR
+
+COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
+# TODO: Remove this once Debian Bullseye and Bookworm provide tzdata 2026e-1 or newer.
+COPY images/runtime/scripts/install-debian-tzdata-2026e.sh /usr/local/bin/
+RUN if [ "${OS_FLAVOR}" = "bullseye" ]; then \
+		chmod +x /usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+		/usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+	fi
+
+RUN apt-get update \
+	&& apt-get upgrade -y \
+	&& apt-get install -y --no-install-recommends \
+		xz-utils \
+		ca-certificates \
+		curl \
+		gnupg \
+		netbase \
+		wget
+
+RUN if [ "${OS_FLAVOR}" = "bullseye" ] || [ "${OS_FLAVOR}" = "bookworm" ]; then \
+		chmod +x /usr/local/bin/install-debian-tzdata-2026e.sh; \
+		/usr/local/bin/install-debian-tzdata-2026e.sh; \
+	elif [ "${OS_FLAVOR}" = "noble" ] || [ "${OS_FLAVOR}" = "resolute" ]; then \
+		apt-get update; \
+		DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata; \
+	fi
+
+RUN if [ "${OS_FLAVOR}" = "bookworm" ] ; then \
+    apt-get update && apt-get install -y --no-install-recommends sq ; \
+    fi
+
+RUN rm -f /usr/local/bin/configure-debian-bullseye-snapshot.sh /usr/local/bin/install-debian-tzdata-2026e.sh \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Copy Azure linux certs to a temporary location
+RUN mkdir -p /tmp/azurelinux-ca-certs && \
+	chmod 755 /tmp/azurelinux-ca-certs;
+COPY --from=azurelinux-core /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
+
+COPY images/runtime/scripts/install-azurelinux-certs.sh /usr/local/bin/install-azurelinux-certs.sh
+
+# Add Azure Linux certs to Debian's CA store if the flag is set to true
+RUN set -e; \
+    if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+        chmod +x /usr/local/bin/install-azurelinux-certs.sh; \
+        /usr/local/bin/install-azurelinux-certs.sh /tmp/azurelinux-ca-certs /tmp/azurelinux-ca-certs/tls-ca-bundle.pem; \
+    fi;
+
+# Cleanup script and temporary files
+RUN	rm -f /usr/local/bin/install-azurelinux-certs.sh; \
+	rm -rf /tmp/azurelinux-ca-certs;
+
+ADD images ${IMAGES_DIR}
+ADD build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+
+FROM oryx_run_base AS oryx_runtime_base
+
+# prevent Debian's PHP packages from being installed
+# https://github.com/docker-library/php/pull/542
+RUN set -eux; \
+	{ \
+		echo 'Package: php*'; \
+		echo 'Pin: release *'; \
+		echo 'Pin-Priority: -1'; \
+	} > /etc/apt/preferences.d/no-debian-php
+
+# dependencies required for running "phpize"
+# (see persistent deps below)
+ENV PHPIZE_DEPS \
+		autoconf \
+		dpkg-dev \
+		file \
+		g++ \
+		gcc \
+		libc-dev \
+		make \
+		pkg-config \
+		re2c
+
+# persistent / runtime deps
+RUN set -eux; \
+	apt-get update; \
+	apt-get upgrade -y \
+	&& apt-get install -y --no-install-recommends \
+		$PHPIZE_DEPS \
+		ca-certificates \
+		curl \
+		xz-utils \
+		libzip-dev \
+		libpng-dev \
+		libjpeg-dev \
+		libpq-dev \
+		libldap2-dev \
+		libldb-dev \
+		libicu-dev \
+		libgmp-dev \
+		libmagickwand-dev \
+		libc-client-dev \
+		libtidy-dev \
+		libkrb5-dev \
+		libxslt-dev \
+		openssh-server \
+		vim \
+		wget \
+		tcptraceroute \
+		mariadb-client \
+		openssl \
+		libedit-dev \
+		libsodium-dev \
+		libfreetype6-dev \
+		libjpeg62-turbo-dev \
+		libonig-dev \
+		libcurl4-openssl-dev \
+		libldap2-dev \
+		zlib1g-dev \
+		apache2-dev \
+		libsqlite3-dev \
+	; \
+	rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+    && ACCEPT_EULA=Y \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get upgrade --assume-yes \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bullseye as startupCmdGen
@@ -15,7 +161,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod +x build.sh && ./build.sh php /opt/startupcmdgen/startupcmdgen
 
 # From https://github.com/docker-library/php.git
-FROM ${BASE_IMAGE}
+FROM oryx_runtime_base
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
@@ -236,9 +382,9 @@ RUN set -eux; \
 		\
 		${PHP_EXTRA_CONFIGURE_ARGS:-} \
 	; \
-	make -j "$(nproc)"; \
+	make -f Makefile -f "${IMAGES_DIR}/runtime/php/build-order.mk" -j "$(nproc)" oryx-runtime; \
 	find -type f -name '*.a' -delete; \
-	make install; \
+	make install INSTALL="install -c"; \
 	find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; \
 	make clean; \
 	\
@@ -335,10 +481,9 @@ RUN set -eux; \
     else \
 		docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
         && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
-    fi
-
-RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && docker-php-ext-install gd \
+    fi \
+    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+    && set -- gd \
         mysqli \
         opcache \
         pdo \
@@ -367,32 +512,37 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 # deprecated from 7.4, so should be avoided in general template for all php versions
 #       wddx \
 #       xmlrpc \
-        xsl
+        xsl \
+    && printf '%s\n' "$@" | xargs -r -n1 -P4 sh -ec \
+        'cd "/usr/src/php/ext/$2"; [ -e Makefile ] || docker-php-ext-configure "$2"; make -j"$1"' \
+        -- "$(( ($(nproc) + 3) / 4 ))" \
+    && docker-php-ext-install -j "$(nproc)" "$@" \
+    && docker-php-source delete
 
 RUN set -eux; \
     if [[ $PHP_VERSION != 5.* ]]; then \
-        pecl install redis && docker-php-ext-enable redis; \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" redis && docker-php-ext-enable redis; \
     fi
 
 # https://github.com/Imagick/imagick/issues/331
 # https://github.com/ihneo/php/pull/24/files
 RUN set -eux; \
     if [[ $PHP_VERSION != 8.3.* ]]; then \
-        pecl install imagick && docker-php-ext-enable imagick; \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" imagick && docker-php-ext-enable imagick; \
     fi
 
 # deprecated from 5.*, so should be avoided
 RUN set -eux; \
     if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \
         echo "pecl/mongodb requires PHP (version >= 7.1.0, version <= 7.99.99)"; \
-        pecl install mongodb && docker-php-ext-enable mongodb; \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" mongodb && docker-php-ext-enable mongodb; \
     fi
 
 # https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
         echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
-        pecl install mysqlnd_azure \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" mysqlnd_azure \
         && docker-php-ext-enable mysqlnd_azure; \
     fi
 
@@ -402,7 +552,7 @@ RUN set -eux; \
 # For php|8.0, latest stable version of pecl/sqlsrv, pecl/pdo_sqlsrv is 5.11.0
 RUN set -eux; \
     if [[ $PHP_VERSION == 8.0.* ]]; then \
-        pecl install sqlsrv-5.11.0 pdo_sqlsrv-5.11.0 \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" sqlsrv-5.11.0 pdo_sqlsrv-5.11.0 \
         && echo extension=pdo_sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||")/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||")/20-sqlsrv.ini; \
     fi
@@ -410,7 +560,7 @@ RUN set -eux; \
 # PHP 8.2 requires SQL Server drivers 5.12.0; newer drivers require PHP 8.3.
 RUN set -eux; \
     if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* ||  $PHP_VERSION == 8.3.* ]]; then \
-        pecl install sqlsrv-5.12.0 pdo_sqlsrv-5.12.0 \
+        MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" sqlsrv-5.12.0 pdo_sqlsrv-5.12.0 \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
     fi
@@ -440,7 +590,9 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
-    && docker-php-ext-install odbc \
+    && docker-php-ext-install -j "$(nproc)" odbc \
+    && cd / \
+    && docker-php-source delete \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf /tmp/oryx

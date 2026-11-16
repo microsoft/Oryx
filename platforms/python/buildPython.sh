@@ -35,6 +35,7 @@ buildPython() {
 		mkdir /usr/src/python
 		cd /usr/src/python
 		OS_FLAVOR=$osFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION PYTHON_SHA256=$python_sha INSTALL_UV=true /tmp/build.sh
+		tar -zcf "$targetDir/$pythonSdkFileName" -C "/opt/python/$version" .
 		cd $REPO_DIR
 
 		rm -r /opt/python/*
