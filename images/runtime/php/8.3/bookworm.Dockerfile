@@ -138,13 +138,8 @@ RUN set -eux; \
 		apache2-dev \
 		libsqlite3-dev \
 	; \
+	ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get upgrade --assume-yes; \
 	rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update \
-    && ACCEPT_EULA=Y \
-    DEBIAN_FRONTEND=noninteractive \
-    apt-get upgrade --assume-yes \
-	&& rm -rf /var/lib/apt/lists/*
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bookworm as startupCmdGen

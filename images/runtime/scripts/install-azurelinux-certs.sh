@@ -61,21 +61,36 @@ sanitize_filename() {
     tr '[:space:]/,()' '_' | tr -cd 'A-Za-z0-9_.-' | tr -s '_.-' | sed -E 's/^[_.-]+//; s/[_.-]+$//' | cut -c1-60
 }
 
-fingerprint_sha256() {
-    local fingerprint
-    fingerprint=$(openssl x509 -in "$1" -noout -fingerprint -sha256) || return 1
-    printf '%s\n' "${fingerprint#*=}"
+prepare_certificate_metadata() {
+    local metadata_dir="$1"
+    shift
+    mkdir -p "$metadata_dir" || return 1
+    [ "$#" -gt 0 ] || return 0
+
+    # Inspect independently; consume results in original order below.
+    printf '%s\0' "$@" | xargs -0 -r -n16 -P4 bash -ec '
+        metadata_dir="$1"
+        shift
+        for certificate; do
+            output="$metadata_dir/${certificate##*/}"
+            status=0
+            openssl x509 -in "$certificate" -noout -subject -nameopt RFC2253 -fingerprint -sha256 \
+                > "$output.txt" 2> "$output.stderr" || status=$?
+            printf "%s\n" "$status" > "$output.status"
+        done
+    ' -- "$metadata_dir"
 }
 
 process_certificate() {
     local azlCert="$1" dest_dir="$2" idx="$3"
     local metadata fp="" subject="" line
 
-    # Validate and read both fields in one OpenSSL invocation.
-    if ! metadata=$(openssl x509 -in "$azlCert" -noout -subject -nameopt RFC2253 -fingerprint -sha256 2>/dev/null); then
+    local metadata_path="$TMP_CERTS_DIR/bundle-metadata/${azlCert##*/}"
+    if [ "$(< "$metadata_path.status")" != 0 ]; then
         err "Invalid cert: $azlCert"
         return 1
     fi
+    metadata=$(< "$metadata_path.txt")
     while IFS= read -r line; do
         case "$line" in
             subject=*) subject="$line" ;;
@@ -124,12 +139,28 @@ process_certificate() {
 }
 
 extract_system_fingerprints() {
+    local existing line metadata_path
+    local -a certificates=()
     if [ -d "/etc/ssl/certs" ]; then
-
         for existing in /etc/ssl/certs/*.pem; do
             [ -f "$existing" ] || continue
-            fp_sys=$(fingerprint_sha256 "$existing") || true
-            [ -n "${fp_sys:-}" ] && printf '%s\n' "$fp_sys" >> "$TMP_CERTS_DIR/system-fingerprints.txt"
+            certificates+=("$existing")
+        done
+        if ! prepare_certificate_metadata "$TMP_CERTS_DIR/system-metadata" "${certificates[@]}"; then
+            err "Failed to inspect system certificates."
+            return 1
+        fi
+        for existing in "${certificates[@]}"; do
+            metadata_path="$TMP_CERTS_DIR/system-metadata/${existing##*/}"
+            if [ -s "$metadata_path.stderr" ]; then
+                cat "$metadata_path.stderr" >&2
+            fi
+            [ "$(< "$metadata_path.status")" = 0 ] || continue
+            while IFS= read -r line; do
+                case "$line" in
+                    *Fingerprint=*) printf '%s\n' "${line#*=}" >> "$TMP_CERTS_DIR/system-fingerprints.txt" ;;
+                esac
+            done < "$metadata_path.txt"
         done
 
         if [ -s "$TMP_CERTS_DIR/system-fingerprints.txt" ]; then
@@ -177,11 +208,19 @@ main() {
         return 1
     fi
 
-    local count=0 idx=0
+    local count=0 idx=0 pem
+    local -a certificates=()
     : > "$TMP_CERTS_DIR/imported-azl-fingerprints.txt"
-
     for pem in "$TMP_CERTS_DIR"/cert-*.pem; do
         [ -f "$pem" ] || continue
+        certificates+=("$pem")
+    done
+    if ! prepare_certificate_metadata "$TMP_CERTS_DIR/bundle-metadata" "${certificates[@]}"; then
+        err "Failed to inspect bundle certificates."
+        return 1
+    fi
+
+    for pem in "${certificates[@]}"; do
         idx=$((idx+1))
 
         if process_certificate "$pem" "$DEST_DIR" "$idx"; then

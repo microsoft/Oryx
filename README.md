@@ -165,15 +165,19 @@ up to three attempts with bounded delays. Other errors and exhausted retries
 remain fatal; repository signatures and certificate verification are unchanged.
 Acquisition uses the existing official base repository that supplies these
 packages, avoiding metadata downloads for unrelated Azure Linux repositories.
+OpenSSL certificate metadata inspection uses at most four workers; deduplication,
+filename selection, installation, and import diagnostics retain their original
+order. The final trust-store refresh is unchanged.
 
 PHP runtime builds configure and compile four independent bundled extensions
 concurrently, splitting make jobs between them. The existing extension installer
 then installs and enables the results serially to avoid shared-header races.
-PHP 8.2 FPM builds compile 22 bundled shared modules with the interpreter, avoiding
-repeated configure work. PDO, mbstring, IMAP, PDO_MYSQL, and sockets retain their
-standalone build profiles; merging those profiles can change library detection,
-default socket settings, or exposed constants. The jointly built modules are
-stripped and enabled with the existing helpers, preserving the module inventory.
+PHP 8.1 FPM Bullseye and PHP 8.2 FPM builds compile 22 bundled shared modules with
+the interpreter, avoiding repeated configure work. PDO, mbstring, IMAP, PDO_MYSQL,
+and sockets retain their standalone build profiles; merging those profiles can
+change library detection, default socket settings, or exposed constants. The
+jointly built modules retain PHP 8.1's non-stripping and PHP 8.2's stripping
+behavior and use the existing enablement helpers, preserving the module inventory.
 PHP 8.3 and 8.4 FPM Bullseye builds also compile 22 bundled shared modules with
 the interpreter. PDO, PDO_MYSQL, mbstring, and sockets retain their standalone
 profiles; PHP 8.3 also builds bundled IMAP separately, while PHP 8.4 retains
@@ -185,9 +189,10 @@ module enablement, and non-stripping behavior.
 PHP 8.5 FPM builds compile 21 bundled shared modules with the interpreter.
 PDO, PDO_MYSQL, and sockets retain their standalone profiles; built-in OPcache,
 external PECL IMAP, and the separate ODBC build remain unchanged.
-PHP 8.2 FPM Bookworm and PHP 8.3/8.4 FPM Bullseye reuse fresh APT indexes for the
-persistent-dependency upgrade and group Nginx repository setup and package
-installation. They avoid the adjacent duplicate extension-phase upgrade;
+PHP 8.2 FPM Bookworm, PHP 8.3/8.4 FPM Bullseye and Bookworm, and PHP 8.3 Apache
+Bookworm reuse fresh APT indexes for the persistent-dependency upgrade.
+These FPM recipes also group Nginx repository setup and package installation.
+PHP 8.2 FPM Bookworm and PHP 8.3/8.4 FPM Bullseye avoid the adjacent duplicate extension-phase upgrade;
 package upgrades, ODBC holds, and Nginx signing-key verification remain enabled.
 PECL receives command-scoped `MAKEFLAGS`, leaving the running
 image's environment and extension selection unchanged.
