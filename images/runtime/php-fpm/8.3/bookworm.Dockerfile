@@ -341,7 +341,7 @@ RUN set -eux; \
 	; \
 	make -j "$(nproc)"; \
 	find -type f -name '*.a' -delete; \
-	make install; \
+	make install INSTALL="install -c"; \
 	find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; \
 	make clean; \
 	\
