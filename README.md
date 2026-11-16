@@ -190,9 +190,11 @@ PHP 8.5 FPM builds compile 21 bundled shared modules with the interpreter.
 PDO, PDO_MYSQL, and sockets retain their standalone profiles; built-in OPcache,
 external PECL IMAP, and the separate ODBC build remain unchanged.
 PHP 8.2 FPM Bookworm, PHP 8.3/8.4 FPM Bullseye and Bookworm, and PHP 8.3 Apache
-Bookworm reuse fresh APT indexes for the persistent-dependency upgrade.
+Bookworm, along with PHP 8.5 FPM Noble, reuse fresh APT indexes for the
+persistent-dependency upgrade.
 These FPM recipes also group Nginx repository setup and package installation.
-PHP 8.2 FPM Bookworm and PHP 8.3/8.4 FPM Bullseye avoid the adjacent duplicate extension-phase upgrade;
+PHP 8.2 FPM Bookworm, PHP 8.3/8.4 FPM Bullseye, and PHP 8.5 FPM Noble avoid the
+adjacent duplicate extension-phase upgrade;
 package upgrades, ODBC holds, and Nginx signing-key verification remain enabled.
 PECL receives command-scoped `MAKEFLAGS`, leaving the running
 image's environment and extension selection unchanged.
