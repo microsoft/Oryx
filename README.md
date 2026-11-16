@@ -172,6 +172,9 @@ order. The final trust-store refresh is unchanged.
 PHP runtime builds configure and compile four independent bundled extensions
 concurrently, splitting make jobs between them. The existing extension installer
 then installs and enables the results serially to avoid shared-header races.
+Core compilation starts the Zend executor and configured JIT translation units
+early in the same make dependency graph, retaining the complete `all` target,
+compiler flags, and job limit.
 The core installation uses native Linux `install` instead of PHP's portable
 shell installer, preserving file contents and permissions without changing compilation.
 PHP 8.1 FPM Bullseye and PHP 8.2 FPM builds compile 22 bundled shared modules with

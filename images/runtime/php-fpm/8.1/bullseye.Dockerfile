@@ -336,7 +336,7 @@ RUN set -eux; \
 		\
 		${PHP_EXTRA_CONFIGURE_ARGS:-} \
 	; \
-	make -j "$(nproc)"; \
+	make -f Makefile -f "${IMAGES_DIR}/runtime/php/build-order.mk" -j "$(nproc)" oryx-runtime; \
 	find -type f -name '*.a' -delete; \
 	make install INSTALL="install -c"; \
 	find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; \
