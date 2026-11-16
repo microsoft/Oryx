@@ -194,6 +194,9 @@ module enablement, and non-stripping behavior.
 PHP 8.5 FPM builds compile 21 bundled shared modules with the interpreter.
 PDO, PDO_MYSQL, and sockets retain their standalone profiles; built-in OPcache,
 external PECL IMAP, and the separate ODBC build remain unchanged.
+Its Noble recipe installs core headers with the persistent dependencies and
+cleans APT indexes before committing package layers, retaining package marks
+and ODBC holds while avoiding redundant metadata refreshes and deleted index blobs.
 PHP 8.2 FPM Bookworm, PHP 8.3/8.4 FPM Bullseye and Bookworm, and PHP 8.3 Apache
 Bookworm, along with PHP 8.5 FPM Noble, reuse fresh APT indexes for the
 persistent-dependency upgrade.

@@ -27,30 +27,28 @@ RUN if [ "${OS_FLAVOR}" = "bullseye" ]; then \
 		/usr/local/bin/configure-debian-bullseye-snapshot.sh; \
 	fi
 
-RUN apt-get update \
-	&& apt-get upgrade -y \
-	&& apt-get install -y --no-install-recommends \
+RUN set -eux; \
+	apt-get update; \
+	apt-get upgrade -y; \
+	apt-get install -y --no-install-recommends \
 		xz-utils \
 		ca-certificates \
 		curl \
 		gnupg \
 		netbase \
-		wget
-
-RUN if [ "${OS_FLAVOR}" = "bullseye" ] || [ "${OS_FLAVOR}" = "bookworm" ]; then \
+		wget; \
+	if [ "${OS_FLAVOR}" = "bullseye" ] || [ "${OS_FLAVOR}" = "bookworm" ]; then \
 		chmod +x /usr/local/bin/install-debian-tzdata-2026e.sh; \
 		/usr/local/bin/install-debian-tzdata-2026e.sh; \
 	elif [ "${OS_FLAVOR}" = "noble" ] || [ "${OS_FLAVOR}" = "resolute" ]; then \
-		apt-get update; \
 		DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata; \
-	fi
-
-RUN if [ "${OS_FLAVOR}" = "bookworm" ] ; then \
-    apt-get update && apt-get install -y --no-install-recommends sq ; \
-    fi
-
-RUN rm -f /usr/local/bin/configure-debian-bullseye-snapshot.sh /usr/local/bin/install-debian-tzdata-2026e.sh \
-	&& rm -rf /var/lib/apt/lists/*
+	fi; \
+	if [ "${OS_FLAVOR}" = "bookworm" ]; then \
+		apt-get update; \
+		apt-get install -y --no-install-recommends sq; \
+	fi; \
+	rm -f /usr/local/bin/configure-debian-bullseye-snapshot.sh /usr/local/bin/install-debian-tzdata-2026e.sh; \
+	rm -rf /var/lib/apt/lists/*
 
 # Copy Azure linux certs to a temporary location
 RUN mkdir -p /tmp/azurelinux-ca-certs && \
@@ -140,7 +138,12 @@ RUN set -eux; \
 		zlib1g-dev \
 		apache2-dev \
 		libsqlite3-dev \
+		libargon2-dev \
+		libssl-dev \
+		libxml2-dev \
 	; \
+	# These core build dependencies were previously installed as automatic packages.
+	apt-mark auto libargon2-dev libssl-dev libxml2-dev; \
 	ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get upgrade --assume-yes; \
 	rm -rf /var/lib/apt/lists/*
 
@@ -174,7 +177,8 @@ RUN set -eux \
 	&& curl https://packages.microsoft.com/config/ubuntu/24.04/prod.list > /etc/apt/sources.list.d/mssql-release.list \
 	&& curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
 	&& apt-get update \
-	&& ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.6.1.1-1 libodbcinst2=2.3.12-1ubuntu0.24.04.1 odbcinst=2.3.12-1ubuntu0.24.04.1 unixodbc=2.3.12-1ubuntu0.24.04.1 unixodbc-dev=2.3.12-1ubuntu0.24.04.1
+	&& ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.6.1.1-1 libodbcinst2=2.3.12-1ubuntu0.24.04.1 odbcinst=2.3.12-1ubuntu0.24.04.1 unixodbc=2.3.12-1ubuntu0.24.04.1 unixodbc-dev=2.3.12-1ubuntu0.24.04.1 \
+	&& rm -rf /var/lib/apt/lists/*
 
 ENV PHP_INI_DIR=/usr/local/etc/php
 RUN set -eux; \
@@ -213,9 +217,6 @@ ENV PHP_SOURCE_BASE_URL=${PHP_SOURCE_BASE_URL}
 RUN set -eux; \
 	\
 	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends gnupg dirmngr; \
-	rm -rf /var/lib/apt/lists/*; \
 	\
 	mkdir -p /usr/src; \
 	cd /usr/src; \
@@ -256,20 +257,11 @@ RUN set -eux; \
 	\
 	
 	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		libargon2-dev \
-		libcurl4-openssl-dev \
-		libedit-dev \
-		libonig-dev \
-		libsodium-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		libxml2-dev \
-		zlib1g-dev \
-		${PHP_EXTRA_BUILD_DEPS:-} \
-	; \
-	rm -rf /var/lib/apt/lists/*; \
+	if [ -n "${PHP_EXTRA_BUILD_DEPS:-}" ]; then \
+		apt-get update; \
+		apt-get install -y --no-install-recommends $PHP_EXTRA_BUILD_DEPS; \
+		rm -rf /var/lib/apt/lists/*; \
+	fi; \
 	\
 	export \
 		CFLAGS="$PHP_CFLAGS" \
@@ -445,7 +437,10 @@ RUN set -euxo pipefail; \
     || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; }; \
     echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/ubuntu noble nginx" > /etc/apt/sources.list.d/nginx.list; \
     apt-get update; \
-    apt-get install -y curl gnupg2 nano nginx
+    apt-get install -y curl gnupg2 nano nginx; \
+    apt-mark hold msodbcsql18 unixodbc unixodbc-dev; \
+    apt-get upgrade -y; \
+    rm -rf /var/lib/apt/lists/*
 RUN rm -f /etc/nginx/conf.d/default.conf \
     && mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
@@ -484,18 +479,13 @@ RUN nginx -t
 ENV NGINX_PORT=8080
 
 # Install common PHP extensions
-# TEMPORARY: Holding odbc related packages from upgrading.
-RUN apt-mark hold msodbcsql18 unixodbc unixodbc-dev \
-    && apt-get update \
-    && apt-get upgrade -y \
-    && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
+RUN ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
+# IMAP is external from PHP 8.4 onward.
 RUN set -eux; \
-    apt-get install -y --no-install-recommends apache2-dev \
-    # IMAP is external from PHP 8.4 onward.
-    && MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" imap \
+    MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" imap \
     && docker-php-source extract \
     && set -- pdo \
         pdo_mysql \
