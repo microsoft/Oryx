@@ -25,8 +25,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         public PlatformsCommandTest(ITestOutputHelper output) : base(output) { }
 
-        [Fact, Trait("category", "githubactions")]
-        public void ListsPlatformsAndVersionsAvailableForDynamicInstall()
+        [Theory, Trait("category", "githubactions")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBullseye, HugoConstants.BullseyeVersion)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBookworm, HugoConstants.Version)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsNoble, HugoConstants.Version)]
+        public void ListsPlatformsAndVersionsAvailableForDynamicInstall(string imageTag, string expectedHugoVersion)
         {
             // Arrange
             var script = new ShellScriptBuilder()
@@ -37,7 +40,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(imageTag),
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
             });
@@ -93,7 +96,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(hugoPlatform);
                     Assert.NotNull(hugoPlatform.Versions);
                     Assert.True(hugoPlatform.Versions.Any());
-                    Assert.True(hugoPlatform.Versions.Contains("0.148.2"));
+                    Assert.True(hugoPlatform.Versions.Contains(expectedHugoVersion));
                 },
             result.GetDebugInfo());
         }

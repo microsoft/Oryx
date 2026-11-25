@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Exceptions;
@@ -44,7 +45,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         public string Name => HugoConstants.PlatformName;
 
         /// <inheritdoc/>
-        public IEnumerable<string> SupportedVersions => new[] { HugoConstants.Version };
+        public IEnumerable<string> SupportedVersions => new[] { this.DefaultVersion };
+
+        private string DefaultVersion => this.commonOptions.DebianFlavor == OsTypes.DebianBullseye
+            ? HugoConstants.BullseyeVersion
+            : HugoConstants.Version;
 
         public static string GetMaxSatisfyingVersionAndVerify(string version)
         {
@@ -217,7 +222,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             }
 
             // Fallback to default version
-            return HugoConstants.Version;
+            return this.DefaultVersion;
         }
     }
 }
