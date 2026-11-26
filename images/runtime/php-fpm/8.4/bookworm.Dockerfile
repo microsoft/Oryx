@@ -1,4 +1,149 @@
-ARG BASE_IMAGE
+ARG OS_TYPE=debian
+ARG OS_FLAVOR=bookworm
+ARG INCLUDE_AZURELINUX_CERTS=true
+
+# Stage: (optional) pull Azure Linux CA certificates so we can merge them into BaseOS trust store
+# Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
+FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
+ARG INCLUDE_AZURELINUX_CERTS
+COPY images/runtime/certs/blocklist/ /etc/pki/ca-trust/source/blacklist/
+COPY images/runtime/scripts/install-azurelinux-ca-packages.sh /usr/local/bin/
+RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+		set -eux; \
+		sh /usr/local/bin/install-azurelinux-ca-packages.sh; \
+	fi
+
+FROM mcr.microsoft.com/mirror/docker/library/${OS_TYPE}:${OS_FLAVOR} AS oryx_run_base
+ARG IMAGES_DIR=/tmp/oryx/images
+ARG BUILD_DIR=/tmp/oryx/build
+ARG INCLUDE_AZURELINUX_CERTS
+ARG OS_FLAVOR
+
+COPY images/runtime/scripts/configure-debian-bullseye-snapshot.sh /usr/local/bin/
+# TODO: Remove this once Debian Bullseye and Bookworm provide tzdata 2026e-1 or newer.
+COPY images/runtime/scripts/install-debian-tzdata-2026e.sh /usr/local/bin/
+RUN if [ "${OS_FLAVOR}" = "bullseye" ]; then \
+		chmod +x /usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+		/usr/local/bin/configure-debian-bullseye-snapshot.sh; \
+	fi
+
+RUN apt-get update \
+	&& apt-get upgrade -y \
+	&& apt-get install -y --no-install-recommends \
+		xz-utils \
+		ca-certificates \
+		curl \
+		gnupg \
+		netbase \
+		wget
+
+RUN if [ "${OS_FLAVOR}" = "bullseye" ] || [ "${OS_FLAVOR}" = "bookworm" ]; then \
+		chmod +x /usr/local/bin/install-debian-tzdata-2026e.sh; \
+		/usr/local/bin/install-debian-tzdata-2026e.sh; \
+	elif [ "${OS_FLAVOR}" = "noble" ] || [ "${OS_FLAVOR}" = "resolute" ]; then \
+		apt-get update; \
+		DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata; \
+	fi
+
+RUN if [ "${OS_FLAVOR}" = "bookworm" ] ; then \
+    apt-get update && apt-get install -y --no-install-recommends sq ; \
+    fi
+
+RUN rm -f /usr/local/bin/configure-debian-bullseye-snapshot.sh /usr/local/bin/install-debian-tzdata-2026e.sh \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Copy Azure linux certs to a temporary location
+RUN mkdir -p /tmp/azurelinux-ca-certs && \
+	chmod 755 /tmp/azurelinux-ca-certs;
+COPY --from=azurelinux-core /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
+
+COPY images/runtime/scripts/install-azurelinux-certs.sh /usr/local/bin/install-azurelinux-certs.sh
+
+# Add Azure Linux certs to Debian's CA store if the flag is set to true
+RUN set -e; \
+    if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+        chmod +x /usr/local/bin/install-azurelinux-certs.sh; \
+        /usr/local/bin/install-azurelinux-certs.sh /tmp/azurelinux-ca-certs /tmp/azurelinux-ca-certs/tls-ca-bundle.pem; \
+    fi;
+
+# Cleanup script and temporary files
+RUN	rm -f /usr/local/bin/install-azurelinux-certs.sh; \
+	rm -rf /tmp/azurelinux-ca-certs;
+
+ADD images ${IMAGES_DIR}
+ADD build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+
+FROM oryx_run_base AS oryx_runtime_base
+
+# prevent Debian's PHP packages from being installed
+# https://github.com/docker-library/php/pull/542
+RUN set -eux; \
+	{ \
+		echo 'Package: php*'; \
+		echo 'Pin: release *'; \
+		echo 'Pin-Priority: -1'; \
+	} > /etc/apt/preferences.d/no-debian-php
+
+# dependencies required for running "phpize"
+# (see persistent deps below)
+ENV PHPIZE_DEPS \
+		autoconf \
+		dpkg-dev \
+		file \
+		g++ \
+		gcc \
+		libc-dev \
+		make \
+		pkg-config \
+		re2c
+
+# persistent / runtime deps
+# Note: libjpeg62-turbo-dev is for Debian, libjpeg-turbo8-dev is for Ubuntu
+ARG OS_TYPE
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		$PHPIZE_DEPS \
+		ca-certificates \
+		curl \
+		xz-utils \
+		libzip-dev \
+		libpng-dev \
+		libjpeg-dev \
+		$([ "$OS_TYPE" = "debian" ] && echo "libjpeg62-turbo-dev") \
+		$([ "$OS_TYPE" = "ubuntu" ] && echo "libjpeg-turbo8-dev") \
+		libpq-dev \
+		libldap2-dev \
+		libldb-dev \
+		libicu-dev \
+		libgmp-dev \
+		libmagickwand-dev \
+		libc-client-dev \
+		libtidy-dev \
+		libkrb5-dev \
+		libxslt-dev \
+		openssh-server \
+		vim \
+		curl \
+		wget \
+		tcptraceroute \
+		mariadb-client \
+		openssl \
+		libedit-dev \
+		libsodium-dev \
+		libfreetype6-dev \
+		libonig-dev \
+		libcurl4-openssl-dev \
+		libldap2-dev \
+		zlib1g-dev \
+		apache2-dev \
+		libsqlite3-dev \
+	; \
+	ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get upgrade --assume-yes; \
+	rm -rf /var/lib/apt/lists/*
+
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-bookworm as startupCmdGen
 
@@ -14,7 +159,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod +x build.sh && ./build.sh php /opt/startupcmdgen/startupcmdgen
 
 # From https://github.com/docker-library/php.git
-FROM ${BASE_IMAGE}
+FROM oryx_runtime_base
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
@@ -182,11 +327,21 @@ RUN set -eux; \
 		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
 		--with-libdir="lib/$debMultiarch" \
 		\
+		--enable-gd=shared --with-freetype --with-jpeg \
+		--with-mysqli=shared --enable-opcache=shared \
+		--with-pdo-pgsql=shared --with-pgsql=shared \
+		--with-ldap=shared --enable-intl=shared --with-gmp=shared \
+		--with-zip=shared --enable-bcmath=shared --enable-pcntl=shared \
+		--enable-calendar=shared --enable-exif=shared --with-gettext=shared \
+		--with-tidy=shared --enable-shmop=shared --enable-soap=shared \
+		--enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared \
+		--with-pdo-odbc=shared,unixODBC,/usr --with-xsl=shared \
+		\
 		${PHP_EXTRA_CONFIGURE_ARGS:-} \
 	; \
-	make -j "$(nproc)"; \
+	make -f Makefile -f "${IMAGES_DIR}/runtime/php/build-order.mk" -j "$(nproc)" oryx-runtime; \
 	find -type f -name '*.a' -delete; \
-	make install; \
+	make install INSTALL="install -c"; \
 	find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; \
 	make clean; \
 	\
@@ -282,16 +437,15 @@ ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 # Install NGINX version from official nginx.org repository
-RUN apt-get update
-RUN apt install curl gnupg2 nano -y
-RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg \
-    && gpg --no-default-keyring \
+RUN set -euxo pipefail; \
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg; \
+    gpg --no-default-keyring \
            --keyring /usr/share/keyrings/nginx-archive-keyring.gpg \
            --list-keys 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62 \
-    || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; } \
-    && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian bookworm nginx" > /etc/apt/sources.list.d/nginx.list
-RUN apt-get update
-RUN yes '' | apt-get install nginx -y
+    || { echo "ERROR: nginx signing key fingerprint mismatch"; exit 1; }; \
+    echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian bookworm nginx" > /etc/apt/sources.list.d/nginx.list; \
+    apt-get update; \
+    apt-get install -y curl gnupg2 nano nginx
 RUN rm -f /etc/nginx/conf.d/default.conf \
     && mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
@@ -339,46 +493,21 @@ RUN apt-mark hold msodbcsql17 msodbcsql18 odbcinst1debian2 odbcinst unixodbc uni
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends apache2-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    # From php 8.4 version imap is removed from php core and moved to pecl
-    # && PHP_OPENSSL=yes \docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
-    && pecl install imap
-
-#33 2.797 bcmath bz2 calendar ctype curl dba dl_test dom enchant exif ffi fileinfo filter ftp gd gettext gmp hash iconv intl json ldap mbstring mysqli odbc opcache pcntl pdo pdo_dblib pdo_firebird pdo_mysql pdo_odbc pdo_pgsql pdo_sqlite pgsql phar posix random readline reflection session shmop simplexml snmp soap sockets sodium spl standard sysvmsg sysvsem sysvshm tidy tokenizer xml xmlreader xmlwriter xsl zend_test zip
-
-RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && docker-php-ext-install gd \
-        mysqli \
-        opcache \
-        pdo \
+    MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" imap \
+    && docker-php-source extract \
+    && set -- pdo \
         pdo_mysql \
-        pdo_pgsql \
-        pgsql \
-        ldap \
-        intl \
-        gmp \
-        zip \
-        bcmath \
         mbstring \
-        pcntl \
-        calendar \
-        exif \
-        gettext \
-        tidy \
-        shmop \
-        soap \
         sockets \
-        sysvmsg \
-        sysvsem \
-        sysvshm \
-        pdo_odbc \
-# deprecated from 7.4, so should be avoided in general template for all php versions
-#        xmlrpc \
-        xsl
-RUN pecl install redis && docker-php-ext-enable redis
+    && printf '%s\n' "$@" | xargs -r -n1 -P4 sh -ec \
+        'cd "/usr/src/php/ext/$2"; [ -e Makefile ] || docker-php-ext-configure "$2"; make -j"$1"' \
+        -- "$(( ($(nproc) + 3) / 4 ))" \
+    && docker-php-ext-install -j "$(nproc)" "$@" \
+    && docker-php-ext-enable gd mysqli opcache pdo_pgsql pgsql ldap intl gmp zip \
+        bcmath pcntl calendar exif gettext tidy shmop soap sysvmsg sysvsem \
+        sysvshm pdo_odbc xsl \
+    && docker-php-source delete
+RUN MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" redis && docker-php-ext-enable redis
 
 # https://github.com/Imagick/imagick/issues/331
 # https://github.com/ihneo/php/pull/24/files
@@ -388,11 +517,11 @@ RUN pecl install redis && docker-php-ext-enable redis
         
 # deprecated from 5.*, so should be avoided 	
 RUN set -eux; \	
-    pecl install mongodb && docker-php-ext-enable mongodb
+    MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" mongodb && docker-php-ext-enable mongodb
 
 # Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.3.0)
 RUN set -eux; \
-    pecl install sqlsrv pdo_sqlsrv \
+    MAKEFLAGS="-j$(nproc)" "${IMAGES_DIR}/runtime/php/install-pecl.sh" sqlsrv pdo_sqlsrv \
     && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
     && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini
 
@@ -422,7 +551,9 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
-    && docker-php-ext-install odbc \
+    && docker-php-ext-install -j "$(nproc)" odbc \
+    && cd / \
+    && docker-php-source delete \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LANG="C.UTF-8" \
