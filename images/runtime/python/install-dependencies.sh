@@ -91,5 +91,18 @@ Threading=1
 UsageCount=1
 EOL
 
+# Blobfuse2 for Azure Blob Storage FUSE mounting.
+# Installs blobfuse2 (+ fuse3 / fusermount3) from the Microsoft package repo already configured
+# above (packages.microsoft.com). This lets downstream consumers BlobFuse2-mount an Azure Blob
+# container from inside the running image without a first-mount `apt install` over the network
+# (which otherwise adds a one-time cold-start latency on the first mount). Guarded to the
+# Debian/Ubuntu flavors whose Microsoft prod feed is set up above and that publish blobfuse2.
+if [ "$osFlavor" == "noble" ] || [ "$osFlavor" == "bookworm" ] || [ "$osFlavor" == "bullseye" ]; then \
+    apt-get update \
+        && apt-get install -y --no-install-recommends blobfuse2 fuse3 \
+        && blobfuse2 --version \
+        && command -v fusermount3
+fi
+
 # Clean up for apt. Keeping at the very end to make sure it runs after every apt-get install.
 rm -rf /var/lib/apt/lists/*
